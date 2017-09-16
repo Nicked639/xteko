@@ -5,7 +5,7 @@
     */
 
 // 请将 Api key 填写到下方""中
-var apiKey = "o.c0ueHZcSbaLnInNFEgpHgvJyl6PbBueu"
+var apiKey = ""
 var LIMIT = 20
 // 从 safari 启动 send url
 if ($context.safari) {
