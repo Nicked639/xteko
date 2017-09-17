@@ -1,6 +1,6 @@
 /*
  Pushbullet
-    支持从剪切板发送和接收 push
+    支持从剪切板发送和接收 Push
     by Nicked
     */
 
@@ -25,6 +25,58 @@ if ($context.safari) {
     }
   })
 
+} else if ($context.data) {
+  var file = $context.data
+  $ui.toast("SETTING...")
+  file_name = file.fileName
+  $http.request({
+    method: "POST",
+    url: "https://api.pushbullet.com/v2/upload-request",
+    header: {
+      "Access-Token": apiKey,
+    },
+    body: {
+      file_name: file_name
+    },
+    handler: function(resp) {
+      var upload_url = resp.data.upload_url
+      var file_url = resp.data.file_url
+      if (file_url.indexOf("pushbulletusercontent.com/") != -1) {
+        $ui.toast("file_url SUCCEED!")
+      } else {
+        $ui.toast("file_url FAILED!")
+        $app.close()
+      }
+      $ui.toast("UPLOADING...")
+      $http.request({
+        method: "POST",
+        url: upload_url,
+        form: {
+          file: file
+        },
+        handler: function(resp) {
+          $http.request({
+            method: "POST",
+            url: "https://api.pushbullet.com/v2/pushes",
+            header: {
+              "Access-Token": apiKey,
+            },
+            body: {
+              type: "file",
+              file_url: file_url,
+              file_name: file_name,
+            },
+            handler: function(resp) {
+              toast(resp)
+              $context.close()
+            }
+          })
+
+        }
+
+      })
+    }
+  })
 } else {
 
   $ui.menu({
@@ -57,13 +109,13 @@ if ($context.safari) {
                     if (item.title) {
                       return "🔗:" + item.title
                     } else {
-                      return mkd
+                      return "🔗:" + mkd
                     }
 
                   } else {
                     var filename = item.file_url
-                    return "📝:"+filename.substr(filename.lastIndexOf('/')+1)
-                   
+                    return "📝:" + filename.substr(filename.lastIndexOf('/') + 1)
+
                   }
                 }),
                 handler: function(title, idx) {
@@ -86,7 +138,7 @@ if ($context.safari) {
                           title: "Copy URL",
 
                           handler: function() {
-                            $clipboard.texr = push[idx].url
+                            $clipboard.text = push[idx].url
                           }
                         },
                         {
@@ -101,7 +153,7 @@ if ($context.safari) {
                   } else if (push[idx].type == "note") {
                     $clipboard.text = push[idx].body
                     var link = $detector.link(push[idx].body)
-                    if (link.length > 0) {
+                    if (link.length == 1) {
                       $ui.alert({
                         title: "Note Copied",
                         message: "Find 🔗: " + link,
@@ -126,6 +178,17 @@ if ($context.safari) {
                         ]
                       })
 
+                    } else if (link.length > 1) {
+                      $ui.toast("Links Dectected")
+                      $ui.menu({
+                        items: link,
+                        handler: function(title,idx) {
+                          $clipboard.text = link[idx]
+                          $ui.toast("Copied")
+                        }
+                      })
+                    } else{
+                      $ui.toast("Copied")
                     }
 
                   } else {
