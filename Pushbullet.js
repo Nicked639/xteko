@@ -4,9 +4,8 @@
     by Nicked
     */
 
-// 请将 Api key 填写到下方""中
-var apiKey = ""
-var LIMIT = 20
+// 请将 accesstoken 填写到下方""中
+var accesstoken = ""
 // 从 safari 启动 send url
 if ($context.safari) {
   url = $context.safari.items.location.href
@@ -14,12 +13,13 @@ if ($context.safari) {
     method: "POST",
     url: "https://api.pushbullet.com/v2/pushes",
     header: {
-      "Access-Token": apiKey
+      "Access-Token": accesstoken
     },
     body: {
       type: "note",
       body: url
     },
+    timeout: 7,
     handler: function(resp) {
       toast(resp)
     }
@@ -34,12 +34,14 @@ if ($context.safari) {
     method: "POST",
     url: "https://api.pushbullet.com/v2/upload-request",
     header: {
-      "Access-Token": apiKey,
+      "Access-Token": accesstoken,
     },
     body: {
       file_name: file_name
     },
+    timeout: 7,
     handler: function(resp) {
+      toast(resp)
       var upload_url = resp.data.upload_url
       var file_url = resp.data.file_url
       if (file_url.indexOf("pushbulletusercontent.com/") != -1) {
@@ -49,6 +51,7 @@ if ($context.safari) {
         $app.close()
       }
       $ui.toast("UPLOADING...")
+      $ui.loading(true)
       $http.request({
         method: "POST",
         url: upload_url,
@@ -60,16 +63,16 @@ if ($context.safari) {
             method: "POST",
             url: "https://api.pushbullet.com/v2/pushes",
             header: {
-              "Access-Token": apiKey,
+              "Access-Token": accesstoken,
             },
             body: {
               type: "file",
               file_url: file_url,
               file_name: file_name,
             },
+            timeout: 6,
             handler: function(resp) {
               toast(resp)
-              $ui.loading(false)
               $context.close()
             }
           })
@@ -88,23 +91,18 @@ if ($context.safari) {
         $ui.loading(true)
         $http.request({
           method: "GET",
-          url: "https://api.pushbullet.com/v2/pushes?active=true&limit=" + LIMIT,
+          url: "https://api.pushbullet.com/v2/pushes?active=true",
           header: {
-            "Access-Token": apiKey
+            "Access-Token": accesstoken
           },
+          timeout: 7,
           handler: function(resp) {
-            if (resp.response.statusCode == 429) {
-              toastdown("Too Many Requests")
-            }
-            if (resp.response.statusCode > 500) {
-              toastdown("Server Error")
-            }
+            toast(resp)
             var push = resp.data.pushes
             if (push.length == 0) {
               $ui.alert("NO PUSHES!")
               $app.close()
             } else {
-              $ui.loading(false)
               $ui.menu({
                 items: push.map(function(item) {
                   if (item.type == "note") {
@@ -181,14 +179,15 @@ if ($context.safari) {
             method: "POST",
             url: "https://api.pushbullet.com/v2/pushes",
             header: {
-              "Access-Token": apiKey
+              "Access-Token": accesstoken
             },
             body: {
               type: "note",
               body: $clipboard.text
             },
+            timeout: 7,
             handler: function(resp) {
-              $ui.loading(false)
+              
               toast(resp)
             }
           })
@@ -204,17 +203,18 @@ if ($context.safari) {
             handler: function() { $app.close() }
           }, {
             title: "Delete",
+            timeout:6,
             handler: function() {
               $ui.loading(true)
               $http.request({
                 method: "DELETE",
                 url: "https://api.pushbullet.com/v2/pushes",
                 header: {
-                  "Access-Token": apiKey
+                  "Access-Token": accesstoken
                 },
+                timeout:7,
                 handler: function(resp) {
                   toast(resp)
-                  $ui.loading(false)
 
                 }
               })
@@ -230,10 +230,13 @@ if ($context.safari) {
 }
 
 function toast(resp) {
-  if (resp.response.statusCode == 200) {
+  if (resp.response) {
     $ui.toast("SUCCEED")
+    $ui.loading(false)
   } else {
-    $ui.toast("FAILED")
+    $ui.toast("请求超时，稍后再试")
+    $ui.loading(false)
+    $app.close()
   }
 
 }
