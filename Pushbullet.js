@@ -27,7 +27,8 @@ if ($context.safari) {
 
 } else if ($context.data) {
   var file = $context.data
-  $ui.toast("SETTING...")
+  $ui.toast("SETTING URL...")
+  $ui.loading(true)
   file_name = file.fileName
   $http.request({
     method: "POST",
@@ -68,6 +69,7 @@ if ($context.safari) {
             },
             handler: function(resp) {
               toast(resp)
+              $ui.loading(false)
               $context.close()
             }
           })
@@ -83,6 +85,7 @@ if ($context.safari) {
     items: ["Get Push", "Send Push", "Delete"],
     handler: function(title, idx) {
       if (idx == 0) {
+        $ui.loading(true)
         $http.request({
           method: "GET",
           url: "https://api.pushbullet.com/v2/pushes?active=true&limit=" + LIMIT,
@@ -99,7 +102,9 @@ if ($context.safari) {
             var push = resp.data.pushes
             if (push.length == 0) {
               $ui.alert("NO PUSHES!")
+              $app.close()
             } else {
+              $ui.loading(false)
               $ui.menu({
                 items: push.map(function(item) {
                   if (item.type == "note") {
@@ -122,97 +127,38 @@ if ($context.safari) {
                   if (push[idx].type == "link") {
 
                     $clipboard.text = "[" + push[idx].body + "]" + "(" + push[idx].url + ")"
+                    var title = "Link and Note Copied"
 
-                    $ui.alert({
-                      title: "Link and Note Copied",
-                      message: "[" + push[idx].body + "]" + "(" + push[idx].url + ")",
-                      actions: [{
-                          title: "Preview",
-                          handler: function() {
-                            $safari.open({
-                              url: push[idx].url
-                            })
-                          }
-                        },
-                        {
-                          title: "Copy URL",
-
-                          handler: function() {
-                            $clipboard.text = push[idx].url
-                          }
-                        },
-                        {
-                          title: "Cancle",
-                          handler: function() {
-                            $app.close()
-                          }
-                        }
-                      ]
-                    })
+                    selectResult(title, $clipboard.text, push[idx].url)
 
                   } else if (push[idx].type == "note") {
                     $clipboard.text = push[idx].body
                     var link = $detector.link(push[idx].body)
                     if (link.length == 1) {
-                      $ui.alert({
-                        title: "Note Copied",
-                        message: "Find 🔗: " + link,
-                        actions: [{
-                            title: "Preview",
-                            handler: function() {
-                              $safari.open({
-                                url: link
-                              })
-                            }
-                          },
-                          {
-                            title: "Copy URL",
-                            handler: function() { $clipboard.text = link }
-                          },
-                          {
-                            title: "Cancle",
-                            handler: function() {
-                              $app.close()
-                            }
-                          }
-                        ]
-                      })
+                      var title = "Note Copied"
+                      var message = "Find 🔗: " + link
+                      selectResult(title, message, link)
 
                     } else if (link.length > 1) {
                       $ui.toast("Links Dectected")
                       $ui.menu({
                         items: link,
-                        handler: function(title,idx) {
+                        handler: function(title, idx) {
                           $clipboard.text = link[idx]
-                          $ui.toast("Copied")
+                          var title = "Copied"
+                          selectResult(title, link[idx], link[idx])
                         }
                       })
-                    } else{
+                    } else {
                       $ui.toast("Copied")
                     }
 
                   } else {
-                    $ui.alert({
-                      title: "Pushbullet File",
-                      message: "Preview Or Copy URL",
-                      actions: [{
-                          title: "Preview",
-                          handler: function() {
-                            $http.download({
-                              url: push[idx].file_url,
-                              handler: function(resp) {
-                                $quicklook.open({ data: resp.data })
-                              }
-                            })
+                    var title = "Pushbullet File"
+                    var message = "Preview Or Copy URL"
+                    var url = push[idx].file_url
 
-                          }
-                        },
-                        {
-                          title: "Copy URL",
-                          handler: function() { $clipboard.text = push[idx].file_url }
-                        }
-                      ]
-                    })
+                    selectResult(title, message, url, quicklook = 1)
 
                   }
                 }
@@ -230,6 +176,7 @@ if ($context.safari) {
         if ($clipboard.text == "") {
           $ui.alert("Clipboard is empty")
         } else {
+          $ui.loading(true)
           $http.request({
             method: "POST",
             url: "https://api.pushbullet.com/v2/pushes",
@@ -241,6 +188,7 @@ if ($context.safari) {
               body: $clipboard.text
             },
             handler: function(resp) {
+              $ui.loading(false)
               toast(resp)
             }
           })
@@ -253,10 +201,11 @@ if ($context.safari) {
           actions: [{
             title: "Cancel",
             style: "Cancel",
-            handler: function() {}
+            handler: function() { $app.close() }
           }, {
             title: "Delete",
             handler: function() {
+              $ui.loading(true)
               $http.request({
                 method: "DELETE",
                 url: "https://api.pushbullet.com/v2/pushes",
@@ -265,6 +214,7 @@ if ($context.safari) {
                 },
                 handler: function(resp) {
                   toast(resp)
+                  $ui.loading(false)
 
                 }
               })
@@ -298,5 +248,47 @@ function toastdown(title) {
         $app.close()
       }
     }]
+  })
+}
+
+function selectResult(title, message, url, quicklook = 0) {
+  $ui.alert({
+    title: title,
+    message: message,
+    actions: [{
+        title: "Preview",
+        handler: function() {
+          if (quicklook == 0) {
+            $safari.open({
+              url: url
+            })
+          } else {
+            $ui.loading(true)
+            $http.download({
+              url: url,
+              handler: function(resp) {
+                $ui.loading(false)
+                $quicklook.open({ data: resp.data })
+              }
+            })
+
+          }
+
+        }
+      },
+      {
+        title: "Copy URL",
+
+        handler: function() {
+          $clipboard.text = url
+        }
+      },
+      {
+        title: "Cancel",
+        handler: function() {
+          $app.close()
+        }
+      }
+    ]
   })
 }
