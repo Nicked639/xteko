@@ -16,10 +16,9 @@
 // 请将 Access Token 填写到下方""中，或直接运行根据提示输入。
 
 var accesstoken = ""
-if ($file.exists("pushbullet.json")) {
-  var file = $file.read("pushbullet.json"),
-    json = JSON.parse(file.string),
-    accesstoken = json.accesstoken
+if ($file.exists("pushbullet.txt")) {
+  var file = $file.read("pushbullet.txt"),
+    accesstoken = file.string
 } else {
   if ($widget.running) {
     var message = {
@@ -56,7 +55,7 @@ if ($file.exists("pushbullet.json")) {
             editable: 0
           },
           layout: function(make) {
-          make.left.top.right.inset(5)
+            make.left.top.right.inset(5)
             make.height.equalTo(200)
           }
         },
@@ -140,10 +139,9 @@ if ($file.exists("pushbullet.json")) {
 }
 
 if (accesstoken) {
-
-  var LIMIT = 20
   // 从 safari 启动 send url
   if ($context.safari) {
+    $ui.loading(true)
     url = $context.safari.items.location.href
     $http.request({
       method: "POST",
@@ -155,6 +153,7 @@ if (accesstoken) {
         type: "note",
         body: url
       },
+      timeout:7,
       handler: function(resp) {
         toast(resp)
       }
@@ -174,7 +173,9 @@ if (accesstoken) {
       body: {
         file_name: file_name
       },
+      timeout:7,
       handler: function(resp) {
+        toast(resp)
         var upload_url = resp.data.upload_url
         var file_url = resp.data.file_url
         if (file_url.indexOf("pushbulletusercontent.com/") != -1) {
@@ -202,9 +203,9 @@ if (accesstoken) {
                 file_url: file_url,
                 file_name: file_name,
               },
+              timeout: 6,
               handler: function(resp) {
                 toast(resp)
-                $ui.loading(false)
                 $context.close()
               }
             })
@@ -223,23 +224,19 @@ if (accesstoken) {
           $ui.loading(true)
           $http.request({
             method: "GET",
-            url: "https://api.pushbullet.com/v2/pushes?active=true&limit=" + LIMIT,
+            url: "https://api.pushbullet.com/v2/pushes?active=true",
             header: {
               "Access-Token": accesstoken
             },
+            timeout: 7,
             handler: function(resp) {
-              if (resp.response.statusCode == 429) {
-                toastdown("Too Many Requests")
-              }
-              if (resp.response.statusCode > 500) {
-                toastdown("Server Error")
-              }
+              
+              toast(resp)
               var push = resp.data.pushes
               if (push.length == 0) {
                 $ui.alert("NO PUSHES!")
                 $app.close()
               } else {
-                $ui.loading(false)
                 $ui.menu({
                   items: push.map(function(item) {
                     if (item.type == "note") {
@@ -322,8 +319,8 @@ if (accesstoken) {
                 type: "note",
                 body: $clipboard.text
               },
+              timeout: 7,
               handler: function(resp) {
-                $ui.loading(false)
                 toast(resp)
               }
             })
@@ -347,9 +344,9 @@ if (accesstoken) {
                   header: {
                     "Access-Token": accesstoken
                   },
+                  timeout:6,
                   handler: function(resp) {
                     toast(resp)
-                    $ui.loading(false)
 
                   }
                 })
@@ -369,8 +366,10 @@ if (accesstoken) {
 function toast(resp) {
   if (resp.response.statusCode == 200) {
     $ui.toast("SUCCEED")
+    $ui.loading(false)
   } else {
-    $ui.toast("FAILED")
+    $ui.toast("请求超时，请稍后再试")
+    $ui.loading(false)
   }
 
 }
@@ -450,9 +449,9 @@ function handleButtonSubmit() {
           $("message").text = "\n\n\n\nAPI Access Token 验证成功\n\n已为您保存相关参数, 现可正常使用 Widget 功能."
           $file.write({
             data: $data({
-              string: '{"accesstoken": "' + accesstoken + '"}'
+              string: accesstoken
             }),
-            path: "pushbullet.json"
+            path: "pushbullet.txt"
           })
           $("accesstoken").blur()
         } else {
