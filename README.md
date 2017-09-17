@@ -1,4 +1,2 @@
-# xteko
-for xteko js of pin
-
-as a backup
+# xteko of pin
+for xteko js of pin as a backup
