@@ -1,6 +1,6 @@
 /*
  Pushbullet
-    支持从剪切板发送 Push 和 接收最新的一条 Push
+    支持从剪切板发送和接收 push
     by Nicked
     */
 
