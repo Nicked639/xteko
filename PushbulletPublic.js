@@ -323,7 +323,7 @@ function pushbulletAction(accesstoken) {
       var upload_url = resp.data.upload_url
       var file_url = resp.data.file_url
       if (file_url.indexOf("pushbulletusercontent.com/") != -1) {
-        $ui.toast("file_url SUCCEED")
+        $ui.toast("file_url SUCCEEDED")
       } else {
         $ui.toast("file_url FAILED")
         $app.close()
@@ -375,7 +375,7 @@ function getToken() {
 
 function toast(resp) {
   if (resp.response) {
-    $ui.toast("REQUEST SUCCEED")
+    $ui.toast("REQUEST SUCCEEDED")
     $ui.loading(false)
   } else {
     $ui.toast("REQUEST TIMEOUT, TRY AGAIN LATER")
@@ -540,7 +540,7 @@ function handleButtonSubmit() {
 
         $ui.loading(false)
         if (resp.response) {
-          $ui.toast("VERIFYING SUCCEED")
+          $ui.toast("VERIFYING SUCCEEDED")
           $("message").text = "\n\n\n\nAccess Token Checked!."
           $file.write({
             data: $data({
