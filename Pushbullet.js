@@ -1,11 +1,25 @@
 /*
  Pushbullet
     支持从剪切板发送和接收 Push
-    by Nicked
+    Send:
+         TodayWidget:
+                     Clipboard
+         ActionExtension:
+                     File
+    Get:
+         TodayWidget or in App:
+                     Note, Link, File
+    Delete:
+          One or All
+    
+  by Nicked 
+     https://t.me/nicked
     */
 
-// 请将 accesstoken 填写到下方""中
+// 请将 Access Token 填写到下方""中
 var accesstoken = ""
+// 请求超时设置
+timeout = 7
 // 从 safari 启动 send url
 if ($context.safari) {
   url = $context.safari.items.location.href
@@ -19,12 +33,12 @@ if ($context.safari) {
       type: "note",
       body: url
     },
-    timeout: 7,
+    timeout: timeout,
     handler: function(resp) {
       toast(resp)
     }
   })
-
+  // 从 Action Extension 运行上传文件
 } else if ($context.data) {
   var file = $context.data
   $ui.toast("SETTING URL...")
@@ -39,7 +53,7 @@ if ($context.safari) {
     body: {
       file_name: file_name
     },
-    timeout: 7,
+    timeout: timeout,
     handler: function(resp) {
       toast(resp)
       var upload_url = resp.data.upload_url
@@ -70,7 +84,7 @@ if ($context.safari) {
               file_url: file_url,
               file_name: file_name,
             },
-            timeout: 6,
+            timeout: timeout,
             handler: function(resp) {
               toast(resp)
               $context.close()
@@ -83,7 +97,6 @@ if ($context.safari) {
     }
   })
 } else {
-
   $ui.menu({
     items: ["Get Push", "Send Push", "Delete"],
     handler: function(title, idx) {
@@ -95,7 +108,7 @@ if ($context.safari) {
           header: {
             "Access-Token": accesstoken
           },
-          timeout: 7,
+          timeout: timeout,
           handler: function(resp) {
             toast(resp)
             var push = resp.data.pushes
@@ -185,9 +198,9 @@ if ($context.safari) {
               type: "note",
               body: $clipboard.text
             },
-            timeout: 7,
+            timeout: timeout,
             handler: function(resp) {
-              
+
               toast(resp)
             }
           })
@@ -196,14 +209,70 @@ if ($context.safari) {
       } else if (idx == 2) {
         $ui.alert({
           title: "Delete Conform",
-          message: "Are you sure to delete ALL pushes?",
+          message: "One Or All?",
           actions: [{
-            title: "Cancel",
-            style: "Cancel",
-            handler: function() { $app.close() }
+            title: "ONE",
+            handler: function() {
+              $ui.loading(true)
+              $http.request({
+                method: "GET",
+                url: "https://api.pushbullet.com/v2/pushes?active=true",
+                header: {
+                  "Access-Token": accesstoken
+                },
+                timeout: timeout,
+                handler: function(resp) {
+                  toast(resp)
+                  var push = resp.data.pushes
+                  if (push.length == 0) {
+                    $ui.alert("NO PUSHES!")
+                    $app.close()
+                  } else {
+                    $ui.menu({
+                      items: push.map(function(item) {
+                        if (item.type == "note") {
+                          return item.body
+                        } else if (item.type == "link") {
+                          mkd = "[" + item.body + "]" + "(" + item.url + ")"
+                          if (item.title) {
+                            return "🔗:" + item.title
+                          } else {
+                            return "🔗:" + mkd
+                          }
+
+                        } else {
+                          var filename = item.file_url
+                          return "📝:" + filename.substr(filename.lastIndexOf('/') + 1)
+
+                        }
+                      }),
+                      handler: function(title, idx) {
+                        var iden = push[idx].iden
+                      
+                        $http.request({
+                          method: "DELETE",
+                          url: "https://api.pushbullet.com/v2/pushes/" + iden,
+                          header: {
+                            "Access-Token": accesstoken
+                          },
+                          timeout: timeout,
+                          handler: function(resp) {
+                            toast(resp)
+                          }
+
+                        })
+                      }
+
+                    })
+
+                  }
+
+                }
+
+              })
+            }
           }, {
-            title: "Delete",
-            timeout:6,
+            title: "ALL",
             handler: function() {
               $ui.loading(true)
               $http.request({
@@ -212,7 +281,7 @@ if ($context.safari) {
                 header: {
                   "Access-Token": accesstoken
                 },
-                timeout:7,
+                timeout: 7,
                 handler: function(resp) {
                   toast(resp)
 
@@ -220,7 +289,17 @@ if ($context.safari) {
               })
 
             }
-          }]
+          },
+          {
+            
+          title:"Cancel",
+          handler: function(){
+            $app.close()
+          }
+          
+            
+          }
+          ]
         })
 
       }
