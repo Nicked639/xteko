@@ -1,6 +1,6 @@
 /*
  Pushbullet
-    支持从剪切板发送和接收 Push
+    Get and Send Push From Clipboard, Safari, Action Extension.
     Send:
          TodayWidget:
                      Clipboard
@@ -16,9 +16,7 @@
      https://t.me/nicked
     */
 
-// 直接运行根据提示输入 Access Token
-
-var timeout = 7
+timeout = 6
 // 从 Today Widget启动
 if ($app.env == $env.today) {
   var accesstoken = getToken()
@@ -27,16 +25,16 @@ if ($app.env == $env.today) {
     pushbullet(accesstoken)
   } else {
     var message = {
-      title: "缺少参数",
-      message: "请进入 Main App 并运行此扩展以键入 API 参数。",
+      title: "Access Token Missing!",
+      message: "Execute This Xteko In Pin App For More Information.",
       actions: [{
-          title: "前往 Main App",
+          title: "Open Pin",
           handler: function() {
             $app.openURL("pin://jslab")
           }
         },
         {
-          title: "取消",
+          title: "Cancel",
           handler: function() {
             $app.close()
           }
@@ -50,7 +48,7 @@ if ($app.env == $env.today) {
 }
 // 从应用内启动
 if ($app.env == $env.app) {
-  var accesstoken = getToken()
+  var accesstoken = getToken();
   if (accesstoken) {
     pushbullet(accesstoken)
   } else {
@@ -88,7 +86,7 @@ function pushbullet(accesstoken) {
           header: {
             "Access-Token": accesstoken
           },
-          timeout: timeout,
+          timeout: 1,
           handler: function(resp) {
 
             toast(resp)
@@ -166,7 +164,7 @@ function pushbullet(accesstoken) {
       } else if (idx == 1) {
 
         if ($clipboard.text == "") {
-          $ui.alert("Clipboard is empty")
+          $ui.alert("Clipboard is EMPTY!")
         } else {
           $ui.loading(true)
           $http.request({
@@ -179,7 +177,7 @@ function pushbullet(accesstoken) {
               type: "note",
               body: $clipboard.text
             },
-            timeout: 7,
+            timeout: timeout,
             handler: function(resp) {
               toast(resp)
             }
@@ -188,7 +186,7 @@ function pushbullet(accesstoken) {
         }
       } else if (idx == 2) {
         $ui.alert({
-          title: "Delete Conform",
+          title: "Delete Confirm",
           message: "One Or All?",
           actions: [{
               title: "ONE",
@@ -261,7 +259,7 @@ function pushbullet(accesstoken) {
                   header: {
                     "Access-Token": accesstoken
                   },
-                  timeout: 7,
+                  timeout: timeout,
                   handler: function(resp) {
                     toast(resp)
 
@@ -325,12 +323,12 @@ function pushbulletAction(accesstoken) {
       var upload_url = resp.data.upload_url
       var file_url = resp.data.file_url
       if (file_url.indexOf("pushbulletusercontent.com/") != -1) {
-        $ui.toast("file_url SUCCEED!")
+        $ui.toast("file_url SUCCEED")
       } else {
-        $ui.toast("file_url FAILED!")
+        $ui.toast("file_url FAILED")
         $app.close()
       }
-      $ui.toast("UPLOADING...")
+      $ui.toast("FILE UPLOADING...")
       $ui.loading(true)
       $http.request({
         method: "POST",
@@ -338,7 +336,9 @@ function pushbulletAction(accesstoken) {
         form: {
           file: file
         },
+        timeout:30,
         handler: function(resp) {
+          toast(resp)
           $http.request({
             method: "POST",
             url: "https://api.pushbullet.com/v2/pushes",
@@ -374,27 +374,14 @@ function getToken() {
 }
 
 function toast(resp) {
-  if (resp.response.statusCode == 200) {
-    $ui.toast("SUCCEED")
+  if (resp.response) {
+    $ui.toast("REQUEST SUCCEED")
     $ui.loading(false)
   } else {
-    $ui.toast("请求超时，请稍后再试")
+    $ui.toast("REQUEST TIMEOUT, TRY AGAIN LATER")
     $ui.loading(false)
   }
 
-}
-
-function toastdown(title) {
-  $ui.alert({
-    title: title,
-    message: "Try Again Later",
-    actions: [{
-      title: "OK",
-      handler: function() {
-        $app.close()
-      }
-    }]
-  })
 }
 
 function selectResult(title, message, url, quicklook = 0) {
@@ -448,7 +435,7 @@ function settingToken() {
         type: "text",
         props: {
           id: "message",
-          text: "\n\n\n与 Pushbullet 通信需要 Access Token(apikey)。Access Token 可以在账户的设置界面找到。Pushbullet 登录需要代理，登录后可直连。\n\n请注意，获得该密钥即获得账户的所有权限，请尽量保密。",
+          text: "\n\n\nYou need the access token in order to use the API.\nUsing an access token grants full access to your account. Don't share this lightly.",
           //align: $align.center,
           font: $font(16),
           editable: 0
@@ -462,7 +449,7 @@ function settingToken() {
         type: "input",
         props: {
           id: "accesstoken",
-          placeholder: "在此处粘贴 Access Token",
+          placeholder: "Paste Your Access Token",
           align: $align.center,
           font: $font(15)
         },
@@ -477,7 +464,7 @@ function settingToken() {
         type: "button",
         props: {
           id: "submit",
-          title: "提交",
+          title: "Submit",
           font: $font(15)
         },
         layout: function(make) {
@@ -496,7 +483,7 @@ function settingToken() {
         type: "button",
         props: {
           id: "register",
-          title: "前往 pushbullet.com 创建 Access Token",
+          title: "Create Access Token on Pushbullet.com",
           font: $font(15)
         },
         layout: function(make) {
@@ -515,7 +502,7 @@ function settingToken() {
         type: "button",
         props: {
           id: "setting",
-          title: "查看 Access Token 设置界面",
+          title: "More Information",
           font: $font(15)
         },
         layout: function(make) {
@@ -539,7 +526,7 @@ function settingToken() {
 function handleButtonSubmit() {
   var accesstoken = $("accesstoken").text
   if (accesstoken == '') {
-    $ui.toast("请输入 Access Token.")
+    $ui.toast("Input Access Token.")
   } else {
     $ui.loading(true)
     $http.request({
@@ -552,9 +539,9 @@ function handleButtonSubmit() {
       handler: function(resp) {
 
         $ui.loading(false)
-        if (resp.response.statusCode == 200) {
-          $ui.toast("验证成功")
-          $("message").text = "\n\n\n\nAPI Access Token 验证成功\n\n已为您保存相关参数, 现可正常使用 Widget 功能."
+        if (resp.response) {
+          $ui.toast("VERIFYING SUCCEED")
+          $("message").text = "\n\n\n\nAccess Token Checked!."
           $file.write({
             data: $data({
               string: accesstoken
@@ -564,7 +551,7 @@ function handleButtonSubmit() {
           $("accesstoken").blur()
         } else {
           $("accesstoken").text = ""
-          $ui.toast("Access Token 有误, 请重新尝试.")
+          $ui.toast("Wrong Access Token! Try Again!")
           $("accesstoken").focus()
         }
       }
