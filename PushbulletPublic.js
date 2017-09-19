@@ -1,11 +1,13 @@
 /*
  Pushbullet
-    Get and Send Push From Clipboard, Safari, Action Extension.
+    支持从剪切板发送和接收 Push
     Send:
          TodayWidget:
                      Clipboard
-         ActionExtension:
+         Action Extension:
                      File
+         Safari:
+                     Link
     Get:
          TodayWidget or in App:
                      Note, Link, File
@@ -14,10 +16,10 @@
     
   by Nicked 
      https://t.me/nicked
-    */
+*/
 
-timeout = 6
-// 从 Today Widget启动
+timeout = 3
+// 从 Today Widget 启动
 if ($app.env == $env.today) {
   var accesstoken = getToken()
   if (accesstoken) {
@@ -25,8 +27,8 @@ if ($app.env == $env.today) {
     pushbullet(accesstoken)
   } else {
     var message = {
-      title: "Access Token Missing!",
-      message: "Execute This Xteko In Pin App For More Information.",
+      title: "Access Token Missing 😅",
+      message: "Execute This xTeko In Pin App For More Information.",
       actions: [{
           title: "Open Pin",
           handler: function() {
@@ -44,7 +46,6 @@ if ($app.env == $env.today) {
     $ui.alert(message)
 
   }
-
 }
 // 从应用内启动
 if ($app.env == $env.app) {
@@ -86,7 +87,7 @@ function pushbullet(accesstoken) {
           header: {
             "Access-Token": accesstoken
           },
-          timeout: 1,
+          timeout: timeout,
           handler: function(resp) {
 
             toast(resp)
@@ -141,6 +142,7 @@ function pushbullet(accesstoken) {
                       })
                     } else {
                       $ui.toast("Copied")
+                      delayClose()
                     }
 
                   } else {
@@ -149,6 +151,13 @@ function pushbullet(accesstoken) {
                     var url = push[idx].file_url
 
                     selectResult(title, message, url, quicklook = 1)
+
+                  }
+                },
+                finished: function(cancelled) {
+                  if (cancelled) {
+
+                    $app.close()
 
                   }
                 }
@@ -180,6 +189,8 @@ function pushbullet(accesstoken) {
             timeout: timeout,
             handler: function(resp) {
               toast(resp)
+              delayClose()
+
             }
           })
 
@@ -236,9 +247,17 @@ function pushbullet(accesstoken) {
                             timeout: timeout,
                             handler: function(resp) {
                               toast(resp)
+                              delayClose()
                             }
 
                           })
+                        },
+                        finished: function(cancelled) {
+                          if (cancelled) {
+
+                            $app.close()
+
+                          }
                         }
 
                       })
@@ -262,6 +281,7 @@ function pushbullet(accesstoken) {
                   timeout: timeout,
                   handler: function(resp) {
                     toast(resp)
+                    delayClose()
 
                   }
                 })
@@ -279,8 +299,14 @@ function pushbullet(accesstoken) {
           ]
         })
       }
+    },
+    finished: function(cancelled) {
+      if (cancelled) {
+        $app.close()
+      }
     }
   })
+
 }
 
 function pushbulletSafari(accesstoken) {
@@ -299,6 +325,7 @@ function pushbulletSafari(accesstoken) {
     timeout: timeout,
     handler: function(resp) {
       toast(resp)
+      delayClose()
     }
   })
 }
@@ -336,9 +363,10 @@ function pushbulletAction(accesstoken) {
         form: {
           file: file
         },
-        timeout:30,
+        timeout: 30,
         handler: function(resp) {
           toast(resp)
+          $ui.loading(true)
           $http.request({
             method: "POST",
             url: "https://api.pushbullet.com/v2/pushes",
@@ -353,7 +381,7 @@ function pushbulletAction(accesstoken) {
             timeout: timeout,
             handler: function(resp) {
               toast(resp)
-              $context.close()
+              delayClose()
             }
           })
 
@@ -375,13 +403,28 @@ function getToken() {
 
 function toast(resp) {
   if (resp.response) {
-    $ui.toast("REQUEST SUCCEEDED")
+    $ui.toast("REQUEST SUCCEEDED💡")
     $ui.loading(false)
   } else {
-    $ui.toast("REQUEST TIMEOUT, TRY AGAIN LATER")
+    $ui.toast("REQUEST TIMEOUT, TRY AGAIN LATER ❌")
     $ui.loading(false)
+    delayClose()
   }
 
+}
+
+function delayClose() {
+  $thread.main({
+    delay: 0.8,
+    handler: function() {
+      if ($app.env == $env.action || $app.env == $env.safari){
+        $context.close()
+      }else{
+        $app.close()
+      }
+      
+    }
+  })
 }
 
 function selectResult(title, message, url, quicklook = 0) {
@@ -393,7 +436,10 @@ function selectResult(title, message, url, quicklook = 0) {
         handler: function() {
           if (quicklook == 0) {
             $safari.open({
-              url: url
+              url: url,
+              handler: function(){
+                $app.close()
+              }
             })
           } else {
             $ui.loading(true)
@@ -401,7 +447,12 @@ function selectResult(title, message, url, quicklook = 0) {
               url: url,
               handler: function(resp) {
                 $ui.loading(false)
-                $quicklook.open({ data: resp.data })
+                $quicklook.open({ 
+                  data: resp.data,
+                  handler: function(){
+                    $app.close()
+                  }
+                  })
               }
             })
 
@@ -414,6 +465,8 @@ function selectResult(title, message, url, quicklook = 0) {
 
         handler: function() {
           $clipboard.text = url
+          $ui.toast("Copied")
+          delayClose()
         }
       },
       {
@@ -442,7 +495,7 @@ function settingToken() {
         },
         layout: function(make) {
           make.left.top.right.inset(5)
-          make.height.equalTo(200)
+          make.height.equalTo(150)
         }
       },
       {
@@ -458,6 +511,12 @@ function settingToken() {
           make.top.equalTo(preView.bottom).inset(100)
           make.left.right.inset(10)
           make.height.equalTo(30)
+        },
+        events:{
+          returned: function(sender) {
+            $("input").blur()
+
+}
         }
       },
       {
@@ -539,8 +598,11 @@ function handleButtonSubmit() {
       handler: function(resp) {
 
         $ui.loading(false)
-        if (resp.response) {
-          $ui.toast("VERIFYING SUCCEEDED")
+        if (!resp.response){
+          $ui.toast("REQUEST TIMEOUT, TRY AGAIN LATER ❌")
+        }
+        else if (resp.response.statusCode == 200) {
+          $ui.toast("VERIFYING SUCCEEDED 💡")
           $("message").text = "\n\n\n\nAccess Token Checked!."
           $file.write({
             data: $data({
@@ -551,7 +613,7 @@ function handleButtonSubmit() {
           $("accesstoken").blur()
         } else {
           $("accesstoken").text = ""
-          $ui.toast("Wrong Access Token! Try Again!")
+          $ui.toast("Wrong Access Token! Try Again! ❌")
           $("accesstoken").focus()
         }
       }
