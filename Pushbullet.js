@@ -4,8 +4,10 @@
     Send:
          TodayWidget:
                      Clipboard
-         ActionExtension:
+         Action Extension:
                      File
+         Safari:
+                     Link
     Get:
          TodayWidget or in App:
                      Note, Link, File
@@ -14,12 +16,12 @@
     
   by Nicked 
      https://t.me/nicked
-    */
+*/
 
 // 请将 Access Token 填写到下方""中
-var accesstoken = ""
+accesstoken = "o.Sm6oHDvLtEkoRuNVqYIUM6cZ8B6aVxiX";
 // 请求超时设置
-timeout = 7
+timeout = 3
 // 从 safari 启动 send url
 if ($context.safari) {
   url = $context.safari.items.location.href
@@ -59,12 +61,12 @@ if ($context.safari) {
       var upload_url = resp.data.upload_url
       var file_url = resp.data.file_url
       if (file_url.indexOf("pushbulletusercontent.com/") != -1) {
-        $ui.toast("file_url SUCCEED!")
+        $ui.toast("file_url SUCCEEDED!")
       } else {
         $ui.toast("file_url FAILED!")
         $app.close()
       }
-      $ui.toast("UPLOADING...")
+      $ui.toast("FILE UPLOADING...")
       $ui.loading(true)
       $http.request({
         method: "POST",
@@ -185,7 +187,7 @@ if ($context.safari) {
       } else if (idx == 1) {
 
         if ($clipboard.text == "") {
-          $ui.alert("Clipboard is empty")
+          $ui.alert("Clipboard is EMPTY!")
         } else {
           $ui.loading(true)
           $http.request({
@@ -208,7 +210,7 @@ if ($context.safari) {
         }
       } else if (idx == 2) {
         $ui.alert({
-          title: "Delete Conform",
+          title: "Delete Confirm",
           message: "One Or All?",
           actions: [{
             title: "ONE",
@@ -281,7 +283,7 @@ if ($context.safari) {
                 header: {
                   "Access-Token": accesstoken
                 },
-                timeout: 7,
+                timeout: timeout,
                 handler: function(resp) {
                   toast(resp)
 
@@ -310,27 +312,14 @@ if ($context.safari) {
 
 function toast(resp) {
   if (resp.response) {
-    $ui.toast("SUCCEED")
+    $ui.toast("REQUEST SUCCEEDED 💡")
     $ui.loading(false)
   } else {
-    $ui.toast("请求超时，稍后再试")
+    $ui.toast("REQUEST TIMEOUT. TRY AGAIN! ❌")
     $ui.loading(false)
     $app.close()
   }
 
-}
-
-function toastdown(title) {
-  $ui.alert({
-    title: title,
-    message: "Try Again Later",
-    actions: [{
-      title: "OK",
-      handler: function() {
-        $app.close()
-      }
-    }]
-  })
 }
 
 function selectResult(title, message, url, quicklook = 0) {
