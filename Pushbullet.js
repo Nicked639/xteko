@@ -21,7 +21,7 @@
 // 请将 Access Token 填写到下方""中
 accesstoken = "o.Sm6oHDvLtEkoRuNVqYIUM6cZ8B6aVxiX";
 // 请求超时设置
-timeout = 3
+timeout = 4
 // 从 safari 启动 send url
 if ($context.safari) {
   url = $context.safari.items.location.href
