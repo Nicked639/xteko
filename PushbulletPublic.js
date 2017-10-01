@@ -99,7 +99,12 @@ function pushbullet(accesstoken) {
               $ui.menu({
                 items: push.map(function(item) {
                   if (item.type == "note") {
-                    return item.body
+                    if (item.body.indexOf("\n") >= 0){
+                      return item.body.trim().split("\n")[0] + "...(🕶多行内容)"
+                    }
+                    else{
+                      return item.body
+                    }
                   } else if (item.type == "link") {
                     mkd = "[" + item.body + "]" + "(" + item.url + ")"
                     if (item.title) {
@@ -220,7 +225,12 @@ function pushbullet(accesstoken) {
                       $ui.menu({
                         items: push.map(function(item) {
                           if (item.type == "note") {
-                            return item.body
+                            if (item.body.indexOf("\n") >= 0){
+                      return item.body.trim().split("\n")[0] + "...(🕶多行内容)"
+                    }
+                    else{
+                      return item.body
+                    }
                           } else if (item.type == "link") {
                             mkd = "[" + item.body + "]" + "(" + item.url + ")"
                             if (item.title) {
