@@ -3,16 +3,16 @@
     支持从剪切板发送和接收 Push
     Send:
          TodayWidget:
-                     Clipboard
+                  Clipboard
          Action Extension:
-                     File
+                  File📝
          Safari:
-                     Link
+                  Link🔗
     Get:
          TodayWidget or in App:
-                     Note, Link, File
+                  Note, Link🔗, File📝
     Delete:
-          One or All
+         One or All
     
   by Nicked 
      https://t.me/nicked
@@ -136,7 +136,7 @@ function pushbullet(accesstoken) {
                       selectResult(title, message, link)
 
                     } else if (link.length > 1) {
-                      $ui.toast("Links Dectected")
+                      $ui.toast("Note Copied and Links Dectected")
                       $ui.menu({
                         items: link,
                         handler: function(title, idx) {
