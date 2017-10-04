@@ -178,7 +178,16 @@ function pushbullet(accesstoken) {
       } else if (idx == 1) {
 
         if ($clipboard.text == "") {
-          $ui.alert("Clipboard is EMPTY!")
+          $ui.alert({
+            title: "WARNING",
+            message: "Clipboard is EMPTY❌",
+            actions:[{
+              title: "Cancel",
+              handler: function(){
+                $app.close()
+              }
+            }]
+          })
         } else {
           $ui.loading(true)
           $http.request({
