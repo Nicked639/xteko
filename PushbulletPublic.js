@@ -77,7 +77,7 @@ if ($app.env == $env.safari) {
 
 function pushbullet(accesstoken) {
   $ui.menu({
-    items: ["Get Push", "Send Push", "Delete"],
+    items: ["Get ⬇️", "Send ⬆️", "Delete 🗑"],
     handler: function(title, idx) {
       if (idx == 0) {
         $ui.loading(true)
@@ -123,7 +123,7 @@ function pushbullet(accesstoken) {
                   if (push[idx].type == "link") {
 
                     $clipboard.text = "[" + push[idx].body + "]" + "(" + push[idx].url + ")"
-                    var title = "Link and Note Copied"
+                    var title = "Link and Note Copied 📌"
 
                     selectResult(title, $clipboard.text, push[idx].url)
 
@@ -131,12 +131,12 @@ function pushbullet(accesstoken) {
                     $clipboard.text = push[idx].body
                     var link = $detector.link(push[idx].body)
                     if (link.length == 1) {
-                      var title = "Note Copied"
+                      var title = "Note Copied 📌"
                       var message = "Find 🔗: " + link
                       selectResult(title, message, link)
 
                     } else if (link.length > 1) {
-                      $ui.toast("Note Copied and Links Dectected")
+                      $ui.toast("Note Copied and Links Dectected 📌")
                       $ui.menu({
                         items: link,
                         handler: function(title, idx) {
@@ -146,7 +146,7 @@ function pushbullet(accesstoken) {
                         }
                       })
                     } else {
-                      $ui.toast("Copied")
+                      $ui.toast("Copied 📌")
                       delayClose()
                     }
 
@@ -180,7 +180,7 @@ function pushbullet(accesstoken) {
         if ($clipboard.text == "") {
           $ui.alert({
             title: "WARNING",
-            message: "Clipboard is EMPTY❌",
+            message: "Clipboard is EMPTY ❌",
             actions:[{
               title: "Cancel",
               handler: function(){
@@ -211,7 +211,7 @@ function pushbullet(accesstoken) {
         }
       } else if (idx == 2) {
         $ui.alert({
-          title: "Delete Confirm",
+          title: "Delete Confirm 🗑",
           message: "One Or All?",
           actions: [{
               title: "ONE",
@@ -228,7 +228,7 @@ function pushbullet(accesstoken) {
                     toast(resp)
                     var push = resp.data.pushes
                     if (push.length == 0) {
-                      $ui.alert("NO PUSHES!")
+                      $ui.alert("NO PUSHES❌")
                       $app.close()
                     } else {
                       $ui.menu({
@@ -369,9 +369,9 @@ function pushbulletAction(accesstoken) {
       var upload_url = resp.data.upload_url
       var file_url = resp.data.file_url
       if (file_url.indexOf("pushbulletusercontent.com/") != -1) {
-        $ui.toast("file_url SUCCEEDED")
+        $ui.toast("file_url SUCCEEDED 💡")
       } else {
-        $ui.toast("file_url FAILED")
+        $ui.toast("file_url FAILED ❌")
         $app.close()
       }
       $ui.toast("FILE UPLOADING...")
