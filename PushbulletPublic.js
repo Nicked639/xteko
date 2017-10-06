@@ -3,14 +3,14 @@
     支持从剪切板发送和接收 Push
     Send:
          TodayWidget:
-                  Clipboard
+                Clipboard
          Action Extension:
-                  File📝
+                File 📝
          Safari:
-                  Link🔗
+                Link 🔗
     Get:
          TodayWidget or in App:
-                  Note, Link🔗, File📝
+                Note, Link 🔗, File 📝
     Delete:
          One or All
     
@@ -80,7 +80,7 @@ function pushbullet(accesstoken) {
     items: ["Get ⬇️", "Send ⬆️", "Delete 🗑"],
     handler: function(title, idx) {
       if (idx == 0) {
-        $ui.loading(true)
+        $ui.loading("Loading...")
         $http.request({
           method: "GET",
           url: "https://api.pushbullet.com/v2/pushes?active=true",
@@ -93,16 +93,15 @@ function pushbullet(accesstoken) {
             toast(resp)
             var push = resp.data.pushes
             if (push.length == 0) {
-              $ui.alert("NO PUSHES!")
+              $ui.alert("NO PUSHES ❌")
               $app.close()
             } else {
               $ui.menu({
                 items: push.map(function(item) {
                   if (item.type == "note") {
-                    if (item.body.indexOf("\n") >= 0){
-                      return item.body.trim().split("\n")[0] + "...(🕶多行内容)"
-                    }
-                    else{
+                    if (item.body.indexOf("\n") >= 0) {
+                      return item.body.trim().split("\n")[0] + "...(👀 Multi-Lines)"
+                    } else {
                       return item.body
                     }
                   } else if (item.type == "link") {
@@ -136,13 +135,13 @@ function pushbullet(accesstoken) {
                       selectResult(title, message, link)
 
                     } else if (link.length > 1) {
-                      $ui.toast("Note Copied and Links Dectected 📌")
+                      $ui.toast("Note Copied 📌 Multi-Links Dectected 🔗")
                       $ui.menu({
                         items: link,
                         handler: function(title, idx) {
                           $clipboard.text = link[idx]
-                          var title = "Copied"
-                          selectResult(title, link[idx], link[idx])
+                          selectResult2("Link Copied 📌", link[idx])
+
                         }
                       })
                     } else {
@@ -151,11 +150,12 @@ function pushbullet(accesstoken) {
                     }
 
                   } else {
-                    var title = "Pushbullet File"
-                    var message = "Preview Or Copy URL"
-                    var url = push[idx].file_url
+                    var title = "Pushbullet File 📝"
 
-                    selectResult(title, message, url, quicklook = 1)
+                    var url = push[idx].file_url
+                    $clipboard.text = url
+                    $ui.toast("File URL Copied 📌")
+                    selectResult2(title, url)
 
                   }
                 },
@@ -181,15 +181,15 @@ function pushbullet(accesstoken) {
           $ui.alert({
             title: "WARNING",
             message: "Clipboard is EMPTY ❌",
-            actions:[{
+            actions: [{
               title: "Cancel",
-              handler: function(){
+              handler: function() {
                 $app.close()
               }
             }]
           })
         } else {
-          $ui.loading(true)
+          $ui.loading("Loading...")
           $http.request({
             method: "POST",
             url: "https://api.pushbullet.com/v2/pushes",
@@ -216,7 +216,7 @@ function pushbullet(accesstoken) {
           actions: [{
               title: "ONE",
               handler: function() {
-                $ui.loading(true)
+                $ui.loading("Loading...")
                 $http.request({
                   method: "GET",
                   url: "https://api.pushbullet.com/v2/pushes?active=true",
@@ -234,12 +234,11 @@ function pushbullet(accesstoken) {
                       $ui.menu({
                         items: push.map(function(item) {
                           if (item.type == "note") {
-                            if (item.body.indexOf("\n") >= 0){
-                      return item.body.trim().split("\n")[0] + "...(🕶多行内容)"
-                    }
-                    else{
-                      return item.body
-                    }
+                            if (item.body.indexOf("\n") >= 0) {
+                              return item.body.trim().split("\n")[0] + "...(👀 Multi-Lines)"
+                            } else {
+                              return item.body
+                            }
                           } else if (item.type == "link") {
                             mkd = "[" + item.body + "]" + "(" + item.url + ")"
                             if (item.title) {
@@ -290,7 +289,7 @@ function pushbullet(accesstoken) {
             }, {
               title: "ALL",
               handler: function() {
-                $ui.loading(true)
+                $ui.loading("Loading...")
                 $http.request({
                   method: "DELETE",
                   url: "https://api.pushbullet.com/v2/pushes",
@@ -329,7 +328,7 @@ function pushbullet(accesstoken) {
 }
 
 function pushbulletSafari(accesstoken) {
-  $ui.loading(true)
+  $ui.loading("Loading...")
   url = $context.safari.items.location.href
   $http.request({
     method: "POST",
@@ -351,8 +350,8 @@ function pushbulletSafari(accesstoken) {
 
 function pushbulletAction(accesstoken) {
   var file = $context.data
-  $ui.toast("SETTING URL...")
-  $ui.loading(true)
+  $ui.toast("Setting URL...")
+  $ui.loading("Loading...")
   file_name = file.fileName
   $http.request({
     method: "POST",
@@ -374,8 +373,8 @@ function pushbulletAction(accesstoken) {
         $ui.toast("file_url FAILED ❌")
         $app.close()
       }
-      $ui.toast("FILE UPLOADING...")
-      $ui.loading(true)
+      $ui.toast("File Uploading...")
+      $ui.loading("Loading...")
       $http.request({
         method: "POST",
         url: upload_url,
@@ -385,7 +384,7 @@ function pushbulletAction(accesstoken) {
         timeout: 30,
         handler: function(resp) {
           toast(resp)
-          $ui.loading(true)
+          $ui.loading("Loading...")
           $http.request({
             method: "POST",
             url: "https://api.pushbullet.com/v2/pushes",
@@ -414,7 +413,12 @@ function pushbulletAction(accesstoken) {
 function getToken() {
   if ($file.exists("pushbullet.txt")) {
     var file = $file.read("pushbullet.txt")
-    return file.string
+    if (file.string) {
+      return file.string
+    } else {
+      return 0
+    }
+
   } else {
     return 0
   }
@@ -422,10 +426,10 @@ function getToken() {
 
 function toast(resp) {
   if (resp.response) {
-    $ui.toast("REQUEST SUCCEEDED💡")
+    $ui.toast("Request Succeeded💡")
     $ui.loading(false)
   } else {
-    $ui.toast("REQUEST TIMEOUT, TRY AGAIN LATER ❌")
+    $ui.toast("Request Timeout, Try Again Later ❌")
     $ui.loading(false)
     delayClose()
   }
@@ -436,12 +440,12 @@ function delayClose() {
   $thread.main({
     delay: 0.8,
     handler: function() {
-      if ($app.env == $env.action || $app.env == $env.safari){
+      if ($app.env == $env.action || $app.env == $env.safari) {
         $context.close()
-      }else{
+      } else {
         $app.close()
       }
-      
+
     }
   })
 }
@@ -456,22 +460,20 @@ function selectResult(title, message, url, quicklook = 0) {
           if (quicklook == 0) {
             $safari.open({
               url: url,
-              handler: function(){
+              handler: function() {
                 $app.close()
               }
             })
           } else {
-            $ui.loading(true)
             $http.download({
               url: url,
               handler: function(resp) {
-                $ui.loading(false)
-                $quicklook.open({ 
+                $quicklook.open({
                   data: resp.data,
-                  handler: function(){
+                  handler: function() {
                     $app.close()
                   }
-                  })
+                })
               }
             })
 
@@ -484,7 +486,7 @@ function selectResult(title, message, url, quicklook = 0) {
 
         handler: function() {
           $clipboard.text = url
-          $ui.toast("Copied")
+          $ui.toast("Copied 📌")
           delayClose()
         }
       },
@@ -507,14 +509,14 @@ function settingToken() {
         type: "text",
         props: {
           id: "message",
-          text: "\n\n\nYou need the access token in order to use the API.\nUsing an access token grants full access to your account. Don't share this lightly.",
+          text: "\n\n\nYou need the access token in order to use the API.\n\nUsing an access token grants full access to your account. Don't share this lightly.",
           //align: $align.center,
           font: $font(16),
           editable: 0
         },
         layout: function(make) {
           make.left.top.right.inset(5)
-          make.height.equalTo(150)
+          make.height.equalTo(160)
         }
       },
       {
@@ -531,11 +533,11 @@ function settingToken() {
           make.left.right.inset(10)
           make.height.equalTo(30)
         },
-        events:{
+        events: {
           returned: function(sender) {
             $("input").blur()
 
-}
+          }
         }
       },
       {
@@ -606,7 +608,7 @@ function handleButtonSubmit() {
   if (accesstoken == '') {
     $ui.toast("Input Access Token.")
   } else {
-    $ui.loading(true)
+    $ui.loading("CONNECTING...")
     $http.request({
       method: "GET",
       url: "https://api.pushbullet.com/v2/pushes?active=true",
@@ -617,12 +619,11 @@ function handleButtonSubmit() {
       handler: function(resp) {
 
         $ui.loading(false)
-        if (!resp.response){
-          $ui.toast("REQUEST TIMEOUT, TRY AGAIN LATER ❌")
-        }
-        else if (resp.response.statusCode == 200) {
-          $ui.toast("VERIFYING SUCCEEDED 💡")
-          $("message").text = "\n\n\n\nAccess Token Checked!."
+        if (!resp.response) {
+          $ui.toast("Request Timeout, Try Again Later ❌")
+        } else if (resp.response.statusCode == 200) {
+          $ui.toast("Verifying Succeeded💡")
+          $("message").text = "\n\n\n\nAccess Token Checked ☑️."
           $file.write({
             data: $data({
               string: accesstoken
@@ -632,10 +633,31 @@ function handleButtonSubmit() {
           $("accesstoken").blur()
         } else {
           $("accesstoken").text = ""
-          $ui.toast("Wrong Access Token! Try Again! ❌")
+          $ui.toast("Wrong Access Token, Try Again Later ❌")
           $("accesstoken").focus()
         }
       }
     })
   }
+}
+
+function selectResult2(title, url) {
+  $ui.alert({
+    title: title,
+    message: url,
+    actions: [{
+      title: "Preview",
+      handler: function() {
+        $safari.open({
+          url: url,
+
+        })
+      }
+    }, {
+      title: "Cancel",
+      handler: function() {
+        $app.close()
+      }
+    }]
+  })
 }
