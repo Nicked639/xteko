@@ -20,11 +20,10 @@ const template = [{
             $("keyword").alpha = 0
           },
           completion: function() {
-            $("list").updateLayout(function(make){
+            $("list").updateLayout(function(make) {
               make.top.equalTo(110)
             })
-            
-            
+
           }
         })
       }
@@ -130,122 +129,196 @@ $ui.render({
     //bgcolor: $color("black")
   },
   views: [{
-    type: "list",
-    props: {
-      id: "list",
-      rowHeight: 70,
-      stickyHeader: true,
-      bgcolor: $color("white"),
-      actions: [{
-        title: "delete",
-        handler: function(sender, indexPath) {
-          if (homePageMode == "local") {
-            $device.taptic(0)
-            updateLocalData("del", indexPath.row)
-          }
-        }
-      }, {
-        title: "分享",
-        handler: function(sender, indexPath) {
-          $device.taptic(0);
-          var username = $("list").data[0].rows[indexPath.row].casename.text;
-          $share.sheet("https://www.instagram.com/" + username)
-        }
-      }],
-      data: [{
-        title: "",
-        rows: []
-      }],
-      template: template,
-      header: {
-        type: "view",
-        props: {
-          height: 45,
-          bgcolor: $color("white")
-        },
-        views: [{
-          type: "input",
-          props: {
-            id: "keyword",
-            placeholder: "输入 id 搜索",
-            stickyHeader: false,
-            hidden: false,
-            font: $font("Gill Sans", 15),
-            clearsOnBeginEditing: true,
-            bgcolor: $color("#f2f2f2"),
-            textColor: $color("#cccccc"),
-            radius: 5
-          },
-          layout: function(make) {
-            make.left.right.inset(5)
-            make.top.inset(0)
-            make.height.equalTo(40)
-          },
-          events: {
-            changed: function(sender) {
-              if (sender.text.length > 0) {
-                $("quick").hidden = true
-              } else {
-                $("quick").hidden = false
-              }
+      type: "text",
+      props: {
+        id: "follow",
+        bgcolor: $color("white"),
+        textColor: $color("#aaaaaa"),
+        font: $font("Heiti TC", 15),
+        selectable: false,
+        scrollEnabled: false,
+        //insets: $insets(0, 10, 0, 0)
+      },
+      layout: function(make) {
+        make.left.top.inset(5)
+        make.height.equalTo(30)
+      }
+    }, {
+      type: "tab",
+      props: {
+        id: "tab",
+        //hidden: true,
+        items: ["关注", "收藏"],
+        tintColor: $color("#888888")
+      },
+      layout: function(make) {
+        make.right.inset(6)
+        make.top.inset(10)
+        make.height.equalTo(22)
+      },
+      events: {
+        changed: function(sender) {
 
-              $("keyword").textColor = $color("black")
-            },
-            returned: function(sender) {
-              sender.blur();
-              $("quick").hidden = false
-              if (sender.text.length > 0) {
-                homePageMode = "search";
-                search(sender.text)
-              }
+        }
+
+      }
+
+    }, {
+      type: "button",
+      props: {
+        id: "back",
+        title: "返回",
+        font: $font("Heiti TC", 15),
+        bgcolor: $color("#021c38"),
+        hidden: true,
+        titleColor: $color("white")
+      },
+      layout: function(make) {
+        make.right.inset(6)
+        make.top.inset(10)
+        make.height.equalTo(22)
+        make.width.equalTo(45)
+      },
+      events: {
+        tapped: function(sender) {
+          loadLocalData();
+          sender.hidden = true;
+          $("tab").hidden = false;
+          $("quick").hidden = false;
+          $("keyword").text = "";
+          $("keyword").blur();
+        }
+
+      }
+
+    },
+    {
+      type: "list",
+      props: {
+        id: "list",
+        rowHeight: 70,
+        stickyHeader: true,
+        //hidden: true,
+        bgcolor: $color("white"),
+        actions: [{
+          title: "delete",
+          handler: function(sender, indexPath) {
+            if (homePageMode == "local") {
+              $device.taptic(0)
+              updateLocalData("del", indexPath.row)
             }
           }
         }, {
-          type: "button",
+          title: "分享",
+          handler: function(sender, indexPath) {
+            $device.taptic(0);
+            var username = $("list").data[0].rows[indexPath.row].casename.text;
+            $share.sheet("https://www.instagram.com/" + username)
+          }
+        }],
+        data: [{
+          title: "",
+          rows: []
+        }],
+        template: template,
+        footer: {
+        type: "label",
+        props: {
+          text: "Designed by Nicked.\n\nSource from Wind.",
+          lines: 0,
+          height: 100,
+          font: $font(10),
+          textColor: $color("#AAAAAA"),
+          align: $align.center
+        }
+      },
+        header: {
+          type: "view",
           props: {
-            //title: "导入",
-            id: "quick",
-            icon: $icon("109", $color("#bbbbbb"), $size(20, 20)),
-            bgcolor: $color("clear"),
-            //titleColor: $color("#aaaaaa"),
-            //radius: 8
+            height: 45,
+            bgcolor: $color("white")
           },
-          layout: function(make, view) {
-            make.top.inset(7)
-            make.right.inset(10)
-          },
-          events: {
-            tapped(sender) {
-              if (homePageMode == "search") {
-                loadLocalData()
-                $("keyword").text = ""
-                $("keyword").blur()
-                //$("quick").title = "导入"
-                $("quick").icon = $icon("109", $color("#aaaaaa"), $size(20, 20))
-              } else {
-                quickAdd($clipboard.link)
-                $("keyword").blur()
+          views: [{
+            type: "input",
+            props: {
+              id: "keyword",
+              placeholder: "输入 id 搜索",
+              stickyHeader: false,
+              hidden: false,
+              font: $font("Heiti TC", 15),
+              clearsOnBeginEditing: true,
+              bgcolor: $color("#f3f3f3"),
+              radius: 10
+            },
+            layout: function(make) {
+              make.left.inset(6)
+              make.right.inset(6)
+              make.top.inset(5)
+              make.height.equalTo(35)
+            },
+            events: {
+              changed: function(sender) {
+                if (sender.text.length > 0) {
+                  $("quick").hidden = true
+                } else {
+                  $("quick").hidden = false
+                }
+
+                $("keyword").textColor = $color("black")
+              },
+              returned: function(sender) {
+                sender.blur();
+
+                if (sender.text.length > 0) {
+                  $("quick").hidden = true;
+                  homePageMode = "search";
+                  $("back").hidden = false;
+                  $('tab').hidden = true;
+                  search(sender.text);
+                }
               }
             }
-          }
-        }]
+          }, {
+            type: "button",
+            props: {
+              //title: "导入",
+              id: "quick",
+              icon: $icon("109", $color("#bbbbbb"), $size(20, 20)),
+              bgcolor: $color("clear"),
+              //titleColor: $color("#aaaaaa"),
+              //radius: 8
+            },
+            layout: function(make, view) {
+              make.top.inset(10)
+              make.right.inset(10)
+            },
+            events: {
+              tapped(sender) {
+
+                quickAdd($clipboard.link)
+                $("keyword").blur()
+
+              }
+            }
+          }]
+        }
+
+      },
+      layout: function(make) {
+        make.top.equalTo(35)
+        make.left.right.bottom.inset(0)
+      },
+      events: {
+        didSelect: function(sender, indexPath, data) {
+          $("keyword").blur();
+          var title = data.info.full_name || data.info.fullname;
+          showPhoto(title);
+          getHomePageJson("https://www.instagram.com/" + data.info.username)
+        }
       }
 
-    },
-    layout: function(make) {
-      make.top.equalTo(0)
-      make.left.right.bottom.inset(0)
-    },
-    events: {
-      didSelect: function(sender, indexPath, data) {
-        $("keyword").blur();
-        var title = data.info.full_name || data.info.fullname;
-        showPhoto(title);
-        getHomePageJson("https://www.instagram.com/" + data.info.username)
-      }
     }
-
-  }]
+  ]
 })
 
 function showPhoto(name) {
@@ -591,11 +664,9 @@ function search(keyword) {
     url: "https://www.instagram.com/web/search/topsearch/?context=blended&query=" + $text.URLEncode(keyword),
     timeout: 3,
     handler: function(resp) {
-      $("quick").icon = $icon("015",
-        $color("#aaaaaa"), $size(20, 20))
       if (!resp.data) {
         $ui.toast("❌ 连接失败，稍后再试", 2)
-        $("quick").hidden = true
+
       }
 
       var data = [{
@@ -622,7 +693,7 @@ function search(keyword) {
             bgcolor: i.user.is_private ? $color("#8e8e8e") : $color("#6194ce")
           },
           caseverified: {
-            /*text: i.user.is_verified ? " 官方认证 " : " 未经认证 ",
+            /*wztext: i.user.is_verified ? " 官方认证 " : " 未经认证 ",
             bgcolor: i.user.is_verified ? $color("#6194ce") : $color("#8e8e8e")*/
             text: i.user.is_verified ? " 🌐" : " ",
             //font: $font(11)
@@ -641,7 +712,8 @@ function search(keyword) {
       });
       $ui.loading(false)
       $ui.toast("", 0.01)
-      data[0].title = "搜索到 " + data[0].rows.length + " 条相关结果"
+      //data[0].title = "搜索到 " + data[0].rows.length + " 条相关结果"
+      $("follow").text = "搜索到 " + data[0].rows.length + " 条相关结果"
       $("list").data = data
       //$("title").text = "  搜索到 " + data.length + " 条相关结果"
     }
@@ -844,20 +916,28 @@ function updateLocalData(mode, data) {
       "username": data.username,
       "fullname": data.full_name,
       "cover": data.profile_pic_url,
-      "liked": data.follower_count || i.followed_by.count,
+      "liked": data.follower_count || data.followed_by.count,
       "private": data.is_private,
       "verified": data.is_verified
     });
-    $ui.toast("👀 已关注 " + data.username, 1)
+    var count = LocalData.length;
+    $("follow").text = "已关注 " + count + " 位用户";
+    $ui.toast("👀 已关注 " + data.username, 1);
+    if (homePageMode == "local") {
+
+      loadLocalData();
+
+    }
   } else if (mode == "del") {
     //$("list").delete(data);
     LocalData.splice(data, 1);
     $ui.toast("⚰️ 已取消对 " + LocalUserName[data] + " 的关注", 0.7);
     LocalUserName.splice(data, 1)
-    var listdata = $("list").data
-    var count = listdata[0].rows.length 
-    listdata[0].title= "已关注 " + count + " 位用户";
-    $("list").data = listdata
+    //var listdata = $("list").data
+    var count = LocalData.length
+    //listdata[0].title = "已关注 " + count + " 位用户";
+    //$("list").data = listdata
+    $("follow").text = "已关注 " + count + " 位用户";
   };
   $drive.write({
     data: $data({
@@ -937,8 +1017,9 @@ function loadLocalData() {
     })
   })
   //$("title").text = "  已关注 " + data.length + " 位用户";
-  data[0].title = "已关注 " + LocalUserName.length + " 位用户";
+  //data[0].title = "已关注 " + LocalUserName.length + " 位用户";
   $("list").data = data;
+  $("follow").text = "已关注 " + LocalUserName.length + " 位用户";
   //$("keyword").text = "输入 id 搜索"
 
 }
