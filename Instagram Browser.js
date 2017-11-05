@@ -14,17 +14,19 @@ const template = [{
     },
     events: {
       tapped(sender) {
-        $device.taptic(0)
-        var data = $("list").data
-        for (idx in data[0].rows) {
-          var i = data[0].rows[idx];
-          //$ui.action(LocalFullName)
-          i.casename.text = LocalFullName[idx];
-          
-        }
-
-        $("list").data = data
-
+        $ui.animate({
+          duration: 0.4,
+          animation: function() {
+            $("keyword").alpha = 0
+          },
+          completion: function() {
+            $("list").updateLayout(function(make){
+              make.top.equalTo(110)
+            })
+            
+            
+          }
+        })
       }
     }
 
@@ -93,9 +95,6 @@ const template = [{
     type: "button",
     props: {
       id: "baseadd",
-      title: "🖤",
-      alpha: 0.3,
-      //icon: $icon("061", $color("#yellow"), $size(20, 20)),
       bgcolor: $color("white")
     },
     layout: function(make, view) {
@@ -106,11 +105,18 @@ const template = [{
     events: {
       tapped(sender) {
         $device.taptic(0);
-        if (sender.info.is_private) {
+        if (sender.info.user.is_private) {
           $ui.toast("❌ 不支持浏览私密账户")
+          var data = $("list").data;
+          data[0].rows[sender.info.idx].baseadd.alpha = 0.3;
+          $("list").data = data
         } else {
-          sender.title = "❤️"
-          updateLocalData("add", sender.info)
+
+          updateLocalData("add", sender.info.user);
+          var data = $("list").data
+          data[0].rows[sender.info.idx].baseadd.title = "❤️"
+          data[0].rows[sender.info.idx].baseadd.alpha = 1
+          $("list").data = data
         }
       }
     }
@@ -118,10 +124,10 @@ const template = [{
 ]
 $ui.render({
   props: {
-    title: "Instagram",
+    title: "Instagram Browser",
     titleColor: $color("#021c38"),
     iconColor: $color("#bbbbbb"),
-    bgcolor: $color("#ffffff")
+    //bgcolor: $color("black")
   },
   views: [{
     type: "list",
@@ -129,7 +135,7 @@ $ui.render({
       id: "list",
       rowHeight: 70,
       stickyHeader: true,
-      bgcolor: $color("#F9F9F9"),
+      bgcolor: $color("white"),
       actions: [{
         title: "delete",
         handler: function(sender, indexPath) {
@@ -138,7 +144,7 @@ $ui.render({
             updateLocalData("del", indexPath.row)
           }
         }
-      },{
+      }, {
         title: "分享",
         handler: function(sender, indexPath) {
           $device.taptic(0);
@@ -213,10 +219,12 @@ $ui.render({
               if (homePageMode == "search") {
                 loadLocalData()
                 $("keyword").text = ""
+                $("keyword").blur()
                 //$("quick").title = "导入"
                 $("quick").icon = $icon("109", $color("#aaaaaa"), $size(20, 20))
               } else {
                 quickAdd($clipboard.link)
+                $("keyword").blur()
               }
             }
           }
@@ -225,7 +233,7 @@ $ui.render({
 
     },
     layout: function(make) {
-      make.top.equalTo(10)
+      make.top.equalTo(0)
       make.left.right.bottom.inset(0)
     },
     events: {
@@ -578,6 +586,7 @@ function search(keyword) {
   $ui.loading(true)
   $ui.toast("搜索中...")
   //$("quick").title = "返回";
+  var idx = 0;
   $http.get({
     url: "https://www.instagram.com/web/search/topsearch/?context=blended&query=" + $text.URLEncode(keyword),
     timeout: 3,
@@ -619,12 +628,16 @@ function search(keyword) {
             //font: $font(11)
           },
           baseadd: {
-            info: i.user,
+            info: {
+              idx: idx,
+              user: i.user
+            },
             hidden: false,
-            title: LocalUserName.indexOf(i.user.username) > -1 ? "❤️": (i.user.is_private? "💔": "🖤"),
-            alpha: LocalUserName.indexOf(i.user.username) > -1  ? 1 : 0.3
+            title: LocalUserName.indexOf(i.user.username) > -1 ? "❤️" : (i.user.is_private ? "💔" : "🖤"),
+            alpha: LocalUserName.indexOf(i.user.username) > -1 ? 1 : 0.3
           }
         })
+        idx++;
       });
       $ui.loading(false)
       $ui.toast("", 0.01)
@@ -819,7 +832,7 @@ function quickAdd(input) {
 
   }
 }
-
+// 列表更新
 function updateLocalData(mode, data) {
   if (mode == "add") {
     if (LocalUserName.indexOf(data.username) > -1) {
@@ -831,16 +844,20 @@ function updateLocalData(mode, data) {
       "username": data.username,
       "fullname": data.full_name,
       "cover": data.profile_pic_url,
-      "liked": data.follower_count || data.followed_by.count,
+      "liked": data.follower_count || i.followed_by.count,
       "private": data.is_private,
       "verified": data.is_verified
     });
     $ui.toast("👀 已关注 " + data.username, 1)
   } else if (mode == "del") {
-    $("list").delete(data);
+    //$("list").delete(data);
     LocalData.splice(data, 1);
-    $ui.toast("⚰️ 已取消对 " + LocalUserName[data] + " 的关注");
+    $ui.toast("⚰️ 已取消对 " + LocalUserName[data] + " 的关注", 0.7);
     LocalUserName.splice(data, 1)
+    var listdata = $("list").data
+    var count = listdata[0].rows.length 
+    listdata[0].title= "已关注 " + count + " 位用户";
+    $("list").data = listdata
   };
   $drive.write({
     data: $data({
@@ -848,9 +865,7 @@ function updateLocalData(mode, data) {
     }),
     path: config
   });
-  if (homePageMode == "local") {
-    loadLocalData()
-  }
+
 }
 
 function pushData() {
@@ -901,7 +916,7 @@ function loadLocalData() {
       caseusername: {
         text: i.username
       },
-      casefullname:{
+      casefullname: {
         text: i.fullname
       },
       caselike: {
