@@ -1,212 +1,243 @@
-$ui.render({
-  props: {
-    title: "Instagram",
-    bgcolor: $color("#ffffff")
-  },
-  views: [{
-      type: "input",
-      props: {
-        id: "keyword",
-        stickyHeader: false,
-        font: $font("Gill Sans", 15),
-        clearsOnBeginEditing: true,
-        bgcolor: $color("#eeeeee"),
-        textColor: $color("#cccccc"),
-        radius: 5
-      },
-      layout: function(make) {
-        make.top.left.right.inset(5)
-        make.height.equalTo(35)
-      },
-      events: {
-        changed: function(sender) {
-          $("quick").hidden = true
-          $("keyword").textColor = $color("black")
-        },
-        returned(sender) {
-          sender.blur();
-          $("quick").hidden = false
-          if (sender.text.length > 0) {
-            homePageMode = "search";
-            search(sender.text)
-          }
-        }
-      }
+const template = [{
+    type: "button",
+    props: {
+      id: "casecover",
+      radius: 25,
+      borderWidth: 0,
+      borderColor: $color("white"),
+      bgcolor: $color("white")
     },
-    {
-      //已关注用户数
-      type: "label", 
-      props: {
-        id: "title",
-        stickyHeader: true,
-        font: $font("Gill Sans", 15),
-        textColor: $color("#cccccc")
-      },
-      layout: function(make) {
-        make.top.equalTo(40)
-        make.left.right.inset(5)
-        make.height.equalTo(35)
-      }
-    }, {
-      type: "button",
-      props: {
-        //title: "导入",
-        id: "quick",
-        icon: $icon("109", $color("#aaaaaa"), $size(20, 20)),
-        bgcolor: $color("clear"),
-        //titleColor: $color("#aaaaaa"),
-        //radius: 8
-      },
-      layout: function(make, view) {
-        make.top.equalTo(5)
-        make.right.inset(0)
-        make.height.equalTo(35)
-        make.width.equalTo(50)
-      },
-      events: {
-        tapped(sender) {
-          if (homePageMode == "search") {
-            loadLocalData()
-            $("keyword").textColor = $color("#cccccc")
-            //$("quick").title = "导入"
-            $("quick").icon = $icon("109", $color("#aaaaaa"), $size(20, 20))
-          } else {
-            quickAdd($clipboard.link)
-          }
+    layout: function(make, view) {
+      make.left.inset(15)
+      make.top.bottom.inset(10)
+      make.width.equalTo(50)
+    },
+    events: {
+      tapped(sender) {
+        $device.taptic(0)
+        var data = $("list").data
+        for (idx in data[0].rows) {
+          var i = data[0].rows[idx];
+          //$ui.action(LocalFullName)
+          i.casename.text = LocalFullName[idx];
+          
         }
+
+        $("list").data = data
+
       }
-    }, {
-      type: "list",
-      props: {
-        id: "list",
-        rowHeight: 70,
-        bgcolor: $color("#eeeeee"),
-        actions: [{
-          title: "delete",
-          handler: function(sender, indexPath) {
-            if (homePageMode == "local") {
-              $device.taptic(0)
-              updateLocalData("del", indexPath.row)
-            }
-          }
-        }],
-        template: [{
-            type: "image",
-            props: {
-              id: "casecover",
-              radius: 25,
-              borderWidth: 0,
-              borderColor: $color("white")
-            },
-            layout: function(make, view) {
-              make.left.top.bottom.inset(10)
-              make.width.equalTo(50)
-            },
+    }
 
-          }, {
-            type: "label",
-            props: {
-              id: "casename",
-              textColor: $color("#021c38"),
-              font: $font("Gill Sans", 20)
-            },
-            layout: function(make, view) {
-              make.left.equalTo($("casecover").right).offset(10)
-              make.top.inset(5)
-              make.height.equalTo(30)
-              //make.right.inset(50)
-            }
-          },
-          /*{
-            type: "label",
-            props: {
-              id: "caseprivate",
-              textColor: $color("white"),
-              font: $font(11),
-              radius: 3,
-              alpha: 0.7
-            },
-            layout: function(make) {
-              make.left.equalTo($("casecover").right).offset(10)
-              make.top.equalTo($("casename").bottom).offset(5)
-              make.height.equalTo(18)
-            }
+  }, {
+    type: "label",
+    props: {
+      id: "caseusername",
+      textColor: $color("#021c38"),
+      font: $font("Heiti TC", 19)
+    },
+    layout: function(make, view) {
+      make.left.equalTo($("casecover").right).offset(10)
+      make.top.inset(5)
+      make.height.equalTo(30)
+      //make.right.inset(50)
+    }
+  }, {
+    type: "label",
+    props: {
+      id: "casefullname",
+      textColor: $color("#aaaaaa"),
+      font: $font("Heiti TC", 13)
+    },
+    layout: function(make, view) {
+      make.left.equalTo($("casecover").right).offset(10)
+      make.top.inset(25)
+      make.height.equalTo(30)
+      make.width.equalTo(250)
+      //make.right.inset(50)
+    }
+  },
+  {
+    type: "label",
+    props: {
+      id: "caseverified",
+      textColor: $color("white"),
+      font: $font(9),
+      radius: 3,
+      alpha: 1
+    },
+    layout: function(make) {
+      //make.left.equalTo(150)
+      make.left.equalTo($("caseusername").right).offset(4)
+      make.top.inset(15)
+      make.height.equalTo(15)
+    }
 
-          }, */
-          {
-            type: "label",
-            props: {
-              id: "caseverified",
-              textColor: $color("white"),
-              font: $font(11),
-              radius: 3,
-              alpha: 1
-            },
-            layout: function(make) {
-              //make.left.equalTo(150)
-              make.left.equalTo($("casename").right).offset(5)
-              make.top.inset(15)
-              make.height.equalTo(15)
-            }
-
-          }, {
-            type: "label",
-            props: {
-              id: "caselike",
-              bgcolor: $color("#021c38"),
-              textColor: $color("white"),
-              font: $font(11),
-              radius: 3,
-              alpha: 0.7
-            },
-            layout: function(make, view) {
-              make.left.equalTo($("casecover").right).offset(10)
-              make.top.equalTo($("casename").bottom).offset(5)
-              make.height.equalTo(15)
-              make.width.equalTo(63)
-            }
-          },
-          {
-            type: "button",
-            props: {
-              id: "baseadd",
-              title: "➕",
-              titleColor: $color("#008080"),
-              bgcolor: $color("clear")
-            },
-            layout: function(make, view) {
-              make.top.bottom.inset(20)
-              make.right.inset(10)
-              make.width.equalTo(view.height)
-            },
-            events: {
-              tapped(sender) {
-                $device.taptic(0);
-                sender.alpha = 0.3;
-                if (sender.info.is_private) {
-                  $ui.toast("❌ 不支持浏览私密账户")
-                } else {
-
-                  updateLocalData("add", sender.info)
-                }
-              }
-            }
-          }
-        ]
-      },
-      layout: function(make) {
-        make.top.equalTo(75)
-        make.left.right.bottom.inset(0)
-      },
-      events: {
-        didSelect: function(sender, indexPath, data) {
-          var title = data.info.full_name || data.info.fullname;
-          showPhoto(title);
-          getHomePageJson("https://www.instagram.com/" + data.info.username)
+  }, {
+    type: "label",
+    props: {
+      id: "caselike",
+      bgcolor: $color("#eeeeee"),
+      textColor: $color("#021c38"),
+      font: $font(11),
+      radius: 3,
+      alpha: 0.7
+    },
+    layout: function(make, view) {
+      make.left.equalTo($("casecover").right).offset(10)
+      make.top.equalTo($("casefullname").bottom).offset(-3)
+      make.height.equalTo(15)
+      make.width.equalTo(63)
+    }
+  },
+  {
+    type: "button",
+    props: {
+      id: "baseadd",
+      title: "🖤",
+      alpha: 0.3,
+      //icon: $icon("061", $color("#yellow"), $size(20, 20)),
+      bgcolor: $color("white")
+    },
+    layout: function(make, view) {
+      make.top.bottom.inset(20)
+      make.right.inset(5)
+      make.width.equalTo(view.height)
+    },
+    events: {
+      tapped(sender) {
+        $device.taptic(0);
+        if (sender.info.is_private) {
+          $ui.toast("❌ 不支持浏览私密账户")
+        } else {
+          sender.title = "❤️"
+          updateLocalData("add", sender.info)
         }
       }
     }
-  ]
+  }
+]
+$ui.render({
+  props: {
+    title: "Instagram",
+    titleColor: $color("#021c38"),
+    iconColor: $color("#bbbbbb"),
+    bgcolor: $color("#ffffff")
+  },
+  views: [{
+    type: "list",
+    props: {
+      id: "list",
+      rowHeight: 70,
+      stickyHeader: true,
+      bgcolor: $color("#F9F9F9"),
+      actions: [{
+        title: "delete",
+        handler: function(sender, indexPath) {
+          if (homePageMode == "local") {
+            $device.taptic(0)
+            updateLocalData("del", indexPath.row)
+          }
+        }
+      },{
+        title: "分享",
+        handler: function(sender, indexPath) {
+          $device.taptic(0);
+          var username = $("list").data[0].rows[indexPath.row].casename.text;
+          $share.sheet("https://www.instagram.com/" + username)
+        }
+      }],
+      data: [{
+        title: "",
+        rows: []
+      }],
+      template: template,
+      header: {
+        type: "view",
+        props: {
+          height: 45,
+          bgcolor: $color("white")
+        },
+        views: [{
+          type: "input",
+          props: {
+            id: "keyword",
+            placeholder: "输入 id 搜索",
+            stickyHeader: false,
+            hidden: false,
+            font: $font("Gill Sans", 15),
+            clearsOnBeginEditing: true,
+            bgcolor: $color("#f2f2f2"),
+            textColor: $color("#cccccc"),
+            radius: 5
+          },
+          layout: function(make) {
+            make.left.right.inset(5)
+            make.top.inset(0)
+            make.height.equalTo(40)
+          },
+          events: {
+            changed: function(sender) {
+              if (sender.text.length > 0) {
+                $("quick").hidden = true
+              } else {
+                $("quick").hidden = false
+              }
+
+              $("keyword").textColor = $color("black")
+            },
+            returned: function(sender) {
+              sender.blur();
+              $("quick").hidden = false
+              if (sender.text.length > 0) {
+                homePageMode = "search";
+                search(sender.text)
+              }
+            }
+          }
+        }, {
+          type: "button",
+          props: {
+            //title: "导入",
+            id: "quick",
+            icon: $icon("109", $color("#bbbbbb"), $size(20, 20)),
+            bgcolor: $color("clear"),
+            //titleColor: $color("#aaaaaa"),
+            //radius: 8
+          },
+          layout: function(make, view) {
+            make.top.inset(7)
+            make.right.inset(10)
+          },
+          events: {
+            tapped(sender) {
+              if (homePageMode == "search") {
+                loadLocalData()
+                $("keyword").text = ""
+                //$("quick").title = "导入"
+                $("quick").icon = $icon("109", $color("#aaaaaa"), $size(20, 20))
+              } else {
+                quickAdd($clipboard.link)
+              }
+            }
+          }
+        }]
+      }
+
+    },
+    layout: function(make) {
+      make.top.equalTo(10)
+      make.left.right.bottom.inset(0)
+    },
+    events: {
+      didSelect: function(sender, indexPath, data) {
+        $("keyword").blur();
+        var title = data.info.full_name || data.info.fullname;
+        showPhoto(title);
+        getHomePageJson("https://www.instagram.com/" + data.info.username)
+      }
+    }
+
+  }]
 })
 
 function showPhoto(name) {
@@ -520,7 +551,11 @@ function getHomePageJson(input, mode) {
   $http.get({
     header: Header,
     url: input,
+    timeout: 3,
     handler: function(resp) {
+      if (!resp.data) {
+        $ui.toast("❌ 连接失败，稍后再试", 2)
+      }
       var match = /window\.\_sharedData\s=\s.+?(?=\;\<\/script\>)/g.exec(resp.data)[0].replace("window._sharedData = ", "");
       homePageJson = JSON.parse(match).entry_data.ProfilePage[0].user;
       if (homePageJson.is_private) {
@@ -543,20 +578,32 @@ function search(keyword) {
   $ui.loading(true)
   $ui.toast("搜索中...")
   //$("quick").title = "返回";
-  $("quick").icon = $icon("015", 
-$color("#aaaaaa"), $size(20, 20))
   $http.get({
     url: "https://www.instagram.com/web/search/topsearch/?context=blended&query=" + $text.URLEncode(keyword),
+    timeout: 3,
     handler: function(resp) {
-      var data = [];
+      $("quick").icon = $icon("015",
+        $color("#aaaaaa"), $size(20, 20))
+      if (!resp.data) {
+        $ui.toast("❌ 连接失败，稍后再试", 2)
+        $("quick").hidden = true
+      }
+
+      var data = [{
+        title: "",
+        rows: []
+      }];
       resp.data.users.map(function(i) {
-        data.push({
+        data[0].rows.push({
           info: i.user,
           casecover: {
-            src: i.user.profile_pic_url
+            src: i.user.profile_pic_url,
           },
-          casename: {
+          caseusername: {
             text: i.user.username
+          },
+          casefullname: {
+            text: i.user.full_name
           },
           caselike: {
             text: " " + likedCountFormat(i.user.follower_count) + " "
@@ -569,19 +616,21 @@ $color("#aaaaaa"), $size(20, 20))
             /*text: i.user.is_verified ? " 官方认证 " : " 未经认证 ",
             bgcolor: i.user.is_verified ? $color("#6194ce") : $color("#8e8e8e")*/
             text: i.user.is_verified ? " 🌐" : " ",
-            font: $font(11)
+            //font: $font(11)
           },
           baseadd: {
             info: i.user,
             hidden: false,
-            alpha: i.user.is_private || LocalUserName.indexOf(i.user.username) > -1 ? 0.3 : 1
+            title: LocalUserName.indexOf(i.user.username) > -1 ? "❤️": (i.user.is_private? "💔": "🖤"),
+            alpha: LocalUserName.indexOf(i.user.username) > -1  ? 1 : 0.3
           }
         })
       });
       $ui.loading(false)
-      $ui.toast("",0.01)
+      $ui.toast("", 0.01)
+      data[0].title = "搜索到 " + data[0].rows.length + " 条相关结果"
       $("list").data = data
-      $("title").text = "  搜索到 " + data.length + " 条相关结果"
+      //$("title").text = "  搜索到 " + data.length + " 条相关结果"
     }
   })
 }
@@ -656,7 +705,11 @@ function getMediaUrl(code) {
   $http.get({
     header: Header,
     url: "https://www.instagram.com/p/" + code + "/?__a=1",
+    timeout: 3,
     handler: function(resp) {
+      if (!resp.data) {
+        $ui.toast("❌ 连接失败，稍后再试", 2)
+      }
       var res = resp.data.graphql.shortcode_media;
       mediaData[code]["caption"] = res.edge_media_to_caption.edges[0].node.text;
       var items = [];
@@ -831,16 +884,25 @@ function loadLocalData() {
   homePageMode = "local";
   //$("quick").title = "剪贴板导入";
   LocalUserName = [];
-  var data = [];
+  LocalFullName = [];
+  //var data = [];
+  var data = [{
+    title: "",
+    rows: []
+  }]
   LocalData.map(function(i) {
     LocalUserName.push(i.username)
-    data.push({
+    LocalFullName.push(i.fullname)
+    data[0].rows.push({
       info: i,
       casecover: {
         src: i.cover
       },
-      casename: {
+      caseusername: {
         text: i.username
+      },
+      casefullname:{
+        text: i.fullname
       },
       caselike: {
         text: " " + likedCountFormat(i.liked) + " "
@@ -853,16 +915,16 @@ function loadLocalData() {
         /*text: i.verified ? " 官方认证 " : " 未经认证 ",
         bgcolor: i.verified ? $color("#6194ce") : $color("#8e8e8e")*/
         text: i.verified ? "🌐" : " ",
-        font: $font(11)
       },
       baseadd: {
         hidden: true
       }
     })
   })
+  //$("title").text = "  已关注 " + data.length + " 位用户";
+  data[0].title = "已关注 " + LocalUserName.length + " 位用户";
   $("list").data = data;
-  $("title").text = "  已关注 " + data.length + " 位用户";
-  $("keyword").text = "输入 id 搜索"
+  //$("keyword").text = "输入 id 搜索"
 
 }
 
@@ -885,5 +947,4 @@ var Header = {
 var config = "instagram-waterfall.json"
 var shortCodes = [],
   mediaData = {};
-
 main()
