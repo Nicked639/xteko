@@ -3,8 +3,8 @@ const template = [{
     props: {
       id: "casecover",
       radius: 25,
-      borderWidth: 0,
-      borderColor: $color("white"),
+      borderWidth: 1,
+      borderColor: $color("#eeeeee"),
       bgcolor: $color("white")
     },
     layout: function(make, view) {
@@ -14,16 +14,23 @@ const template = [{
     },
     events: {
       tapped(sender) {
+       // $("list").header.animator.makeOpacity(0).animate(1.0)
+        // $("list").animator.moveY(-50).animate(1)
         $ui.animate({
-          duration: 0.4,
-          animation: function() {
-            $("keyword").alpha = 0
+          duration: 1,
+          animation:function() {
+            
+            if($("list").header.alpha ==0)
+            {
+              
+            $("list").header.alpha = 1
+              
+            }else{
+              $("list").header.alpha = 0
+            }
           },
           completion: function() {
-            $("list").updateLayout(function(make) {
-              make.top.equalTo(110)
-            })
-
+           $ui.action("预留功能")
           }
         })
       }
@@ -34,11 +41,11 @@ const template = [{
     props: {
       id: "caseusername",
       textColor: $color("#021c38"),
-      font: $font("Heiti TC", 19)
+      font: $font("bold", 13)
     },
     layout: function(make, view) {
       make.left.equalTo($("casecover").right).offset(10)
-      make.top.inset(5)
+      make.top.inset(2)
       make.height.equalTo(30)
       //make.right.inset(50)
     }
@@ -47,13 +54,13 @@ const template = [{
     props: {
       id: "casefullname",
       textColor: $color("#aaaaaa"),
-      font: $font("Heiti TC", 13)
+      font: $font("bold", 14)
     },
     layout: function(make, view) {
       make.left.equalTo($("casecover").right).offset(10)
-      make.top.inset(25)
+      make.top.inset(19)
       make.height.equalTo(30)
-      make.width.equalTo(250)
+      make.width.equalTo(260)
       //make.right.inset(50)
     }
   },
@@ -69,7 +76,7 @@ const template = [{
     layout: function(make) {
       //make.left.equalTo(150)
       make.left.equalTo($("caseusername").right).offset(4)
-      make.top.inset(15)
+      make.top.inset(10)
       make.height.equalTo(15)
     }
 
@@ -78,14 +85,15 @@ const template = [{
     props: {
       id: "caselike",
       bgcolor: $color("#eeeeee"),
-      textColor: $color("#021c38"),
+      textColor: $color("#888888"),
       font: $font(11),
       radius: 3,
-      alpha: 0.7
+      alpha: 0.7,
+      hidden: false
     },
     layout: function(make, view) {
       make.left.equalTo($("casecover").right).offset(10)
-      make.top.equalTo($("casefullname").bottom).offset(-3)
+      make.top.equalTo($("casefullname").bottom).offset(-5)
       make.height.equalTo(15)
       make.width.equalTo(63)
     }
@@ -131,10 +139,38 @@ $ui.render({
   views: [{
       type: "text",
       props: {
-        id: "follow",
+        text: "Designed by Nicked.\n\nBased on Wind.",
+        textColor: $color("#CCCCCC"),
+        font: $font(10),
+        align: $align.center
+      },
+
+      layout: function(make, view) {
+        make.top.inset(40)
+        make.height.equalTo(100)
+        make.width.equalTo(375)
+      }
+    }, {
+    type: "image",
+    props:{
+      src:"https://i.loli.net/2017/11/06/59ffebf2eb071.jpeg",
+      radius : 25,
+      alpha:0.8,
+      align: $align.center,
+    },
+    layout: function(make, view){
+      make.size.equalTo($size(50,50))
+      make.top.inset(100)
+      make.left.inset(162)
+    }
+    
+  },{
+      type: "text",
+      props: {
+        id: "follow", //关注用户数
         bgcolor: $color("white"),
         textColor: $color("#aaaaaa"),
-        font: $font("Heiti TC", 15),
+        font: $font(15),
         selectable: false,
         scrollEnabled: false,
         //insets: $insets(0, 10, 0, 0)
@@ -149,11 +185,11 @@ $ui.render({
         id: "tab",
         //hidden: true,
         items: ["关注", "收藏"],
-        tintColor: $color("#888888")
+        tintColor: $color("#AAAAAA")
       },
       layout: function(make) {
         make.right.inset(6)
-        make.top.inset(10)
+        make.top.inset(8)
         make.height.equalTo(22)
       },
       events: {
@@ -168,8 +204,8 @@ $ui.render({
       props: {
         id: "back",
         title: "返回",
-        font: $font("Heiti TC", 15),
-        bgcolor: $color("#021c38"),
+        font: $font(13),
+        bgcolor: $color("#AAAAAA"),
         hidden: true,
         titleColor: $color("white")
       },
@@ -177,7 +213,7 @@ $ui.render({
         make.right.inset(6)
         make.top.inset(10)
         make.height.equalTo(22)
-        make.width.equalTo(45)
+        make.width.equalTo(40)
       },
       events: {
         tapped: function(sender) {
@@ -199,7 +235,7 @@ $ui.render({
         rowHeight: 70,
         stickyHeader: true,
         //hidden: true,
-        bgcolor: $color("white"),
+        bgcolor: $color("clear"),
         actions: [{
           title: "delete",
           handler: function(sender, indexPath) {
@@ -222,31 +258,32 @@ $ui.render({
         }],
         template: template,
         footer: {
-        type: "label",
-        props: {
-          text: "Designed by Nicked.\n\nSource from Wind.",
-          lines: 0,
-          height: 100,
-          font: $font(10),
-          textColor: $color("#AAAAAA"),
-          align: $align.center
-        }
-      },
+          type: "label",
+          props: {
+            text: "Version: 1.0",
+            lines: 0,
+            height: 100,
+            font: $font(10),
+            textColor: $color("#AAAAAA"),
+            align: $align.center
+          }
+        },
         header: {
           type: "view",
           props: {
             height: 45,
-            bgcolor: $color("white")
+            bgcolor: $color("white"),
+            //hidden: true
           },
           views: [{
             type: "input",
             props: {
               id: "keyword",
-              placeholder: "输入 id 搜索",
+              placeholder: "输入用户 ID 进行搜索",
               stickyHeader: false,
               hidden: false,
-              font: $font("Heiti TC", 15),
-              clearsOnBeginEditing: true,
+              font: $font(13),
+              clearsOnBeginEditing: false,
               bgcolor: $color("#f3f3f3"),
               radius: 10
             },
@@ -254,7 +291,7 @@ $ui.render({
               make.left.inset(6)
               make.right.inset(6)
               make.top.inset(5)
-              make.height.equalTo(35)
+              make.height.equalTo(30)
             },
             events: {
               changed: function(sender) {
@@ -881,16 +918,16 @@ function userAction(mode) {
 
 function likedCountFormat(num) {
   if (num < 10000) {
-    return " ♥ " + num;
+    return "♥ " + num;
   } else if (num === 10000) {
-    return " ♥ " + num / 1000 + " k ";
+    return "♥ " + num / 1000 + " k ";
   } else if (num > 10000 && num < 1000000) {
-    return " ♥ " + (num / 1000).toFixed(1) + " k ";
+    return "♥ " + (num / 1000).toFixed(1) + " k ";
   } else if (num === 1000000) {
-    return " ♥ " + num / 1000000 + " m ";
+    return "♥ " + num / 1000000 + " m ";
 
   } else if (num > 1000000) {
-    return " ♥ " + (num / 1000000).toFixed(1) + " m ";
+    return "♥ " + (num / 1000000).toFixed(1) + " m ";
   }
 }
 
