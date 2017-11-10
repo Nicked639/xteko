@@ -116,12 +116,18 @@ const template = [{
           var data = $("userList").data;
           data[0].rows[sender.info.idx].baseadd.alpha = 0.3;
           $("userList").data = data
-        } else {
+        } else if(LocalUserName.indexOf(sender.info.user.username) < 0){
 
           updateLocalUserData("add", sender.info.user);
           var data = $("userList").data
           data[0].rows[sender.info.idx].baseadd.title = "❤️"
           data[0].rows[sender.info.idx].baseadd.alpha = 1
+          $("userList").data = data
+        }else {
+          updateLocalUserData("del", LocalUserName.indexOf(sender.info.user.username));
+          var data = $("userList").data
+          data[0].rows[sender.info.idx].baseadd.title = "🖤"
+          data[0].rows[sender.info.idx].baseadd.alpha = 0.3
           $("userList").data = data
         }
       }
@@ -153,7 +159,7 @@ $ui.render({
         layout: function(make, view) {
           make.top.inset(40)
           make.height.equalTo(100)
-          make.width.equalTo(375)
+          make.width.equalTo($device.info.screen.width)
         }
       }, {
         type: "image",
@@ -225,10 +231,11 @@ $ui.render({
           type: "list",
           props: {
             id: "userList",
+            reorder: true,
             rowHeight: 70,
             stickyHeader: true,
             //hidden: true,
-            bgcolor: $color("clear"),
+            bgcolor: $color("white"),
             actions: [{
               title: "delete",
               handler: function(sender, indexPath) {
@@ -253,7 +260,8 @@ $ui.render({
             footer: {
               type: "label",
               props: {
-                text: "Version: 1.0",
+                
+                text: "\n\nVersion: 1.0",
                 lines: 0,
                 height: 100,
                 font: $font(10),
@@ -339,9 +347,24 @@ $ui.render({
             make.left.right.bottom.inset(0)
           },
           events: {
+            reorderBegan:function(indexPath){
+              $("preinfo").hidden = true
+            },
+            reorderMoved: function(from, to){
+              if (homePageMode == "user"){
+              LocalData.user.move(from.row, to.row)  
+              }
+            },
+            reorderFinished:function(data){
+              if(homePageMode == "user"){
+             updateLocalUserData("save")   
+              }
+              
+            },
             didSelect: function(sender, indexPath, data) {
               $("keyword").blur();
               var title = data.info.username;
+              $ui.toast("加载中...",10)
               getUserHomePageJson("https://www.instagram.com/" + data.info.username, "", indexPath.row);
               showPhoto(title);
             }
@@ -362,7 +385,7 @@ $ui.render({
       views: [{
           type: "text",
           props: {
-            id: "followpost", //关注用户数
+            id: "followpost",//关注用户数
             bgcolor: $color("white"),
             textColor: $color("#aaaaaa"),
             font: $font(15),
@@ -595,7 +618,7 @@ function showPhoto(name) {
             layout: function(make, view) {
               var prewView = $("showimage")
               make.top.equalTo(prewView.top).offset(7)
-              make.left.equalTo(prewView.right).offset(8)
+              make.left.equalTo(prewView.right).offset(7)
               make.width.equalTo(80)
               make.height.lessThanOrEqualTo(350)
             }
@@ -666,15 +689,37 @@ function showPhoto(name) {
                 if (sender.info.data.is_private) {
                   $ui.toast("❌ 不支持浏览私密账户")
 
-                } else {
-
+                } else if(LocalUserName.indexOf(sender.info.data.username) < 0) {
                   updateLocalUserData("add", sender.info.data);
                   $("followButton").title = "已关注"
                   $("followButton").bgcolor = $color("#eeeeee")
                   $("followButton").titleColor = $color("#aaaaaa")
                   var data = $("userList").data
+                  if(homePageMode == "search"){
+                    
                   data[0].rows[sender.info.idx].baseadd.title = "❤️"
                   data[0].rows[sender.info.idx].baseadd.alpha = 1
+                    
+            }
+                  $("userList").data = data
+                }else{
+                 
+                  
+                  $("followButton").title = "关注"
+                  $("followButton").bgcolor = $color("#3797f1")
+                  $("followButton").titleColor = $color("white")
+                  var data = $("userList").data
+                  if(homePageMode == "user"){
+                    updateLocalUserData("del", sender.info.idx);
+           data[0].rows.splice(sender.info.idx,1)         
+                  } else {
+                    updateLocalUserData("del", LocalUserName.indexOf(sender.info.data.username));
+                    data[0].rows[sender.info.idx].baseadd.title = "🖤"
+                  data[0].rows[sender.info.idx].baseadd.alpha = 0.3
+                  }
+                  
+                  
+                
                   $("userList").data = data
                 }
 
@@ -840,11 +885,30 @@ function showPhoto(name) {
     ]
   })
 }
+function computeRows(str) {
+  // 计算 biography 行数
+  var strarray = str.split("\n")
+  var long = 0;
+  var short = 0;
+  for (var i = 0; i < strarray.length; i++) {
+    if (strarray[i].length < 51) {
+      short++;
+    } else {
+      long = long + Math.ceil(strarray[i].length / 51)
+    }
+  }
+  rows = long + short
+  return rows
+}
+
 
 function postDetailView(code, scale) {
   selectCode = code;
   var data = mediaData[code]["media"];
   var items = [];
+  var captionRows = computeRows(mediaData[code]["caption"])
+
+  //$ui.action(computeRows(mediaData[code]["caption"]))
   data.map(function(i) {
     if (i.video) {
       items.push({
@@ -878,7 +942,7 @@ function postDetailView(code, scale) {
           } else if (indexPath.row == 1) {
             return 60
           } else if (indexPath.row == 2) {
-            return 200
+            return 20 * (captionRows + 3)
           }
         }
       },
@@ -959,7 +1023,7 @@ function postDetailView(code, scale) {
                     props: {
                       id: "count",
                       font: $font(12),
-                      text: formatTime(mediaData[code]["postDate"]) + "\n" + mediaData[code]["likes"] + " ♥      " + mediaData[code]["comment"] + " ♬",
+                      text: formatTime(mediaData[code]["postDate"]) + "\n" + mediaData[code]["likes"] + " 次赞      " + mediaData[code]["comment"] + " 评论",
                       lines: 2,
                       autoFontSize: true
                     },
@@ -1164,7 +1228,7 @@ function postDetailView(code, scale) {
 }
 
 function getUserHomePageJson(input, mode, row) {
-  $ui.toast("加载中...", 100);
+  //$ui.toast("加载中...", 100);
   $http.get({
     header: Header,
     url: input,
@@ -1182,6 +1246,7 @@ function getUserHomePageJson(input, mode, row) {
       if (mode == "import") {
         homePageMode = "user";
         updateLocalUserData("add", homePageJson)
+            $ui.toast("导入成功",0.5)
       } else {
         postDataFormate(homePageJson, "home", row)
       }
@@ -1251,6 +1316,11 @@ function search(keyword) {
       $("follow").text = "搜索到 " + data[0].rows.length + " 条相关结果"
       $("userList").data = data
       //$("title").text = "  搜索到 " + data.length + " 条相关结果"
+      if(data[0].rows.length >0){
+        $("userList").bgcolor = $color("clear")
+      }else{
+         $("userList").bgcolor = $color("white")
+      }
     }
   })
 }
@@ -1427,7 +1497,6 @@ function getPostMediaUrls(code,mode) {
         mediaData[code]["type"] = "MultiMedia"
       } else {
         var json = resp.data.graphql.shortcode_media;
- $clipboard.text = JSON.stringify(json)
         var imageSize = json.dimensions;
         var video = json.is_video ? json.video_url : false;
         var image = json.display_url;
@@ -1448,7 +1517,7 @@ function getPostMediaUrls(code,mode) {
         mediaData[code]["code"] = code
         
         updateLocalPostData(mode,code)
-     
+        $ui.toast("导入成功",0.5)
       }else{
         postDetailView(code, scale)
       }
@@ -1576,6 +1645,18 @@ function userAction(mode) {
 
 function likedCountFormat(star, num) {
   if (num < 10000) {
+    return star + (num || 0).toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
+  } else if (num >= 10000 && num < 1000000) {
+    return star + (num / 10000).toFixed(1) + " 万 ";
+  } else if (num >= 1000000 && num < 100000000) {
+    return star + ((num / 10000).toFixed(0) || 0).toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') + " 万 ";
+  } else if (num > 100000000){
+    return star + ((num / 100000000).toFixed(1) || 0).toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,') + " 亿 ";
+  }
+}
+
+function followCountFormat(star, num) {
+  if (num < 10000) {
     return star + num;
   } else if (num === 10000) {
     return star + num / 1000 + " k ";
@@ -1593,6 +1674,7 @@ function quickAdd(input) {
   var match1 = /^http.+?instagram.com\/[^\/]+?\/?$/g.exec(input);
   var match2 = /^http.+?instagram.com\/p\/.*\/?$/g.exec(input);
   if(match1){
+    $ui.toast("导入中...",2)
     getUserHomePageJson(input, "import")
   }else if(match2){
     var code = /(\/p\/)(\w*)/gm.exec(input).pop()
@@ -1623,7 +1705,7 @@ function updateLocalUserData(mode, data) {
     });
     var count = LocalData.user.length;
     $("follow").text = "已关注 " + count + " 位用户";
-    $ui.toast("👀 已关注 " + data.username, 1);
+    //$ui.toast("👀 已关注 " + data.username, 1);
     if (homePageMode == "user") {
 
       loadLocalUserData();
@@ -1632,7 +1714,7 @@ function updateLocalUserData(mode, data) {
   } else if (mode == "del") {
     //$("userList").delete(data);
     LocalData.user.splice(data, 1);
-    $ui.toast("⚰️ 已取消对 " + LocalUserName[data] + " 的关注", 0.7);
+    //$ui.toast("⚰️ 已取消对 " + LocalUserName[data] + " 的关注", 0.7);
     LocalUserName.splice(data, 1)
     //var listdata = $("userList").data
     var count = LocalData.user.length
@@ -1646,7 +1728,14 @@ function updateLocalUserData(mode, data) {
     }),
     path: config
   });
-
+if(LocalData.user.length>0){
+       $("userList").bgcolor = $color("clear")
+         
+       }else{
+          $("userList").bgcolor = $color("white")
+       }
+         
+         
 }
 
 function updateLocalPostData(mode, code, x) {
@@ -1667,11 +1756,11 @@ function updateLocalPostData(mode, code, x) {
       "thumbnail": data.thumbnail,
       "detailType": textType
     });
-    $ui.toast("💡 已收藏", 0.5);
+    //$ui.toast("💡 已收藏", 0.5);
   } else if (mode == "del") {
     LocalPostCode.splice(code, 1);
     LocalData.post.splice(code, 1);
-    $ui.toast("🗑 已取消收藏", 0.5)
+    //$ui.toast("🗑 已取消收藏", 0.5)
     /*if (x) {
       $("postList").delete(code)
     }*/
@@ -1823,6 +1912,14 @@ function main() {
   var file = $drive.read(config);
   if (file) {
     LocalData = JSON.parse(file.string);
+    if(LocalData.user.length>0){
+       $("userList").bgcolor = $color("clear")
+         
+       }else{
+          $("userList").bgcolor = $color("white")
+       }
+    
+   
   } else {
     LocalData = { "user": [], "post": [] };
   }
