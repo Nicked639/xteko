@@ -18,152 +18,162 @@ let category = [{
   title: "收藏",
 }]
 
-$ui.render({
-  props: {
-    title: "秀美眉",
-  },
-  views: [{
-      type: "text",
-      props: {
-        id: "bgInfo",
-        text: "Originated in Power Flow\n\nhttps://t.me/Flow_Script\n\nVersion: 1.1",
-        textColor: $color("#CCCCCC"),
-        font: $font(10),
-        align: $align.center
-      },
-
-      layout: function(make, view) {
-        make.top.inset(40)
-        make.height.equalTo(100)
-        make.width.equalTo($device.info.screen.width)
-      }
-    }, {
-      type: "image",
-      props: {
-        id: "bgImage",
-        src: "https://i.loli.net/2017/11/14/5a0a553e1c420.jpg",
-        radius: 25,
-        alpha: 0.8,
-        align: $align.center,
-      },
-      layout: function(make, view) {
-        make.size.equalTo($size(50, 50))
-        make.top.inset(110)
-        make.left.inset(162)
-      }
-
-    }, {
-      type: "menu",
-      props: {
-        id: "menu",
-        items: category.map(i => i.title)
-      },
-      layout: function(make, view) {
-        make.top.left.right.inset(0)
-        make.height.equalTo(30)
-      },
-      events: {
-        changed(sender) {
-          if (sender.index !== 4) {
-            $("preView").hidden = false
-            page = 0;
-            $("preView").data = [];
-            getPostData()
-          } else {
-            if(LocalList.length == 0){
-              $ui.toast("暂无收藏内容，请收藏")
-              $("preView").hidden = true
-            }else{
-            
-                          
-            $("preView").data = []
-            LocalData.fav.map(function(i) {
-              $("preView").data = $("preView").data.concat({
-                title: i.title,
-                detail: i.url,
-                interface: {
-                  src: i.src
-
-                }
-              })
-            })
-            }
-
-          }
-
-          $("preView").contentOffset = $point(0, 0)
-
-        }
-      }
+function mainUI(column,rowHeight) {
+  $ui.render({
+    props: {
+      title: "秀美眉",
     },
-    {
-      type: "matrix",
-      props: {
-        id: "preView",
-        itemHeight: 280,
-        columns: 2,
-        spacing: 1,
-        square: false,
-        bgcolor: $color("clear"),
-        template: [{
-          type: "image",
-          props: {
-            id: "interface",
-          },
-          layout: $layout.fill
-        }],
-      },
-      layout: function(make, view) {
-        make.left.right.bottom.inset(0)
-        make.top.equalTo($("menu").bottom)
-      },
-      events: {
-        didReachBottom(sender) {
-          sender.endFetchingMore();
-          getPostData()
-          $delay(0.5, function() {
-            getPostData()
-          })
+    views: [{
+        type: "text",
+        props: {
+          id: "bgInfo",
+          text: "Originated in Power Flow\n\nhttps://t.me/Flow_Script\n\nVersion: 1.1",
+          textColor: $color("#CCCCCC"),
+          font: $font(10),
+          align: $align.center
         },
-        didSelect(sender, indexPath, data) {
-          interface = data.interface.src
-          title = data.title
 
-          showPhotos(title)
-          if (LocalList.indexOf(interface) > -1) {
-            $("favorite").title = "取消收藏"
-          }
-          $("detailView").data = [];
-          detailPage = 0;
-          detailUrl = data.detail
-          $http.request({
-            url: detailUrl,
-            handler: function(resp) {
-              num = parseInt(/(共)(.*)(页)/g.exec(resp.data)[2]);
-              title = /<title>([\s\S]*?)<\/title>/g.exec(resp.data)[1]
-              //$ui.action(title)
-              getDetailPost(detailUrl)
+        layout: function(make, view) {
+          make.top.inset(40)
+          make.height.equalTo(100)
+          make.width.equalTo($device.info.screen.width)
+        }
+      }, {
+        type: "image",
+        props: {
+          id: "bgImage",
+          src: "https://i.loli.net/2017/11/14/5a0a553e1c420.jpg",
+          radius: 25,
+          alpha: 0.8,
+          align: $align.center,
+        },
+        layout: function(make, view) {
+          make.size.equalTo($size(50, 50))
+          make.top.inset(110)
+          make.left.inset(162)
+        }
 
-              $delay(0.5, function() {
-                getDetailPost(detailUrl)
-              })
+      }, {
+        type: "menu",
+        props: {
+          id: "menu",
+          items: category.map(i => i.title)
+        },
+        layout: function(make, view) {
+          make.top.left.right.inset(0)
+          make.height.equalTo(30)
+        },
+        events: {
+          changed(sender) {
+            if (sender.index !== 4) {
+              mainUI(2,280)
+              $("menu").index = sender.index;
+              $("preView").hidden = false
+              page = 0;
+              $("preView").data = [];
+              getPostData()
+            } else {
+              mainUI(3,185)
+              $("menu").index = 4
+              if (LocalList.length == 0) {
+                $ui.toast("暂无收藏内容，请收藏")
+                $("preView").hidden = true
+              } else {
+
+                $("preView").data = []
+                LocalData.fav.map(function(i) {
+                  $("preView").data = $("preView").data.concat({
+                    title: i.title,
+                    detail: i.url,
+                    interface: {
+                      src: i.src
+
+                    }
+                  })
+                })
+              }
+
             }
-          })
 
+            $("preView").contentOffset = $point(0, 0)
+
+          }
+        }
+      },
+      {
+        type: "matrix",
+        props: {
+          id: "preView",
+          itemHeight: rowHeight,
+          columns: column,
+          spacing: 1,
+          square: false,
+          bgcolor: $color("clear"),
+          template: [{
+            type: "image",
+            props: {
+              id: "interface",
+            },
+            layout: $layout.fill
+          }],
+        },
+        layout: function(make, view) {
+          make.left.right.bottom.inset(0)
+          make.top.equalTo($("menu").bottom)
+        },
+        events: {
+          didReachBottom(sender) {
+            sender.endFetchingMore();
+            getPostData()
+            $delay(0.5, function() {
+              getPostData()
+            })
+          },
+          didSelect(sender, indexPath, data) {
+            interface = data.interface.src
+            title = data.title
+
+            showPhotos(title)
+            if (LocalList.indexOf(interface) > -1) {
+              $("favorite").title = "取消收藏"
+            }
+            $("detailView").data = [];
+            detailPage = 0;
+            detailUrl = data.detail
+            $http.request({
+              url: detailUrl,
+              handler: function(resp) {
+                num = parseInt(/(共)(.*)(页)/g.exec(resp.data)[2]);
+                title = /<title>([\s\S]*?)<\/title>/g.exec(resp.data)[1]
+                //$ui.action(title)
+                getDetailPost(detailUrl)
+
+                $delay(0.5, function() {
+                  getDetailPost(detailUrl)
+                })
+              }
+            })
+
+          }
         }
       }
-    }
-  ]
-})
+    ]
+  })
+}
 
-function getPostData() {
+function getPostData(mode) {
   page++
-  if (page == 1) {
+  if( mode == "firstRun"){
+    url = category[0].addr
+  } else{
+    if (page == 1) {
     url = category[$("menu").index].addr
   } else {
     url = category[$("menu").index].next + page + ".html"
 
   }
+  }
+  
   $http.request({
     url: url,
     handler: function(resp) {
@@ -400,24 +410,24 @@ function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
     LocalData.fav.push(data)
     LocalList.push(data.src)
-    if($("menu").index == 4){
-     
-    $("preView").data = $("preView").data.concat({
-      title: data.title,
-      detail: data.url,
-      interface: {
-        src: data.src
-      }
-    });
-      
+    if ($("menu").index == 4) {
+
+      $("preView").data = $("preView").data.concat({
+        title: data.title,
+        detail: data.url,
+        interface: {
+          src: data.src
+        }
+      });
+
     }
   } else if (mode == "del") {
     idx = LocalList.indexOf(data.src)
     LocalList.splice(idx, 1)
     LocalData.fav.splice(idx, 1)
-    if($("menu").index == 4){
-    $("preView").delete(idx)
-      
+    if ($("menu").index == 4) {
+      $("preView").delete(idx)
+
     }
   }
   writeCache()
@@ -430,17 +440,9 @@ function writeCache() {
   })
 }
 
-function setColumn(){
-  if($("menu").index == 4){
-    return 3
-  } else {
-    return 2
-  }
-}
-
 function main() {
   page = 0
-  getPostData()
+  getPostData("firstRun")
   if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
     LocalList = LocalData.fav.map(i => i.src)
@@ -450,5 +452,7 @@ function main() {
   };
 }
 
+
 LocalDataPath = "drive://xiumeim.json"
 main()
+mainUI(2,280)
