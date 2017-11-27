@@ -28,6 +28,7 @@ function mainUI(column,rowHeight) {
         props: {
           id: "bgInfo",
           text: "Originated in Power Flow\n\nhttps://t.me/Flow_Script\n\nVersion: 1.1",
+          editable: false,
           textColor: $color("#CCCCCC"),
           font: $font(10),
           align: $align.center
@@ -124,10 +125,14 @@ function mainUI(column,rowHeight) {
         events: {
           didReachBottom(sender) {
             sender.endFetchingMore();
+            if ($("menu").index !== 4){
+              
             getPostData()
             $delay(0.5, function() {
               getPostData()
             })
+            }
+            //$ui.action($("menu").index)
           },
           didSelect(sender, indexPath, data) {
             interface = data.interface.src
