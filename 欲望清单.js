@@ -7,7 +7,8 @@ const searchView = {
   views: [{
     type: "input",
     props: {
-      placeholder: "输入番号演员",
+      id: "input",
+      placeholder: "输入番号或演员进行搜索",
       id: "input",
       font: $font(13),
       clearsOnBeginEditing: false,
@@ -17,6 +18,7 @@ const searchView = {
     },
     events: {
       returned: function(sender) {
+        $("menu").index = 0
         if (sender.text) {
           sender.blur()
           $("initialView").data = [];
@@ -77,9 +79,12 @@ const searchView = {
     },
     events: {
       didReachBottom(sender) {
-        $ui.loading = true
         sender.endFetchingMore();
-        getInitial(mode, keyword);
+        if ($("menu").index == 0) {
+          $ui.loading = true
+          getInitial(mode, keyword);
+
+        }
 
       },
       didSelect(sender, indexPath, data) {
@@ -87,8 +92,18 @@ const searchView = {
         favSrc = data.initialCover.src
         favInfo = data.info.text
         favLink = data.link
+        favCode = data.code
         getDetail(data.link)
         $ui.push(detailView)
+        if ($("menu").index == 0) {
+          if (LocalFavList.indexOf(favLink) > -1) {
+            $("favorite").title = "取消收藏"
+          }
+        } else if ($("menu").index == 1) {
+          $("favorite").title = "归档"
+        } else {
+          $("favorite").title = "删除"
+        }
       }
     }
 
@@ -98,10 +113,6 @@ const searchView = {
     make.top.equalTo($("menu").bottom)
   }
 
-}
-
-const favoriteView = {
-  type: "view",
 }
 
 const detailView = {
@@ -210,44 +221,76 @@ const detailView = {
       }
     }
 
-  },{
+  }, {
     type: "button",
-      props: {
-        id: "megnet",
-        bgcolor: $color("black"),
-        radius: 0,
-        title: "搜磁链",
-        alpha: 0.7
-      },
-      layout: function(make, view) {
-        make.left.bottom.inset(0)
-        make.width.equalTo(view.super).dividedBy(2).offset(-1)
-        make.height.equalTo(30)
-      },
-      
-    
-  },{
-    type: "button",
-      props: {
-        id: "favorite",
-        bgcolor: $color("black"),
-        radius: 0,
-        title: "收藏",
-        alpha: 0.7
-      },
-      layout: function(make, view) {
-        make.bottom.inset(0)
-        make.left.equalTo($("megnet").right).offset(2)
-        make.width.equalTo(view.super).dividedBy(2)
-        make.height.equalTo(30)
-      },
-      events:{
-        tapped(sender){
-          $ui.action(favInfo)
-        }
+    props: {
+      id: "megnet",
+      bgcolor: $color("black"),
+      radius: 0,
+      title: "搜磁链",
+      alpha: 0.7
+    },
+    layout: function(make, view) {
+      make.left.bottom.inset(0)
+      make.width.equalTo(view.super).dividedBy(2).offset(-1)
+      make.height.equalTo(30)
+    },
+    events: {
+      tapped(sender) {
+        $safari.open({
+          url: "https://cn.torrentkitty.tv/search/" + encodeURI(favCode)
+        })
       }
-      
-    
+    }
+
+  }, {
+    type: "button",
+    props: {
+      id: "favorite",
+      bgcolor: $color("black"),
+      radius: 0,
+      title: "收藏",
+      alpha: 0.7
+    },
+    layout: function(make, view) {
+      make.bottom.inset(0)
+      make.left.equalTo($("megnet").right).offset(2)
+      make.width.equalTo(view.super).dividedBy(2)
+      make.height.equalTo(30)
+    },
+    events: {
+      tapped(sender) {
+        var data = {
+          "src": favSrc,
+          "info": favInfo,
+          "link": favLink
+        }
+        if ($("menu").index == 0) {
+          if ($("favorite").title == "收藏") {
+            $("favorite").title = "取消收藏"
+            favoriteButtonTapped("add", data)
+          } else if ($("favorite").title == "取消收藏") {
+            $("favorite").title = "收藏"
+            favoriteButtonTapped("cancel", data)
+          }
+        } else if ($("menu").index == 1) {
+          if ($("favorite").title == "归档") {
+
+            $("favorite").title = "已归档"
+            favoriteButtonTapped("archive", data)
+
+          }
+        } else {
+          if ($("favorite").title == "删除") {
+            $("favorite").title = "已删除"
+            favoriteButtonTapped("del", data)
+          }
+
+        }
+
+      }
+    }
+
   }],
   layout: $layout.fill
 
@@ -350,9 +393,23 @@ function actressView(actress, cover) {
 
         },
         didSelect(sender, indexPath, data) {
-          //$ui.action(data.title)
+
+          favSrc = data.actressCovers.src
+          favInfo = data.actressInfos.text
+          favLink = data.link
+          //$ui.action(data.link)
           getDetail(data.link)
           $ui.push(detailView)
+          if ($("menu").index == 0) {
+            if (LocalFavList.indexOf(favLink) > -1) {
+              $("favorite").title = "取消收藏"
+            }
+          } else if ($("menu").index == 1) {
+            $("favorite").title = "归档"
+          } else {
+            $("favorite").title = "删除"
+          }
+
         }
       }
 
@@ -379,15 +436,62 @@ $ui.render({
         changed(sender) {
           switch (sender.index) {
             case 0:
-              $("searchView").hidden = false
-              $("favoriteView").hidden = true
+              $("input").placeholder = "输入番号或演员进行搜索"
+              $("initialView").hidden = false
+              $("initialView").data = []
+              $("initialView").contentOffset = $point(0, 0)
+              page = 0
+              mode = "home"
+              keyword = ""
+              getInitial(mode)
               break;
             case 1:
-              $("searchView").hidden = true
-              $("favoriteView").hidden = false
+              $("initialView").data = [];
+              $("initialView").contentOffset = $point(0, 0);
+              var length = LocalFavList.length;
+              $("input").text = ("")
+              $("input").placeholder = "已收藏 " + length + " 个番号"
+              if (length == 0) {
+                $("initialView").hidden = true
+              } else {
+                $("initialView").hidden = false
+              }
+              LocalData.favorite.map(function(i) {
+                $("initialView").data = $("initialView").data.concat({
+                  link: i.link,
+                  initialCover: {
+                    src: i.src
+                  },
+                  info: {
+                    text: i.info
+                  }
+                })
+              })
+
               break;
             case 2:
-              $("searchView").hidden = true
+              var length = LocalArcList.length;
+              $("input").text = ("")
+              $("input").placeholder = "已归档 " + length + " 个番号"
+              if (length == 0) {
+                $("initialView").hidden = true
+              } else {
+                $("initialView").hidden = false
+              }
+              $("initialView").data = []
+              $("initialView").contentOffset = $point(0, 0)
+              LocalData.archive.map(function(i) {
+                $("initialView").data = $("initialView").data.concat({
+                  link: i.link,
+                  initialCover: {
+                    src: i.src
+                  },
+                  info: {
+                    text: i.info
+                  }
+                })
+              })
+              break;
 
           }
         }
@@ -429,7 +533,8 @@ function getInitial(mode, keyword) {
         var code = /<br><date>(.*?)<\/date>/.exec(i)[1];
         var date = /\/\s<date>(.*?)<\/date><\/span>/.exec(i)[1];
         $("initialView").data = $("initialView").data.concat({
-          title: title,
+          //title: title,
+          code: code,
           link: link,
           initialCover: {
             src: image
@@ -567,20 +672,62 @@ function getActress(url) {
   })
 }
 
+function favoriteButtonTapped(mode, data) {
+  if (mode == "add") {
+    LocalData.favorite.push(data)
+    LocalFavList.push(data.link)
+
+  } else if (mode == "cancel") {
+    idx = LocalFavList.indexOf(data.link)
+    LocalFavList.splice(idx, 1)
+    LocalData.favorite.splice(idx, 1)
+
+  } else if (mode == "archive") {
+    idx = LocalFavList.indexOf(data.link)
+    LocalFavList.splice(idx, 1)
+    LocalData.favorite.splice(idx, 1)
+    if ($("menu").index == 1) {
+      $("initialView").delete(idx)
+      var length = LocalFavList.length;
+      $("input").placeholder = "已收藏 " + length + " 个番号"
+    }
+    LocalData.archive.push(data)
+    LocalArcList.push(data.link)
+  } else if (mode == "del") {
+    idx = LocalArcList.indexOf(data.link)
+    LocalArcList.splice(idx, 1)
+    LocalData.archive.splice(idx, 1)
+    if ($("menu").index == 2) {
+      $("initialView").delete(idx)
+      var length = LocalArcList.length;
+      $("input").placeholder = "已归档 " + length + " 个番号"
+    }
+  }
+  writeCache()
+}
+
+function writeCache() {
+  $file.write({
+    data: $data({ string: JSON.stringify(LocalData) }),
+    path: LocalDataPath
+  })
+}
+
 function main() {
   page = 0
   mode = "home"
   keyword = ""
-getInitial(mode)
+  getInitial(mode)
   if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
-    LocalList = LocalData.fav.map(i => i.src)
+    LocalFavList = LocalData.favorite.map(i => i.link)
+    LocalArcList = LocalData.archive.map(i => i.link)
   } else {
-    LocalData = { "fav": [] };
-    LocalList = [];
+    LocalData = { "favorite": [], "archive": [] };
+    LocalFavList = [];
+    LocalArcList = [];
   };
 }
-
 
 LocalDataPath = "drive://HList.json"
 main()
