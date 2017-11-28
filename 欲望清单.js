@@ -5,6 +5,39 @@ const searchView = {
     bgcolor: $color("white")
   },
   views: [{
+        type: "text",
+        props: {
+          id: "bgInfo",
+          text: "Originated in Power Flow\n\nhttps://t.me/Flow_Script\n\nVersion: 1.0",
+          editable: false,
+          textColor: $color("#CCCCCC"),
+          font: $font(10),
+          align: $align.center,
+          hidden:true
+        },
+
+        layout: function(make, view) {
+          make.top.inset(40)
+          make.height.equalTo(100)
+          make.width.equalTo($device.info.screen.width)
+        }
+      }, {
+        type: "image",
+        props: {
+          id: "bgImage",
+          src: "https://i.loli.net/2017/11/14/5a0a553e1c420.jpg",
+          radius: 25,
+          alpha: 0.8,
+          align: $align.center,
+          hidden:true
+        },
+        layout: function(make, view) {
+          make.size.equalTo($size(50, 50))
+          make.top.inset(110)
+          make.left.inset(162)
+        }
+
+      },{
     type: "input",
     props: {
       id: "input",
@@ -89,20 +122,113 @@ const searchView = {
       },
       didSelect(sender, indexPath, data) {
         //$ui.action(data.title)
+
         favSrc = data.initialCover.src
         favInfo = data.info.text
         favLink = data.link
         favCode = data.code
-        getDetail(data.link)
-        $ui.push(detailView)
-        if ($("menu").index == 0) {
-          if (LocalFavList.indexOf(favLink) > -1) {
-            $("favorite").title = "取消收藏"
+        if ($("tab").hidden == false && $("tab").index == 1) {
+            favActressCover = favSrc
+            favActressName = favInfo
+            url = favLink
+          
+          actressView(favInfo, favSrc)
+          actressPage = 0
+          getActress(favLink)
+          if (LocalActressList.indexOf(favLink) > -1) {
+            $("favActress").title = "取消收藏";
+            $("favActress").bgcolor = $color("#f25959");
+            $("favActress").titleColor = $color("white");
+            $("favActress").borderColor = $color("#f25959");
           }
-        } else if ($("menu").index == 1) {
-          $("favorite").title = "归档"
         } else {
-          $("favorite").title = "删除"
+          getDetail(data.link)
+          $ui.push(detailView)
+          if ($("menu").index == 0) {
+            if (LocalFavList.indexOf(favLink) > -1) {
+              $("favorite").title = "取消收藏"
+              $("favorite").bgcolor = $color("#f25959")
+            }
+          } else if ($("menu").index == 1) {
+            if (LocalFavList.indexOf(favLink) > -1) {
+              $("favorite").title = "归档"
+
+            } else {
+              $("favorite").title = "收藏"
+            }
+
+          } else {
+            $("favorite").title = "删除"
+            $("favorite").bgcolor = $color("#f25959")
+          }
+        }
+      }
+
+    }
+
+  }, {
+    type: "tab",
+    props: {
+      id: "tab",
+      hidden: false,
+      items: ["影片", "演员"],
+      tintColor: $color("#06102b"),
+      radius: 5,
+      hidden: true
+    },
+    layout: function(make) {
+      make.left.right.inset(10)
+      make.bottom.inset(10)
+      make.height.equalTo(22)
+      //make.width.equalTo(40)
+    },
+    events: {
+      changed(sender) {
+        if (sender.index == 0) {
+          $("initialView").data = [];
+          //$("initialView").contentOffset = $point(0, 0);
+          var length = LocalFavList.length;
+          $("input").text = ("")
+          $("input").placeholder = "已收藏 " + length + " 部影片"
+          if (length == 0) {
+            $("initialView").hidden = true
+          } else {
+            $("initialView").hidden = false
+          }
+          LocalData.favorite.map(function(i) {
+            $("initialView").data = $("initialView").data.concat({
+              link: i.link,
+              initialCover: {
+                src: i.src
+              },
+              info: {
+                text: i.info
+              }
+            })
+          })
+
+        } else if (sender.index == 1) {
+          $("initialView").data = [];
+          $("initialView").contentOffset = $point(0, 0);
+          var length = LocalActressList.length;
+          $("input").text = ("")
+          $("input").placeholder = "已收藏 " + length + " 位演员"
+          if (length == 0) {
+            $("initialView").hidden = true
+          } else {
+            $("initialView").hidden = false
+          }
+          LocalData.actress.map(function(i) {
+            $("initialView").data = $("initialView").data.concat({
+              link: i.link,
+              initialCover: {
+                src: i.src
+              },
+              info: {
+                text: i.info
+              }
+            })
+          })
         }
       }
     }
@@ -263,18 +389,24 @@ const detailView = {
       layout: function(make, view) {
         make.left.right.inset(5)
         make.bottom.inset(40)
-        make.top.equalTo($("whoInFilm").bottom).offset(5)
+        make.top.equalTo($("whoInFilm").bottom).offset(0)
       },
       events: {
         didSelect(sender, indexPath, data) {
           //$ui.action(data.actressName.text)
           url = data.link
-          var actress = data.actressName.text
-          var cover = data.actressCover.src
+          favActressName = data.actressName.text
+          favActressCover = data.actressCover.src
           actressPage = 0
-          actressView(actress, cover)
+          actressView(favActressName, favActressCover)
           $("actressView").data = []
           getActress(url)
+          if (LocalActressList.indexOf(url) > -1) {
+            $("favActress").title = "取消收藏";
+            $("favActress").bgcolor = $color("#f25959");
+            $("favActress").titleColor = $color("white");
+            $("favActress").borderColor = $color("#f25959");
+          }
         }
       }
 
@@ -311,7 +443,7 @@ const detailView = {
         bgcolor: $color("#ededed"),
         radius: 0,
         title: "查看截图",
-        titleColor:$color("black"),
+        titleColor: $color("black"),
         alpha: 1,
         radius: 6
       },
@@ -350,7 +482,7 @@ const detailView = {
         id: "favorite",
         bgcolor: $color("#5e9ced"),
         title: "收藏",
-        titleColor:$color("white"),
+        titleColor: $color("white"),
         alpha: 1,
         radius: 6
       },
@@ -370,9 +502,11 @@ const detailView = {
           if ($("menu").index == 0) {
             if ($("favorite").title == "收藏") {
               $("favorite").title = "取消收藏"
+              $("favorite").bgcolor = $color("#f25959");
               favoriteButtonTapped("add", data)
             } else if ($("favorite").title == "取消收藏") {
               $("favorite").title = "收藏"
+              $("favorite").bgcolor = $color("#5e9ced")
               favoriteButtonTapped("cancel", data)
             }
           } else if ($("menu").index == 1) {
@@ -385,6 +519,7 @@ const detailView = {
           } else {
             if ($("favorite").title == "删除") {
               $("favorite").title = "已删除"
+              $("favorite").bgcolor = $color("#aaaaaa")
               favoriteButtonTapped("del", data)
             }
 
@@ -466,12 +601,13 @@ function actressView(actress, cover) {
         textColor: $color("black"),
         font: $font("bold", 15),
         align: $align.left,
-        scrollEnabled: false
+        scrollEnabled: false,
+        insets: $insets(0, 0, 0, 0)
 
       },
       layout: function(make, view) {
-        make.left.equalTo($("actress").right).offset(0)
-        make.top.inset(0)
+        make.left.equalTo($("actress").right).offset(5)
+        make.top.inset(5)
         make.height.equalTo(150)
         make.width.equalTo(150)
       }
@@ -484,14 +620,65 @@ function actressView(actress, cover) {
         textColor: $color("black"),
         font: $font("bold", 15),
         align: $align.left,
-        scrollEnabled: false
-
+        scrollEnabled: false,
+        insets: $insets(0, 0, 0, 0)
       },
       layout: function(make, view) {
-        make.left.equalTo($("actressInfo").right).offset(-5)
-        make.top.inset(0)
+        //make.left.equalTo($("actressInfo").right).offset(-5)
+        make.right.inset(5)
+        make.top.inset(5)
         make.height.equalTo(150)
         make.width.equalTo(100)
+      }
+    }, {
+      type: "button",
+      props: {
+        id: "favActress",
+        title: "收藏演员",
+        font: $font("bold", 15),
+        bgcolor: $color("white"),
+        titleColor: $color("black"),
+        borderWidth: 1,
+        borderColor: $color("black"),
+        radius: 5
+        //tintColor: $color("white")
+      },
+      layout: function(make, view) {
+        //make.top.equalTo($("actressInfo2").bottom).offset(10)
+        make.top.inset(110)
+        make.left.equalTo($("actressInfo2").left).offset(2)
+        make.width.equalTo(70)
+        make.height.equalTo(22)
+      },
+      events: {
+        tapped(sender) {
+          var data = {
+            "src": favActressCover,
+            "info": favActressName,
+            "link": url
+          }
+
+          //$ui.action(data)
+          if ($("favActress").title == "收藏演员") {
+            
+
+            $("favActress").title = "取消收藏";
+            $("favActress").bgcolor = $color("#f25959");
+            $("favActress").titleColor = $color("white");
+            $("favActress").borderColor = $color("#f25959");
+            favActressButtonTapped("add", data);
+            //$ui.action(data)
+          } else if($("favActress").title == "取消收藏"){
+            $("favActress").title = "收藏演员";
+            $("favActress").bgcolor = $color("white");
+            $("favActress").titleColor = $color("black");
+            $("favActress").borderColor = $color("black");
+           // $ui.action(data)
+         favActressButtonTapped("del", data);
+                         
+           
+          }
+        }
       }
     }, {
       type: "matrix",
@@ -546,12 +733,14 @@ function actressView(actress, cover) {
           $ui.push(detailView)
           if ($("menu").index == 0) {
             if (LocalFavList.indexOf(favLink) > -1) {
-              $("favorite").title = "取消收藏"
+              $("favorite").title = "取消收藏";
+              $("favorite").bgcolor = $color("#f25959")
             }
           } else if ($("menu").index == 1) {
             $("favorite").title = "归档"
           } else {
             $("favorite").title = "删除"
+            $("favorite").bgcolor = $color("#f25959")
           }
 
         }
@@ -580,6 +769,9 @@ $ui.render({
         changed(sender) {
           switch (sender.index) {
             case 0:
+            $("bgInfo").hidden=false;
+            $("bgImage").hidden=false;
+              $("tab").hidden = true;
               $("input").placeholder = "输入番号或演员进行搜索"
               $("initialView").hidden = false
               $("initialView").data = []
@@ -590,30 +782,54 @@ $ui.render({
               getInitial(mode)
               break;
             case 1:
+             $("bgInfo").hidden=true;
+            $("bgImage").hidden=true;
+              $("tab").hidden = false;
               $("initialView").data = [];
               $("initialView").contentOffset = $point(0, 0);
+
               var length = LocalFavList.length;
               $("input").text = ("")
-              $("input").placeholder = "已收藏 " + length + " 个番号"
               if (length == 0) {
                 $("initialView").hidden = true
               } else {
                 $("initialView").hidden = false
               }
-              LocalData.favorite.map(function(i) {
-                $("initialView").data = $("initialView").data.concat({
-                  link: i.link,
-                  initialCover: {
-                    src: i.src
-                  },
-                  info: {
-                    text: i.info
-                  }
+              if ($("tab").index == 0) {
+
+                $("input").placeholder = "已收藏 " + length + " 部影片";
+                LocalData.favorite.map(function(i) {
+                  $("initialView").data = $("initialView").data.concat({
+                    link: i.link,
+                    initialCover: {
+                      src: i.src
+                    },
+                    info: {
+                      text: i.info
+                    }
+                  })
                 })
-              })
+
+              } else if ($("tab").index == 1) {
+                $("input").placeholder = "已收藏 " + length + " 位演员";
+                LocalData.actress.map(function(i) {
+                  $("initialView").data = $("initialView").data.concat({
+                    link: i.link,
+                    initialCover: {
+                      src: i.src
+                    },
+                    info: {
+                      text: i.info
+                    }
+                  })
+                })
+              }
 
               break;
             case 2:
+             $("bgInfo").hidden=true;
+            $("bgImage").hidden=true;
+              $("tab").hidden = true;
               var length = LocalArcList.length;
               $("input").text = ("")
               $("input").placeholder = "已归档 " + length + " 个番号"
@@ -689,8 +905,12 @@ function getInitial(mode, keyword) {
         });
 
       })
+       $("bgInfo").hidden=false;
+            $("bgImage").hidden=false;
     }
+    
   })
+  
 }
 
 function getDetail(url) {
@@ -756,7 +976,7 @@ function getDetail(url) {
         screenData = []
         match.map(function(i) {
           var screenshot = /<a class="sample-box" href="(.*?)"[\s\S]*?<img src="(.*?)">/g.exec(i)[1];
-                            
+
           var screenshotCover = /<a class="sample-box" href="(.*?)"[\s\S]*?<img src="(.*?)">/g.exec(i)[2];
           //$ui.action(screenshotCover)
           screenData.push({
@@ -858,6 +1078,36 @@ function getActress(url) {
   })
 }
 
+function favActressButtonTapped(mode, data) {
+  if (mode == "add") {
+    LocalData.actress.push(data)
+    LocalActressList.push(data.link)
+    if ($("menu").index == 1 && $("tab").index == 1) {
+      $("initialView").data = $("initialView").data.concat({
+        link: data.link,
+        initialCover: {
+          src: data.src
+        },
+        info: {
+          text: data.info
+        }
+      })
+    }
+
+  } else if (mode == "del") {
+    
+    idx = LocalActressList.indexOf(data.link)
+    //$ui.action(idx)
+    LocalActressList.splice(idx, 1)
+    LocalData.actress.splice(idx, 1)
+    if ($("menu").index == 1 && $("tab").index == 1) {
+     // $ui.action(data.link)
+      $("initialView").delete(idx)
+    }
+  }
+  writeCache()
+}
+
 function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
     LocalData.favorite.push(data)
@@ -906,12 +1156,14 @@ function main() {
   getInitial(mode)
   if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
-    LocalFavList = LocalData.favorite.map(i => i.link)
-    LocalArcList = LocalData.archive.map(i => i.link)
+    LocalFavList = LocalData.favorite.map(i => i.link);
+    LocalArcList = LocalData.archive.map(i => i.link);
+    LocalActressList = LocalData.actress.map(i => i.link);
   } else {
-    LocalData = { "favorite": [], "archive": [] };
+    LocalData = { "favorite": [], "actress": [], "archive": [] };
     LocalFavList = [];
     LocalArcList = [];
+    LocalActressList = [];
   };
 }
 
