@@ -1,3 +1,16 @@
+/*
+
+ H LIST
+ 收藏与归档你想看影片
+ 同时搜索庞大的 AV 片库
+ 部分影片支持视频截图预览
+ 几大厂商番号可复制后启动脚本直接进入搜索结果
+
+ By Nicked
+
+ https://t.me/nicked
+
+*/
 const searchView = {
   type: 'view',
   props: {
@@ -5,39 +18,39 @@ const searchView = {
     bgcolor: $color("white")
   },
   views: [{
-        type: "text",
-        props: {
-          id: "bgInfo",
-          text: "Originated in Power Flow\n\nhttps://t.me/Flow_Script\n\nVersion: 1.0",
-          editable: false,
-          textColor: $color("#CCCCCC"),
-          font: $font(10),
-          align: $align.center,
-          hidden:true
-        },
+    type: "text",
+    props: {
+      id: "bgInfo",
+      text: "Originated in Power Flow\n\nhttps://t.me/Flow_Script\n\nVersion: 1.0",
+      editable: false,
+      textColor: $color("#CCCCCC"),
+      font: $font(10),
+      align: $align.center,
+      hidden: true
+    },
 
-        layout: function(make, view) {
-          make.top.inset(40)
-          make.height.equalTo(100)
-          make.width.equalTo($device.info.screen.width)
-        }
-      }, {
-        type: "image",
-        props: {
-          id: "bgImage",
-          src: "https://i.loli.net/2017/11/14/5a0a553e1c420.jpg",
-          radius: 25,
-          alpha: 0.8,
-          align: $align.center,
-          hidden:true
-        },
-        layout: function(make, view) {
-          make.size.equalTo($size(50, 50))
-          make.top.inset(110)
-          make.left.inset(162)
-        }
+    layout: function(make, view) {
+      make.top.inset(40)
+      make.height.equalTo(100)
+      make.width.equalTo($device.info.screen.width)
+    }
+  }, {
+    type: "image",
+    props: {
+      id: "bgImage",
+      src: "https://i.loli.net/2017/11/14/5a0a553e1c420.jpg",
+      radius: 25,
+      alpha: 0.8,
+      align: $align.center,
+      hidden: true
+    },
+    layout: function(make, view) {
+      make.size.equalTo($size(50, 50))
+      make.top.inset(110)
+      make.left.inset(162)
+    }
 
-      },{
+  }, {
     type: "input",
     props: {
       id: "input",
@@ -128,10 +141,10 @@ const searchView = {
         favLink = data.link
         favCode = data.code
         if ($("tab").hidden == false && $("tab").index == 1) {
-            favActressCover = favSrc
-            favActressName = favInfo
-            url = favLink
-          
+          favActressCover = favSrc
+          favActressName = favInfo
+          url = favLink
+
           actressView(favInfo, favSrc)
           actressPage = 0
           getActress(favLink)
@@ -172,12 +185,13 @@ const searchView = {
       id: "tab",
       hidden: false,
       items: ["影片", "演员"],
-      tintColor: $color("#06102b"),
+      tintColor: $color("black"),
       radius: 5,
+      bgcolor: $color("white"),
       hidden: true
     },
     layout: function(make) {
-      make.left.right.inset(10)
+      make.left.right.inset(120)
       make.bottom.inset(10)
       make.height.equalTo(22)
       //make.width.equalTo(40)
@@ -499,6 +513,7 @@ const detailView = {
             "info": favInfo,
             "link": favLink
           }
+          /*
           if ($("menu").index == 0) {
             if ($("favorite").title == "收藏") {
               $("favorite").title = "取消收藏"
@@ -523,10 +538,27 @@ const detailView = {
               favoriteButtonTapped("del", data)
             }
 
+          }*/
+
+          if ($("favorite").title == "收藏") {
+            $("favorite").title = "取消收藏"
+            $("favorite").bgcolor = $color("#f25959");
+            favoriteButtonTapped("add", data)
+          } else if ($("favorite").title == "取消收藏") {
+            $("favorite").title = "收藏"
+            $("favorite").bgcolor = $color("#5e9ced")
+            favoriteButtonTapped("cancel", data)
+          } else if ($("favorite").title == "归档") {
+            $("favorite").title = "已归档"
+            favoriteButtonTapped("archive", data)
+          } else if ($("favorite").title == "删除") {
+            $("favorite").title = "已删除"
+            $("favorite").bgcolor = $color("#aaaaaa")
+            favoriteButtonTapped("del", data)
           }
 
-        }
-      }
+        } //tapped
+      } //events
 
     },
 
@@ -660,7 +692,6 @@ function actressView(actress, cover) {
 
           //$ui.action(data)
           if ($("favActress").title == "收藏演员") {
-            
 
             $("favActress").title = "取消收藏";
             $("favActress").bgcolor = $color("#f25959");
@@ -668,15 +699,14 @@ function actressView(actress, cover) {
             $("favActress").borderColor = $color("#f25959");
             favActressButtonTapped("add", data);
             //$ui.action(data)
-          } else if($("favActress").title == "取消收藏"){
+          } else if ($("favActress").title == "取消收藏") {
             $("favActress").title = "收藏演员";
             $("favActress").bgcolor = $color("white");
             $("favActress").titleColor = $color("black");
             $("favActress").borderColor = $color("black");
-           // $ui.action(data)
-         favActressButtonTapped("del", data);
-                         
-           
+            // $ui.action(data)
+            favActressButtonTapped("del", data);
+
           }
         }
       }
@@ -731,18 +761,54 @@ function actressView(actress, cover) {
           //$ui.action(data.link)
           getDetail(data.link)
           $ui.push(detailView)
-          if ($("menu").index == 0) {
-            if (LocalFavList.indexOf(favLink) > -1) {
+
+          /*if (LocalFavList.indexOf(favLink) > -1) {
+            if ($("menu").index == 0) {
               $("favorite").title = "取消收藏";
               $("favorite").bgcolor = $color("#f25959")
+            } else if ($("menu").index == 1) {
+              $("favorite").title = "归档"
+            } else if ($("menu").index == 2){
+              if (LocalArcList.indexOf(favLink) < 0){
+                 $("favorite").title = "归档"
+              }
+
+            }
+          } else {
+            if(LocalArcList.indexOf(favLink) > -1){
+              $("favorite").title = "已归档"
+            }
+            $("favorite").title = "收藏"
+          }*/
+
+          if ($("menu").index == 0) {
+            if (LocalFavList.indexOf(favLink) > -1) {
+              $("favorite").title = "取消收藏"
+            } else if (LocalArcList.indexOf(favLink) > -1) {
+              $("favorite").title = "已归档"
             }
           } else if ($("menu").index == 1) {
-            $("favorite").title = "归档"
-          } else {
-            $("favorite").title = "删除"
-            $("favorite").bgcolor = $color("#f25959")
+            if (LocalFavList.indexOf(favLink) > -1) {
+              $("favorite").title = "归档"
+            } else {
+              if (LocalArcList.indexOf(favLink) > -1) {
+                $("favorite").title = "已归档"
+              } else {
+                $("favorite").title = "收藏"
+              }
+            }
+          } else if ($("menu").index == 2) {
+            if (LocalArcList.indexOf(favLink) > -1) {
+              $("favorite").title = "删除"
+              $("favorite").bgcolor = $color("#f25959");
+            } else {
+              if (LocalFavList.indexOf(favLink) > -1) {
+                $("favorite").title = "归档"
+              } else {
+                $("favorite").title = "收藏"
+              }
+            }
           }
-
         }
       }
 
@@ -769,8 +835,8 @@ $ui.render({
         changed(sender) {
           switch (sender.index) {
             case 0:
-            $("bgInfo").hidden=false;
-            $("bgImage").hidden=false;
+              $("bgInfo").hidden = false;
+              $("bgImage").hidden = false;
               $("tab").hidden = true;
               $("input").placeholder = "输入番号或演员进行搜索"
               $("initialView").hidden = false
@@ -782,8 +848,8 @@ $ui.render({
               getInitial(mode)
               break;
             case 1:
-             $("bgInfo").hidden=true;
-            $("bgImage").hidden=true;
+              $("bgInfo").hidden = true;
+              $("bgImage").hidden = true;
               $("tab").hidden = false;
               $("initialView").data = [];
               $("initialView").contentOffset = $point(0, 0);
@@ -827,8 +893,8 @@ $ui.render({
 
               break;
             case 2:
-             $("bgInfo").hidden=true;
-            $("bgImage").hidden=true;
+              $("bgInfo").hidden = true;
+              $("bgImage").hidden = true;
               $("tab").hidden = true;
               var length = LocalArcList.length;
               $("input").text = ("")
@@ -863,6 +929,7 @@ $ui.render({
 
 function getInitial(mode, keyword) {
   page++
+  $ui.toast("⏱ 搜索中",100)
   if (mode == "home") {
     url = "https://avmo.club/cn/page/"
   } else if (mode == "search") {
@@ -905,12 +972,19 @@ function getInitial(mode, keyword) {
         });
 
       })
-       $("bgInfo").hidden=false;
-            $("bgImage").hidden=false;
+      if($("initialView").data.length==1){
+      $("bgInfo").hidden = true;
+      $("bgImage").hidden = true;
+      }else{
+      $("bgInfo").hidden = false;
+      $("bgImage").hidden = false;        
+      }
+      $ui.toast("",0.1)
+
     }
-    
+
   })
-  
+
 }
 
 function getDetail(url) {
@@ -1095,13 +1169,13 @@ function favActressButtonTapped(mode, data) {
     }
 
   } else if (mode == "del") {
-    
+
     idx = LocalActressList.indexOf(data.link)
     //$ui.action(idx)
     LocalActressList.splice(idx, 1)
     LocalData.actress.splice(idx, 1)
     if ($("menu").index == 1 && $("tab").index == 1) {
-     // $ui.action(data.link)
+      // $ui.action(data.link)
       $("initialView").delete(idx)
     }
   }
@@ -1112,6 +1186,19 @@ function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
     LocalData.favorite.push(data)
     LocalFavList.push(data.link)
+    if ($("menu").index == 1) {
+      $("initialView").data = $("initialView").data.concat({
+        link: data.link,
+        initialCover: {
+          src: data.src
+        },
+        info: {
+          text: data.info
+        }
+      })
+      var length = LocalFavList.length;
+      $("input").placeholder = "已收藏 " + length + " 部影片";
+    }
 
   } else if (mode == "cancel") {
     idx = LocalFavList.indexOf(data.link)
@@ -1126,9 +1213,21 @@ function favoriteButtonTapped(mode, data) {
       $("initialView").delete(idx)
       var length = LocalFavList.length;
       $("input").placeholder = "已收藏 " + length + " 部影片"
+    } else if ($("menu").index == 2) {
+      $("initialView").data = $("initialView").data.concat({
+        link: data.link,
+        initialCover: {
+          src: data.src
+        },
+        info: {
+          text: data.info
+        }
+      })
     }
     LocalData.archive.push(data)
     LocalArcList.push(data.link)
+    var length = LocalArcList.length;
+    $("input").placeholder = "已归档 " + length + " 部影片"
   } else if (mode == "del") {
     idx = LocalArcList.indexOf(data.link)
     LocalArcList.splice(idx, 1)
@@ -1149,11 +1248,114 @@ function writeCache() {
   })
 }
 
+function checkAdult() {
+  $ui.window.add({
+    type: "view",
+    props: {
+      id: "checkAdult",
+      bgcolor: $color("black")
+    },
+    views: [{
+      type: "text",
+      props: {
+        text: "FBI WARNING",
+        textColor: $color("white"),
+        font: $font("Helvetica-Bold", 25),
+        bgcolor: $color("red"),
+        insets: $insets(5, 0, 0, 0),
+        align: $align.center
+      },
+      layout: function(make, view) {
+        make.top.inset(55)
+        make.left.right.inset(90)
+        make.height.equalTo(40)
+      }
+    }, {
+      type: "text",
+      props: {
+        text: "Federal law provides severe civil and criminal penalties for the unauthorized reproduction, distribution, or exhibition of copyrighted motion pictures (Title 17, United States Code,Sections 501 and 508). The Federal Bureau of Investigation investigates allegations of criminal copyright infringement (Title 17, United States Code, Section 506).",
+        textColor: $color("white"),
+        font: $font("bold", 14),
+        bgcolor: $color("clear"),
+        insets: $insets(0, 0, 0, 0),
+        align: $align.justified
+      },
+      layout: function(make, view) {
+        make.top.inset(120)
+        make.left.right.inset(10)
+        make.height.equalTo(160)
+      }
+    }, {
+      type: "button",
+      props: {
+        title: "已满十八岁",
+        titleColor: $color("black"),
+        bgcolor: $color("white")
+      },
+      layout: function(make, view) {
+        make.left.right.inset(120)
+        make.bottom.inset(80)
+        make.height.equalTo(30)
+      },
+      events: {
+        tapped: function(sender) {
+          $cache.set("adultCheck", {
+            "adult": "true",
+          })
+
+          sender.super.remove()
+        }
+      }
+    }, {
+      type: "button",
+      props: {
+        title: "未满十八岁",
+        titleColor: $color("white"),
+        bgcolor: $color("red")
+      },
+      layout: function(make, view) {
+        make.left.right.inset(120)
+        make.bottom.inset(20)
+        make.height.equalTo(30)
+      },
+      events: {
+        tapped: function(sender) {
+          $app.close()
+        }
+      }
+    }],
+    layout: $layout.fill
+  })
+}
+
 function main() {
+  var check = $cache.get("adultCheck")
+  if(!check){
+    checkAdult()
+  }
   page = 0
-  mode = "home"
+  var str = $clipboard.text
+  var reg1 =/[sS][nN][iI][sS][\s\-]\d{3}|[aA][bB][pP][\s\-]\d{3}|[iI][pP][zZ][\s\-]\d{3}|[sS][wW][\s\-]\d{3}|[jJ][uU][xX][\s\-]\d{3}|[mM][iI][aA][dD][\s\-]\d{3}|[mM][iI][dD][eE][\s\-]\d{3}|[mM][iI][dD][dD][\s\-]\d{3}|[pP][gG][dD][\s\-]\d{3}|[sS][tT][aA][rR][\s\-]\d{3}|[eE][bB][oO][dD][\s\-]\d{3}|[iI][pP][tT][dD][\s\-]\d{3}/g;
+  var reg2 = /[a-zA-Z]{3,5}[\s\-]\d{3}/g;
+var match = str.match(reg1);
+if(match){
+  mode = "search";
+  keyword = match[0];
+  $("input").text = keyword
+}else{
+  var match = str.match(reg2);
+  if(match){
+    mode = "search";
+    keyword = match[0];
+    $("input").text = keyword
+  }else{
+    mode = "home"
   keyword = ""
-  getInitial(mode)
+  }
+  
+}
+ 
+  getInitial(mode,keyword)
   if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
     LocalFavList = LocalData.favorite.map(i => i.link);
