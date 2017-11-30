@@ -192,7 +192,7 @@ const searchView = {
     },
     layout: function(make) {
       make.left.right.inset(120)
-      make.bottom.inset(10)
+      make.bottom.inset(20)
       make.height.equalTo(22)
       //make.width.equalTo(40)
     },
@@ -437,7 +437,7 @@ const detailView = {
       },
       layout: function(make, view) {
         make.left.inset(10)
-        make.bottom.inset(5)
+        make.bottom.inset(20)
         make.width.equalTo(view.super).dividedBy(3).offset(-10)
         make.height.equalTo(30)
       },
@@ -462,7 +462,7 @@ const detailView = {
         radius: 6
       },
       layout: function(make, view) {
-        make.bottom.inset(5)
+        make.bottom.inset(20)
         make.left.equalTo($("megnet").right).offset(5)
         make.width.equalTo(view.super).dividedBy(3).offset(-10)
         make.height.equalTo(30)
@@ -501,7 +501,7 @@ const detailView = {
         radius: 6
       },
       layout: function(make, view) {
-        make.bottom.inset(5)
+        make.bottom.inset(20)
         make.right.inset(10)
         make.width.equalTo(view.super).dividedBy(3).offset(-10)
         make.height.equalTo(30)
