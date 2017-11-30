@@ -560,7 +560,34 @@ const detailView = {
         } //tapped
       } //events
 
-    },
+    },{
+      type: "button",
+      props: {
+        id: "share",
+        bgcolor: $color("#ededed"),
+        title: "分享",
+        hidden: true,
+        font:$font(11),
+        //icon: $icon("022", $color("#666666"), $size(15, 15))
+        titleColor: $color("black"),
+        //alpha: 1,
+        radius: 6
+      },
+      layout: function(make, view) {
+        make.left.inset(90)
+        make.top.equalTo($("filmCover").bottom).offset(5)
+        make.width.equalTo(30)
+        make.height.equalTo(20)
+      },
+      events: {
+        tapped(sender) {
+          //$clipboard.text = favCode
+$share.sheet(favLink)
+          
+        }
+      }
+
+    }, 
 
   ],
   layout: $layout.fill
@@ -628,7 +655,7 @@ function actressView(actress, cover) {
       type: "text",
       props: {
         id: "actressInfo",
-        text: "生日: ????-??-??\n\n年龄: ??\n\n身高: ??cm\n\n罩杯: ?",
+        text: "生日: ????-??-??\n\n年龄: ??岁\n\n身高: ???cm\n\n罩杯: ?",
         editable: false,
         textColor: $color("black"),
         font: $font("bold", 15),
@@ -1063,6 +1090,7 @@ function getDetail(url) {
       } else {
         screenData = "no"
       }
+      $("share").hidden = false
 
     }
   })
