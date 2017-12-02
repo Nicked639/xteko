@@ -82,6 +82,7 @@ const searchView = {
           getInitial(mode)
         }
         $("initialView").contentOffset = $point(0, 0);
+        $("initialView").hidden = false;
       }
     },
     layout: function(make, view) {
@@ -550,6 +551,7 @@ const detailView = {
             $("favorite").bgcolor = $color("#5e9ced")
             favoriteButtonTapped("cancel", data)
           } else if ($("favorite").title == "归档") {
+            $("favorite").bgcolor = $color("#aaaaaa")
             $("favorite").title = "已归档"
             favoriteButtonTapped("archive", data)
           } else if ($("favorite").title == "删除") {
@@ -561,14 +563,14 @@ const detailView = {
         } //tapped
       } //events
 
-    },{
+    }, {
       type: "button",
       props: {
         id: "share",
         bgcolor: $color("#ededed"),
         title: "分享",
         hidden: true,
-        font:$font(11),
+        font: $font(11),
         //icon: $icon("022", $color("#666666"), $size(15, 15))
         titleColor: $color("black"),
         //alpha: 1,
@@ -583,12 +585,12 @@ const detailView = {
       events: {
         tapped(sender) {
           //$clipboard.text = favCode
-$share.sheet(favLink)
-          
+          $share.sheet(favLink)
+
         }
       }
 
-    }, 
+    },
 
   ],
   layout: $layout.fill
@@ -868,6 +870,7 @@ $ui.render({
               $("tab").hidden = true;
               $("input").placeholder = "输入番号或演员进行搜索"
               $("initialView").hidden = false
+
               $("initialView").data = []
               $("initialView").contentOffset = $point(0, 0)
               page = 0
@@ -886,6 +889,7 @@ $ui.render({
               $("input").text = ("")
               if (length == 0) {
                 $("initialView").hidden = true
+
               } else {
                 $("initialView").hidden = false
               }
@@ -926,7 +930,7 @@ $ui.render({
               $("tab").hidden = true;
               var length = LocalArcList.length;
               $("input").text = ("")
-              $("input").placeholder = "已归档 " + length + " 个番号"
+              $("input").placeholder = "已归档 " + length + " 部影片"
               if (length == 0) {
                 $("initialView").hidden = true
               } else {
@@ -957,7 +961,7 @@ $ui.render({
 
 function getInitial(mode, keyword) {
   page++
-  $ui.toast("⏱ 搜索中",100)
+  //$ui.toast("⏱ 搜索中", 100)
   if (mode == "home") {
     url = "https://avmo.club/cn/page/"
   } else if (mode == "search") {
@@ -967,14 +971,24 @@ function getInitial(mode, keyword) {
   }
   $http.request({
     url: url + page,
+    timeout:timeout,
     handler: function(resp) {
-      if (resp.data.indexOf("404 Not Found") > -1) {
-        $ui.toast("🙈 到底了", 0.1)
+      if(!resp.response){
+        $ui.toast("❌ 网络连接错误")
         return
       }
-      if (resp.data.indexOf("没有结果") > -1) {
-        $ui.toast("💔 搜索无果,车牌无效")
+      if (resp.data.indexOf("404 Not Found") > -1) {
+        $ui.toast("🙈 到底了")
         return
+      }else if (resp.data.indexOf("没有结果") > -1) {
+        if (mode == "search" && $("initialView").data.length > 0) {
+          $ui.toast("🙈 到底了")
+          return
+        } else {
+          $ui.toast("💔 搜索无果,车牌无效")
+          return
+        }
+
       }
       $ui.loading = false
       var reg = /<a class="movie-box"[\s\S]*?<\/span>/g;
@@ -1000,14 +1014,14 @@ function getInitial(mode, keyword) {
         });
 
       })
-      if($("initialView").data.length==1){
-      $("bgInfo").hidden = true;
-      $("bgImage").hidden = true;
-      }else{
-      $("bgInfo").hidden = false;
-      $("bgImage").hidden = false;        
+      if ($("initialView").data.length == 1) {
+        $("bgInfo").hidden = true;
+        $("bgImage").hidden = true;
+      } else {
+        $("bgInfo").hidden = false;
+        $("bgImage").hidden = false;
       }
-      $ui.toast("",0.1)
+      //$ui.toast("", 0.1)
 
     }
 
@@ -1018,7 +1032,12 @@ function getInitial(mode, keyword) {
 function getDetail(url) {
   $http.request({
     url: url,
+    timeout: timeout,
     handler: function(resp) {
+      if(!resp.response){
+        $ui.toast("❌ 网络连接错误")
+        return
+      }
       //演员头像
       var actressReg = /<a class="avatar-box"[\s\S]*?<\/a>/g;
       var match = resp.data.match(actressReg)
@@ -1102,11 +1121,17 @@ function getActress(url) {
   actressPage++
   $http.request({
     url: url + "/page/" + actressPage,
+    timeout:timeout,
     handler: function(resp) {
-      if (resp.data.indexOf("404 Not Found") > -1) {
-        $ui.toast("🙈 到底了", 0.1)
+      if(!resp.response){
+        $ui.toast("❌ 网络连接错误")
         return
       }
+      if (resp.data.indexOf("404 Not Found") > -1) {
+        $ui.toast("🙈 到底了")
+        return
+      }
+       //$ui.toast("搜索中")
       if (actressPage == 1) {
         var temp = /<div class="photo-info">[\s\S]*?生日:\s(.*?)<\/p>/.exec(resp.data)
         if (temp) {
@@ -1177,6 +1202,7 @@ function getActress(url) {
         });
 
       })
+     // $ui.toast("",0.1)
     }
   })
 }
@@ -1252,11 +1278,12 @@ function favoriteButtonTapped(mode, data) {
           text: data.info
         }
       })
+      var length = LocalArcList.length;
+      $("input").placeholder = "已归档 " + length + " 部影片"
     }
     LocalData.archive.push(data)
     LocalArcList.push(data.link)
-    var length = LocalArcList.length;
-    $("input").placeholder = "已归档 " + length + " 部影片"
+
   } else if (mode == "del") {
     idx = LocalArcList.indexOf(data.link)
     LocalArcList.splice(idx, 1)
@@ -1357,35 +1384,36 @@ function checkAdult() {
   })
 }
 
-function main() {
-  var check = $cache.get("adultCheck")
-  if(!check){
-    checkAdult()
-  }
-  page = 0
-  var str = $clipboard.text
-  var reg1 =/[sS][nN][iI][sS][\s\-]\d{3}|[aA][bB][pP][\s\-]\d{3}|[iI][pP][zZ][\s\-]\d{3}|[sS][wW][\s\-]\d{3}|[jJ][uU][xX][\s\-]\d{3}|[mM][iI][aA][dD][\s\-]\d{3}|[mM][iI][dD][eE][\s\-]\d{3}|[mM][iI][dD][dD][\s\-]\d{3}|[pP][gG][dD][\s\-]\d{3}|[sS][tT][aA][rR][\s\-]\d{3}|[eE][bB][oO][dD][\s\-]\d{3}|[iI][pP][tT][dD][\s\-]\d{3}/g;
-  var reg2 = /[a-zA-Z]{3,5}[\s\-]\d{3}/g;
-var match = str.match(reg1);
-if(match){
-  mode = "search";
-  keyword = match[0];
-  $("input").text = keyword
-}else{
-  var match = str.match(reg2);
-  if(match){
-    mode = "search";
-    keyword = match[0];
-    $("input").text = keyword
-  }else{
-    mode = "home"
-  keyword = ""
-  }
-  
+//检测扩展更新
+function scriptVersionUpdate() {
+  $http.get({
+    url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/H%20List/updateInfo",
+    handler: function(resp) {
+      var afterVersion = resp.data.version;
+      var msg = resp.data.msg;
+      if (afterVersion > version) {
+        $ui.alert({
+          title: "检测到新的版本！",
+          message: "当前最新版本为v" + afterVersion + "，是否更新?\n更新完成后请退出至扩展列表重新启动新版本。\n" + msg,
+          actions: [{
+            title: "更新",
+            handler: function() {
+              var url = "pin://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/H%20List/H%20List.js&name=小说阅读器" + afterVersion;
+              $app.openURL(encodeURI(url));
+              $app.close()
+            }
+          }, {
+            title: "取消"
+          }]
+        })
+      }
+    }
+  })
 }
- 
-  getInitial(mode,keyword)
-  if ($file.read(LocalDataPath)) {
+
+//初始化设定
+function initial(){
+    if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
     LocalFavList = LocalData.favorite.map(i => i.link);
     LocalArcList = LocalData.archive.map(i => i.link);
@@ -1396,6 +1424,50 @@ if(match){
     LocalArcList = [];
     LocalActressList = [];
   };
+}
+
+//剪贴板检测
+function clipboardDetect(){
+  var str = $clipboard.text
+  var reg1 = /[sS][nN][iI][sS][\s\-]\d{3}|[aA][bB][pP][\s\-]\d{3}|[iI][pP][zZ][\s\-]\d{3}|[sS][wW][\s\-]\d{3}|[jJ][uU][xX][\s\-]\d{3}|[mM][iI][aA][dD][\s\-]\d{3}|[mM][iI][dD][eE][\s\-]\d{3}|[mM][iI][dD][dD][\s\-]\d{3}|[pP][gG][dD][\s\-]\d{3}|[sS][tT][aA][rR][\s\-]\d{3}|[eE][bB][oO][dD][\s\-]\d{3}|[iI][pP][tT][dD][\s\-]\d{3}/g;
+  var reg2 = /[a-zA-Z]{3,5}[\s\-]\d{3}/g;
+  var match = str.match(reg1);
+  if (match) {
+    mode = "search";
+    keyword = match[0];
+    $("input").text = keyword
+  } else {
+    var match = str.match(reg2);
+    if (match) {
+      mode = "search";
+      keyword = match[0];
+      $("input").text = keyword
+    } else {
+      mode = "home"
+      keyword = ""
+    }
+
+  }
+  return {
+    "mode":mode,
+    "keyword":keyword
+  }
+}
+
+
+function main() {
+  var check = $cache.get("adultCheck")
+  if (!check) {
+    checkAdult()
+  }
+  scriptVersionUpdate()
+  
+  initial()
+  timeout = 3
+  page = 0
+  var detect = clipboardDetect()
+  getInitial(detect.mode, detect.keyword)
+
 }
 
 LocalDataPath = "drive://HList.json"
