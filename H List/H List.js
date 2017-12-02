@@ -11,6 +11,7 @@
  https://t.me/nicked
 
 */
+var version = 1.01
 const searchView = {
   type: 'view',
   props: {
