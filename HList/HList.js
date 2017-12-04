@@ -11,7 +11,8 @@
  https://t.me/nicked
 
 */
-var version = 1.2
+//$cache.clear()
+var version = 1.1
 const searchView = {
   type: 'view',
   props: {
@@ -1398,18 +1399,18 @@ function checkAdult() {
 //检测扩展更新
 function scriptVersionUpdate() {
   $http.get({
-    url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/H%20List/updateInfo",
+    url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/HList/updateInfo",
     handler: function(resp) {
       var afterVersion = resp.data.version;
       var msg = resp.data.msg;
       if (afterVersion > version) {
         $ui.alert({
-          title: "检测到新的版本！V"++afterVersion,
+          title: "检测到新的版本！V"+ afterVersion,
           message: "是否更新?\n更新完成后请退出至扩展列表重新启动新版本。\n" + msg,
           actions: [{
             title: "更新",
             handler: function() {
-              var url = "pin://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/H%20List/H%20List.js&name=小说阅读器" + afterVersion;
+              var url = "pin://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/HList/HList.js&name=小说阅读器" + afterVersion;
               $app.openURL(encodeURI(url));
               $app.close()
             }
@@ -1421,6 +1422,7 @@ function scriptVersionUpdate() {
     }
   })
 }
+
 
 //初始化设定
 function initial() {
