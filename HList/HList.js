@@ -1404,8 +1404,8 @@ function scriptVersionUpdate() {
       var msg = resp.data.msg;
       if (afterVersion > version) {
         $ui.alert({
-          title: "检测到新的版本！",
-          message: "当前最新版本为v" + afterVersion + "，是否更新?\n更新完成后请退出至扩展列表重新启动新版本。\n" + msg,
+          title: "检测到新的版本！V"++afterVersion,
+          message: "是否更新?\n更新完成后请退出至扩展列表重新启动新版本。\n" + msg,
           actions: [{
             title: "更新",
             handler: function() {
