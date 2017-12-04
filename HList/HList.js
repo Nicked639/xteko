@@ -1410,7 +1410,7 @@ function scriptVersionUpdate() {
           actions: [{
             title: "更新",
             handler: function() {
-              var url = "pin://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/HList/HList.js&name=小说阅读器" + afterVersion;
+              var url = "pin://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/HList/HList.js&name=Hlist" + afterVersion;
               $app.openURL(encodeURI(url));
               $app.close()
             }
