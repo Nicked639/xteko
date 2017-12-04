@@ -949,6 +949,7 @@ $ui.render({
               $("initialView").contentOffset = $point(0, 0)
               LocalData.archive.map(function(i) {
                 $("initialView").data = $("initialView").data.concat({
+                  code: i.code,
                   link: homeMoviePage + i.shortCode,
                   initialCover: {
                     src: i.src
@@ -1405,7 +1406,7 @@ function scriptVersionUpdate() {
       var msg = resp.data.msg;
       if (afterVersion > version) {
         $ui.alert({
-          title: "检测到新的版本！V"+ afterVersion,
+          title: "检测到新的版本！V" + afterVersion,
           message: "是否更新?\n更新完成后请退出至扩展列表重新启动新版本。\n" + msg,
           actions: [{
             title: "更新",
@@ -1422,7 +1423,6 @@ function scriptVersionUpdate() {
     }
   })
 }
-
 
 //初始化设定
 function initial() {
@@ -1473,18 +1473,19 @@ function main() {
   if (!check) {
     checkAdult()
   }
-  $("input").placeholder = "载入中,请稍候..."
 
   scriptVersionUpdate()
-  timeout = 3
-  page = 0
   var url = "https://tellme.pw/avmoo";
   $http.request({
-    timeout:timeout,
+    timeout: timeout,
     url: url,
     handler: function(resp) {
       match = /<strong><a href="(.*?)"/g.exec(resp.data)
       if (match) {
+        $("input").placeholder = "载入中,请稍候..."
+        timeout = 3
+        page = 0
+        initial()
         //$ui.action(match)
         homepage = match[1] + "/cn/";
         homeMoviePage = homepage + "movie/";
