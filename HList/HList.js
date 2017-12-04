@@ -11,7 +11,7 @@
  https://t.me/nicked
 
 */
-var version = 1.1
+var version = 1.2
 const searchView = {
   type: 'view',
   props: {
@@ -136,11 +136,12 @@ const searchView = {
 
       },
       didSelect(sender, indexPath, data) {
-        //$ui.action(data.title)
+        //$ui.action(data.code)
 
         favSrc = data.initialCover.src
         favInfo = data.info.text
         favLink = data.link
+        shortCode = favLink.split('/').pop()
         favCode = data.code
         if ($("tab").hidden == false && $("tab").index == 1) {
           favActressCover = favSrc
@@ -150,7 +151,7 @@ const searchView = {
           actressView(favInfo, favSrc)
           actressPage = 0
           getActress(favLink)
-          if (LocalActressList.indexOf(favLink) > -1) {
+          if (LocalActressList.indexOf(shortCode) > -1) {
             $("favActress").title = "取消收藏";
             $("favActress").bgcolor = $color("#f25959");
             $("favActress").titleColor = $color("white");
@@ -160,12 +161,12 @@ const searchView = {
           getDetail(data.link)
           $ui.push(detailView)
           if ($("menu").index == 0) {
-            if (LocalFavList.indexOf(favLink) > -1) {
+            if (LocalFavList.indexOf(shortCode) > -1) {
               $("favorite").title = "取消收藏"
               $("favorite").bgcolor = $color("#f25959")
             }
           } else if ($("menu").index == 1) {
-            if (LocalFavList.indexOf(favLink) > -1) {
+            if (LocalFavList.indexOf(shortCode) > -1) {
               $("favorite").title = "归档"
 
             } else {
@@ -213,7 +214,8 @@ const searchView = {
           }
           LocalData.favorite.map(function(i) {
             $("initialView").data = $("initialView").data.concat({
-              link: i.link,
+              code: i.code,
+              link: homeMoviePage + i.shortCode,
               initialCover: {
                 src: i.src
               },
@@ -236,7 +238,7 @@ const searchView = {
           }
           LocalData.actress.map(function(i) {
             $("initialView").data = $("initialView").data.concat({
-              link: i.link,
+              link: homeStarPage + i.shortCode,
               initialCover: {
                 src: i.src
               },
@@ -414,10 +416,11 @@ const detailView = {
           favActressName = data.actressName.text
           favActressCover = data.actressCover.src
           actressPage = 0
+          shortCode = url.split("/").pop()
           actressView(favActressName, favActressCover)
           $("actressView").data = []
           getActress(url)
-          if (LocalActressList.indexOf(url) > -1) {
+          if (LocalActressList.indexOf(shortCode) > -1) {
             $("favActress").title = "取消收藏";
             $("favActress").bgcolor = $color("#f25959");
             $("favActress").titleColor = $color("white");
@@ -446,8 +449,9 @@ const detailView = {
       events: {
         tapped(sender) {
           //$clipboard.text = favCode
+          //$ui.action(favCode)
           $safari.open({
-            url: "https://btso.pw/search/" + encodeURI(favCode)
+            url: "http://btspread.rip/" + encodeURI(favCode) + "/1-0-0/"
           })
         }
       }
@@ -511,9 +515,10 @@ const detailView = {
       events: {
         tapped(sender) {
           var data = {
+            "code": favCode,
             "src": favSrc,
             "info": favInfo,
-            "link": favLink
+            "shortCode": shortCode
           }
           /*
           if ($("menu").index == 0) {
@@ -717,7 +722,7 @@ function actressView(actress, cover) {
           var data = {
             "src": favActressCover,
             "info": favActressName,
-            "link": url
+            "shortCode": shortCode
           }
 
           //$ui.action(data)
@@ -788,6 +793,7 @@ function actressView(actress, cover) {
           favSrc = data.actressCovers.src
           favInfo = data.actressInfos.text
           favLink = data.link
+          shortCode = favLink.split("/").pop()
           //$ui.action(data.link)
           getDetail(data.link)
           $ui.push(detailView)
@@ -812,27 +818,27 @@ function actressView(actress, cover) {
           }*/
 
           if ($("menu").index == 0) {
-            if (LocalFavList.indexOf(favLink) > -1) {
+            if (LocalFavList.indexOf(shortCode) > -1) {
               $("favorite").title = "取消收藏"
-            } else if (LocalArcList.indexOf(favLink) > -1) {
+            } else if (LocalArcList.indexOf(shortCode) > -1) {
               $("favorite").title = "已归档"
             }
           } else if ($("menu").index == 1) {
-            if (LocalFavList.indexOf(favLink) > -1) {
+            if (LocalFavList.indexOf(shortCode) > -1) {
               $("favorite").title = "归档"
             } else {
-              if (LocalArcList.indexOf(favLink) > -1) {
+              if (LocalArcList.indexOf(shortCode) > -1) {
                 $("favorite").title = "已归档"
               } else {
                 $("favorite").title = "收藏"
               }
             }
           } else if ($("menu").index == 2) {
-            if (LocalArcList.indexOf(favLink) > -1) {
+            if (LocalArcList.indexOf(shortCode) > -1) {
               $("favorite").title = "删除"
               $("favorite").bgcolor = $color("#f25959");
             } else {
-              if (LocalFavList.indexOf(favLink) > -1) {
+              if (LocalFavList.indexOf(shortCode) > -1) {
                 $("favorite").title = "归档"
               } else {
                 $("favorite").title = "收藏"
@@ -898,7 +904,8 @@ $ui.render({
                 $("input").placeholder = "已收藏 " + length + " 部影片";
                 LocalData.favorite.map(function(i) {
                   $("initialView").data = $("initialView").data.concat({
-                    link: i.link,
+                    code: i.code,
+                    link: homeMoviePage + i.shortCode,
                     initialCover: {
                       src: i.src
                     },
@@ -909,10 +916,11 @@ $ui.render({
                 })
 
               } else if ($("tab").index == 1) {
+                var length = LocalActressList.length;
                 $("input").placeholder = "已收藏 " + length + " 位演员";
                 LocalData.actress.map(function(i) {
                   $("initialView").data = $("initialView").data.concat({
-                    link: i.link,
+                    link: homeStarPage + i.shortCode,
                     initialCover: {
                       src: i.src
                     },
@@ -940,7 +948,7 @@ $ui.render({
               $("initialView").contentOffset = $point(0, 0)
               LocalData.archive.map(function(i) {
                 $("initialView").data = $("initialView").data.concat({
-                  link: i.link,
+                  link: homeMoviePage + i.shortCode,
                   initialCover: {
                     src: i.src
                   },
@@ -963,24 +971,24 @@ function getInitial(mode, keyword) {
   page++
   //$ui.toast("⏱ 搜索中", 100)
   if (mode == "home") {
-    url = "https://avmo.club/cn/page/"
+    url = homepage + "page/"
   } else if (mode == "search") {
-    url = encodeURI("https://avmo.club/cn/search/" + keyword + "/page/")
-  } else if (mode = "actress") {
+    url = encodeURI(homepage + "search/" + keyword + "/page/")
+  } else if (mode == "actress") {
     url = keyword + "/page/"
   }
   $http.request({
     url: url + page,
-    timeout:timeout,
+    timeout: timeout,
     handler: function(resp) {
-      if(!resp.response){
+      if (!resp.response) {
         $ui.toast("❌ 网络连接错误")
         return
       }
       if (resp.data.indexOf("404 Not Found") > -1) {
         $ui.toast("🙈 到底了")
         return
-      }else if (resp.data.indexOf("没有结果") > -1) {
+      } else if (resp.data.indexOf("没有结果") > -1) {
         if (mode == "search" && $("initialView").data.length > 0) {
           $ui.toast("🙈 到底了")
           return
@@ -1034,7 +1042,7 @@ function getDetail(url) {
     url: url,
     timeout: timeout,
     handler: function(resp) {
-      if(!resp.response){
+      if (!resp.response) {
         $ui.toast("❌ 网络连接错误")
         return
       }
@@ -1121,9 +1129,9 @@ function getActress(url) {
   actressPage++
   $http.request({
     url: url + "/page/" + actressPage,
-    timeout:timeout,
+    timeout: timeout,
     handler: function(resp) {
-      if(!resp.response){
+      if (!resp.response) {
         $ui.toast("❌ 网络连接错误")
         return
       }
@@ -1131,7 +1139,7 @@ function getActress(url) {
         $ui.toast("🙈 到底了")
         return
       }
-       //$ui.toast("搜索中")
+      //$ui.toast("搜索中")
       if (actressPage == 1) {
         var temp = /<div class="photo-info">[\s\S]*?生日:\s(.*?)<\/p>/.exec(resp.data)
         if (temp) {
@@ -1202,7 +1210,7 @@ function getActress(url) {
         });
 
       })
-     // $ui.toast("",0.1)
+      // $ui.toast("",0.1)
     }
   })
 }
@@ -1210,10 +1218,10 @@ function getActress(url) {
 function favActressButtonTapped(mode, data) {
   if (mode == "add") {
     LocalData.actress.push(data)
-    LocalActressList.push(data.link)
+    LocalActressList.push(data.shortCode)
     if ($("menu").index == 1 && $("tab").index == 1) {
       $("initialView").data = $("initialView").data.concat({
-        link: data.link,
+        link: homeStarPage + data.shortCode,
         initialCover: {
           src: data.src
         },
@@ -1225,7 +1233,7 @@ function favActressButtonTapped(mode, data) {
 
   } else if (mode == "del") {
 
-    idx = LocalActressList.indexOf(data.link)
+    idx = LocalActressList.indexOf(data.shortCode)
     //$ui.action(idx)
     LocalActressList.splice(idx, 1)
     LocalData.actress.splice(idx, 1)
@@ -1234,16 +1242,19 @@ function favActressButtonTapped(mode, data) {
       $("initialView").delete(idx)
     }
   }
+
+  var length = LocalActressList.length;
+  $("input").placeholder = "已收藏 " + length + " 位演员";
   writeCache()
 }
 
 function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
     LocalData.favorite.push(data)
-    LocalFavList.push(data.link)
+    LocalFavList.push(data.shortCode)
     if ($("menu").index == 1) {
       $("initialView").data = $("initialView").data.concat({
-        link: data.link,
+        link: homeMoviePage + shortCode,
         initialCover: {
           src: data.src
         },
@@ -1256,12 +1267,12 @@ function favoriteButtonTapped(mode, data) {
     }
 
   } else if (mode == "cancel") {
-    idx = LocalFavList.indexOf(data.link)
+    idx = LocalFavList.indexOf(data.shortCode)
     LocalFavList.splice(idx, 1)
     LocalData.favorite.splice(idx, 1)
 
   } else if (mode == "archive") {
-    idx = LocalFavList.indexOf(data.link)
+    idx = LocalFavList.indexOf(data.shortCode)
     LocalFavList.splice(idx, 1)
     LocalData.favorite.splice(idx, 1)
     if ($("menu").index == 1) {
@@ -1270,7 +1281,7 @@ function favoriteButtonTapped(mode, data) {
       $("input").placeholder = "已收藏 " + length + " 部影片"
     } else if ($("menu").index == 2) {
       $("initialView").data = $("initialView").data.concat({
-        link: data.link,
+        link: homeMoviePage + shortCode,
         initialCover: {
           src: data.src
         },
@@ -1282,10 +1293,10 @@ function favoriteButtonTapped(mode, data) {
       $("input").placeholder = "已归档 " + length + " 部影片"
     }
     LocalData.archive.push(data)
-    LocalArcList.push(data.link)
+    LocalArcList.push(data.shortCode)
 
   } else if (mode == "del") {
-    idx = LocalArcList.indexOf(data.link)
+    idx = LocalArcList.indexOf(data.shortCode)
     LocalArcList.splice(idx, 1)
     LocalData.archive.splice(idx, 1)
     if ($("menu").index == 2) {
@@ -1412,22 +1423,23 @@ function scriptVersionUpdate() {
 }
 
 //初始化设定
-function initial(){
-    if ($file.read(LocalDataPath)) {
+function initial() {
+  if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
-    LocalFavList = LocalData.favorite.map(i => i.link);
-    LocalArcList = LocalData.archive.map(i => i.link);
-    LocalActressList = LocalData.actress.map(i => i.link);
+    LocalFavList = LocalData.favorite.map(i => i.shortCode);
+    LocalArcList = LocalData.archive.map(i => i.shortCode);
+    LocalActressList = LocalData.actress.map(i => i.shortCode);
   } else {
     LocalData = { "favorite": [], "actress": [], "archive": [] };
     LocalFavList = [];
     LocalArcList = [];
     LocalActressList = [];
   };
+
 }
 
 //剪贴板检测
-function clipboardDetect(){
+function clipboardDetect() {
   var str = $clipboard.text
   var reg1 = /[sS][nN][iI][sS][\s\-]\d{3}|[aA][bB][pP][\s\-]\d{3}|[iI][pP][zZ][\s\-]\d{3}|[sS][wW][\s\-]\d{3}|[jJ][uU][xX][\s\-]\d{3}|[mM][iI][aA][dD][\s\-]\d{3}|[mM][iI][dD][eE][\s\-]\d{3}|[mM][iI][dD][dD][\s\-]\d{3}|[pP][gG][dD][\s\-]\d{3}|[sS][tT][aA][rR][\s\-]\d{3}|[eE][bB][oO][dD][\s\-]\d{3}|[iI][pP][tT][dD][\s\-]\d{3}/g;
   var reg2 = /[a-zA-Z]{3,5}[\s\-]\d{3}/g;
@@ -1449,24 +1461,56 @@ function clipboardDetect(){
 
   }
   return {
-    "mode":mode,
-    "keyword":keyword
+    "mode": mode,
+    "keyword": keyword
   }
 }
-
 
 function main() {
   var check = $cache.get("adultCheck")
   if (!check) {
     checkAdult()
   }
+  $("input").placeholder = "载入中,请稍候..."
+
   scriptVersionUpdate()
-  
-  initial()
   timeout = 3
   page = 0
-  var detect = clipboardDetect()
-  getInitial(detect.mode, detect.keyword)
+  var url = "https://tellme.pw/avmoo";
+  $http.request({
+    timeout:timeout,
+    url: url,
+    handler: function(resp) {
+      match = /<strong><a href="(.*?)"/g.exec(resp.data)
+      if (match) {
+        //$ui.action(match)
+        homepage = match[1] + "/cn/";
+        homeMoviePage = homepage + "movie/";
+        homeStarPage = homepage + "star/";
+        var detect = clipboardDetect()
+        getInitial(detect.mode, detect.keyword)
+        $("input").placeholder = "输入番号或演员进行搜索"
+      } else {
+        $ui.action({
+          title: "无法找到主页",
+          message: "请联系脚本作者",
+          action: [{
+            title: "确认",
+            handler: function() {
+              $safari.open("https://t.me/nicked")
+              $app.close()
+            }
+          }, {
+            title: "取消",
+            handler: function() {
+              $app.close()
+            }
+          }]
+        })
+      }
+
+    }
+  })
 
 }
 
