@@ -56,7 +56,7 @@ const searchView = {
     type: "input",
     props: {
       id: "input",
-      placeholder: "输入番号或演员进行搜索",
+      placeholder: "载入中, 请稍候...",
       id: "input",
       font: $font(13),
       clearsOnBeginEditing: false,
@@ -292,6 +292,7 @@ const detailView = {
       type: "image",
       props: {
         id: "filmCover",
+        radius:7
         //scale: 2,
         //src: "https://i.loli.net/2017/11/14/5a0a553e1c420.jpg"
       },
@@ -375,12 +376,14 @@ const detailView = {
         template: [{
           type: "view",
           props: {
-            bgcolor: $color("#ededed")
+            bgcolor: $color("#ededed"),
+            radius:7
           },
           views: [{
             type: "image",
             props: {
               id: "actressCover",
+              radius:7
             },
             layout: function(make, view) {
               make.left.right.top.inset(3);
@@ -407,7 +410,7 @@ const detailView = {
       },
       layout: function(make, view) {
         make.left.right.inset(5)
-        make.bottom.inset(40)
+        make.bottom.inset(20)
         make.top.equalTo($("whoInFilm").bottom).offset(0)
       },
       events: {
@@ -438,7 +441,7 @@ const detailView = {
         radius: 0,
         title: "搜磁链",
         titleColor: $color("black"),
-        alpha: 1,
+        alpha: 0.9,
         radius: 6
       },
       layout: function(make, view) {
@@ -465,7 +468,7 @@ const detailView = {
         radius: 0,
         title: "查看截图",
         titleColor: $color("black"),
-        alpha: 1,
+        alpha: 0.9,
         radius: 6
       },
       layout: function(make, view) {
@@ -504,7 +507,7 @@ const detailView = {
         bgcolor: $color("#5e9ced"),
         title: "收藏",
         titleColor: $color("white"),
-        alpha: 1,
+        alpha: 0.9,
         radius: 6
       },
       layout: function(make, view) {
@@ -574,7 +577,7 @@ const detailView = {
       props: {
         id: "share",
         bgcolor: $color("#ededed"),
-        title: "分享",
+        title: "分享链接",
         hidden: true,
         font: $font(11),
         //icon: $icon("022", $color("#666666"), $size(15, 15))
@@ -585,7 +588,7 @@ const detailView = {
       layout: function(make, view) {
         make.left.inset(90)
         make.top.equalTo($("filmCover").bottom).offset(5)
-        make.width.equalTo(30)
+        make.width.equalTo(50)
         make.height.equalTo(20)
       },
       events: {
@@ -970,7 +973,7 @@ $ui.render({
 })
 
 function getInitial(mode, keyword) {
-  page++
+  page++;
   //$ui.toast("⏱ 搜索中", 100)
   if (mode == "home") {
     url = homepage + "page/"
@@ -1031,6 +1034,7 @@ function getInitial(mode, keyword) {
         $("bgInfo").hidden = false;
         $("bgImage").hidden = false;
       }
+      $("input").placeholder = "输入番号或演员进行搜索"
       //$ui.toast("", 0.1)
 
     }
@@ -1254,7 +1258,7 @@ function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
     LocalData.favorite.push(data)
     LocalFavList.push(data.shortCode)
-    if ($("menu").index == 1) {
+    if ($("menu").index == 1 && $("tab").index == 0) {
       $("initialView").data = $("initialView").data.concat({
         link: homeMoviePage + shortCode,
         initialCover: {
@@ -1475,15 +1479,15 @@ function main() {
   }
 
   scriptVersionUpdate()
+  timeout = 3
   var url = "https://tellme.pw/avmoo";
   $http.request({
     timeout: timeout,
     url: url,
     handler: function(resp) {
+      
       match = /<strong><a href="(.*?)"/g.exec(resp.data)
       if (match) {
-        $("input").placeholder = "载入中,请稍候..."
-        timeout = 3
         page = 0
         initial()
         //$ui.action(match)
@@ -1492,7 +1496,7 @@ function main() {
         homeStarPage = homepage + "star/";
         var detect = clipboardDetect()
         getInitial(detect.mode, detect.keyword)
-        $("input").placeholder = "输入番号或演员进行搜索"
+       // $("input").placeholder = "输入番号或演员进行搜索"
       } else {
         $ui.action({
           title: "无法找到主页",
