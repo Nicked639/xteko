@@ -1411,7 +1411,7 @@ function scriptVersionUpdate() {
           actions: [{
             title: "更新",
             handler: function() {
-              var url = "pin://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/HList/HList.js&name=Hlist" + afterVersion&icon=icon_135.png;
+              var url = "pin://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/HList/HList.js&name=Hlist V" + afterVersion&icon+"=icon_135.png";
               $app.openURL(encodeURI(url));
               $app.close()
             }
