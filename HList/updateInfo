@@ -2,5 +2,6 @@
   "version": 1.2,
   "msg": "更新说明：\n1.错误修复细节优化\n2.支持分享影片\n3.支持检测更新",
   "wfVersion":1.1,
-  "wfMsg": "更新说明：xxx"
+  "wfMsg": "更新说明：xxx",
+  "workflow": "https://workflow.is/workflows/e7b0262c195241c5b566c9dfc3108cf0"
 }
