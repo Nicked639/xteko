@@ -12,7 +12,7 @@
 
 */
 //$cache.clear()
-var version = 1.2
+var version = 1.3
 const searchView = {
   type: 'view',
   props: {
@@ -1447,7 +1447,7 @@ function initial() {
 //剪贴板检测
 function clipboardDetect() {
   var str = $clipboard.text
-  var reg1 = /[sS][nN][iI][sS][\s\-]\d{3}|[aA][bB][pP][\s\-]\d{3}|[iI][pP][zZ][\s\-]\d{3}|[sS][wW][\s\-]\d{3}|[jJ][uU][xX][\s\-]\d{3}|[mM][iI][aA][dD][\s\-]\d{3}|[mM][iI][dD][eE][\s\-]\d{3}|[mM][iI][dD][dD][\s\-]\d{3}|[pP][gG][dD][\s\-]\d{3}|[sS][tT][aA][rR][\s\-]\d{3}|[eE][bB][oO][dD][\s\-]\d{3}|[iI][pP][tT][dD][\s\-]\d{3}/g;
+  var reg1 = /[sS][nN][iI][sS][\s\-]?\d{3}|[aA][bB][pP][\s\-]?\d{3}|[iI][pP][zZ][\s\-]?\d{3}|[sS][wW][\s\-]?\d{3}|[jJ][uU][xX][\s\-]?\d{3}|[mM][iI][aA][dD][\s\-]?\d{3}|[mM][iI][dD][eE][\s\-]?\d{3}|[mM][iI][dD][dD][\s\-]?\d{3}|[pP][gG][dD][\s\-]?\d{3}|[sS][tT][aA][rR][\s\-]?\d{3}|[eE][bB][oO][dD][\s\-]?\d{3}|[iI][pP][tT][dD][\s\-]?\d{3}/g;
   var reg2 = /[a-zA-Z]{3,5}[\s\-]\d{3}/g;
   var match = str.match(reg1);
   if (match) {
