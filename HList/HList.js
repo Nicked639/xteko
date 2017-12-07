@@ -12,7 +12,7 @@
 
 */
 //$cache.clear()
-var version = 1.31
+var version = 1.32
 const searchView = {
   type: 'view',
   props: {
