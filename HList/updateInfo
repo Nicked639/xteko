@@ -1,6 +1,6 @@
 {
   "version": 1.31,
-  "msg": "更新说明：\n1.之前的存档在新文件储存格式下会报错，故新建了iCloud Drive文件\n2.后续新的更新将在jsbox下面进行"
+  "msg": "更新说明：\n1.之前的存档在新文件储存格式下会报错，故新建了iCloud Drive文件\n2.后续新的更新将在jsbox下面进行\n3.修复当剪贴板为空时不显示初始界面的错误"
   "wfVersion":1.1,
   "wfMsg": "更新说明：xxx",
   "workflow": "https://workflow.is/workflows/a5e03887209b4eed8642d524004f36fc"
