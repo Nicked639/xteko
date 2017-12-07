@@ -1429,7 +1429,7 @@ function scriptVersionUpdate() {
           actions: [{
             title: "更新",
             handler: function() {
-              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/HList/HList.js&name=HList" + afterVersion + "&icon=icon_135.png";
+              var url = "pin://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/HList/HList.js&name=HList" + afterVersion + "&icon=icon_135.png";
               $app.openURL(encodeURI(url));
               $app.close()
             }
@@ -1505,8 +1505,17 @@ function main() {
         homeMoviePage = homepage + "movie/";
         homeSearchPage = homepage + "search/"
         homeStarPage = homepage + "star/";
-        var detect = clipboardDetect()
+        if($clipboard.text){
+          var detect = clipboardDetect()
+        }else{
+          var detect = {
+            "mode":"home",
+            "keyword":""
+          }
+        }
+        
         getInitial(detect.mode, detect.keyword)
+        
         $ui.toast("载入成功", 1)
         // $("input").placeholder = "输入番号或演员进行搜索"
       } else {
