@@ -1,7 +1,7 @@
 /*
 
  H LIST
- 收藏与归档你想看影片
+ 收藏与归档你想看的影片
  同时搜索庞大的 AV 片库
  部分影片支持视频截图预览
  几大厂商番号可复制后启动脚本直接进入搜索结果
@@ -12,7 +12,7 @@
 
 */
 //$cache.clear()
-var version = 1.3
+var version = 1.31
 const searchView = {
   type: 'view',
   props: {
@@ -292,7 +292,7 @@ const detailView = {
       type: "image",
       props: {
         id: "filmCover",
-        radius:7
+        radius: 7
         //scale: 2,
         //src: "https://i.loli.net/2017/11/14/5a0a553e1c420.jpg"
       },
@@ -377,13 +377,13 @@ const detailView = {
           type: "view",
           props: {
             bgcolor: $color("#ededed"),
-            radius:7
+            radius: 7
           },
           views: [{
             type: "image",
             props: {
               id: "actressCover",
-              radius:7
+              radius: 7
             },
             layout: function(make, view) {
               make.left.right.top.inset(3);
@@ -454,9 +454,22 @@ const detailView = {
         tapped(sender) {
           //$clipboard.text = favCode
           //$ui.action(favCode)
+          $http.request({
+  url:"https://btso.pw",
+  timeout:1,
+  handler:function(resp){
+    if(resp.data){
           $safari.open({
-            url: "http://btspread.rip/" + encodeURI(favCode) + "/1-0-0/"
+            url: "http://btso.pw/search/" + encodeURI(favCode) 
           })
+    }else{
+          $safari.open({
+            url:"http://www.nms999.com/l/"+ encodeURI(favCode) + "-hot-desc-1"
+          })
+    }
+
+  }
+})
         }
       }
 
@@ -978,9 +991,7 @@ function getInitial(mode, keyword) {
   if (mode == "home") {
     url = homepage + "page/"
   } else if (mode == "search") {
-    url = encodeURI(homepage + "search/" + keyword + "/page/")
-  } else if (mode == "actress") {
-    url = keyword + "/page/"
+    url = encodeURI(homeSearchPage + keyword + "/page/")
   }
   $http.request({
     url: url + page,
@@ -1336,7 +1347,8 @@ function checkAdult() {
         font: $font("Helvetica-Bold", 25),
         bgcolor: $color("red"),
         insets: $insets(5, 0, 0, 0),
-        align: $align.center
+        align: $align.center,
+        editable: false
       },
       layout: function(make, view) {
         make.top.inset(55)
@@ -1351,7 +1363,8 @@ function checkAdult() {
         font: $font("bold", 14),
         bgcolor: $color("clear"),
         insets: $insets(0, 0, 0, 0),
-        align: $align.justified
+        align: $align.justified,
+        editable: false
       },
       layout: function(make, view) {
         make.top.inset(120)
@@ -1367,7 +1380,7 @@ function checkAdult() {
       },
       layout: function(make, view) {
         make.left.right.inset(120)
-        make.bottom.inset(80)
+        make.bottom.inset(100)
         make.height.equalTo(30)
       },
       events: {
@@ -1377,6 +1390,7 @@ function checkAdult() {
           })
 
           sender.super.remove()
+          main()
         }
       }
     }, {
@@ -1388,7 +1402,7 @@ function checkAdult() {
       },
       layout: function(make, view) {
         make.left.right.inset(120)
-        make.bottom.inset(20)
+        make.bottom.inset(40)
         make.height.equalTo(30)
       },
       events: {
@@ -1415,7 +1429,7 @@ function scriptVersionUpdate() {
           actions: [{
             title: "更新",
             handler: function() {
-              var url = "pin://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/HList/HList.js&name=HList" + afterVersion+"&icon=icon_135.png";
+              var url = "pin://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/HList/HList.js&name=HList" + afterVersion + "&icon=icon_135.png";
               $app.openURL(encodeURI(url));
               $app.close()
             }
@@ -1473,10 +1487,6 @@ function clipboardDetect() {
 }
 
 function main() {
-  var check = $cache.get("adultCheck")
-  if (!check) {
-    checkAdult()
-  }
 
   scriptVersionUpdate()
   timeout = 3
@@ -1485,18 +1495,20 @@ function main() {
     timeout: timeout,
     url: url,
     handler: function(resp) {
-      
-      match = /<strong><a href="(.*?)"/g.exec(resp.data)
+      var match = /<strong><a href="(.*?)"/g.exec(resp.data)
       if (match) {
+                $ui.toast("载入成功", 1)
         page = 0
         initial()
         //$ui.action(match)
         homepage = match[1] + "/cn/";
         homeMoviePage = homepage + "movie/";
+        homeSearchPage = homepage + "search/"
         homeStarPage = homepage + "star/";
         var detect = clipboardDetect()
         getInitial(detect.mode, detect.keyword)
-       // $("input").placeholder = "输入番号或演员进行搜索"
+        $ui.toast("载入成功", 1)
+        // $("input").placeholder = "输入番号或演员进行搜索"
       } else {
         $ui.action({
           title: "无法找到主页",
@@ -1521,5 +1533,10 @@ function main() {
 
 }
 
-LocalDataPath = "drive://HList.json"
-main()
+LocalDataPath = "drive://HList2.json";
+var check = $cache.get("adultCheck")
+if (!check) {
+  checkAdult()
+}else{
+  main()
+}
