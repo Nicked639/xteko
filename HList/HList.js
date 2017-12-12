@@ -66,18 +66,16 @@ const searchView = {
     },
     events: {
       returned: function(sender) {
-        $("menu").index = 0
+        sender.blur()
+        $("initialView").data = [];
+        $("menu").index = 0;
+        $ui.loading("t")
         if (sender.text) {
-          sender.blur()
-          $("initialView").data = [];
           mode = "search";
           keyword = sender.text;
           page = 0;
           getInitial(mode, keyword);
-
         } else {
-          $("initialView").data = [];
-          sender.blur()
           mode = "home"
           page = 0
           getInitial(mode)
@@ -377,13 +375,13 @@ const detailView = {
           type: "view",
           props: {
             bgcolor: $color("#ededed"),
-            radius: 7
+            radius: 5
           },
           views: [{
             type: "image",
             props: {
               id: "actressCover",
-              radius: 7
+              radius: 5
             },
             layout: function(make, view) {
               make.left.right.top.inset(3);
@@ -440,6 +438,7 @@ const detailView = {
         bgcolor: $color("#ededed"),
         radius: 0,
         title: "搜磁链",
+        font: $font("bold", 16),
         titleColor: $color("black"),
         alpha: 0.9,
         radius: 6
@@ -455,21 +454,21 @@ const detailView = {
           //$clipboard.text = favCode
           //$ui.action(favCode)
           $http.request({
-  url:"https://btso.pw",
-  timeout:1,
-  handler:function(resp){
-    if(resp.data){
-          $safari.open({
-            url: "http://btso.pw/search/" + encodeURI(favCode) 
-          })
-    }else{
-          $safari.open({
-            url:"http://www.nms999.com/l/"+ encodeURI(favCode) + "-hot-desc-1"
-          })
-    }
+            url: "https://btso.pw",
+            timeout: 1,
+            handler: function(resp) {
+              if (resp.data) {
+                $safari.open({
+                  url: "http://btso.pw/search/" + encodeURI(favCode)
+                })
+              } else {
+                $safari.open({
+                  url: "http://www.nms999.com/l/" + encodeURI(favCode) + "-hot-desc-1"
+                })
+              }
 
-  }
-})
+            }
+          })
         }
       }
 
@@ -480,6 +479,7 @@ const detailView = {
         bgcolor: $color("#ededed"),
         radius: 0,
         title: "查看截图",
+        font: $font("bold", 16),
         titleColor: $color("black"),
         alpha: 0.9,
         radius: 6
@@ -519,6 +519,7 @@ const detailView = {
         id: "favorite",
         bgcolor: $color("#5e9ced"),
         title: "收藏",
+        font: $font("bold", 16),
         titleColor: $color("white"),
         alpha: 0.9,
         radius: 6
@@ -590,7 +591,7 @@ const detailView = {
       props: {
         id: "share",
         bgcolor: $color("#ededed"),
-        title: "分享链接",
+        title: "分享影片",
         hidden: true,
         font: $font(11),
         //icon: $icon("022", $color("#666666"), $size(15, 15))
@@ -1014,7 +1015,7 @@ function getInitial(mode, keyword) {
         }
 
       }
-      $ui.loading = false
+     $ui.loading(false);
       var reg = /<a class="movie-box"[\s\S]*?<\/span>/g;
       var match = resp.data.match(reg)
       //$ui.action(match)
@@ -1489,7 +1490,7 @@ function clipboardDetect() {
 function main() {
 
   scriptVersionUpdate()
-  timeout = 3
+  timeout = 5
   var url = "https://tellme.pw/avmoo";
   $http.request({
     timeout: timeout,
@@ -1497,7 +1498,7 @@ function main() {
     handler: function(resp) {
       var match = /<strong><a href="(.*?)"/g.exec(resp.data)
       if (match) {
-                $ui.toast("载入成功", 1)
+        //$ui.toast("载入成功", 1)
         page = 0
         initial()
         //$ui.action(match)
@@ -1505,23 +1506,23 @@ function main() {
         homeMoviePage = homepage + "movie/";
         homeSearchPage = homepage + "search/"
         homeStarPage = homepage + "star/";
-        if($clipboard.text){
+        if ($clipboard.text) {
           var detect = clipboardDetect()
-        }else{
+        } else {
           var detect = {
-            "mode":"home",
-            "keyword":""
+            "mode": "home",
+            "keyword": ""
           }
         }
-        
+
         getInitial(detect.mode, detect.keyword)
-        
+
         $ui.toast("载入成功", 1)
         // $("input").placeholder = "输入番号或演员进行搜索"
       } else {
         $ui.action({
           title: "无法找到主页",
-          message: "请联系脚本作者",
+          message: "请联系脚本作者或稍后再试",
           action: [{
             title: "确认",
             handler: function() {
@@ -1546,6 +1547,6 @@ LocalDataPath = "drive://HList2.json";
 var check = $cache.get("adultCheck")
 if (!check) {
   checkAdult()
-}else{
+} else {
   main()
 }
