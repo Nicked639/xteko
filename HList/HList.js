@@ -69,7 +69,7 @@ const searchView = {
         sender.blur()
         $("initialView").data = [];
         $("menu").index = 0;
-        $ui.loading("t")
+        $ui.loading(true)
         if (sender.text) {
           mode = "search";
           keyword = sender.text;
@@ -128,7 +128,7 @@ const searchView = {
       didReachBottom(sender) {
         sender.endFetchingMore();
         if ($("menu").index == 0) {
-          $ui.loading = true
+          $ui.loading(true)
           getInitial(mode, keyword);
 
         }
@@ -801,7 +801,7 @@ function actressView(actress, cover) {
       },
       events: {
         didReachBottom(sender, data) {
-          $ui.loading = true
+          $ui.loading(true)
           sender.endFetchingMore();
           getActress(url);
 
@@ -998,6 +998,7 @@ function getInitial(mode, keyword) {
     url: url + page,
     timeout: timeout,
     handler: function(resp) {
+              $ui.loading(false);
       if (!resp.response) {
         $ui.toast("❌ 网络连接错误")
         return
@@ -1015,7 +1016,6 @@ function getInitial(mode, keyword) {
         }
 
       }
-     $ui.loading(false);
       var reg = /<a class="movie-box"[\s\S]*?<\/span>/g;
       var match = resp.data.match(reg)
       //$ui.action(match)
