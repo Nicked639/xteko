@@ -12,7 +12,7 @@
 
 */
 //$cache.clear()
-var version = 1.32
+var version = 1.33
 const searchView = {
   type: 'view',
   props: {
@@ -68,7 +68,6 @@ const searchView = {
       returned: function(sender) {
         sender.blur()
         $("initialView").data = [];
-        $("menu").index = 0;
         $ui.loading(true)
         if (sender.text) {
           mode = "search";
@@ -82,6 +81,7 @@ const searchView = {
         }
         $("initialView").contentOffset = $point(0, 0);
         $("initialView").hidden = false;
+                $("menu").index = 0;
       }
     },
     layout: function(make, view) {
@@ -163,6 +163,9 @@ const searchView = {
             if (LocalFavList.indexOf(shortCode) > -1) {
               $("favorite").title = "取消收藏"
               $("favorite").bgcolor = $color("#f25959")
+            }else if(LocalArcList.indexOf(shortCode)> -1){
+              $("favorite").title = "已归档"
+              $("favorite").bgcolor = $color("#aaaaaa")
             }
           } else if ($("menu").index == 1) {
             if (LocalFavList.indexOf(shortCode) > -1) {
@@ -532,6 +535,7 @@ const detailView = {
       },
       events: {
         tapped(sender) {
+         
           var data = {
             "code": favCode,
             "src": favSrc,
@@ -812,7 +816,8 @@ function actressView(actress, cover) {
           favInfo = data.actressInfos.text
           favLink = data.link
           shortCode = favLink.split("/").pop()
-          //$ui.action(data.link)
+          favCode = data.code
+          //$ui.action(data.code)
           getDetail(data.link)
           $ui.push(detailView)
 
@@ -840,16 +845,20 @@ function actressView(actress, cover) {
               $("favorite").title = "取消收藏"
             } else if (LocalArcList.indexOf(shortCode) > -1) {
               $("favorite").title = "已归档"
+              $("favorite").bgcolor = $color("#aaaaaa")
             }
           } else if ($("menu").index == 1) {
             if (LocalFavList.indexOf(shortCode) > -1) {
               $("favorite").title = "归档"
-            } else {
-              if (LocalArcList.indexOf(shortCode) > -1) {
+            } else if ((LocalArcList.indexOf(shortCode) > -1)){
+               
                 $("favorite").title = "已归档"
-              } else {
+                $("favorite").bgcolor = $color("#aaaaaa")
+            }else {
+             
+             
                 $("favorite").title = "收藏"
-              }
+             
             }
           } else if ($("menu").index == 2) {
             if (LocalArcList.indexOf(shortCode) > -1) {
@@ -1028,8 +1037,8 @@ function getInitial(mode, keyword) {
         var date = /\/\s<date>(.*?)<\/date><\/span>/.exec(i)[1];
         $("initialView").data = $("initialView").data.concat({
           //title: title,
-          code: code,
           link: link,
+          code: code,
           initialCover: {
             src: image
           },
@@ -1217,8 +1226,9 @@ function getActress(url) {
         var code = /<br><date>(.*?)<\/date>/.exec(i)[1];
         var date = /\/\s<date>(.*?)<\/date><\/span>/.exec(i)[1];
         $("actressView").data = $("actressView").data.concat({
-          title: title,
+          //title: title,
           link: link,
+          code:code,
           actressCovers: {
             src: image
           },
@@ -1240,6 +1250,7 @@ function favActressButtonTapped(mode, data) {
     if ($("menu").index == 1 && $("tab").index == 1) {
       $("initialView").data = $("initialView").data.concat({
         link: homeStarPage + data.shortCode,
+        //code:code,
         initialCover: {
           src: data.src
         },
@@ -1268,11 +1279,13 @@ function favActressButtonTapped(mode, data) {
 
 function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
+     $ui.pop();
     LocalData.favorite.push(data)
     LocalFavList.push(data.shortCode)
     if ($("menu").index == 1 && $("tab").index == 0) {
       $("initialView").data = $("initialView").data.concat({
         link: homeMoviePage + shortCode,
+        code: data.code,
         initialCover: {
           src: data.src
         },
@@ -1285,21 +1298,25 @@ function favoriteButtonTapped(mode, data) {
     }
 
   } else if (mode == "cancel") {
-    idx = LocalFavList.indexOf(data.shortCode)
+     $ui.pop();
+    var idx = LocalFavList.indexOf(data.shortCode)
     LocalFavList.splice(idx, 1)
     LocalData.favorite.splice(idx, 1)
 
   } else if (mode == "archive") {
-    idx = LocalFavList.indexOf(data.shortCode)
+     $ui.pop();
+    var idx = LocalFavList.indexOf(data.shortCode)
     LocalFavList.splice(idx, 1)
     LocalData.favorite.splice(idx, 1)
     if ($("menu").index == 1) {
+      //$ui.action($("initialView").data)
       $("initialView").delete(idx)
       var length = LocalFavList.length;
       $("input").placeholder = "已收藏 " + length + " 部影片"
     } else if ($("menu").index == 2) {
       $("initialView").data = $("initialView").data.concat({
         link: homeMoviePage + shortCode,
+        code:data.code,
         initialCover: {
           src: data.src
         },
@@ -1314,7 +1331,8 @@ function favoriteButtonTapped(mode, data) {
     LocalArcList.push(data.shortCode)
 
   } else if (mode == "del") {
-    idx = LocalArcList.indexOf(data.shortCode)
+     $ui.pop();
+    var idx = LocalArcList.indexOf(data.shortCode)
     LocalArcList.splice(idx, 1)
     LocalData.archive.splice(idx, 1)
     if ($("menu").index == 2) {
@@ -1488,7 +1506,7 @@ function clipboardDetect() {
 }
 
 function main() {
-
+  initial()
   scriptVersionUpdate()
   timeout = 5
   var url = "https://tellme.pw/avmoo";
@@ -1500,7 +1518,6 @@ function main() {
       if (match) {
         //$ui.toast("载入成功", 1)
         page = 0
-        initial()
         //$ui.action(match)
         homepage = match[1] + "/cn/";
         homeMoviePage = homepage + "movie/";
