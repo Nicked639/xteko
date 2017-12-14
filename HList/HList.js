@@ -12,7 +12,7 @@
 
 */
 //$cache.clear()
-var version = 1.33
+var version = 1.34
 const searchView = {
   type: 'view',
   props: {
@@ -81,7 +81,7 @@ const searchView = {
         }
         $("initialView").contentOffset = $point(0, 0);
         $("initialView").hidden = false;
-                $("menu").index = 0;
+        $("menu").index = 0;
       }
     },
     layout: function(make, view) {
@@ -163,7 +163,7 @@ const searchView = {
             if (LocalFavList.indexOf(shortCode) > -1) {
               $("favorite").title = "取消收藏"
               $("favorite").bgcolor = $color("#f25959")
-            }else if(LocalArcList.indexOf(shortCode)> -1){
+            } else if (LocalArcList.indexOf(shortCode) > -1) {
               $("favorite").title = "已归档"
               $("favorite").bgcolor = $color("#aaaaaa")
             }
@@ -440,7 +440,7 @@ const detailView = {
         id: "megnet",
         bgcolor: $color("#ededed"),
         radius: 0,
-        title: "搜磁链",
+        title: "搜索",
         font: $font("bold", 16),
         titleColor: $color("black"),
         alpha: 0.9,
@@ -456,7 +456,11 @@ const detailView = {
         tapped(sender) {
           //$clipboard.text = favCode
           //$ui.action(favCode)
-          $http.request({
+         $ui.menu({
+           items:["磁链","Avgle"],
+           handler:function(title,idx){
+             if(idx==0){
+                         $http.request({
             url: "https://btso.pw",
             timeout: 1,
             handler: function(resp) {
@@ -472,6 +476,30 @@ const detailView = {
 
             }
           })
+             }else{
+             $safari.open({
+               url:"https://avgle.com/search/videos?search_query="+encodeURI(favCode)+"&search_type=videos"
+             })
+           }
+           }
+         }) 
+          /*
+          $http.request({
+            url: "https://btso.pw",
+            timeout: 1,
+            handler: function(resp) {
+              if (resp.data) {
+                $safari.open({
+                  url: "http://btso.pw/search/" + encodeURI(favCode)
+                })
+              } else {
+                $safari.open({
+                  url: "http://www.nms999.com/l/" + encodeURI(favCode) + "-hot-desc-1"
+                })
+              }
+
+            }
+          })*/
         }
       }
 
@@ -535,7 +563,7 @@ const detailView = {
       },
       events: {
         tapped(sender) {
-         
+
           var data = {
             "code": favCode,
             "src": favSrc,
@@ -850,15 +878,14 @@ function actressView(actress, cover) {
           } else if ($("menu").index == 1) {
             if (LocalFavList.indexOf(shortCode) > -1) {
               $("favorite").title = "归档"
-            } else if ((LocalArcList.indexOf(shortCode) > -1)){
-               
-                $("favorite").title = "已归档"
-                $("favorite").bgcolor = $color("#aaaaaa")
-            }else {
-             
-             
-                $("favorite").title = "收藏"
-             
+            } else if ((LocalArcList.indexOf(shortCode) > -1)) {
+
+              $("favorite").title = "已归档"
+              $("favorite").bgcolor = $color("#aaaaaa")
+            } else {
+
+              $("favorite").title = "收藏"
+
             }
           } else if ($("menu").index == 2) {
             if (LocalArcList.indexOf(shortCode) > -1) {
@@ -1007,7 +1034,7 @@ function getInitial(mode, keyword) {
     url: url + page,
     timeout: timeout,
     handler: function(resp) {
-              $ui.loading(false);
+      $ui.loading(false);
       if (!resp.response) {
         $ui.toast("❌ 网络连接错误")
         return
@@ -1228,7 +1255,7 @@ function getActress(url) {
         $("actressView").data = $("actressView").data.concat({
           //title: title,
           link: link,
-          code:code,
+          code: code,
           actressCovers: {
             src: image
           },
@@ -1279,7 +1306,7 @@ function favActressButtonTapped(mode, data) {
 
 function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
-     $ui.pop();
+    $ui.pop();
     LocalData.favorite.push(data)
     LocalFavList.push(data.shortCode)
     if ($("menu").index == 1 && $("tab").index == 0) {
@@ -1298,13 +1325,13 @@ function favoriteButtonTapped(mode, data) {
     }
 
   } else if (mode == "cancel") {
-     $ui.pop();
+    $ui.pop();
     var idx = LocalFavList.indexOf(data.shortCode)
     LocalFavList.splice(idx, 1)
     LocalData.favorite.splice(idx, 1)
 
   } else if (mode == "archive") {
-     $ui.pop();
+    $ui.pop();
     var idx = LocalFavList.indexOf(data.shortCode)
     LocalFavList.splice(idx, 1)
     LocalData.favorite.splice(idx, 1)
@@ -1316,7 +1343,7 @@ function favoriteButtonTapped(mode, data) {
     } else if ($("menu").index == 2) {
       $("initialView").data = $("initialView").data.concat({
         link: homeMoviePage + shortCode,
-        code:data.code,
+        code: data.code,
         initialCover: {
           src: data.src
         },
@@ -1331,7 +1358,7 @@ function favoriteButtonTapped(mode, data) {
     LocalArcList.push(data.shortCode)
 
   } else if (mode == "del") {
-     $ui.pop();
+    $ui.pop();
     var idx = LocalArcList.indexOf(data.shortCode)
     LocalArcList.splice(idx, 1)
     LocalData.archive.splice(idx, 1)
@@ -1520,6 +1547,7 @@ function main() {
         page = 0
         //$ui.action(match)
         homepage = match[1] + "/cn/";
+        
         homeMoviePage = homepage + "movie/";
         homeSearchPage = homepage + "search/"
         homeStarPage = homepage + "star/";
