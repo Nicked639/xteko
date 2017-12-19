@@ -1,4 +1,4 @@
-version = 1.0
+version = 1.1
 const filters = {
   "Time": {
     "全部视频": "a",
@@ -67,6 +67,7 @@ const filterView = {
         mode = "Home";
         $device.taptic(0);
         $("filter").remove();
+        filterExist = false
         $("videos").data = [];
 
         cacheFilters.Time = filters.Time[data.filterLabel.text];
@@ -114,6 +115,7 @@ const filterView = {
         mode = "Home";
         $device.taptic(0);
         $("filter").remove();
+        filterExist = false;
         $("videos").data = [];
         cacheFilters.View = filters.View[data.filterLabel.text];
         $cache.set("cacheFilters", cacheFilters);
@@ -131,7 +133,7 @@ const filterView = {
     }
   }],
   layout: function(make, view) {
-    make.top.inset(10)
+    make.top.inset(45)
     make.left.inset(15)
     make.width.equalTo(120)
     make.height.equalTo(0)
@@ -154,7 +156,7 @@ const contentView = {
       separatorHidden: true,
       rowHeight: 30,
       bgcolor: $color("white"),
-     // data:["1","2"],
+      scrollEnabled: false,
       template: [{
         type: "label",
         props: {
@@ -164,21 +166,29 @@ const contentView = {
           align: $align.center
         },
         layout: $layout.fill
-
       }],
-      scrollEnabled: false,
-      events:{
-        
-      }
     },
-    layout: function(make, view) {
-    make.top.inset(0)
-    make.left.inset(0)
-    make.width.equalTo(100)
-    make.height.equalTo(200)
-  }
+    events: {
+         didSelect(sender,indexPath,data){
+           $device.taptic(0);
+           $("content").remove();
+           contentExist = false;
+           if ($("player")) {
+          $("player").stopLoading();
+          $("player").remove()
+        };
+        $("search").text = "";
+        mode = "Home";
+         }
+    },
+  layout: function(make, view) {
+      make.top.inset(0)
+      make.left.inset(0)
+      make.width.equalTo(100)
+      make.height.equalTo(200)
+    }
 
-  },{
+  }, {
     type: "button",
     props: {
       title: "收藏夹",
@@ -196,7 +206,6 @@ const contentView = {
     },
     events: {
       tapped(sender) {
-      
         if ($("player")) {
           $("player").stopLoading();
           $("player").remove()
@@ -204,52 +213,29 @@ const contentView = {
         $("search").text = "";
         $device.taptic(0);
         sender.super.remove();
-        if ($("filter")) {
-            $("filter").remove();
-          }
-        if (LocalFavList.length == 0) {
+        contentExist = false;
+        if (filterExist) {
+          $("filter").remove();
+          filterExist = false;
+        }
+        if (LocalData.favorite.length == 0) {
           $ui.alert("Get Some Favorites!")
           return
         }
         $("videos").contentOffset = $point(0, 0);
         mode = "Favorite";
-        
-        $("search").placeholder = "共有 " + LocalFavList.length + " 个收藏"
+        $("search").placeholder = "共有 " + LocalData.favorite.length + " 个收藏"
         $("videos").data = [];
+        $ui.toast("收藏加载中...",100)
         LocalData.favorite.map(function(i) {
-          $("videos").data = $("videos").data.concat({
-            interface: {
-              src: i.image
-            },
-            title: {
-              text: i.title
-            },
-            time: {
-              text: i.time
-            },
-            videoUrl: i.video,
-            duration: {
-              text: i.duration
-            },
-            like: {
-              text: i.like,
-              alpha: 0.7
-
-            },
-            hd: {
-              hidden: i.hd
-            },
-            favorite: {
-              title: "😍",
-              info: i
-            }
-          });
+          getVidData(i)
         });
+        $ui.toast("",0.1)
       }
     }
   }],
   layout: function(make, view) {
-    make.top.inset(10)
+    make.top.inset(45)
     make.right.inset(15)
     make.width.equalTo(100)
     make.height.equalTo(0)
@@ -347,10 +333,8 @@ const template = [{
       id: "favorite",
       bgcolor: $color("clear"),
       title: "🤔",
-      font: $font("bold", 15),
-      titleColor: $color("white"),
-      alpha: 0.9,
-      radius: 6
+      font: $font(13),
+      alpha: 0.8,
     },
     layout: function(make, view) {
       make.top.equalTo($("like").top).offset(-3)
@@ -360,12 +344,77 @@ const template = [{
     },
     events: {
       tapped(sender) {
-        favButtonTapped(sender);
-        //$ui.action(sender.info.time)
-        //var data = $("videos").data;
-          //data[0].rows[sender.info.idx].baseadd.alpha = 0.3;
-          //$ui.action($props(data))
-          //$("videos").data = data
+        //favButtonTapped(sender);
+        //$ui.action($props(sender.data))
+        var vid = sender.info;
+        var data = $("videos").data;
+        var cell = sender.super.super.super;
+        var view = $("videos").runtimeValue();
+        var index = view.invoke("indexPathForCell",cell).rawValue();
+        var idx = index.row;
+        if (sender.title == "🤔") {
+              data[idx].favorite.title = "😍"
+              LocalData.favorite.push(vid);
+  writeCache();
+              $ui.toast("😍 已收藏！", 1)
+            } else {
+              data[idx].favorite.title = "🤔"
+               var idxx = LocalData.favorite.indexOf(vid);
+  LocalData.favorite.splice(idxx, 1);
+  writeCache()
+              $ui.toast("🤔 已取消！", 1)
+            }
+            if (mode == "Favorite") {
+              $("search").placeholder = "共有 " + LocalData.favorite.length + " 个收藏"
+            }
+        
+        /*
+        var length = data.length;
+        for (var i = 0; i < length; i++) {
+          if (data[i].favorite.info == vid) {
+            if (sender.title == "🤔") {
+              data[i].favorite.title = "😍"
+              LocalData.favorite.push(vid);
+  writeCache();
+              $ui.toast("😍 已收藏！", 1)
+            } else {
+              data[i].favorite.title = "🤔"
+               idx = LocalData.favorite.indexOf(vid);
+  LocalData.favorite.splice(idx, 1);
+  writeCache()
+              $ui.toast("🤔 已取消！", 1)
+            }
+            if (mode == "Favorite") {
+              $("search").placeholder = "共有 " + LocalData.favorite.length + " 个收藏"
+            }
+
+            break;
+          }
+        }*/
+
+        $("videos").data = data
+      }
+    }
+
+  }, {
+    type: "button",
+    props: {
+      id: "share",
+      bgcolor: $color("clear"),
+      //title: "🔗",
+      font: $font(13),
+      icon: $icon("022", $color("#666666"), $size(17, 17)),
+      alpha: 1,
+    },
+    layout: function(make, view) {
+      make.top.equalTo($("favorite").top).offset(1.5)
+      make.left.equalTo($("favorite").right).offset(0)
+      //make.width.equalTo(20)
+      //make.height.equalTo(20)
+    },
+    events: {
+      tapped(sender) {
+         $share.sheet("https://avgle.com/video/"+sender.info)
       }
     }
 
@@ -395,21 +444,24 @@ $ui.render({
       },
       events: {
         didBeginEditing: function(sender) {
-          if ($("filter")) {
+          if (filterExist) {
             $("filter").remove();
+            filterExist = false
           }
-          
-          if ($("content")) {
+
+          if ($("contentList")) {
             $("content").remove();
           }
 
         },
         changed(sender) {
-          if ($("filter")) {
+          if (filterExist) {
             $("filter").remove();
+            filterExist = false;
           }
-          if ($("content")) {
+          if (contentExist) {
             $("content").remove();
+            contentExist = false;
           }
         },
         returned(sender) {
@@ -456,10 +508,16 @@ $ui.render({
       events: {
         tapped(sender) {
           $device.taptic(0)
-          if ($("content")) {
+          if (contentExist) {
             $("content").remove();
+            contentExist = false
           }
-          
+          if(filterExist){
+            $("filter").remove()
+            filterExist = false;
+            return
+          }
+
           $("Avgle").add(filterView);
 
           var data = []
@@ -485,6 +543,7 @@ $ui.render({
           })
           $("filtersV").data = data
           //$ui.action(data)
+          filterExist = true;
           $("filter").updateLayout(function(make) {
             make.height.equalTo(240)
           });
@@ -515,8 +574,14 @@ $ui.render({
       events: {
         tapped(sender) {
           $device.taptic(0)
-          if ($("filter")) {
+          if (filterExist) {
             $("filter").remove();
+            filterExist = false;
+          }
+          if (contentExist) {
+            $("content").remove();
+            contentExist = false
+            return
           }
           $("Avgle").add(contentView);
           var data = []
@@ -530,7 +595,7 @@ $ui.render({
             })
           })
           $("contentList").data = data
-          
+          contentExist = true
           //$ui.action(data)
           $("content").updateLayout(function(make) {
             make.height.equalTo(130)
@@ -582,11 +647,13 @@ $ui.render({
           }
         },
         pulled(sender) {
-          if ($("filter")) {
+          if (filterExist) {
             $("filter").remove()
+            filterExist = false;
           }
-          if ($("content")) {
+          if (contentExist) {
             $("content").remove();
+            contentExist = false;
           }
           sender.super.super.views[0].text = "";
           page = -1
@@ -601,17 +668,19 @@ $ui.render({
         },
         didEndDragging(sender) {
           endY = sender.contentOffset.y;
-          if (Math.abs(endY - startY) > 150  ){
-            if ($("filter")) {
-            $("filter").remove();
-          }
-          if ($("content")) {
-            $("content").remove();
-          }
-          if($("player")){
-             $("player").stopLoading();
-            $("player").remove()
-          }
+          if (Math.abs(endY - startY) > 150) {
+            if (filterExist) {
+              $("filter").remove();
+              filterExist = false
+            }
+            if (contentExist) {
+              $("content").remove();
+              contentExist = false;
+            }
+            if ($("player")) {
+              $("player").stopLoading();
+              $("player").remove()
+            }
           }
         }
 
@@ -631,16 +700,15 @@ function getPostData(filterT, filterV) {
   } else {
     url = "https://api.avgle.com/v1/videos/" + page + "?limit=10&t=" + filterT + "&o=" + filterV;
   }
-  var idx
 
   $http.request({
     url: url,
     timeout: 3,
     handler: function(resp) {
-      //$ui.action(resp.data)
+      //$ui.action(resp.error)
       var success = resp.data.success;
       if (!success || !resp.response) {
-        $ui.alert("网络连接出错！");
+        $ui.alert("❌ 网络连接出错！");
         //$ui.toast("",0.1)
         return
       }
@@ -675,23 +743,16 @@ function getPostData(filterT, filterV) {
           like: {
             text: "❤️ " + i.likes + " 🖤 " + i.dislikes + " ▶️ " + i.viewnumber,
             alpha: 0.7
-            /*i.likes == 0 && i.dislikes == 0 ? "🖤" : `❤️${Math.ceil(i.likes/(i.likes+i.dislikes)*100)}%`,
-            alpha: i.likes == 0 && i.dislikes == 0 ? 0.5 : 1*/
           },
           hd: {
             hidden: i.hd == true ? false : true
           },
           favorite: {
-            title: LocalFavList.indexOf(i.video_url) > -1 ? "😍" : "🤔",
-            info: {
-              title: i.title,
-              image: i.preview_url,
-              video: i.video_url,
-              time: formatTime(i.addtime),
-              duration: formatDuration(i.duration),
-              like: "❤️ " + i.likes + " 🖤 " + i.dislikes + " ▶️ " + i.viewnumber,
-              hd: i.hd == true ? false : true
-            }
+            title: LocalData.favorite.indexOf(i.vid) > -1 ? "😍" : "🤔",
+            info: i.vid
+          },
+          share:{
+            info:i.vid
           }
         })
       })
@@ -705,6 +766,52 @@ function getPostData(filterT, filterV) {
       }
 
       $("videos").endRefreshing();
+    }
+  })
+}
+
+function getVidData(vid) {
+  url = "https://api.avgle.com/v1/video/" + vid;
+  $http.request({
+    url: url,
+    handler: function(resp) {
+       var success = resp.data.success;
+      if (!success || !resp.response) {
+        $ui.alert("❌ 网络连接出错！");
+        //$ui.toast("",0.1)
+        return
+      }
+      var i = resp.data.response.video;
+      $("videos").data = $("videos").data.concat({
+        interface: {
+          src: i.preview_url
+        },
+        title: {
+          text: i.title
+        },
+        time: {
+          text: formatTime(i.addtime)
+        },
+        videoUrl: i.video_url,
+        duration: {
+          text: formatDuration(i.duration)
+        },
+        like: {
+          text: "❤️ " + i.likes + " 🖤 " + i.dislikes + " ▶️ " + i.viewnumber,
+          alpha: 0.7
+        },
+        hd: {
+          hidden: i.hd == true ? false : true
+        },
+        favorite: {
+          title: "😍",
+          info: vid
+        },
+        share:{
+          info:vid
+        }
+      })
+
     }
   })
 }
@@ -740,33 +847,6 @@ function formatTime(ns) {
 
 }
 
-function favButtonTapped(info) {
-  if (info.title == "🤔") {
-    info.title = "😍"
-    addFav(info.info);
-    $ui.toast("😍 已收藏！", 1)
-  } else {
-    info.title = "🤔"
-    delFav(info.info);
-    $ui.toast("🤔 已取消！", 1)
-  }
-  if (mode == "Favorite") {
-      $("search").placeholder = "共有 " + LocalFavList.length + " 个收藏"
-    }
-}
-
-function addFav(info) {
-  LocalData.favorite.push(info);
-  LocalFavList.push(info.video);
-  writeCache();
-}
-
-function delFav(info) {
-  idx = LocalFavList.indexOf(info.video);
-  LocalData.favorite.splice(idx, 1);
-  LocalFavList.splice(idx, 1)
-  writeCache()
-}
 
 function writeCache() {
   $file.write({
@@ -863,14 +943,14 @@ function openURL(title, url) {
 function initial() {
   if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
-    LocalFavList = LocalData.favorite.map(i => i.video);
 
   } else {
     LocalData = { "favorite": [] };
-    LocalFavList = [];
   };
   cacheFilters = $cache.get("cacheFilters") || { "Time": "a", "View": "mr" };
   cacheContent = $cache.get("cacheContent") || "视频";
+  contentExist = false
+  filterExist = false
 }
 
 function scriptVersionUpdate() {
@@ -878,7 +958,6 @@ function scriptVersionUpdate() {
     url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/updateInfo",
     handler: function(resp) {
       var afterVersion = resp.data.version;
-      $ui.action(afterVersion)
       var msg = resp.data.msg;
       if (afterVersion > version) {
         $ui.alert({
