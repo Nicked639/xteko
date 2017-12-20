@@ -169,19 +169,19 @@ const contentView = {
       }],
     },
     events: {
-         didSelect(sender,indexPath,data){
-           $device.taptic(0);
-           $("content").remove();
-           contentExist = false;
-           if ($("player")) {
+      didSelect(sender, indexPath, data) {
+        $device.taptic(0);
+        $("content").remove();
+        contentExist = false;
+        if ($("player")) {
           $("player").stopLoading();
           $("player").remove()
         };
         $("search").text = "";
         mode = "Home";
-         }
+      }
     },
-  layout: function(make, view) {
+    layout: function(make, view) {
       make.top.inset(0)
       make.left.inset(0)
       make.width.equalTo(100)
@@ -218,19 +218,45 @@ const contentView = {
           $("filter").remove();
           filterExist = false;
         }
-        if (LocalData.favorite.length == 0) {
+        if (LocalFavList.length == 0) {
           $ui.alert("Get Some Favorites!")
           return
         }
         $("videos").contentOffset = $point(0, 0);
         mode = "Favorite";
-        $("search").placeholder = "共有 " + LocalData.favorite.length + " 个收藏"
+        $("search").placeholder = "共有 " + LocalFavList.length + " 个收藏"
         $("videos").data = [];
-        $ui.toast("收藏加载中...",100)
-        LocalData.favorite.map(function(i) {
-          getVidData(i)
+LocalData.favorite.map(function(i) {
+          $("videos").data = $("videos").data.concat({
+            interface: {
+              src: i.image
+            },
+            title: {
+              text: i.title
+            },
+            time: {
+              text: i.time
+            },
+            duration: {
+              text: i.duration
+            },
+            like: {
+              text: i.like,
+              alpha: 0.7
+
+            },
+            hd: {
+              hidden: i.hd
+            },
+            favorite: {
+              title: "😍",
+              info: i
+            },
+            share:{
+              info:i.vid
+            }
+          });
         });
-        $ui.toast("",0.1)
       }
     }
   }],
@@ -252,10 +278,13 @@ const template = [{
     type: "image",
     props: {
       id: "interface",
+      radius: 5
     },
     layout: function(make, view) {
+      var scale = 16 / 9;
       make.top.left.right.inset(10)
-      make.bottom.inset(55)
+      make.height.equalTo(view.width).dividedBy(scale)
+      //make.bottom.inset(55)
     }
   }, {
     type: "label",
@@ -276,7 +305,7 @@ const template = [{
       font: $font(13)
     },
     layout: function(make, view) {
-      make.top.equalTo($("title").bottom).offset(3)
+      make.bottom.inset(10)
       make.left.inset(10)
     }
   }, {
@@ -287,7 +316,7 @@ const template = [{
       font: $font(12),
     },
     layout: function(make, view) {
-      make.top.equalTo($("title").bottom).offset(4)
+      make.bottom.inset(10)
       make.right.inset(10)
     }
   }, {
@@ -346,28 +375,34 @@ const template = [{
       tapped(sender) {
         //favButtonTapped(sender);
         //$ui.action($props(sender.data))
-        var vid = sender.info;
+        if ($("player")) {
+              $("player").stopLoading();
+              $("player").remove()
+            };
+        var info = sender.info;
         var data = $("videos").data;
         var cell = sender.super.super.super;
         var view = $("videos").runtimeValue();
-        var index = view.invoke("indexPathForCell",cell).rawValue();
+        var index = view.invoke("indexPathForCell", cell).rawValue();
         var idx = index.row;
         if (sender.title == "🤔") {
-              data[idx].favorite.title = "😍"
-              LocalData.favorite.push(vid);
-  writeCache();
-              $ui.toast("😍 已收藏！", 1)
-            } else {
-              data[idx].favorite.title = "🤔"
-               var idxx = LocalData.favorite.indexOf(vid);
-  LocalData.favorite.splice(idxx, 1);
-  writeCache()
-              $ui.toast("🤔 已取消！", 1)
-            }
-            if (mode == "Favorite") {
-              $("search").placeholder = "共有 " + LocalData.favorite.length + " 个收藏"
-            }
-        
+          data[idx].favorite.title = "😍";
+          LocalData.favorite.push(info);
+          LocalFavList.push(info.vid)
+          writeCache();
+          $ui.toast("😍 已收藏！", 1)
+        } else {
+          data[idx].favorite.title = "🤔"
+          var idxx = LocalFavList.indexOf(info.vid);
+          LocalFavList.splice(idxx,1);
+          LocalData.favorite.splice(idxx, 1);
+          writeCache()
+          $ui.toast("🤔 已取消！", 1)
+        }
+        if (mode == "Favorite") {
+          $("search").placeholder = "共有 " + LocalFavList.length + " 个收藏"
+        }
+
         /*
         var length = data.length;
         for (var i = 0; i < length; i++) {
@@ -414,7 +449,7 @@ const template = [{
     },
     events: {
       tapped(sender) {
-         $share.sheet("https://avgle.com/video/"+sender.info)
+        $share.sheet("https://avgle.com/video/" + sender.info)
       }
     }
 
@@ -512,10 +547,19 @@ $ui.render({
             $("content").remove();
             contentExist = false
           }
-          if(filterExist){
+          if (filterExist) {
             $("filter").remove()
             filterExist = false;
             return
+          }
+          if(mode == "Favorite"){
+            mode = "Home";
+            $("videos").data = [];
+            $ui.toast("载入中...",10);
+getPostData(cacheFilters.Time, cacheFilters.View);
+        $("videos").contentOffset = $point(0, 0);
+        $ui.toast("",0.1)
+        return
           }
 
           $("Avgle").add(filterView);
@@ -563,7 +607,6 @@ $ui.render({
         id: "contentButton",
         bgcolor: $color("#dddddd"),
         icon: $icon("067", $color("#ffffff"))
-        //src:"https://avgle.com/images/logo/logo.png"
       },
       layout: function(make, view) {
         make.top.inset(12)
@@ -631,7 +674,7 @@ $ui.render({
           if ($("filter")) {
             $("filter").remove()
           }
-          var url = encodeURI(data.videoUrl);
+          var url = "https://avgle.com/video/"+data.share.info;
           play(url, indexPath, data.interface.src)
 
         },
@@ -657,9 +700,23 @@ $ui.render({
           }
           sender.super.super.views[0].text = "";
           page = -1
-          mode = "Home"
-          $("videos").data = []
-          getPostData(cacheFilters.Time, cacheFilters.View);
+          if (mode == "Home") {
+            $("videos").data = []
+            getPostData(cacheFilters.Time, cacheFilters.View);
+            $("videos").endRefreshing();
+          } else if (mode == "Favorite") {
+            $("search").placeholder = "共有 " + LocalData.favorite.length + " 个收藏"
+            $("videos").data = [];
+            var temp = LocalFavList;
+            tempList = [];
+            tempData = {"favorite":[]};
+            temp.map(function(i) {
+              getVidData(i)
+            });
+            $("videos").endRefreshing();
+            
+
+          }
 
         },
         willBeginDragging(sender) {
@@ -736,7 +793,6 @@ function getPostData(filterT, filterV) {
           time: {
             text: formatTime(i.addtime)
           },
-          videoUrl: i.video_url,
           duration: {
             text: formatDuration(i.duration)
           },
@@ -748,11 +804,19 @@ function getPostData(filterT, filterV) {
             hidden: i.hd == true ? false : true
           },
           favorite: {
-            title: LocalData.favorite.indexOf(i.vid) > -1 ? "😍" : "🤔",
-            info: i.vid
+            title: LocalFavList.indexOf(i.vid) > -1 ? "😍" : "🤔",
+            info: {
+              title: i.title,
+              image: i.preview_url,
+              time: formatTime(i.addtime),
+              duration: formatDuration(i.duration),
+              like: "❤️ " + i.likes + " 🖤 " + i.dislikes + " ▶️ " + i.viewnumber,
+              hd: i.hd == true ? false : true,
+              vid:i.vid
+            }
           },
-          share:{
-            info:i.vid
+          share: {
+            info: i.vid
           }
         })
       })
@@ -765,7 +829,6 @@ function getPostData(filterT, filterV) {
         $("search").placeholder = filterName[filterT] + " " + video_num + " 个视频 "
       }
 
-      $("videos").endRefreshing();
     }
   })
 }
@@ -775,13 +838,22 @@ function getVidData(vid) {
   $http.request({
     url: url,
     handler: function(resp) {
-       var success = resp.data.success;
+      var success = resp.data.success;
       if (!success || !resp.response) {
         $ui.alert("❌ 网络连接出错！");
         //$ui.toast("",0.1)
         return
       }
       var i = resp.data.response.video;
+      var info = {
+              title: i.title,
+              image: i.preview_url,
+              time: formatTime(i.addtime),
+              duration: formatDuration(i.duration),
+              like: "❤️ " + i.likes + " 🖤 " + i.dislikes + " ▶️ " + i.viewnumber,
+              hd: i.hd == true ? false : true,
+              vid:i.vid
+            };
       $("videos").data = $("videos").data.concat({
         interface: {
           src: i.preview_url
@@ -792,7 +864,6 @@ function getVidData(vid) {
         time: {
           text: formatTime(i.addtime)
         },
-        videoUrl: i.video_url,
         duration: {
           text: formatDuration(i.duration)
         },
@@ -805,12 +876,21 @@ function getVidData(vid) {
         },
         favorite: {
           title: "😍",
-          info: vid
+          info: info
         },
-        share:{
-          info:vid
+        share: {
+          info: i.vid
         }
-      })
+      });
+      if(mode == "Favorite"){
+        tempList.push(i.vid);
+              tempData.favorite.push(info)
+              if(tempList.length == LocalFavList.length){
+              LocalFavList = tempList;
+    LocalData = tempData;
+            }
+            writeCache();
+              };
 
     }
   })
@@ -838,15 +918,14 @@ function formatTime(ns) {
   var myTime = Math.floor(new Date() / 1000);
   var timeDiff = myTime - ns
   if (timeDiff / 60 < 60) {
-    return Math.floor(timeDiff / 60) + " minutes ago"
+    return Math.floor(timeDiff / 60) + " 分钟前"
   } else if (timeDiff / 3600 < 24) {
-    return Math.floor(timeDiff / 3600) + " hours ago"
+    return Math.floor(timeDiff / 3600) + " 小时前"
   } else {
-    return Math.floor(timeDiff / 3600 / 25) + " days ago"
+    return Math.floor(timeDiff / 3600 / 25) + " 天前"
   }
 
 }
-
 
 function writeCache() {
   $file.write({
@@ -916,9 +995,10 @@ function play(url, indexPath, poster) {
           src: videoUrl,
           poster: poster,
         },
-        layout: function(make) {
+        layout: function(make,view) {
+          var scale = 16/9;
           make.top.left.right.inset(10)
-          make.bottom.inset(52)
+          make.height.equalTo(view.width).dividedBy(scale);
         }
       });
     }
@@ -943,9 +1023,11 @@ function openURL(title, url) {
 function initial() {
   if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
+    LocalFavList = LocalData.favorite.map(i => i.vid);
 
   } else {
     LocalData = { "favorite": [] };
+    LocalFavList = [];
   };
   cacheFilters = $cache.get("cacheFilters") || { "Time": "a", "View": "mr" };
   cacheContent = $cache.get("cacheContent") || "视频";
