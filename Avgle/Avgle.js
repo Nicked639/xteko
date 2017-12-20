@@ -888,8 +888,8 @@ function getVidData(vid) {
               if(tempList.length == LocalFavList.length){
               LocalFavList = tempList;
     LocalData = tempData;
+    writeCache();
             }
-            writeCache();
               };
 
     }
