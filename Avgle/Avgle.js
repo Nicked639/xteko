@@ -5,7 +5,7 @@
 
  庞大的在线片源库：
 
- 骑兵、步兵、大陆、日韩、欧美，近9万部影片且日日更新。
+ 骑兵、步兵、日韩、欧美，近9万部影片日日更新。
 
  脚本特点：
 
@@ -28,10 +28,10 @@ const filters = {
     "本月新增": "m"
   },
   "View": {
-    "按新添加": "mr",
-    "按观看量": "mv",
-    "按评论量": "md",
-    "按喜欢量": "tf"
+    "最新添加": "mr",
+    "最多观看": "mv",
+    "最多评论": "md",
+    "最多喜欢": "tf"
   }
 }
 const filterName = {
@@ -63,7 +63,7 @@ const filterView = {
     type: "list",
     props: {
       id: "filtersT",
-      separatorHidden: true,
+      //separatorHidden: true,
       rowHeight: 30,
       bgcolor: $color("white"),
       template: [{
@@ -108,14 +108,15 @@ const filterView = {
     },
     layout: function(make, view) {
       make.top.inset(0)
-      make.left.right.inset(0)
-      make.height.equalTo(121)
+      make.left.inset(0)
+      make.width.equalTo(100)
+      make.height.equalTo(140)
     }
   }, {
     type: "list",
     props: {
       id: "filtersV",
-      separatorHidden: true,
+      //separatorHidden: true,
       rowHeight: 30,
       bgcolor: $color("white"),
       template: [{
@@ -165,15 +166,16 @@ const filterView = {
 
     },
     layout: function(make, view) {
-      make.top.inset(130)
-      make.left.right.inset(0)
-      make.height.equalTo(120)
+      make.top.inset(0)
+      make.left.equalTo($("filtersT").right)
+      make.right.inset(0)
+      make.height.equalTo(140)
     }
   }],
   layout: function(make, view) {
     make.top.inset(45)
     make.left.inset(15)
-    make.width.equalTo(120)
+    make.width.equalTo(200)
     make.height.equalTo(0)
   }
 }
@@ -729,7 +731,7 @@ const statusView = {
             }
           })
         })
-        $("filtersT").data = data
+        $("filtersT").data = [{title:"    时间线",rows:data}]
         data = []
         Object.keys(filters.View).map(function(i) {
           data.push({
@@ -740,10 +742,10 @@ const statusView = {
             }
           })
         })
-        $("filtersV").data = data
+        $("filtersV").data = [{title:"   影片类型",rows:data}]
         filterExist = true;
         $("filterView").updateLayout(function(make) {
-          make.height.equalTo(250)
+          make.height.equalTo(145)
         });
       }
     }
@@ -784,11 +786,11 @@ const statusView = {
             }
           })
         })
-        $("contentList").data = data
+        $("contentList").data = [{title:"       出处",rows:data}];
         contentExist = true
         //$ui.action(data)
         $("contentView").updateLayout(function(make) {
-          make.height.equalTo(120)
+          make.height.equalTo(145)
         });
       }
     }
@@ -1421,6 +1423,7 @@ function initial() {
   contentMode = "Videos";
   VFExist = true; // videos and favorites
   CCExist = false; // categories and collections 
+  page = -1;
   $app.tips("本脚本运行需要翻墙，请将\n https://avgle.com \n加入到翻墙列表。")
 }
 
@@ -1452,16 +1455,14 @@ function scriptVersionUpdate() {
 
 function main() {
   initial();
-  page = -1;
   var search = clipboardDetect()
   if (!search) {
     mode = "Videos";
-    getVideoData();
   } else {
     mode = "Search";
-    getVideoData();
     $("search").text = keyword;
   }
+  getVideoData();
 }
 
 LocalDataPath = "drive://Avgle.json";
