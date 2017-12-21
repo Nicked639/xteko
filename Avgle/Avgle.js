@@ -1,4 +1,19 @@
-version = 1.2
+/*
+ Avgle X JSBox
+
+ 你口袋里的观影利器。
+
+ 庞大的在线片源库：
+
+ 骑兵、步兵、大陆、日韩、欧美，近9万部影片且日日更新。
+
+ 脚本特点：无广告困扰，想看就看；基本还原官网功能，方便省心。
+
+ 作者联系：https://t.me/nicked
+
+*/
+
+version = 1.3
 const filters = {
   "Time": {
     "全部视频": "a",
@@ -25,7 +40,9 @@ const filterName = {
   "tf": "Top Favorites"
 }
 
+
 const content = ["视频", "合集", "分类", "收藏夹"]
+
 
 const filterView = {
   type: "view",
@@ -63,25 +80,29 @@ const filterView = {
           $("player").stopLoading();
           $("player").remove()
         };
-        $("search").text = "";
-        mode = "Videos";
         $device.taptic(0);
-        $("filterView").remove();
-        filterExist = false
-        $("videos").data = [];
-
         cacheFilters.Time = filters.Time[data.filterLabel.text];
+        $("filterView").remove();
+        filterExist = false;
+        $("videos").contentOffset = $point(0, 0);
         $cache.set("cacheFilters", cacheFilters);
         page = -1;
-        getVideoData(cacheFilters.Time, cacheFilters.View);
-        $("videos").contentOffset = $point(0, 0);
+        $("videos").data = [];
+        if(mode == "Cat"){
+          getVideoData();
+        } else if (mode == "Search"){
+          getVideoData();
+        }else{
+          $("search").text = "";
+          mode = "Videos";
+          getVideoData();
+        }
       },
 
     },
     layout: function(make, view) {
       make.top.inset(0)
-      make.right.inset(0)
-      make.width.equalTo(120)
+      make.left.right.inset(0)
       make.height.equalTo(121)
     }
   }, {
@@ -111,24 +132,35 @@ const filterView = {
           $("player").stopLoading();
           $("player").remove()
         };
-        $("search").text = "";
-        mode = "Videos";
         $device.taptic(0);
         $("filterView").remove();
         filterExist = false;
-        $("videos").data = [];
         cacheFilters.View = filters.View[data.filterLabel.text];
         $cache.set("cacheFilters", cacheFilters);
-        page = -1;
-        getVideoData(cacheFilters.Time, cacheFilters.View);
+        if(contentMode == "Collections"){
+          page = -1
+          $("CCMatrix").contentOffset = $point(0, 0);
+          getCollectionData()
+          return
+        }
         $("videos").contentOffset = $point(0, 0);
+        page = -1;
+        $("videos").data = [];
+        if(mode == "Cat"){
+          getVideoData();
+        } else if (mode == "Search"){
+          getVideoData();
+        }else {
+          $("search").text = "";
+          mode = "Videos";
+          getVideoData();         
+        }
       },
 
     },
     layout: function(make, view) {
       make.top.inset(130)
-      make.right.inset(0)
-      make.width.equalTo(120)
+      make.left.right.inset(0)
       make.height.equalTo(120)
     }
   }],
@@ -193,10 +225,12 @@ const contentView = {
           $("videos").contentOffset = $point(0, 0);
           $("videos").data = [];
           page = -1;
-          getVideoData(cacheFilters.Time, cacheFilters.View);
+          getVideoData();
         } else if (c == "合集") {
           cacheContent = "合集";
           $cache.set("cacheContent", cacheContent);
+          cacheFilters.View = "mr";
+          $cache.set("cacheFiltes",cacheFilters)
           contentMode = "Collections";
           if (VFExist == true) {
             VFExist = false;
@@ -218,7 +252,7 @@ const contentView = {
             CCExist = true;
             $("Avgle").add(CCView)
           }
-          //$("CCMatrix").contentOffset = $point(0, 0);   
+          $("CCMatrix").contentOffset = $point(0, 0);   
           getCategoryData()
         } else if (c == "收藏夹") {
           cacheContent = "收藏夹";
@@ -293,7 +327,7 @@ const contentView = {
   }
 }
 
-const template = [{  // Video and Favorite                                                         
+const template = [{ // Video and Favorite                                                         
   type: "view",
   props: {
     bgcolor: $color("white"),
@@ -460,7 +494,7 @@ const template = [{  // Video and Favorite
   layout: $layout.fill
 }]
 
-const templateC = [{  // Catagory and Collection
+const templateC = [{ // Catagory and Collection
   type: "view",
   props: {
     bgcolor: $color("white"),
@@ -471,7 +505,7 @@ const templateC = [{  // Catagory and Collection
     props: {
       id: "interface",
       radius: 5,
-      bgcolor:$color("white")
+      bgcolor: $color("white")
     },
     layout: function(make, view) {
       var scale = 16 / 9;
@@ -550,7 +584,8 @@ const templateC = [{  // Catagory and Collection
     layout: function(make, view) {
       make.top.inset(4)
       make.left.equalTo($("totalViews").right).offset(-18)
-    },events: {
+    },
+    events: {
       tapped(sender) {
         $share.sheet(sender.info)
       }
@@ -620,13 +655,16 @@ const statusView = {
           $("videos").contentOffset = $point(0, 0);
           $("videos").data = [];
           page = -1;
-          getVideoData(keyword, "")
+          cacheFilters.Time = "a";
+          cacheFilters.View = "mr"
+          $cache.set("cacheFilters",cacheFilters)
+          getVideoData()
         } else {
           mode = "Videos";
           $("videos").contentOffset = $point(0, 0);
           $("videos").data = [];
           page = -1;
-          getVideoData(cacheFilters.Time, cacheFilters.View);
+          getVideoData();
         }
       }
     }
@@ -655,27 +693,25 @@ const statusView = {
           filterExist = false;
           return
         }
-
-        if(contentMode !== "Videos"){
-          if(CCExist){
+        if (contentMode !== "Videos") {
+          if (CCExist) {
             $("CCView").remove();
             CCExist = false
             $("Avgle").add(VFView);
             VFExist = true;
-
           }
           contentMode = "Videos";
           cacheContent = "视频";
-          $cache.set("cacheContent", cacheContent); 
-          mode = "Videos"       
+          $cache.set("cacheContent", cacheContent);
+          mode = "Videos"
           page = -1;
           $("videos").data = [];
           $ui.toast("载入中...", 10);
-          getVideoData(cacheFilters.Time, cacheFilters.View);
+          getVideoData();
           $("videos").contentOffset = $point(0, 0);
           $ui.toast("", 0.1)
-          return 
-        }       
+          return
+        }
         $("Avgle").add(filterView);
         var data = []
         Object.keys(filters.Time).map(function(i) {
@@ -699,17 +735,9 @@ const statusView = {
           })
         })
         $("filtersV").data = data
-        //$ui.action(data)
         filterExist = true;
         $("filterView").updateLayout(function(make) {
           make.height.equalTo(250)
-        });
-
-        $ui.animate({
-          duration: 0.3,
-          animation: function() {
-            $("filterView").relayout()
-          }
         });
       }
     }
@@ -756,25 +784,18 @@ const statusView = {
         $("contentView").updateLayout(function(make) {
           make.height.equalTo(120)
         });
-
-        $ui.animate({
-          duration: 0.3,
-          animation: function() {
-            $("contentView").relayout()
-          }
-        });
       }
     }
 
   }, {
-    type:"label",
-    props:{
-      id:"searchResult",
-      font:$font(14),
-      textColor:$color("#cccccc"),
-      text:""
+    type: "label",
+    props: {
+      id: "searchResult",
+      font: $font(14),
+      textColor: $color("#cccccc"),
+      text: ""
     },
-    layout:function(make,view){
+    layout: function(make, view) {
       make.right.equalTo($("search").right).offset(-5)
       make.top.equalTo(17)
     }
@@ -787,13 +808,13 @@ const statusView = {
 
 }
 
-const VFView = {  // Video and Favorite
+const VFView = { // Video and Favorite
   type: "view",
   props: {
     id: "VFView",
     bgcolor: $color("#dddddd"),
   },
-  views: [{
+  views: [statusView,{
     type: "matrix",
     props: {
       id: "videos",
@@ -804,14 +825,17 @@ const VFView = {  // Video and Favorite
       bgcolor: $color("#dddddd"),
       template: template,
     },
-    layout: $layout.fill,
+    layout: function(make, view) {
+      make.left.right.bottom.inset(0)
+      make.top.equalTo($("statusView").bottom).offset(0)
+    },
     events: {
       didSelect(sender, indexPath, data) {
         if (filterExist) {
           $("filterView").remove();
           filterExist = false;
         }
-        if(contentExist){
+        if (contentExist) {
           $("contentView").remove();
           contentExist = false;
         }
@@ -821,13 +845,13 @@ const VFView = {  // Video and Favorite
       },
       didReachBottom(sender) {
         sender.endFetchingMore();
-        if(contentMode == "Favorites"){
+        if (contentMode == "Favorites") {
           return
         }
         if (mode == "Search") {
           getVideoData(keyword, "")
         } else {
-          getVideoData(cacheFilters.Time, cacheFilters.View);
+          getVideoData();
         }
       },
       pulled(sender) {
@@ -841,10 +865,11 @@ const VFView = {  // Video and Favorite
         }
         $("search").text = "";
         page = -1
-        $("videos").data = []
-        if(contentMode == "Videos"){
-          getVideoData(cacheFilters.Time, cacheFilters.View);
-        }else{
+        $("videos").data = [];
+        mode = "Videos";
+        if (contentMode == "Videos") {
+          getVideoData();
+        } else {
           $("search").placeholder = "共计 " + LocalData.favorite.length + " 个收藏";
           $("searchResult").text = "";
           var temp = LocalFavList;
@@ -881,10 +906,7 @@ const VFView = {  // Video and Favorite
 
     }
   }, ],
-  layout: function(make, view) {
-    make.left.right.bottom.inset(0)
-    make.top.equalTo($("statusView").bottom).offset(0)
-  }
+  layout:$layout.fill
 }
 
 const CCView = { // category and collection
@@ -893,7 +915,7 @@ const CCView = { // category and collection
     id: "CCView",
     bgcolor: $color("#dddddd"),
   },
-  views: [{
+  views: [statusView,{
     type: "matrix",
     props: {
       id: "CCMatrix",
@@ -904,18 +926,36 @@ const CCView = { // category and collection
       bgcolor: $color("#dddddd"),
       template: templateC,
     },
-    layout: $layout.fill,
+    layout: function(make, view) {
+      make.left.right.bottom.inset(0)
+      make.top.equalTo($("statusView").bottom).offset(0)
+    },
     events: {
       didSelect(sender, indexPath, data) {
         if (filterExist) {
           $("filterView").remove();
           filterExist = false;
         }
-        if(contentExist){
+        if (contentExist) {
           $("contentView").remove();
           contentExist = false;
         }
-        $ui.action(data.info)
+        if(contentMode == "Categories"){
+          mode = "Cat"
+          page = -1;
+          CHID = data.info
+          $("CCView").remove()
+          CCExist = false
+          $("Avgle").add(VFView);
+          VFExist = true;    
+          $("videos").data = [];
+          $("videos").contentOffset = $point(0,0);
+          cacheFilters.Time = "a"
+          cacheFilters.View = "mr"
+          $cache.set("cacheFilters",cacheFilters)
+          getVideoData(CHID)
+          contentMode = "Videos";
+        }
 
       },
       didReachBottom(sender) {
@@ -960,12 +1000,8 @@ const CCView = { // category and collection
 
     }
   }, ],
-  layout: function(make, view) {
-    make.left.right.bottom.inset(0)
-    make.top.equalTo($("statusView").bottom).offset(0)
-  }
+  layout: $layout.fill
 }
-
 
 $ui.render({
   props: {
@@ -973,30 +1009,35 @@ $ui.render({
     bgcolor: $color("#dddddd"),
     id: "Avgle"
   },
-  views: [statusView],
+  views: [VFView],
   layout: $layout.fill
 })
 
-function getVideoData(filterT, filterV) {
+function getVideoData() {
   //$ui.toast("载入中...", 10);
   $ui.loading(true)
   page++;
-  if (mode == "Search") {
-    url = "https://api.avgle.com/v1/search/" + keyword + "/" + page + "?limit=10"
-  } else {
-    url = "https://api.avgle.com/v1/videos/" + page + "?limit=10&t=" + filterT + "&o=" + filterV;
+  if(mode == "Cat"){
+    url = "https://api.avgle.com/v1/videos/"+page+"?limit=10&c="+CHID+"&t="+ cacheFilters.Time + "&o=" +cacheFilters.View;
+  }else{
+    if (mode == "Search") {
+      url = "https://api.avgle.com/v1/search/" + keyword + "/" + page + "?limit=10&t=" + cacheFilters.Time + "&o=" +cacheFilters.View
+    } else {
+      url = "https://api.avgle.com/v1/videos/" + page + "?limit=10&t=" + cacheFilters.Time + "&o=" + cacheFilters.View;
+    }
+    if (VFExist == false) {
+      VFExist = true
+      $("Avgle").add(VFView)
+      cacheContent = "视频";
+      $cache.set("cacheContent", cacheContent);
+    }
   }
-  if (VFExist == false) {
-    VFExist = true
-    $("Avgle").add(VFView)
-    cacheContent = "视频";
-    $cache.set("cacheContent", cacheContent);
-  }
+  
   $http.request({
     url: url,
-    timeout: 3,
+    timeout: 5,
     handler: function(resp) {
-      //$ui.action(resp.error)
+      //$ui.action(resp.err)
       var success = resp.data.success;
       if (!success || !resp.response) {
         $ui.alert("❌ 网络连接出错！");
@@ -1058,10 +1099,14 @@ function getVideoData(filterT, filterV) {
       //$ui.toast("", 0.1);
       $ui.loading(false);
       if (mode == "Search") {
-        $("searchResult").text = "找到 " + video_num + " 个视频";
+        $("searchResult").text = filterName[cacheFilters.Time]+"找到 " + video_num + " 个视频";
         $("search").placeholder = "";
       } else {
-        $("search").placeholder = filterName[filterT] + " " + video_num + " 个视频 ";
+        if(mode == "Cat"){
+          $("search").placeholder = "该分类"+filterName[cacheFilters.Time] + " " + video_num + " 个视频 ";
+        }else{
+          $("search").placeholder = filterName[cacheFilters.Time] + " " + video_num + " 个视频 ";
+        }
         $("searchResult").text = "";
       }
 
@@ -1140,7 +1185,7 @@ function getCollectionData() {
   page++;
   $http.request({
     url: "https://api.avgle.com/v1/collections/" + page + "?limit=10",
-    timeout: 3,
+    timeout: 5,
     handler: function(resp) {
       var success = resp.data.success;
       if (!success || !resp.response) {
@@ -1166,13 +1211,13 @@ function getCollectionData() {
           },
           totalViews: {
             text: formatNum(i.total_views),
-            hidden:false,
+            hidden: false,
           },
-          playButton:{
-            hidden:false,
+          playButton: {
+            hidden: false,
             info: i.collection_url
           },
-          info: i.collection_url
+          info: i.keyword
 
         })
       })
@@ -1190,7 +1235,7 @@ function getCategoryData() { // category and collection
   url = "https://api.avgle.com/v1/categories"
   $http.request({
     url: url,
-    timeout: 3,
+    timeout: 5,
     handler: function(resp) {
       var success = resp.data.success;
       if (!success || !resp.response) {
@@ -1210,14 +1255,15 @@ function getCategoryData() { // category and collection
           },
           totalVideos: {
             text: formatNum(i.total_videos)
-          },totalViews: {
-           
-            hidden:true,
           },
-          playButton:{
-            hidden:true
+          totalViews: {
+
+            hidden: true,
           },
-          info: i.category_url
+          playButton: {
+            hidden: true
+          },
+          info: i.CHID
         })
       })
       $("search").text = ""
@@ -1258,14 +1304,15 @@ function formatTime(ns) {
 
 }
 
-function formatNum(num){
-  var num = (num || 0).toString(), result = '';
-    while (num.length > 3) {
-        result = ',' + num.slice(-3) + result;
-        num = num.slice(0, num.length - 3);
-    }
-    if (num) { result = num + result; }
-    return result;
+function formatNum(num) {
+  var num = (num || 0).toString(),
+    result = '';
+  while (num.length > 3) {
+    result = ',' + num.slice(-3) + result;
+    num = num.slice(0, num.length - 3);
+  }
+  if (num) { result = num + result; }
+  return result;
 }
 
 function writeCache() {
@@ -1360,8 +1407,9 @@ function initial() {
   contentExist = false;
   filterExist = false;
   contentMode = "Videos";
-  VFExist = true;  // videos and favorites
+  VFExist = true; // videos and favorites
   CCExist = false; // categories and collections 
+  $app.tips("本脚本运行需要翻墙，请将\n https://avgle.com \n加入到翻墙列表。")
 }
 
 function scriptVersionUpdate() {
@@ -1377,7 +1425,7 @@ function scriptVersionUpdate() {
           actions: [{
             title: "更新",
             handler: function() {
-              var url = "pin://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/Avgle.js&name=Avgle" + afterVersion + "&icon=icon_135.png";
+              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/Avgle.js&name=Avgle" + afterVersion + "&icon=icon_135.png";
               $app.openURL(encodeURI(url));
               $app.close()
             }
@@ -1396,13 +1444,10 @@ function main() {
   var search = clipboardDetect()
   if (!search) {
     mode = "Videos";
-    //$ui.push(VFView)
-    $("Avgle").add(VFView);
-    //$("VFView").remove()
-    getVideoData(cacheFilters.Time, cacheFilters.View);
+    getVideoData();
   } else {
     mode = "Search";
-    getVideoData(keyword, "");
+    getVideoData();
     $("search").text = keyword;
   }
 }
