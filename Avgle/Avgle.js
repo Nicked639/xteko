@@ -7,7 +7,13 @@
 
  骑兵、步兵、大陆、日韩、欧美，近9万部影片且日日更新。
 
- 脚本特点：无广告困扰，想看就看；基本还原官网功能，方便省心。
+ 脚本特点：
+
+ 1.无广告困扰，想看就看；
+
+ 2.基本还原官网功能，方便省心;
+
+ 3.支持收藏，方便巩固温习。
 
  作者联系：https://t.me/nicked
 
@@ -849,7 +855,7 @@ const VFView = { // Video and Favorite
           return
         }
         if (mode == "Search") {
-          getVideoData(keyword, "")
+          getVideoData()
         } else {
           getVideoData();
         }
@@ -940,21 +946,27 @@ const CCView = { // category and collection
           $("contentView").remove();
           contentExist = false;
         }
+        $("CCView").remove()
+        CCExist = false
+        $("Avgle").add(VFView);
+        VFExist = true;   
+        page = -1; 
+        $("videos").data = [];
+        $("videos").contentOffset = $point(0,0);
+        cacheFilters.Time = "a"
+        cacheFilters.View = "mr"
+        $cache.set("cacheFilters",cacheFilters)
         if(contentMode == "Categories"){
-          mode = "Cat"
-          page = -1;
-          CHID = data.info
-          $("CCView").remove()
-          CCExist = false
-          $("Avgle").add(VFView);
-          VFExist = true;    
-          $("videos").data = [];
-          $("videos").contentOffset = $point(0,0);
-          cacheFilters.Time = "a"
-          cacheFilters.View = "mr"
-          $cache.set("cacheFilters",cacheFilters)
-          getVideoData(CHID)
           contentMode = "Videos";
+          mode = "Cat"
+          CHID = data.info
+          getVideoData()
+        }else if(contentMode == "Collections"){
+          contentMode = "Videos";
+          mode = "Search"
+          keyword = encodeURI(data.info)
+          $("search").text = data.info
+          getVideoData()
         }
 
       },
