@@ -30,7 +30,7 @@ const content = ["视频", "合集", "分类", "收藏夹"]
 const filterView = {
   type: "view",
   props: {
-    id: "filter",
+    id: "filterView",
     radius: 7,
     bgcolor: $color("white"),
     borderWidth: 1,
@@ -66,7 +66,7 @@ const filterView = {
         $("search").text = "";
         mode = "Videos";
         $device.taptic(0);
-        $("filter").remove();
+        $("filterView").remove();
         filterExist = false
         $("videos").data = [];
 
@@ -114,7 +114,7 @@ const filterView = {
         $("search").text = "";
         mode = "Videos";
         $device.taptic(0);
-        $("filter").remove();
+        $("filterView").remove();
         filterExist = false;
         $("videos").data = [];
         cacheFilters.View = filters.View[data.filterLabel.text];
@@ -143,7 +143,7 @@ const filterView = {
 const contentView = {
   type: "view",
   props: {
-    id: "content",
+    id: "contentView",
     radius: 7,
     bgcolor: $color("white"),
     borderWidth: 1,
@@ -171,7 +171,7 @@ const contentView = {
     events: {
       didSelect(sender, indexPath, data) {
         $device.taptic(0);
-        $("content").remove();
+        $("contentView").remove();
         contentExist = false;
         if ($("player")) {
           $("player").stopLoading();
@@ -186,14 +186,9 @@ const contentView = {
           if (CCExist == true) {
             CCExist = false;
             $("CCView").remove()
-          } else if (favoritesExist == true) {
-            favoritesExist = false;
-            $("favoriteView").remove()
-          } else {
-            videosExist = true;
-            $("Avgle").add(videoView);
+            VFExist = true;
+            $("Avgle").add(VFView);
           }
-
           mode = "Videos";
           $("videos").contentOffset = $point(0, 0);
           $("videos").data = [];
@@ -203,11 +198,9 @@ const contentView = {
           cacheContent = "合集";
           $cache.set("cacheContent", cacheContent);
           contentMode = "Collections";
-          if (videosExist == true) {
-            videosExist = false;
-            $("videoView").remove()
-          }
-          if (!CCExist) {
+          if (VFExist == true) {
+            VFExist = false;
+            $("VFView").remove()
             CCExist = true;
             $("Avgle").add(CCView)
           }
@@ -219,11 +212,9 @@ const contentView = {
           cacheContent = "分类";
           $cache.set("cacheContent", cacheContent);
           contentMode = "Categories"
-          if (videosExist == true) {
-            videosExist = false;
-            $("videoView").remove()
-          }
-          if (!CCExist) {
+          if (VFExist == true) {
+            VFExist = false;
+            $("VFView").remove()
             CCExist = true;
             $("Avgle").add(CCView)
           }
@@ -233,33 +224,23 @@ const contentView = {
           cacheContent = "收藏夹";
           $cache.set("cacheContent", cacheContent);
           contentMode = "Favorites"
-          if (videosExist == true) {
-            videosExist = false;
-            $("videoView").remove()
-          }
           if (CCExist == true) {
             CCExist = false;
             $("CCView").remove()
-          }
-          if (favoritesExist == false) {
-            favoritesExist = true;
-            $("Avgle").add(favoriteView);
+            VFExist = true;
+            $("Avgle").add(VFView);
           }
           $("search").text = "";
           $device.taptic(0);
           sender.super.remove();
           contentExist = false;
-          if (filterExist) {
-            $("filter").remove();
-            filterExist = false;
-          }
           if (LocalFavList.length == 0) {
             $ui.alert("Get Some Favorites!")
             return
           }
           $("videos").contentOffset = $point(0, 0);
-          //mode = "Favorite";
           $("search").placeholder = "共计 " + LocalFavList.length + " 个收藏"
+          $("searchResult").text = "";
           $("videos").data = [];
           LocalData.favorite.map(function(i) {
             $("videos").data = $("videos").data.concat({
@@ -312,7 +293,7 @@ const contentView = {
   }
 }
 
-const template = [{
+const template = [{  // Video and Favorite                                                         
   type: "view",
   props: {
     bgcolor: $color("white"),
@@ -446,9 +427,10 @@ const template = [{
           $ui.toast("🤔 已取消！", 1)
         }
         if (contentMode == "Favorites") {
-          $("search").placeholder = "共计 " + LocalFavList.length + " 个收藏"
+          $("search").placeholder = "共计 " + LocalFavList.length + " 个收藏";
+          $("searchResult").text = "";
         }
-        $("videos").data = data
+        $("videos").data = data;
       }
     }
 
@@ -478,7 +460,7 @@ const template = [{
   layout: $layout.fill
 }]
 
-const templateC = [{
+const templateC = [{  // Catagory and Collection
   type: "view",
   props: {
     bgcolor: $color("white"),
@@ -600,23 +582,23 @@ const statusView = {
     events: {
       didBeginEditing: function(sender) {
         if (filterExist) {
-          $("filter").remove();
+          $("filterView").remove();
           filterExist = false;
         }
 
         if (contentExist) {
-          $("content").remove();
+          $("contentView").remove();
           contentExist = false;
         }
 
       },
       changed(sender) {
         if (filterExist) {
-          $("filter").remove();
+          $("filterView").remove();
           filterExist = false;
         }
         if (contentExist) {
-          $("content").remove();
+          $("contentView").remove();
           contentExist = false;
         }
       },
@@ -665,39 +647,36 @@ const statusView = {
       tapped(sender) {
         $device.taptic(0)
         if (contentExist) {
-          $("content").remove();
+          $("contentView").remove();
           contentExist = false
         }
         if (filterExist) {
-          $("filter").remove()
+          $("filterView").remove()
           filterExist = false;
           return
         }
-        if (contentMode !== "Videos") {
-          if(contentMode == "Favorites"){
-             $("favoriteView").remove();
-          favoritesExist = false;
-          }else{
+
+        if(contentMode !== "Videos"){
+          if(CCExist){
             $("CCView").remove();
             CCExist = false
+            $("Avgle").add(VFView);
+            VFExist = true;
+
           }
           contentMode = "Videos";
           cacheContent = "视频";
-          $cache.set("cacheContent", cacheContent);
-         
-          $("Avgle").add(videoView);
-          videosExist = true;
+          $cache.set("cacheContent", cacheContent); 
+          mode = "Videos"       
           page = -1;
           $("videos").data = [];
           $ui.toast("载入中...", 10);
           getVideoData(cacheFilters.Time, cacheFilters.View);
           $("videos").contentOffset = $point(0, 0);
           $ui.toast("", 0.1)
-          return
-        }
-
+          return 
+        }       
         $("Avgle").add(filterView);
-
         var data = []
         Object.keys(filters.Time).map(function(i) {
           data.push({
@@ -722,14 +701,14 @@ const statusView = {
         $("filtersV").data = data
         //$ui.action(data)
         filterExist = true;
-        $("filter").updateLayout(function(make) {
+        $("filterView").updateLayout(function(make) {
           make.height.equalTo(250)
         });
 
         $ui.animate({
           duration: 0.3,
           animation: function() {
-            $("filter").relayout()
+            $("filterView").relayout()
           }
         });
       }
@@ -752,11 +731,11 @@ const statusView = {
       tapped(sender) {
         $device.taptic(0)
         if (filterExist) {
-          $("filter").remove();
+          $("filterView").remove();
           filterExist = false;
         }
         if (contentExist) {
-          $("content").remove();
+          $("contentView").remove();
           contentExist = false
           return
         }
@@ -774,20 +753,33 @@ const statusView = {
         $("contentList").data = data
         contentExist = true
         //$ui.action(data)
-        $("content").updateLayout(function(make) {
+        $("contentView").updateLayout(function(make) {
           make.height.equalTo(120)
         });
 
         $ui.animate({
           duration: 0.3,
           animation: function() {
-            $("content").relayout()
+            $("contentView").relayout()
           }
         });
       }
     }
 
-  }, ],
+  }, {
+    type:"label",
+    props:{
+      id:"searchResult",
+      font:$font(14),
+      textColor:$color("#cccccc"),
+      text:""
+    },
+    layout:function(make,view){
+      make.right.equalTo($("search").right).offset(-5)
+      make.top.equalTo(17)
+    }
+
+  }],
   layout: function(make, view) {
     make.left.right.top.inset(0);
     make.height.equalTo(45)
@@ -795,10 +787,10 @@ const statusView = {
 
 }
 
-const videoView = {
+const VFView = {  // Video and Favorite
   type: "view",
   props: {
-    id: "videoView",
+    id: "VFView",
     bgcolor: $color("#dddddd"),
   },
   views: [{
@@ -816,8 +808,12 @@ const videoView = {
     events: {
       didSelect(sender, indexPath, data) {
         if (filterExist) {
-          $("filter").remove()
+          $("filterView").remove();
           filterExist = false;
+        }
+        if(contentExist){
+          $("contentView").remove();
+          contentExist = false;
         }
         var url = "https://avgle.com/video/" + data.share.info;
         play(url, indexPath, data.interface.src)
@@ -825,27 +821,39 @@ const videoView = {
       },
       didReachBottom(sender) {
         sender.endFetchingMore();
+        if(contentMode == "Favorites"){
+          return
+        }
         if (mode == "Search") {
           getVideoData(keyword, "")
         } else {
           getVideoData(cacheFilters.Time, cacheFilters.View);
-
         }
       },
       pulled(sender) {
         if (filterExist) {
-          $("filter").remove()
+          $("filterView").remove()
           filterExist = false;
         }
         if (contentExist) {
-          $("content").remove();
+          $("contentView").remove();
           contentExist = false;
         }
         $("search").text = "";
         page = -1
-
         $("videos").data = []
-        getVideoData(cacheFilters.Time, cacheFilters.View);
+        if(contentMode == "Videos"){
+          getVideoData(cacheFilters.Time, cacheFilters.View);
+        }else{
+          $("search").placeholder = "共计 " + LocalData.favorite.length + " 个收藏";
+          $("searchResult").text = "";
+          var temp = LocalFavList;
+          tempList = [];
+          tempData = { "favorite": [] };
+          temp.map(function(i) {
+            getFavoriteData(i)
+          });
+        }
         $("videos").endRefreshing();
 
       },
@@ -857,11 +865,11 @@ const videoView = {
         endY = sender.contentOffset.y;
         if (Math.abs(endY - startY) > 100) {
           if (filterExist) {
-            $("filter").remove();
+            $("filterView").remove();
             filterExist = false
           }
           if (contentExist) {
-            $("content").remove();
+            $("contentView").remove();
             contentExist = false;
           }
           if ($("player")) {
@@ -900,8 +908,12 @@ const CCView = { // category and collection
     events: {
       didSelect(sender, indexPath, data) {
         if (filterExist) {
-          $("filter").remove()
-          filterExist = false
+          $("filterView").remove();
+          filterExist = false;
+        }
+        if(contentExist){
+          $("contentView").remove();
+          contentExist = false;
         }
         $ui.action(data.info)
 
@@ -914,11 +926,11 @@ const CCView = { // category and collection
       },
       pulled(sender) {
         if (filterExist) {
-          $("filter").remove()
+          $("filterView").remove()
           filterExist = false;
         }
         if (contentExist) {
-          $("content").remove();
+          $("contentView").remove();
           contentExist = false;
         }
         $("search").text = "";
@@ -932,11 +944,11 @@ const CCView = { // category and collection
         endY = sender.contentOffset.y;
         if (Math.abs(endY - startY) > 150) {
           if (filterExist) {
-            $("filter").remove();
+            $("filterView").remove();
             filterExist = false
           }
           if (contentExist) {
-            $("content").remove();
+            $("contentView").remove();
             contentExist = false;
           }
           if ($("player")) {
@@ -954,85 +966,6 @@ const CCView = { // category and collection
   }
 }
 
-const favoriteView = {
-  type: "view",
-  props: {
-    id: "favoriteView",
-    bgcolor: $color("#dddddd"),
-  },
-  views: [{
-    type: "matrix",
-    props: {
-      id: "videos",
-      itemHeight: 250,
-      columns: 1,
-      spacing: 15,
-      square: false,
-      bgcolor: $color("#dddddd"),
-      template: template,
-    },
-    layout: $layout.fill,
-    events: {
-      didSelect(sender, indexPath, data) {
-        if (filterExist) {
-          $("filter").remove()
-          filterExist = false;
-        }
-        var url = "https://avgle.com/video/" + data.share.info;
-        play(url, indexPath, data.interface.src)
-
-      },
-      pulled(sender) {
-        if (filterExist) {
-          $("filter").remove()
-          filterExist = false;
-        }
-        if (contentExist) {
-          $("content").remove();
-          contentExist = false;
-        }
-        $("search").text = "";
-        page = -1
-        $("search").placeholder = "共计 " + LocalData.favorite.length + " 个收藏";
-        $("videos").data = [];
-        var temp = LocalFavList;
-        tempList = [];
-        tempData = { "favorite": [] };
-        temp.map(function(i) {
-          getVidData(i)
-        });
-        $("videos").endRefreshing();
-
-      },
-      willBeginDragging(sender) {
-        startY = sender.contentOffset.y;
-
-      },
-      didEndDragging(sender) {
-        endY = sender.contentOffset.y;
-        if (Math.abs(endY - startY) > 150) {
-          if (filterExist) {
-            $("filter").remove();
-            filterExist = false
-          }
-          if (contentExist) {
-            $("content").remove();
-            contentExist = false;
-          }
-          if ($("player")) {
-            $("player").stopLoading();
-            $("player").remove()
-          }
-        }
-      }
-
-    }
-  }, ],
-  layout: function(make, view) {
-    make.left.right.bottom.inset(0)
-    make.top.equalTo($("statusView").bottom).offset(0)
-  }
-}
 
 $ui.render({
   props: {
@@ -1053,9 +986,9 @@ function getVideoData(filterT, filterV) {
   } else {
     url = "https://api.avgle.com/v1/videos/" + page + "?limit=10&t=" + filterT + "&o=" + filterV;
   }
-  if (videosExist == false) {
-    videosExist = true
-    $("Avgle").add(videoView)
+  if (VFExist == false) {
+    VFExist = true
+    $("Avgle").add(VFView)
     cacheContent = "视频";
     $cache.set("cacheContent", cacheContent);
   }
@@ -1124,19 +1057,21 @@ function getVideoData(filterT, filterV) {
       })
       //$ui.toast("", 0.1);
       $ui.loading(false);
-      if (mode == "Search" && page == 0) {
-        $ui.toast("找到 " + video_num + " 个视频", 1);
-        $("search").placeholder = "找到 " + video_num + " 个视频";
+      if (mode == "Search") {
+        $("searchResult").text = "找到 " + video_num + " 个视频";
+        $("search").placeholder = "";
       } else {
-        $("search").placeholder = filterName[filterT] + " " + video_num + " 个视频 "
+        $("search").placeholder = filterName[filterT] + " " + video_num + " 个视频 ";
+        $("searchResult").text = "";
       }
 
     }
   })
 }
 
-function getVidData(vid) {
+function getFavoriteData(vid) {
   url = "https://api.avgle.com/v1/video/" + vid;
+  $("searchResult").text = "";
   $http.request({
     url: url,
     handler: function(resp) {
@@ -1201,6 +1136,7 @@ function getVidData(vid) {
 
 function getCollectionData() {
   $ui.loading(true)
+  $("searchResult").text = "";
   page++;
   $http.request({
     url: "https://api.avgle.com/v1/collections/" + page + "?limit=10",
@@ -1250,6 +1186,7 @@ function getCollectionData() {
 
 function getCategoryData() { // category and collection
   $ui.loading(true)
+  $("searchResult").text = "";
   url = "https://api.avgle.com/v1/categories"
   $http.request({
     url: url,
@@ -1423,9 +1360,8 @@ function initial() {
   contentExist = false;
   filterExist = false;
   contentMode = "Videos";
-  videosExist = true;
+  VFExist = true;  // videos and favorites
   CCExist = false; // categories and collections 
-  favoritesExist = false;
 }
 
 function scriptVersionUpdate() {
@@ -1460,9 +1396,9 @@ function main() {
   var search = clipboardDetect()
   if (!search) {
     mode = "Videos";
-    //$ui.push(videoView)
-    $("Avgle").add(videoView);
-    //$("videoView").remove()
+    //$ui.push(VFView)
+    $("Avgle").add(VFView);
+    //$("VFView").remove()
     getVideoData(cacheFilters.Time, cacheFilters.View);
   } else {
     mode = "Search";
