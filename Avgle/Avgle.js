@@ -324,7 +324,7 @@ const contentView = {
           LocalData.favorite.map(function(i) {
             $("fvideos").data = $("fvideos").data.concat({
               videosBg:{
-                bgcolor:favColor
+                bgcolor:$color("white")
               },
               interface: {
                 src: i.image
@@ -601,7 +601,7 @@ const info = {
   views: [{
     type: "text",
     props: {
-      text: "Created by Nicked.\n\nSource from Avgle.",
+      text: "Created by Nicked.\n\nSource from Avgle.\n\nhttps://t.me/nicked",
       bgcolor: $color("#dddddd"),
       textColor: $color("#aaaaaa"),
       font: $font(10),
@@ -624,7 +624,7 @@ const info = {
     },
     layout: function(make, view) {
       make.size.equalTo($size(50, 50))
-      make.top.inset(100)
+      make.top.inset(130)
       make.left.inset(130)
     }
 
@@ -639,7 +639,7 @@ const info = {
     },
     layout: function(make, view) {
       make.size.equalTo($size(50, 50))
-      make.top.inset(100)
+      make.top.inset(130)
       make.right.inset(130)
     }
 
@@ -1022,8 +1022,9 @@ const FView = { // Video and Favorite
           var idx = LocalFavList.indexOf(info.vid);
           LocalFavList.splice(idx, 1);
           LocalData.favorite.splice(idx, 1);
-          writeCache()
-          $ui.toast("🤔 已删除！", 1)         
+          writeCache();
+          $ui.toast("🤔 已删除！", 1)
+          $("search").placeholder = "共计 "+LocalFavList.length + " 个收藏";          
         }
       }, {
         title: "分享",
@@ -1610,7 +1611,8 @@ function play(url, indexPath, poster) {
         $("player").stopLoading();
         $("player").remove()
       };
-      $("videos").cell(indexPath).add({
+      var place = contentMode == "Favorites"? "fvideos":"videos"
+      $(place).cell(indexPath).add({
         type: "video",
         props: {
           id: "player",
