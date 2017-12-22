@@ -47,7 +47,7 @@ const filterName = {
 }
 
 
-const content = ["视频", "合集", "分类", "收藏夹"]
+const content = ["影片", "合集", "分类", "收藏夹"]
 
 
 const filterView = {
@@ -110,7 +110,7 @@ const filterView = {
       make.top.inset(0)
       make.left.inset(0)
       make.width.equalTo(100)
-      make.height.equalTo(140)
+      make.height.equalTo(145)
     }
   }, {
     type: "list",
@@ -169,7 +169,7 @@ const filterView = {
       make.top.inset(0)
       make.left.equalTo($("filtersT").right)
       make.right.inset(0)
-      make.height.equalTo(140)
+      make.height.equalTo(145)
     }
   }],
   layout: function(make, view) {
@@ -219,8 +219,8 @@ const contentView = {
         };
         $("search").text = "";
         var c = data.contentLabel.text;
-        if (c == "视频") {
-          cacheContent = "视频";
+        if (c == "影片") {
+          cacheContent = "影片";
           $cache.set("cacheContent", cacheContent);
           contentMode = "Videos";
           if (CCExist == true) {
@@ -277,7 +277,10 @@ const contentView = {
           sender.super.remove();
           contentExist = false;
           if (LocalFavList.length == 0) {
+            cacheContent = "影片"
+            $cache.set("cacheContent",cacheContent)
             $ui.alert("Get Some Favorites!")
+            contentMode = "Videos";
             return
           }
           $("videos").contentOffset = $point(0, 0);
@@ -731,7 +734,7 @@ const statusView = {
             }
           })
         })
-        $("filtersT").data = [{title:"    时间线",rows:data}]
+        $("filtersT").data = [{title:"     时间线",rows:data}]
         data = []
         Object.keys(filters.View).map(function(i) {
           data.push({
@@ -786,11 +789,11 @@ const statusView = {
             }
           })
         })
-        $("contentList").data = [{title:"       出处",rows:data}];
+        $("contentList").data = data;
         contentExist = true
         //$ui.action(data)
         $("contentView").updateLayout(function(make) {
-          make.height.equalTo(145)
+          make.height.equalTo(120)
         });
       }
     }
@@ -1417,7 +1420,7 @@ function initial() {
     LocalFavList = [];
   };
   cacheFilters = $cache.get("cacheFilters") || { "Time": "a", "View": "mr" };
-  cacheContent = "视频";
+  cacheContent = "影片";
   contentExist = false;
   filterExist = false;
   contentMode = "Videos";
