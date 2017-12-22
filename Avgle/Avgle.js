@@ -20,7 +20,6 @@
 */
 
 version = 1.4
-
 const filters = {
   "Time": {
     "全部视频": "a",
@@ -50,6 +49,7 @@ const filterName = {
 
 const content = ["影片", "合集", "分类", "收藏夹"]
 
+const favColor = $color("#e2e9ff")
 
 const filterView = {
   type: "view",
@@ -147,7 +147,7 @@ const filterView = {
         $cache.set("cacheFilters", cacheFilters);
         if(contentMode == "Collections"){
           page = -1
-          $("CCMatrix").contentOffset = $point(0, 0);
+          $("CCList").contentOffset = $point(0, 0);
           getCollectionData()
           return
         }
@@ -212,6 +212,7 @@ const contentView = {
     events: {
       didSelect(sender, indexPath, data) {
         $device.taptic(0);
+        $("searchResult").text = ""
         $("contentView").remove();
         contentExist = false;
         if ($("player")) {
@@ -227,6 +228,12 @@ const contentView = {
           if (CCExist == true) {
             CCExist = false;
             $("CCView").remove()
+            VFExist = true;
+            $("Avgle").add(VFView);
+          }
+          if (FExist == true) {
+            FExist = false;
+            $("FView").remove()
             VFExist = true;
             $("Avgle").add(VFView);
           }
@@ -247,9 +254,15 @@ const contentView = {
             CCExist = true;
             $("Avgle").add(CCView)
           }
-          $("CCMatrix").contentOffset = $point(0, 0);
+          if (FExist == true) {
+            FExist = false;
+            $("FView").remove()
+            CCExist = true;
+            $("Avgle").add(CCView)
+          }
+          $("CCList").contentOffset = $point(0, 0);
           page = -1;
-          $("CCMatrix").data = []
+          $("CCList").data = []
           getCollectionData()
         } else if (c == "分类") {
           cacheContent = "分类";
@@ -261,35 +274,58 @@ const contentView = {
             CCExist = true;
             $("Avgle").add(CCView)
           }
-          $("CCMatrix").contentOffset = $point(0, 0);   
+          if (FExist == true) {
+            FExist = false;
+            $("FView").remove()
+            CCExist = true;
+            $("Avgle").add(CCView)
+          }
+          $("CCList").contentOffset = $point(0, 0);   
           getCategoryData()
-        } else if (c == "收藏夹") {
+        } else if (c == "收藏夹") {      
           cacheContent = "收藏夹";
           $cache.set("cacheContent", cacheContent);
           contentMode = "Favorites"
           if (CCExist == true) {
             CCExist = false;
             $("CCView").remove()
-            VFExist = true;
-            $("Avgle").add(VFView);
+            FExist = true;
+            $("Avgle").add(FView);
+          }
+          if(VFExist == true){
+            $("VFView").remove()
+            VFExist = false
+            FExist = true;
+            $("Avgle").add(FView);
           }
           $("search").text = "";
           $device.taptic(0);
           sender.super.remove();
           contentExist = false;
           if (LocalFavList.length == 0) {
-            cacheContent = "影片"
-            $cache.set("cacheContent",cacheContent)
-            $ui.alert("Get Some Favorites!")
+            cacheContent = "影片",
+            $cache.set("cacheContent",cacheContent);
             contentMode = "Videos";
+            VFExist = true;
+            $("Avgle").add(VFView);
+            mode = "Videos";
+            page = -1;
+            getVideoData();
+            $ui.alert({
+              title: "❌ 收藏夹为空!",
+              message:"\n提示: 试试左滑"
+            })
             return
           }
-          $("videos").contentOffset = $point(0, 0);
+          $("fvideos").contentOffset = $point(0, 0);
           $("search").placeholder = "共计 " + LocalFavList.length + " 个收藏"
           $("searchResult").text = "";
-          $("videos").data = [];
+          $("fvideos").data = [];
           LocalData.favorite.map(function(i) {
-            $("videos").data = $("videos").data.concat({
+            $("fvideos").data = $("fvideos").data.concat({
+              videosBg:{
+                bgcolor:$color("#c6dfff")
+              },
               interface: {
                 src: i.image
               },
@@ -339,169 +375,107 @@ const contentView = {
   }
 }
 
+
 const template = [{ // Video and Favorite                                                         
   type: "view",
   props: {
-    bgcolor: $color("white"),
-    radius: 7
+    bgcolor: $color("#dddddd"),
   },
   views: [{
-    type: "image",
-    props: {
-      id: "interface",
-      radius: 5
+    type:"view",
+    props:{
+      id:"videosBg",
+      bgcolor:$color("white"),
+      radius:7
     },
-    layout: function(make, view) {
-      var scale = 16 / 9;
-      make.top.left.right.inset(10)
-      make.height.equalTo(view.width).dividedBy(scale)
-      //make.bottom.inset(55)
-    }
-  }, {
-    type: "label",
-    props: {
-      id: "title",
-      textColor: $color("#5c98f9"),
-      font: $font(15)
+    layout: function(make,view){
+      make.left.right.inset(15)
+      make.top.inset(5)
+      make.bottom.inset(5)
     },
-    layout: function(make, view) {
-      make.top.equalTo($("interface").bottom).offset(5)
-      make.left.right.inset(10)
-    }
-  }, {
-    type: "label",
-    props: {
-      id: "time",
-      textColor: $color("black"),
-      font: $font(13)
-    },
-    layout: function(make, view) {
-      make.bottom.inset(10)
-      make.left.inset(10)
-    }
-  }, {
-    type: "label",
-    props: {
-      id: "like",
-      textColor: $color("black"),
-      font: $font(12),
-    },
-    layout: function(make, view) {
-      make.bottom.inset(10)
-      make.right.inset(10)
-    }
-  }, {
-    type: "text",
-    props: {
-      id: "duration",
-      textColor: $color("white"),
-      bgcolor: $color("black"),
-      alpha: 0.5,
-      font: $font(12),
-      radius: 3,
-      align: $align.left,
-      editable: false,
-      scrollEnabled: false,
-      insets: $insets(1, 1, 2, 1)
-    },
-    layout: function(make, view) {
-      make.top.equalTo($("interface").bottom).offset(-23)
-      make.right.equalTo($("interface").right).offset(-5)
-    }
-  }, {
-    type: "text",
-    props: {
-      id: "hd",
-      textColor: $color("black"),
-      bgcolor: $color("#fcbc05"),
-      text: "HD",
-      alpha: 0.8,
-      font: $font("bold", 12),
-      radius: 3,
-      align: $align.center,
-      editable: false,
-      scrollEnabled: false,
-      insets: $insets(0, 0, 0, 0)
-    },
-    layout: function(make, view) {
-      make.top.equalTo($("interface").top).offset(5)
-      make.right.equalTo($("interface").right).offset(-5)
-    }
-  }, {
-    type: "button",
-    props: {
-      id: "favorite",
-      bgcolor: $color("clear"),
-      title: "🤔",
-      font: $font(13),
-    },
-    layout: function(make, view) {
-      make.top.equalTo($("like").top).offset(-3)
-      make.left.equalTo($("time").right).offset(0)
-      make.width.equalTo(30)
-      make.height.equalTo(20)
-    },
-    events: {
-      tapped(sender) {
-        //favButtonTapped(sender);
-        //$ui.action($props(sender.data))
-        if ($("player")) {
-          $("player").stopLoading();
-          $("player").remove()
-        };
-        var info = sender.info;
-        var data = $("videos").data;
-        var cell = sender.super.super.super;
-        var view = $("videos").runtimeValue();
-        var index = view.invoke("indexPathForCell", cell).rawValue();
-        var idx = index.row;
-        //$ui.action(idx.toString())
-        if (sender.title == "🤔") {
-          data[idx].favorite.title = "😍";
-          data[idx].favorite.alpha = 1;
-          LocalData.favorite.push(info);
-          LocalFavList.push(info.vid)
-          writeCache();
-          $ui.toast("😍 已收藏！", 1)
-        } else {
-          data[idx].favorite.title = "🤔";
-          data[idx].favorite.alpha = 0.6;
-          var idxx = LocalFavList.indexOf(info.vid);
-          LocalFavList.splice(idxx, 1);
-          LocalData.favorite.splice(idxx, 1);
-          writeCache()
-          $ui.toast("🤔 已取消！", 1)
-        }
-        if (contentMode == "Favorites") {
-          $("search").placeholder = "共计 " + LocalFavList.length + " 个收藏";
-          $("searchResult").text = "";
-        }
-        $("videos").data = data;
+    views:[{
+      type: "image",
+      props: {
+        id: "interface",
+        radius: 5
+      },
+      layout: function(make, view) {
+        var scale = 16 / 9;
+        make.top.left.right.inset(10)
+        make.height.equalTo(view.width).dividedBy(scale)
+        //make.bottom.inset(55)
       }
-    }
-
-  }, {
-    type: "button",
-    props: {
-      id: "share",
-      bgcolor: $color("clear"),
-      font: $font(12),
-      icon: $icon("022", $color("#777777"), $size(16, 16)),
-      alpha: 1,
-      //inset:$insets(0,0,0,0)
-    },
-    layout: function(make, view) {
-      make.top.equalTo($("favorite").top).offset(2)
-      make.right.equalTo($("like").left).offset(0)
-      make.width.equalTo(30)
-      make.height.equalTo(17)
-    },
-    events: {
-      tapped(sender) {
-        $share.sheet("https://avgle.com/video/" + sender.info)
+    }, {
+      type: "label",
+      props: {
+        id: "title",
+        textColor: $color("#5c98f9"),
+        font: $font(15)
+      },
+      layout: function(make, view) {
+        make.top.equalTo($("interface").bottom).offset(5)
+        make.left.right.inset(10)
       }
-    }
-
+    }, {
+      type: "label",
+      props: {
+        id: "time",
+        textColor: $color("black"),
+        font: $font(13)
+      },
+      layout: function(make, view) {
+        make.bottom.inset(10)
+        make.left.inset(10)
+      }
+    }, {
+      type: "label",
+      props: {
+        id: "like",
+        textColor: $color("black"),
+        font: $font(12),
+      },
+      layout: function(make, view) {
+        make.bottom.inset(10)
+        make.right.inset(10)
+      }
+    }, {
+      type: "text",
+      props: {
+        id: "duration",
+        textColor: $color("white"),
+        bgcolor: $color("black"),
+        alpha: 0.5,
+        font: $font(12),
+        radius: 3,
+        align: $align.left,
+        editable: false,
+        scrollEnabled: false,
+        insets: $insets(1, 1, 2, 1)
+      },
+      layout: function(make, view) {
+        make.top.equalTo($("interface").bottom).offset(-23)
+        make.right.equalTo($("interface").right).offset(-5)
+      }
+    }, {
+      type: "text",
+      props: {
+        id: "hd",
+        textColor: $color("black"),
+        bgcolor: $color("#fcbc05"),
+        text: "HD",
+        alpha: 0.8,
+        font: $font("bold", 12),
+        radius: 3,
+        align: $align.center,
+        editable: false,
+        scrollEnabled: false,
+        insets: $insets(0, 0, 0, 0)
+      },
+      layout: function(make, view) {
+        make.top.equalTo($("interface").top).offset(5)
+        make.right.equalTo($("interface").right).offset(-5)
+      }
+    }, ]
   }],
   layout: $layout.fill
 }]
@@ -509,102 +483,172 @@ const template = [{ // Video and Favorite
 const templateC = [{ // Catagory and Collection
   type: "view",
   props: {
-    bgcolor: $color("white"),
-    radius: 7
+    bgcolor: $color("#dddddd"),
   },
   views: [{
-    type: "image",
-    props: {
-      id: "interface",
-      radius: 5,
-      bgcolor: $color("white")
+    type:"view",
+    props:{
+      bgcolor:$color("clear"),
+      radius:7
     },
-    layout: function(make, view) {
-      var scale = 16 / 9;
-      make.top.left.right.inset(0)
-      make.height.equalTo(view.width).dividedBy(scale)
-      //make.bottom.inset(55)
-    }
-  }, {
-    type: "label",
-    props: {
-      id: "bottomLayer",
-      textColor: $color("white"),
-      bgcolor: $color("black"),
-      alpha: 0.5,
+    layout: function(make,view){
+      make.left.right.inset(15)
+      make.top.inset(10)
+      make.bottom.inset(0)
     },
-    layout: function(make, view) {
-      make.left.right.bottom.inset(0)
-      make.height.equalTo(30)
-    }
-  }, {
-    type: "label",
-    props: {
-      id: "CCName",
-      textColor: $color("white"),
-      font: $font(16),
-      alpha: 1,
-    },
-    layout: function(make, view) {
-      make.bottom.inset(5)
-      make.left.inset(10)
-    }
-  }, {
-    type: "text",
-    props: {
-      id: "totalVideos",
-      editable: "false",
-      textColor: $color("white"),
-      bgcolor: $color("#5c98f9"),
-      font: $font("bold", 13),
-      align: $align.center,
-      scrollEnabled: false,
-      lines: 1,
-      insets: $insets(2, 2, 2, 2),
-      radius: 10
-    },
-    layout: function(make, view) {
-      make.bottom.inset(5)
-      make.right.inset(10)
-    }
-  }, {
-    type: "text",
-    props: {
-      id: "totalViews",
-      editable: "false",
-      textColor: $color("white"),
-      bgcolor: $color("#5c98f9"),
-      font: $font("bold", 13),
-      align: $align.center,
-      scrollEnabled: false,
-      lines: 1,
-      insets: $insets(2, 0, 2, 15),
-      radius: 3,
-    },
-    layout: function(make, view) {
-      make.top.inset(5)
-      make.left.inset(10)
-    }
-  }, {
-    type: "button",
-    props: {
-      id: "playButton",
-      bgcolor: $color("clear"),
-      icon: $icon("049", $color("white"), $size(15, 15)),
-      alpha: 1,
-    },
-    layout: function(make, view) {
-      make.top.inset(4)
-      make.left.equalTo($("totalViews").right).offset(-18)
-    },
-    events: {
-      tapped(sender) {
-        $share.sheet(sender.info)
+    views:[{
+      type: "image",
+      props: {
+        id: "interface",
+        radius: 5,
+        bgcolor: $color("white")
+      },
+      layout: function(make, view) {
+        var scale = 16 / 9;
+        make.top.left.right.inset(0)
+        make.height.equalTo(view.width).dividedBy(scale)
+        //make.bottom.inset(55)
       }
-    }
+    }, {
+      type: "label",
+      props: {
+        id: "bottomLayer",
+        textColor: $color("white"),
+        bgcolor: $color("black"),
+        alpha: 0.5,
+      },
+      layout: function(make, view) {
+        make.left.right.bottom.inset(0)
+        make.height.equalTo(30)
+      }
+    }, {
+      type: "label",
+      props: {
+        id: "CCName",
+        textColor: $color("white"),
+        font: $font(16),
+        alpha: 1,
+      },
+      layout: function(make, view) {
+        make.bottom.inset(5)
+        make.left.inset(10)
+      }
+    }, {
+      type: "text",
+      props: {
+        id: "totalVideos",
+        editable: "false",
+        textColor: $color("white"),
+        bgcolor: $color("#5c98f9"),
+        font: $font("bold", 13),
+        align: $align.center,
+        scrollEnabled: false,
+        lines: 1,
+        insets: $insets(2, 2, 2, 2),
+        radius: 10
+      },
+      layout: function(make, view) {
+        make.bottom.inset(5)
+        make.right.inset(10)
+      }
+    }, {
+      type: "text",
+      props: {
+        id: "totalViews",
+        editable: "false",
+        textColor: $color("white"),
+        bgcolor: $color("#5c98f9"),
+        font: $font("bold", 13),
+        align: $align.center,
+        scrollEnabled: false,
+        lines: 1,
+        insets: $insets(2, 0, 2, 15),
+        radius: 3,
+      },
+      layout: function(make, view) {
+        make.top.inset(5)
+        make.left.inset(10)
+      }
+    }, {
+      type: "button",
+      props: {
+        id: "playButton",
+        bgcolor: $color("clear"),
+        icon: $icon("049", $color("white"), $size(15, 15)),
+        alpha: 1,
+      },
+      layout: function(make, view) {
+        make.top.inset(4)
+        make.left.equalTo($("totalViews").right).offset(-18)
+      },
+      events: {
+        tapped(sender) {
+          $share.sheet(sender.info)
+        }
+      }
+    }]
   }],
   layout: $layout.fill
 }]
+
+
+const info = {
+  type: "view",
+  props: {
+    id: "preinfo",
+    bgcolor: $color("#dddddd")
+  },
+  views: [{
+    type: "text",
+    props: {
+      text: "Designed by Nicked.\n\nSource from Avgle.",
+      bgcolor: $color("#dddddd"),
+      textColor: $color("#aaaaaa"),
+      font: $font(10),
+      align: $align.center
+    },
+
+    layout: function(make, view) {
+      make.top.inset(50)
+      make.height.equalTo(100)
+      make.width.equalTo($device.info.screen.width)
+    }
+  }, {
+    type: "image",
+    props: {
+      src: "https://i.loli.net/2017/11/06/59ffebf2eb071.jpeg",
+      radius: 25,
+      bgcolor: $color("#dddddd"),
+      alpha: 0.8,
+      align: $align.center,
+    },
+    layout: function(make, view) {
+      make.size.equalTo($size(50, 50))
+      make.top.inset(100)
+      make.left.inset(130)
+    }
+
+  },  {
+    type: "image",
+    props: {
+      src: "https://i.loli.net/2017/12/22/5a3cd0ff0b781.jpeg",
+      radius: 25,
+      bgcolor: $color("#dddddd"),
+      alpha: 0.8,
+      align: $align.center,
+    },
+    layout: function(make, view) {
+      make.size.equalTo($size(50, 50))
+      make.top.inset(100)
+      make.right.inset(130)
+    }
+
+  },],
+  layout:function(make,view){
+    make.top.equalTo($("search").bottom)
+    make.left.right.bottom.inset(0)
+  }
+}
 
 const statusView = {
   type: "view",
@@ -707,11 +751,17 @@ const statusView = {
         }
         if (contentMode !== "Videos") {
           if (CCExist) {
-            $("CCView").remove();
-            CCExist = false
+             $("CCView").remove();
+             CCExist = false
             $("Avgle").add(VFView);
             VFExist = true;
           }
+          if (FExist) {
+            $("FView").remove();
+            CCExist = false
+           $("Avgle").add(VFView);
+           VFExist = true;
+         }
           contentMode = "Videos";
           cacheContent = "视频";
           $cache.set("cacheContent", cacheContent);
@@ -824,18 +874,164 @@ const VFView = { // Video and Favorite
   type: "view",
   props: {
     id: "VFView",
-    bgcolor: $color("#dddddd"),
+    bgcolor: $color("clear"),
   },
-  views: [statusView,{
-    type: "matrix",
+  views: [statusView,info,{
+    type: "list",
     props: {
       id: "videos",
-      itemHeight: 250,
-      columns: 1,
-      spacing: 15,
-      square: false,
-      bgcolor: $color("#dddddd"),
+      rowHeight: 265,
+      bgcolor: $color("clear"),
+      separatorHidden:true,
       template: template,
+      actions: [{
+        title: contentMode = "收藏",
+        handler: function(sender, indexPath) {
+          $device.taptic(0)
+          if ($("player")) {
+            $("player").stopLoading();
+            $("player").remove()
+          };
+          var info = $("videos").data[indexPath.row].info
+          if(LocalFavList.indexOf(info.vid)>-1){
+              $ui.toast("❌ 已在收藏列表！",1)
+          }else{
+            LocalData.favorite.push(info);
+            LocalFavList.push(info.vid)
+            writeCache();
+            $ui.toast("😍 已收藏！", 1)
+            var data = $("videos").data
+            data[indexPath.row].videosBg.bgcolor = favColor
+            $("videos").data = data
+          }
+        }
+      }, {
+        title: "分享",
+        handler: function(sender, indexPath) {
+          $device.taptic(0);
+          $share.sheet("https://avgle.com/video/" + $("videos").data[indexPath.row].share.info)
+        }
+      }],
+      footer: {
+        type: "label",
+        props: {
+          id: "footer",
+          height: 40,
+          text: "Loading...",
+          font:$font(15),
+          align: $align.center,
+          textColor: $color("#aaaaaa")
+        }
+      },
+    },
+    layout: function(make, view) {
+      make.left.right.bottom.inset(0)
+      make.top.equalTo($("statusView").bottom).offset(0)
+    },
+    events: {
+      didSelect(sender, indexPath, data) {
+        if (filterExist) {
+          $("filterView").remove();
+          filterExist = false;
+        }
+        if (contentExist) {
+          $("contentView").remove();
+          contentExist = false;
+        }
+        var url = "https://avgle.com/video/" + data.share.info;
+        play(url, indexPath, data.interface.src)
+
+      },
+      didReachBottom(sender) {
+        sender.endFetchingMore();
+        if (contentMode == "Favorites") {
+          return
+        }
+        if (mode == "Search") {
+          getVideoData()
+        } else {
+          getVideoData();
+        }
+      },
+      pulled(sender) {
+        if (filterExist) {
+          $("filterView").remove()
+          filterExist = false;
+        }
+        if (contentExist) {
+          $("contentView").remove();
+          contentExist = false;
+        }
+        page = -1
+        $("videos").data = [];
+        getVideoData();     
+        $("videos").endRefreshing();
+        $ui.toast("更新成功!",0.1)
+
+      },
+      willBeginDragging(sender) {
+        startY = sender.contentOffset.y;
+
+      },
+      didEndDragging(sender) {
+        endY = sender.contentOffset.y;
+        if (Math.abs(endY - startY) > 150) {
+          if (filterExist) {
+            $("filterView").remove();
+            filterExist = false
+          }
+          if (contentExist) {
+            $("contentView").remove();
+            contentExist = false;
+          }
+          if ($("player")) {
+            $("player").stopLoading();
+            $("player").remove()
+          }
+        }
+      }
+
+    }
+  }, ],
+  layout:$layout.fill
+}
+
+const FView = { // Video and Favorite
+  type: "view",
+  props: {
+    id: "FView",
+    bgcolor: $color("clear"),
+  },
+  views: [statusView,info,{
+    type: "list",
+    props: {
+      id: "fvideos",
+      rowHeight: 265,
+      bgcolor: $color("clear"),
+      separatorHidden:true,
+      template: template,
+      actions: [{
+        title: contentMode = "delete",
+        handler: function(sender, indexPath) {
+          $device.taptic(0)
+          if ($("player")) {
+            $("player").stopLoading();
+            $("player").remove()
+          };
+          var info = $("videos").data[indexPath.row].info
+          var idx = LocalFavList.indexOf(info.vid);
+          LocalFavList.splice(idx, 1);
+          LocalData.favorite.splice(idx, 1);
+          writeCache()
+          $ui.toast("🤔 已删除！", 1)         
+        }
+      }, {
+        title: "分享",
+        handler: function(sender, indexPath) {
+          $device.taptic(0);
+          $share.sheet("https://avgle.com/video/" + $("videos").data[indexPath.row].share.info)
+        }
+      }],
     },
     layout: function(make, view) {
       make.left.right.bottom.inset(0)
@@ -877,11 +1073,8 @@ const VFView = { // Video and Favorite
         }
         $("search").text = "";
         page = -1
-        $("videos").data = [];
+        $("fvideos").data = [];
         mode = "Videos";
-        if (contentMode == "Videos") {
-          getVideoData();
-        } else {
           $("search").placeholder = "共计 " + LocalData.favorite.length + " 个收藏";
           $("searchResult").text = "";
           var temp = LocalFavList;
@@ -890,8 +1083,9 @@ const VFView = { // Video and Favorite
           temp.map(function(i) {
             getFavoriteData(i)
           });
-        }
-        $("videos").endRefreshing();
+        
+        $("fvideos").endRefreshing();
+        $ui.toast("更新成功!",0.1)
 
       },
       willBeginDragging(sender) {
@@ -900,7 +1094,7 @@ const VFView = { // Video and Favorite
       },
       didEndDragging(sender) {
         endY = sender.contentOffset.y;
-        if (Math.abs(endY - startY) > 100) {
+        if (Math.abs(endY - startY) > 150) {
           if (filterExist) {
             $("filterView").remove();
             filterExist = false
@@ -921,22 +1115,32 @@ const VFView = { // Video and Favorite
   layout:$layout.fill
 }
 
+
 const CCView = { // category and collection
   type: "view",
   props: {
     id: "CCView",
     bgcolor: $color("#dddddd"),
   },
-  views: [statusView,{
-    type: "matrix",
+  views: [statusView,info,{
+    type: "list",
     props: {
-      id: "CCMatrix",
-      itemHeight: 190,
-      columns: 1,
-      spacing: 15,
-      square: false,
-      bgcolor: $color("#dddddd"),
+      id: "CCList",
+      rowHeight: 205,
+      bgcolor: $color("clear"),
       template: templateC,
+      separatorHidden:true,
+      footer: {
+        type: "label",
+        props: {
+          id: "footer",
+          height: 40,
+          text: "Loading...",
+          font:$font(15),
+          align: $align.center,
+          textColor: $color("#aaaaaa")
+        }
+      },
     },
     layout: function(make, view) {
       make.left.right.bottom.inset(0)
@@ -980,6 +1184,8 @@ const CCView = { // category and collection
         sender.endFetchingMore();
         if (contentMode == "Collections") {
           getCollectionData()
+        }else{
+          $("footer").text = ""
         }
       },
       pulled(sender) {
@@ -992,6 +1198,18 @@ const CCView = { // category and collection
           contentExist = false;
         }
         $("search").text = "";
+        if(contentMode == "Categories"){
+          $("CCList").data = []
+          page = -1
+          getCategoryData()
+        }else if (contentMode == "Collections"){
+          $("CCList").data = []
+          page = -1
+          getCollectionData()
+        }
+        $ui.toast("更新成功！",0.1)
+
+        $("CCList").endRefreshing()
 
       },
       willBeginDragging(sender) {
@@ -1027,7 +1245,7 @@ $ui.render({
     bgcolor: $color("#dddddd"),
     id: "Avgle"
   },
-  views: [VFView],
+  views: [],
   layout: $layout.fill
 })
 
@@ -1071,12 +1289,16 @@ function getVideoData() {
       if (!resp.data.response.has_more && page > 0) {
         $ui.toast("🙈 已经到底了", 1);
         $ui.loading(false);
+        $("footer").text = ""
         return
       }
       var infos = resp.data.response.videos;
       //$ui.action(infos)
       infos.map(function(i) {
         $("videos").data = $("videos").data.concat({
+          videosBg:{
+            bgcolor:LocalFavList.indexOf(i.vid) > -1 ? favColor:$color("white")
+          },
           interface: {
             src: i.preview_url
           },
@@ -1096,21 +1318,17 @@ function getVideoData() {
           hd: {
             hidden: i.hd == true ? false : true
           },
-          favorite: {
-            title: LocalFavList.indexOf(i.vid) > -1 ? "😍" : "🤔",
-            alpha: LocalFavList.indexOf(i.vid) > -1 ? 1 : 0.6,
-            info: {
-              title: i.title,
-              image: i.preview_url,
-              time: formatTime(i.addtime),
-              duration: formatDuration(i.duration),
-              like: "❤️ " + i.likes + " 🖤 " + i.dislikes + " ▶️ " + i.viewnumber,
-              hd: i.hd == true ? false : true,
-              vid: i.vid
-            }
-          },
           share: {
             info: i.vid
+          },
+          info:{
+            title: i.title,
+            image: i.preview_url,
+            time: formatTime(i.addtime),
+            duration: formatDuration(i.duration),
+            like: "❤️ " + i.likes + " 🖤 " + i.dislikes + " ▶️ " + i.viewnumber,
+            hd: i.hd == true ? false : true,
+            vid: i.vid
           }
         })
       })
@@ -1154,7 +1372,10 @@ function getFavoriteData(vid) {
         hd: i.hd == true ? false : true,
         vid: i.vid
       };
-      $("videos").data = $("videos").data.concat({
+      $("fvideos").data = $("fvideos").data.concat({
+        videosBg:{
+          bgcolor:favColor
+        },
         interface: {
           src: i.preview_url
         },
@@ -1173,11 +1394,6 @@ function getFavoriteData(vid) {
         },
         hd: {
           hidden: i.hd == true ? false : true
-        },
-        favorite: {
-          title: "😍",
-          alpha: 1,
-          info: info
         },
         share: {
           info: i.vid
@@ -1217,7 +1433,7 @@ function getCollectionData() {
       }
       var collections = resp.data.response.collections;
       collections.map(function(i) {
-        $("CCMatrix").data = $("CCMatrix").data.concat({
+        $("CCList").data = $("CCList").data.concat({
           interface: {
             src: i.cover_url
           },
@@ -1262,9 +1478,9 @@ function getCategoryData() { // category and collection
       }
       var categories = resp.data.response.categories
 
-      $("CCMatrix").data = []
+      $("CCList").data = []
       categories.map(function(i) {
-        $("CCMatrix").data = $("CCMatrix").data.concat({
+        $("CCList").data = $("CCList").data.concat({
           interface: {
             src: i.cover_url
           },
@@ -1403,7 +1619,8 @@ function play(url, indexPath, poster) {
         },
         layout: function(make, view) {
           var scale = 16 / 9;
-          make.top.left.right.inset(10)
+          make.left.right.inset(15)
+          make.top.inset(5)
           make.height.equalTo(view.width).dividedBy(scale);
         }
       });
@@ -1427,6 +1644,7 @@ function initial() {
   contentMode = "Videos";
   VFExist = true; // videos and favorites
   CCExist = false; // categories and collections 
+  FExist = false;
   page = -1;
   $app.tips("本脚本运行需要翻墙，请将\n https://avgle.com \n加入到翻墙列表。")
 }
@@ -1467,8 +1685,9 @@ function main() {
     $("search").text = keyword;
   }
   getVideoData();
+  $("Avgle").add(VFView)
 }
 
-LocalDataPath = "drive://Avgle.json";
+LocalDataPath = "drive://Avgle3.json";
 scriptVersionUpdate()
 main()
