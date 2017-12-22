@@ -19,7 +19,8 @@
 
 */
 
-version = 1.3
+version = 1.4
+
 const filters = {
   "Time": {
     "全部视频": "a",
