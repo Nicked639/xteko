@@ -238,7 +238,7 @@ const contentView = {
         } else if (c == "合集") {
           cacheContent = "合集";
           $cache.set("cacheContent", cacheContent);
-          cacheFilters.View = "mr";
+          cacheFilters.View = "bw";
           $cache.set("cacheFiltes",cacheFilters)
           contentMode = "Collections";
           if (VFExist == true) {
@@ -1483,7 +1483,7 @@ function play(url, indexPath, poster) {
         },
         layout: function(make, view) {
           var scale = 16 / 9;
-          make.top.left.right.inset(10)
+          make.top.left.right.inset(0)
           make.height.equalTo(view.width).dividedBy(scale);
         }
       });
