@@ -324,7 +324,7 @@ const contentView = {
           LocalData.favorite.map(function(i) {
             $("fvideos").data = $("fvideos").data.concat({
               videosBg:{
-                bgcolor:$color("#c6dfff")
+                bgcolor:favColor
               },
               interface: {
                 src: i.image
@@ -601,7 +601,7 @@ const info = {
   views: [{
     type: "text",
     props: {
-      text: "Designed by Nicked.\n\nSource from Avgle.",
+      text: "Created by Nicked.\n\nSource from Avgle.",
       bgcolor: $color("#dddddd"),
       textColor: $color("#aaaaaa"),
       font: $font(10),
