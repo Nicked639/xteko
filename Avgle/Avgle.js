@@ -19,7 +19,7 @@
 
 */
 
-version = 1.5
+version = 1.6
 
 const filters = {
   "Time": {
@@ -657,7 +657,23 @@ const info = {
       make.right.inset(130)
     }
 
-  },],
+  },{
+    type: "text",
+    props: {
+      id:"loading",
+      text: "Loading...",
+      bgcolor: $color("#dddddd"),
+      textColor: $color("#888888"),
+      font: $font(20),
+      align: $align.center
+    },
+
+    layout: function(make, view) {
+      make.top.inset(200)
+      make.height.equalTo(100)
+      make.width.equalTo($device.info.screen.width)
+    }
+  }],
   layout:function(make,view){
     make.top.equalTo($("search").bottom)
     make.left.right.bottom.inset(0)
@@ -840,12 +856,10 @@ const statusView = {
     props: {
       id: "contentButton",
       bgcolor: $color("#dddddd"),
-      icon: $icon("067", $color("#ffffff"))
+      icon: $icon("067", $color("#ffffff"),$size(25,25))
     },
     layout: function(make, view) {
       make.top.inset(12)
-      make.height.equalTo(25)
-      make.width.equalTo(26)
       make.right.inset(14)
     },
     events: {
@@ -1112,19 +1126,9 @@ const CCView = { // category and collection
   layout: $layout.fill
 }
 
-$ui.render({
-  props: {
-    title: "Avgle",
-    bgcolor: $color("#dddddd"),
-    id: "Avgle"
-  },
-  views: [VFView],
-  layout: $layout.fill
-})
-
 function getVideoData() {
-  //$ui.toast("载入中...", 10);
   $ui.loading(true)
+  $("loading").text = "Loading..."
   page++;
   if(mode == "Cat"){
     url = "https://api.avgle.com/v1/videos/"+page+"?limit=10&c="+CHID+"&t="+ cacheFilters.Time + "&o=" +cacheFilters.View;
@@ -1200,6 +1204,7 @@ function getVideoData() {
       })
       //$ui.toast("", 0.1);
       $ui.loading(false);
+        $("loading").text = ""
       if (mode == "Search") {
         $("searchResult").text = filterName[cacheFilters.Time]+"找到 " + video_num + " 个视频";
         $("search").placeholder = "";
@@ -1283,6 +1288,7 @@ function getFavoriteData(vid) {
 
 function getCollectionData() {
   $ui.loading(true)
+  $("loading").text = "Loading..."
   $("searchResult").text = "";
   page++;
   $http.request({
@@ -1326,13 +1332,15 @@ function getCollectionData() {
       $("search").text = ""
       $("search").placeholder = "共计 " + resp.data.response.total_collections + " 个合集"
       $ui.loading(false)
-
+  $("loading").text = ""
     }
   })
+  
 }
 
 function getCategoryData() { // category and collection
   $ui.loading(true)
+  $("loading").text = "Loading..."
   $("searchResult").text = "";
   url = "https://api.avgle.com/v1/categories"
   $http.request({
@@ -1371,6 +1379,7 @@ function getCategoryData() { // category and collection
       $("search").text = ""
       $("search").placeholder = "搜索"
       $ui.loading(false)
+        $("loading").text = ""
     }
   })
 }
@@ -1491,6 +1500,83 @@ function play(url, indexPath, poster) {
   })
 }
 
+const checkAdultView ={
+    type: "view",
+    props: {
+      id: "checkAdult",
+      bgcolor: $color("black")
+    },
+    views: [{
+      type: "text",
+      props: {
+        text: "FBI WARNING",
+        textColor: $color("white"),
+        font: $font("Helvetica-Bold", 25),
+        bgcolor: $color("red"),
+        insets: $insets(5, 0, 0, 0),
+        align: $align.center,
+        editable: false
+      },
+      layout: function(make, view) {
+        make.top.inset(55)
+        make.left.right.inset(90)
+        make.height.equalTo(40)
+      }
+    }, {
+      type: "text",
+      props: {
+        text: "Federal law provides severe civil and criminal penalties for the unauthorized reproduction, distribution, or exhibition of copyrighted motion pictures (Title 17, United States Code,Sections 501 and 508). The Federal Bureau of Investigation investigates allegations of criminal copyright infringement (Title 17, United States Code, Section 506).",
+        textColor: $color("white"),
+        font: $font("bold", 14),
+        bgcolor: $color("clear"),
+        insets: $insets(0, 0, 0, 0),
+        align: $align.justified,
+        editable: false
+      },
+      layout: function(make, view) {
+        make.top.inset(120)
+        make.left.right.inset(10)
+        make.height.equalTo(160)
+      }
+    }, {
+      type: "button",
+      props: {
+        title: "已满十八岁",
+        titleColor: $color("black"),
+        bgcolor: $color("white")
+      },
+      layout: function(make, view) {
+        make.left.right.inset(120)
+        make.bottom.inset(100)
+        make.height.equalTo(30)
+      },
+      events: {
+        tapped: function(sender) {
+          $("checkAdult").remove()
+          $cache.set("ADULT",true)
+        }
+      }
+    }, {
+      type: "button",
+      props: {
+        title: "未满十八岁",
+        titleColor: $color("white"),
+        bgcolor: $color("red")
+      },
+      layout: function(make, view) {
+        make.left.right.inset(120)
+        make.bottom.inset(40)
+        make.height.equalTo(30)
+      },
+      events: {
+        tapped: function(sender) {
+          $app.close()
+        }
+      }
+    }],
+    layout: $layout.fill
+}
+
 function initial() {
   if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
@@ -1505,10 +1591,9 @@ function initial() {
   contentExist = false;
   filterExist = false;
   contentMode = "Videos";
-  $("Avgle").add(VFView)
+  //$("Avgle").add(VFView)
   VFExist = true; // videos and favorites
   CCExist = false; // categories and collections 
-  FExist = false;
   page = -1;
   $app.tips("本脚本运行需要翻墙，请将\n https://avgle.com \n加入到翻墙列表。")
 }
@@ -1540,6 +1625,9 @@ function scriptVersionUpdate() {
 }
 
 function main() {
+  if($cache.get("ADULT")){
+      $("checkAdult").remove()
+  }
   initial();
   keyword = clipboardDetect()
   if (keyword == "none") {
@@ -1549,8 +1637,17 @@ function main() {
     $("search").text = keyword;
   }
   getVideoData();
-
 }
+
+$ui.render({
+  props: {
+    title: "Avgle",
+    bgcolor: $color("#dddddd"),
+    id: "Avgle"
+  },
+  views: [VFView,checkAdultView],
+  layout: $layout.fill
+})
 
 LocalDataPath = "drive://Avgle.json";
 scriptVersionUpdate()
