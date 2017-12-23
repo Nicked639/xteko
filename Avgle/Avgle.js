@@ -1539,6 +1539,38 @@ const checkAdultView ={
         make.height.equalTo(160)
       }
     }, {
+      type: "text",
+      props: {
+        text: "警告 ⚠️",
+        textColor: $color("white"),
+        font: $font("Helvetica-Bold", 25),
+        bgcolor: $color("red"),
+        insets: $insets(5, 0, 0, 0),
+        align: $align.center,
+        editable: false
+      },
+      layout: function(make, view) {
+        make.top.inset(280)
+        make.left.right.inset(130)
+        make.height.equalTo(40)
+      }
+    }, {
+      type: "text",
+      props: {
+        text: "本脚本运行内容包含成人视频、图片，可能会引起你的不适，请谨慎运行。\n未满十八岁，禁止运行。\n\n脚本运行需代理，请将 Https://avgle.com 加入代理。",
+        textColor: $color("white"),
+        font: $font("bold", 14),
+        bgcolor: $color("clear"),
+        insets: $insets(0, 0, 0, 0),
+        align: $align.center,
+        editable: false
+      },
+      layout: function(make, view) {
+        make.top.inset(350)
+        make.left.right.inset(10)
+        make.height.equalTo(160)
+      }
+    },{
       type: "button",
       props: {
         title: "已满十八岁",
@@ -1595,7 +1627,6 @@ function initial() {
   VFExist = true; // videos and favorites
   CCExist = false; // categories and collections 
   page = -1;
-  $app.tips("本脚本运行需要翻墙，请将\n https://avgle.com \n加入到翻墙列表。")
 }
 
 function scriptVersionUpdate() {
