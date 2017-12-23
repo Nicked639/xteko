@@ -1576,7 +1576,7 @@ function clipboardDetect() {
 function jsDetect() {
   var js = $file.extensions
   for (var i = 0; i < js.length; i++) {
-    var match = /Abvgle[\s\S]*?/g.exec(js[i])
+    var match = /Avgle[\s\S]*?/g.exec(js[i])
     if (match) {
       return js[i]
     }
