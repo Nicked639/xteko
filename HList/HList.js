@@ -11,7 +11,7 @@
  https://t.me/nicked
 
 */
-//$cache.clear()
+$cache.clear()
 var version = 1.34
 const searchView = {
   type: 'view',
@@ -457,7 +457,7 @@ const detailView = {
           //$clipboard.text = favCode
           //$ui.action(favCode)
          $ui.menu({
-           items:["磁链","Avgle"],
+           items:["磁链","Avgle","复制番号"],
            handler:function(title,idx){
              if(idx==0){
                          $http.request({
@@ -476,10 +476,12 @@ const detailView = {
 
             }
           })
-             }else{
+             }else if(idx ==1){
              $safari.open({
                url:"https://avgle.com/search/videos?search_query="+encodeURI(favCode)+"&search_type=videos"
              })
+           }else {
+            $clipboard.text = favCode
            }
            }
          }) 
@@ -1418,6 +1420,38 @@ function checkAdult() {
         make.height.equalTo(160)
       }
     }, {
+      type: "text",
+      props: {
+        text: "警告 ⚠️",
+        textColor: $color("white"),
+        font: $font("Helvetica-Bold", 25),
+        bgcolor: $color("red"),
+        insets: $insets(5, 0, 0, 0),
+        align: $align.center,
+        editable: false
+      },
+      layout: function(make, view) {
+        make.top.inset(280)
+        make.left.right.inset(130)
+        make.height.equalTo(40)
+      }
+    }, {
+      type: "text",
+      props: {
+        text: "本脚本运行内容包含成人视频、图片，可能会引起你的不适，请谨慎运行。\n未满十八岁，禁止运行。\n\n脚本运行需代理，请将 Https://tellme.pw 加入代理。",
+        textColor: $color("white"),
+        font: $font("bold", 14),
+        bgcolor: $color("clear"),
+        insets: $insets(0, 0, 0, 0),
+        align: $align.center,
+        editable: false
+      },
+      layout: function(make, view) {
+        make.top.inset(350)
+        make.left.right.inset(10)
+        make.height.equalTo(160)
+      }
+    },{
       type: "button",
       props: {
         title: "已满十八岁",
@@ -1508,7 +1542,7 @@ function initial() {
 function clipboardDetect() {
   var str = $clipboard.text
   var reg1 = /[sS][nN][iI][sS][\s\-]?\d{3}|[aA][bB][pP][\s\-]?\d{3}|[iI][pP][zZ][\s\-]?\d{3}|[sS][wW][\s\-]?\d{3}|[jJ][uU][xX][\s\-]?\d{3}|[mM][iI][aA][dD][\s\-]?\d{3}|[mM][iI][dD][eE][\s\-]?\d{3}|[mM][iI][dD][dD][\s\-]?\d{3}|[pP][gG][dD][\s\-]?\d{3}|[sS][tT][aA][rR][\s\-]?\d{3}|[eE][bB][oO][dD][\s\-]?\d{3}|[iI][pP][tT][dD][\s\-]?\d{3}/g;
-  var reg2 = /[a-zA-Z]{3,5}[\s\-]\d{3}/g;
+  var reg2 = /[a-zA-Z]{3,5}[\s\-]?\d{3}/g;
   var match = str.match(reg1);
   if (match) {
     mode = "search";
@@ -1588,7 +1622,7 @@ function main() {
 
 }
 
-LocalDataPath = "drive://HList2.json";
+LocalDataPath = "drive://HList.json";
 var check = $cache.get("adultCheck")
 if (!check) {
   checkAdult()
