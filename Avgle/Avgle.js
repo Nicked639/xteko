@@ -19,7 +19,7 @@
 
 */
 
-version = 1.6
+version = 1.61
 
 const filters = {
   "Time": {
