@@ -12,7 +12,7 @@
 
 */
 //$cache.clear()
-var version = 1.35
+var version = 1.4
 const searchView = {
   type: 'view',
   props: {
@@ -477,31 +477,38 @@ const detailView = {
             }
           })
              }else if(idx ==1){
-             $safari.open({
+               $clipboard.text = favCode;
+              var js = jsDetect()
+              if(js){
+                $app.openExtension(js+".js")
+              }else {
+                $ui.alert({
+                  title: "Avgle 脚本不存在",
+                  message: "是否安装?\n安装完成后请再次点击。" ,
+                  actions: [{
+                    title: "安装",
+                    handler: function() {
+                      var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/Avgle.js&name=Avgle&icon=icon_135.png";
+                      $app.openURL(encodeURI(url));
+                      $app.close()
+                    }
+                  }, {
+                    title: "取消"
+                  }]
+                })
+              }
+              //  $clipboard.text = favCode;
+              //  $app.openExtension("Avgle.js")
+               
+             /*$safari.open({
                url:"https://avgle.com/search/videos?search_query="+encodeURI(favCode)+"&search_type=videos"
-             })
+             })*/
            }else {
             $clipboard.text = favCode
            }
            }
          }) 
-          /*
-          $http.request({
-            url: "https://btso.pw",
-            timeout: 1,
-            handler: function(resp) {
-              if (resp.data) {
-                $safari.open({
-                  url: "http://btso.pw/search/" + encodeURI(favCode)
-                })
-              } else {
-                $safari.open({
-                  url: "http://www.nms999.com/l/" + encodeURI(favCode) + "-hot-desc-1"
-                })
-              }
-
-            }
-          })*/
+ 
         }
       }
 
@@ -1564,6 +1571,17 @@ function clipboardDetect() {
     "mode": mode,
     "keyword": keyword
   }
+}
+
+function jsDetect() {
+  var js = $file.extensions
+  for (var i = 0; i < js.length; i++) {
+    var match = /Abvgle[\s\S]*?/g.exec(js[i])
+    if (match) {
+      return js[i]
+    }
+  }
+  return false
 }
 
 function main() {
