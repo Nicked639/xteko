@@ -1,6 +1,6 @@
 {
-  "version": 1.34,
-  "msg": "更新说明：\n1.搜索支持 Avgle",
+  "version": 1.35,
+  "msg": "更新说明：\n1.更新警告内容",
   "wfVersion":1.1,
   "wfMsg": "更新说明：xxx",
   "workflow": "https://workflow.is/workflows/a5e03887209b4eed8642d524004f36fc"
