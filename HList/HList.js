@@ -11,8 +11,8 @@
  https://t.me/nicked
 
 */
-$cache.clear()
-var version = 1.34
+//$cache.clear()
+var version = 1.35
 const searchView = {
   type: 'view',
   props: {
