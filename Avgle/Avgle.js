@@ -443,40 +443,17 @@ const template = [{ // Video and Favorite
     },
     events: {
       tapped(sender) {
-        //favButtonTapped(sender);
-        //$ui.action($props(sender.data))
-        if ($("player")) {
-          $("player").stopLoading();
-          $("player").remove()
-        };
+        
         var info = sender.info;
-        var data = $("videos").data;
         var cell = sender.super.super.super;
         var view = $("videos").runtimeValue();
         var index = view.invoke("indexPathForCell", cell).rawValue();
         var idx = index.row;
-        //$ui.action(idx.toString())
-        if (sender.title == "🤔") {
-          data[idx].favorite.title = "😍";
-          data[idx].favorite.alpha = 1;
-          LocalData.favorite.push(info);
-          LocalFavList.push(info.vid)
-          writeCache();
-          $ui.toast("😍 已收藏！", 1)
-        } else {
-          data[idx].favorite.title = "🤔";
-          data[idx].favorite.alpha = 0.6;
-          var idxx = LocalFavList.indexOf(info.vid);
-          LocalFavList.splice(idxx, 1);
-          LocalData.favorite.splice(idxx, 1);
-          writeCache()
-          $ui.toast("🤔 已取消！", 1)
-        }
+        favButtonTapped(sender,info,idx)
         if (contentMode == "Favorites") {
           $("search").placeholder = "共计 " + LocalFavList.length + " 个收藏";
           $("searchResult").text = "";
         }
-        $("videos").data = data;
       }
     }
 
@@ -985,7 +962,7 @@ const VFView = { // Video and Favorite
           getVideoData()
         }
         $("videos").endRefreshing();
-
+        $ui.toast("更新成功！",1)
       },
       willBeginDragging(sender) {
         startY = sender.contentOffset.y;
@@ -993,7 +970,7 @@ const VFView = { // Video and Favorite
       },
       didEndDragging(sender) {
         endY = sender.contentOffset.y;
-        if (Math.abs(endY - startY) > 100) {
+        if (Math.abs(endY - startY) > 130) {
           if (filterExist) {
             $("filterView").remove();
             filterExist = false
@@ -1154,6 +1131,7 @@ function getVideoData() {
       if (video_num == 0) {
         $ui.alert("❌ 没有搜索结果！");
         $ui.loading(false);
+        $("loading") = ""
         return
       }
       if (!resp.data.response.has_more && page > 0) {
@@ -1384,6 +1362,75 @@ function getCategoryData() { // category and collection
   })
 }
 
+/*
+function favButtonTapped(sender,info,idx){
+if($("player")){
+  if (sender.title == "🤔"){
+    sender.title = "😍";
+    LocalData.favorite.push(info);
+    LocalFavList.push(info.vid)
+    writeCache();
+    $ui.toast("😍 已收藏！", 1)
+  }else if (sender.title == "😍"){
+    sender.title = "🤔";
+    var idxx = LocalFavList.indexOf(info.vid);
+    LocalFavList.splice(idxx, 1);
+    LocalData.favorite.splice(idxx, 1);
+    writeCache()
+    $ui.toast("🤔 已取消！", 1)
+  }
+}else {
+  if (sender.title == "🤔") {
+    data[idx].favorite.title = "😍";
+    data[idx].favorite.alpha = 1;
+    LocalData.favorite.push(info);
+    LocalFavList.push(info.vid)
+    writeCache();
+    $ui.toast("😍 已收藏！", 1)
+  } else {
+    data[idx].favorite.title = "🤔";
+    data[idx].favorite.alpha = 0.6;
+    var idxx = LocalFavList.indexOf(info.vid);
+    LocalFavList.splice(idxx, 1);
+    LocalData.favorite.splice(idxx, 1);
+    writeCache()
+    $ui.toast("🤔 已取消！", 1)
+  }
+  $("videos").data = data;
+}
+}*/
+
+function favButtonTapped(sender,info,idx){
+  if (sender.title == "🤔"){
+    if($("player")){
+      sender.title = "😍"
+    }else{
+      var data = $("videos").data;
+      data[idx].favorite.title = "😍";
+      data[idx].favorite.alpha = 1;
+      $("videos").data = data;
+    }
+    LocalData.favorite.push(info);
+    LocalFavList.push(info.vid)
+    writeCache();
+    $ui.toast("😍 已收藏！", 1)
+  }else if(sender.title == "😍"){
+    if($("player")){
+      sender.title = "🤔"
+    }else{
+      var data = $("videos").data;
+      data[idx].favorite.title = "🤔";
+      data[idx].favorite.alpha = 1;
+      $("videos").data = data;
+    }
+    var idxx = LocalFavList.indexOf(info.vid);
+    LocalFavList.splice(idxx, 1);
+    LocalData.favorite.splice(idxx, 1);
+    writeCache()
+    $ui.toast("🤔 已取消！", 1)
+  }
+}
+
 function formatDuration(ns) {
   var mins = Math.floor(ns / 60)
   var hours = mins > 60 ? Math.floor(mins / 60) : 0
@@ -1525,7 +1572,7 @@ const checkAdultView ={
     }, {
       type: "text",
       props: {
-        text: "Federal law provides severe civil and criminal penalties for the unauthorized reproduction, distribution, or exhibition of copyrighted motion pictures (Title 17, United States Code,Sections 501 and 508). The Federal Bureau of Investigation investigates allegations of criminal copyright infringement (Title 17, United States Code, Section 506).",
+        text: "Federal law provides severe civil and criminal penalties for the unauthorized reproduction, distribution, or exhibition of copyrighted motion pictures (Title 17, United States Code, Sections 501 and 508). The Federal Bureau of Investigation investigates allegations of criminal copyright infringement (Title 17, United States Code, Section 506).",
         textColor: $color("white"),
         font: $font("bold", 14),
         bgcolor: $color("clear"),
