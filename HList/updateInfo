@@ -1,6 +1,6 @@
 {
-  "version": 1.4,
-  "msg": "更新说明：\n1.搜索中现在支持直接打开 Avgle 脚本。",
+  "version": 1.41,
+  "msg": "更新说明：\n1.此版本开始后续更新都将安装在jsbox",
   "wfVersion":1.1,
   "wfMsg": "更新说明：xxx",
   "workflow": "https://workflow.is/workflows/a5e03887209b4eed8642d524004f36fc"
