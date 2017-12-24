@@ -12,7 +12,7 @@
 
 */
 //$cache.clear()
-var version = 1.4
+var version = 1.41
 const searchView = {
   type: 'view',
   props: {
@@ -1516,7 +1516,7 @@ function scriptVersionUpdate() {
           actions: [{
             title: "更新",
             handler: function() {
-              var url = "pin://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/HList/HList.js&name=HList" + afterVersion + "&icon=icon_135.png";
+              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/HList/HList.js&name=HList" + afterVersion + "&icon=icon_135.png";
               $app.openURL(encodeURI(url));
               $app.close()
             }
