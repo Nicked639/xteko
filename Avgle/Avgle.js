@@ -19,7 +19,7 @@
 
 */
 
-version = 1.61
+version = 1.62
 
 const filters = {
   "Time": {
@@ -1131,7 +1131,7 @@ function getVideoData() {
       if (video_num == 0) {
         $ui.alert("❌ 没有搜索结果！");
         $ui.loading(false);
-        $("loading") = ""
+        $("loading").text = ""
         return
       }
       if (!resp.data.response.has_more && page > 0) {
@@ -1362,43 +1362,6 @@ function getCategoryData() { // category and collection
   })
 }
 
-/*
-function favButtonTapped(sender,info,idx){
-if($("player")){
-  if (sender.title == "🤔"){
-    sender.title = "😍";
-    LocalData.favorite.push(info);
-    LocalFavList.push(info.vid)
-    writeCache();
-    $ui.toast("😍 已收藏！", 1)
-  }else if (sender.title == "😍"){
-    sender.title = "🤔";
-    var idxx = LocalFavList.indexOf(info.vid);
-    LocalFavList.splice(idxx, 1);
-    LocalData.favorite.splice(idxx, 1);
-    writeCache()
-    $ui.toast("🤔 已取消！", 1)
-  }
-}else {
-  if (sender.title == "🤔") {
-    data[idx].favorite.title = "😍";
-    data[idx].favorite.alpha = 1;
-    LocalData.favorite.push(info);
-    LocalFavList.push(info.vid)
-    writeCache();
-    $ui.toast("😍 已收藏！", 1)
-  } else {
-    data[idx].favorite.title = "🤔";
-    data[idx].favorite.alpha = 0.6;
-    var idxx = LocalFavList.indexOf(info.vid);
-    LocalFavList.splice(idxx, 1);
-    LocalData.favorite.splice(idxx, 1);
-    writeCache()
-    $ui.toast("🤔 已取消！", 1)
-  }
-  $("videos").data = data;
-}
-}*/
 
 function favButtonTapped(sender,info,idx){
   if (sender.title == "🤔"){
