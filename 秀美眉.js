@@ -1,4 +1,3 @@
-version = 1.2
 let category = [{
   title: "首页",
   addr: "http://www.xiumeim.com",
@@ -455,8 +454,8 @@ function getDetailPost(inputUrl) {
 
 function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
-    LocalData.fav.push(data)
-    LocalList.push(data.src)
+    LocalData.fav.unshift(data)
+    LocalList.unshift(data.src)
     if ($("menu").index == 4) {
 
       $("preView").data = $("preView").data.concat({
