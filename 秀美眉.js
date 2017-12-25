@@ -1,8 +1,11 @@
+version = 1.2
 let category = [{
   title: "首页",
   addr: "http://www.xiumeim.com",
   next: "http://www.xiumeim.com/albums/page-"
 }, {
+  title: "收藏",
+},{
   title: "尤果",
   addr: "http://www.xiumeim.com/albums/UG.html",
   next: "http://www.xiumeim.com/albums/UG-"
@@ -10,13 +13,27 @@ let category = [{
   title: "波萝",
   addr: "http://www.xiumeim.com/albums/BOL.html",
   next: "http://www.xiumeim.com/albums/BOL-"
+},{
+  title: "秀人",
+  addr: "http://www.xiumeim.com/albums/Goddess.html",
+  next: "http://www.xiumeim.com/albums/Goddess.html-"
 }, {
+  title: "花の颜",
+  addr: "http://www.xiumeim.com/albums/HuaYan.html",
+  next: "http://www.xiumeim.com/albums/HuaYan.html-"
+}, {
+  title:"蜜桃",
+  addr:"http://www.xiumeim.com/albums/MiiTao.html",
+  next:"http://www.xiumeim.com/albums/MiiTao-.html"
+},{
+  title: "尤蜜荟",
+  addr: "http://www.xiumeim.com/albums/YOUMI.html",
+  next: "http://www.xiumeim.com/albums/YOUMI.html-"
+},{
   title: "其他",
   addr: "http://www.xiumeim.com/albums/mix.html",
   next: "http://www.xiumeim.com/albums/mix-"
-}, {
-  title: "收藏",
-}]
+}, ]
 
 function mainUI(column,rowHeight) {
   $ui.render({
@@ -27,7 +44,7 @@ function mainUI(column,rowHeight) {
         type: "text",
         props: {
           id: "bgInfo",
-          text: "Originated in Power Flow\n\nhttps://t.me/Flow_Script\n\nVersion: 1.1",
+          text: "Originated in Power Flow\n\nhttps://t.me/Flow_Script\n\nCreated By Nicked\n\nhttps://t.me/nicked\n\nVersion: 1.1",
           editable: false,
           textColor: $color("#CCCCCC"),
           font: $font(10),
@@ -50,7 +67,7 @@ function mainUI(column,rowHeight) {
         },
         layout: function(make, view) {
           make.size.equalTo($size(50, 50))
-          make.top.inset(110)
+          make.top.inset(150)
           make.left.inset(162)
         }
 
@@ -66,7 +83,7 @@ function mainUI(column,rowHeight) {
         },
         events: {
           changed(sender) {
-            if (sender.index !== 4) {
+            if (sender.index !== 1) {
               mainUI(2,280)
               $("menu").index = sender.index;
               $("preView").hidden = false
@@ -74,8 +91,8 @@ function mainUI(column,rowHeight) {
               $("preView").data = [];
               getPostData()
             } else {
-              mainUI(3,185)
-              $("menu").index = 4
+              mainUI(4,150)
+              $("menu").index = 1
               if (LocalList.length == 0) {
                 $ui.toast("暂无收藏内容，请收藏")
                 $("preView").hidden = true
@@ -125,7 +142,7 @@ function mainUI(column,rowHeight) {
         events: {
           didReachBottom(sender) {
             sender.endFetchingMore();
-            if ($("menu").index !== 4){
+            if ($("menu").index !== 1){
               
             getPostData()
             $delay(0.5, function() {
@@ -137,10 +154,14 @@ function mainUI(column,rowHeight) {
           didSelect(sender, indexPath, data) {
             interface = data.interface.src
             title = data.title
-
-            showPhotos(title)
+            if($("menu").index == 1){
+              showPhotos(title,1,563)
+            }else{
+              showPhotos(title,2,280)
+            }
             if (LocalList.indexOf(interface) > -1) {
               $("favorite").title = "取消收藏"
+               $("favorite").bgcolor= $color("#4f86f2")
             }
             $("detailView").data = [];
             detailPage = 0;
@@ -178,10 +199,26 @@ function getPostData(mode) {
 
   }
   }
-  
   $http.request({
     url: url,
     handler: function(resp) {
+      if(!resp){
+        $ui.alert("❌ 请检查网络")
+      }
+
+    //   var reg1 = /<div class="gallary_item_album album">([\s\S]*?)<\/span>/g;
+    //   var match1 = resp.data.match(reg1)
+    //  // $ui.action(match1)
+    //   var postData = []
+    //   match1.map(function(i){
+    //     var image = /(data-original=")([\s\S]*?)(")/.exec(i)[2];
+    //     var detail = /(href=")([\s\S]*?)(")/.exec(i)[2];
+    //     var title = /alt="(.*?)-/.exec(i)[1]
+    //     var path0 = /<span class="name">([\s\S]*?)<\/span>/g.exec(i)[1]
+    //     $ui.action(path0)
+    //     path = /target='_blank'>[\s\S]*?<\/a>([\s\S]*?)<\/a>/g.exec(path0)[1]
+
+    //   })
       var reg = /<table>[\s\S]*?<\/table>/g;
       var match = resp.data.match(reg);
       var postData = []
@@ -203,7 +240,7 @@ function getPostData(mode) {
   })
 }
 
-function showPhotos(title) {
+function showPhotos(title,columns,rowHeight) {
   $ui.push({
     props: {
       title: title,
@@ -212,8 +249,8 @@ function showPhotos(title) {
       type: "matrix",
       props: {
         id: "detailView",
-        itemHeight: 280,
-        columns: 2,
+        itemHeight: rowHeight,
+        columns: columns,
         spacing: 2,
         bgcolor: $color("clear"),
         template: [{
@@ -263,7 +300,7 @@ function showPhotos(title) {
       layout: function(make, view) {
         make.left.bottom.inset(0)
         make.width.equalTo(view.super).dividedBy(2)
-        make.height.equalTo(30)
+        make.height.equalTo(40)
       },
       events: {
         tapped(sender) {
@@ -277,27 +314,24 @@ function showPhotos(title) {
             })
             /*$quicklook.open({
             list: urlList
-
           })*/
-
-            if (!$drive.exists(title)) {
-              $drive.mkdir(title)
+            if (!$drive.exists(folderName)) {
+              $drive.mkdir(folderName)
             }
-            var count = 1
             $("progress").value = 0;
+            var count = 0
             for (var i = 0; i < urlList.length; i++) {
               $http.download({
                 url: urlList[i],
                 handler: function(resp) {
-                  count++
-                  $("button").title = "正在下载第 " + count + " 幅图";
+                  count++;
+                  sender.title = "正在下载第 " + count + " 幅图";
                   $("progress").value = count * 1.0 / urlList.length
-                  if (count == urlList.length + 1) {
-                    $("button").title = "完成, iCloud Drive 查看"
+                  if (count == urlList.length) {
+                    sender.title = "完成, iCloud Drive 查看"
                     $("progress").value = 0
                   }
-
-                  var path = title + "/" + resp.response.suggestedFilename
+                  var path = folderName + "/" + resp.response.suggestedFilename
                   $drive.write({
                     data: resp.data,
                     path: path
@@ -313,7 +347,7 @@ function showPhotos(title) {
       type: "button",
       props: {
         id: "favorite",
-        bgcolor: $color("black"),
+        bgcolor:$color("black"),
         radius: 0,
         title: "收藏",
         alpha: 0.9
@@ -321,7 +355,7 @@ function showPhotos(title) {
       layout: function(make, view) {
         make.right.bottom.inset(0)
         make.width.equalTo(view.super).dividedBy(2)
-        make.height.equalTo(30)
+        make.height.equalTo(40)
       },
       events: {
         tapped(sender) {
@@ -333,9 +367,11 @@ function showPhotos(title) {
           if ($("favorite").title == "收藏") {
             favoriteButtonTapped("add", data)
             $("favorite").title = "取消收藏"
+            $("favorite").bgcolor = $color("#4f86f2")
           } else {
             favoriteButtonTapped("del", data)
             $("favorite").title = "收藏"
+            $("favorite").bgcolor = $color("black")
 
           }
 
@@ -355,7 +391,7 @@ function showPhotos(title) {
       },
       layout: function(make, view) {
         make.bottom.left.right.inset(0)
-        make.height.equalTo(30)
+        make.height.equalTo(40)
       }
     }]
   })
@@ -371,6 +407,9 @@ function getDetailPost(inputUrl) {
   $http.request({
     url: url,
     handler: function(resp) {
+      if(!resp){
+        $ui.alert("❌ 请检查网络")
+      }
       var reg = /<table>[\s\S]*?<\/table>/g;
       var match = resp.data.match(reg);
       if (!match && detailPage == 1) {
@@ -395,6 +434,9 @@ function getDetailPost(inputUrl) {
           ]
         })
 
+      }
+      if(detailPage == 1){
+        folderName = /<title>([\s\S]*?) \-/g.exec(resp.data)[1]
       }
       var imgList = [];
       match.map(function(i) {
