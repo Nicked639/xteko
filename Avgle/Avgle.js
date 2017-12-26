@@ -17,6 +17,18 @@
 
  作者联系：https://t.me/nicked
 
+ Tips: 
+
+ 1.点击片名左下角时间可预览视频;
+
+ 2.点击片名左下角 🤔 收藏影片;
+
+ 3.点击收藏按钮旁边的按钮可分享视频;
+
+ 3.点击图片中央或下方标题播放完整视频;
+
+ 4.请合理安排娱乐与工作时间, 劳逸结合, 强身健体，做中华好儿女。
+
 */
 
 version = 1.62
@@ -83,10 +95,6 @@ const filterView = {
     },
     events: {
       didSelect(sender, indexPath, data) {
-        if ($("player")) {
-          $("player").stopLoading();
-          $("player").remove()
-        };
         $device.taptic(0);
         cacheFilters.Time = filters.Time[data.filterLabel.text];
         $("filterView").remove();
@@ -136,10 +144,6 @@ const filterView = {
     },
     events: {
       didSelect(sender, indexPath, data) {
-        if ($("player")) {
-          $("player").stopLoading();
-          $("player").remove()
-        };
         $device.taptic(0);
         $("filterView").remove();
         filterExist = false;
@@ -214,10 +218,6 @@ const contentView = {
         $device.taptic(0);
         $("contentView").remove();
         contentExist = false;
-        if ($("player")) {
-          $("player").stopLoading();
-          $("player").remove()
-        };
         $("search").text = "";
         var c = data.contentLabel.text;
         if (c == "影片") {
@@ -285,7 +285,7 @@ const contentView = {
             return
           }
           $("videos").contentOffset = $point(0, 0);
-          $("search").placeholder = "共计 " + LocalFavList.length + " 个收藏"
+          $("search").placeholder = "共计 " + formatNum(LocalFavList.length)  + " 个收藏"
           $("searchResult").text = "";
           $("videos").data = [];
           LocalData.favorite.map(function(i) {
@@ -369,15 +369,29 @@ const template = [{ // Video and Favorite
       make.left.right.inset(10)
     }
   }, {
-    type: "label",
+    type: "button",
     props: {
       id: "time",
-      textColor: $color("black"),
-      font: $font(13)
+      titleColor: $color("black"),
+      font: $font(13),
+      bgcolor: $color("clear")
     },
     layout: function(make, view) {
-      make.bottom.inset(10)
+      make.bottom.inset(4)
       make.left.inset(10)
+    },
+    events:{
+      tapped(sender){
+        var preview = /https.*\//g.exec(sender.info)!= false?/https.*\//g.exec(sender.info)[0]+"preview.mp4":false
+        var cell = sender.super.super.super;
+        var view = $("videos").runtimeValue();
+        var indexPath = view.invoke("indexPathForCell", cell).rawValue();
+        play(preview,indexPath,sender.info,"preview")
+        $delay(0.5, function() {
+          $("player").play()
+        })
+        $ui.toast("",0.1)
+      }
     }
   }, {
     type: "label",
@@ -432,7 +446,7 @@ const template = [{ // Video and Favorite
     props: {
       id: "favorite",
       bgcolor: $color("clear"),
-      title: "🤔",
+      //title: "🤔",
       font: $font(13),
     },
     layout: function(make, view) {
@@ -443,7 +457,6 @@ const template = [{ // Video and Favorite
     },
     events: {
       tapped(sender) {
-        
         var info = sender.info;
         var cell = sender.super.super.super;
         var view = $("videos").runtimeValue();
@@ -451,7 +464,7 @@ const template = [{ // Video and Favorite
         var idx = index.row;
         favButtonTapped(sender,info,idx)
         if (contentMode == "Favorites") {
-          $("search").placeholder = "共计 " + LocalFavList.length + " 个收藏";
+          $("search").placeholder = "共计 " + formatNum(LocalFavList.length) + " 个收藏";
           $("searchResult").text = "";
         }
       }
@@ -703,10 +716,6 @@ const statusView = {
       returned(sender) {
         sender.blur();
         if (sender.text) {
-          if ($("player")) {
-            $("player").stopLoading();
-            $("player").remove()
-          };
           mode = "Search";
           var code = codeCorrectify(sender.text);
           if (code !== "none") {
@@ -733,10 +742,6 @@ const statusView = {
           $cache.set("cacheFilters",cacheFilters)
           getVideoData()
         } else {
-          if ($("player")) {
-            $("player").stopLoading();
-            $("player").remove()
-          };
           if(CCExist){
             $("CCView").remove();
             CCExist = false;
@@ -924,8 +929,10 @@ const VFView = { // Video and Favorite
           contentExist = false;
         }
         var url = "https://avgle.com/video/" + data.share.info;
-        play(url, indexPath, data.interface.src)
-
+        play(url, indexPath, data.interface.src,"video")
+        $delay(2, function() {
+        $("player").play()
+        })
       },
       didReachBottom(sender) {
         sender.endFetchingMore();
@@ -950,7 +957,7 @@ const VFView = { // Video and Favorite
         page = -1;
         $("videos").data = [];
         if (contentMode == "Favorites" && mode == "Videos") {
-          $("search").placeholder = "共计 " + LocalData.favorite.length + " 个收藏";
+          $("search").placeholder = "共计 " + formatNum(LocalData.favorite.length) + " 个收藏";
           $("searchResult").text = "";
           var temp = LocalFavList;
           tempList = [];
@@ -970,7 +977,7 @@ const VFView = { // Video and Favorite
       },
       didEndDragging(sender) {
         endY = sender.contentOffset.y;
-        if (Math.abs(endY - startY) > 130) {
+        if (Math.abs(endY - startY) > 100) {
           if (filterExist) {
             $("filterView").remove();
             filterExist = false
@@ -980,8 +987,9 @@ const VFView = { // Video and Favorite
             contentExist = false;
           }
           if ($("player")) {
-            $("player").stopLoading();
-            $("player").remove()
+            //$("player").stopLoading();
+           // $("player").remove()
+           $("player").toggle()
           }
         }
       }
@@ -1082,7 +1090,7 @@ const CCView = { // category and collection
       },
       didEndDragging(sender) {
         endY = sender.contentOffset.y;
-        if (Math.abs(endY - startY) > 150) {
+        if (Math.abs(endY - startY) > 100) {
           if (filterExist) {
             $("filterView").remove();
             filterExist = false
@@ -1092,8 +1100,9 @@ const CCView = { // category and collection
             contentExist = false;
           }
           if ($("player")) {
-            $("player").stopLoading();
-            $("player").remove()
+            //$("player").stopLoading();
+            //$("player").remove()
+            $("player").toggle()
           }
         }
       }
@@ -1104,6 +1113,11 @@ const CCView = { // category and collection
 }
 
 function getVideoData() {
+  if($("player")){
+    $("player").pause();
+    $("player").stopLoading();
+    $("player").remove();
+  }
   $ui.loading(true)
   $("loading").text = "Loading..."
   page++;
@@ -1120,7 +1134,8 @@ function getVideoData() {
     url: url,
     timeout: 5,
     handler: function(resp) {
-      //$ui.action(resp.err)
+      //$ui.action(resp.error)
+      //$ui.action(resp.error.indexOf("请求超时"))
       var success = resp.data.success;
       if (!success || !resp.response) {
         $ui.alert("❌ 网络连接出错！");
@@ -1150,14 +1165,15 @@ function getVideoData() {
             text: i.title
           },
           time: {
-            text: formatTime(i.addtime)
+            title: formatTime(i.addtime),
+            info: i.preview_url
           },
           duration: {
             text: formatDuration(i.duration)
           },
           like: {
-            text: "❤️ " + i.likes + " 🖤 " + i.dislikes + " ▶️ " + i.viewnumber,
-            alpha: 0.7
+            text: "❤️ " + formatNum(i.likes) + " 🖤 " + formatNum(i.dislikes) + " ▶️ " + formatNum(i.viewnumber),
+            alpha: 0.7,
           },
           hd: {
             hidden: i.hd == true ? false : true
@@ -1172,7 +1188,7 @@ function getVideoData() {
               duration: formatDuration(i.duration),
               like: "❤️ " + i.likes + " 🖤 " + i.dislikes + " ▶️ " + i.viewnumber,
               hd: i.hd == true ? false : true,
-              vid: i.vid
+              vid: i.vid,
             }
           },
           share: {
@@ -1184,13 +1200,13 @@ function getVideoData() {
       $ui.loading(false);
         $("loading").text = ""
       if (mode == "Search") {
-        $("searchResult").text = filterName[cacheFilters.Time]+"找到 " + video_num + " 个视频";
+        $("searchResult").text = filterName[cacheFilters.Time]+"找到 " + formatNum(video_num) + " 个视频";
         $("search").placeholder = "";
       } else {
         if(mode == "Cat"){
-          $("search").placeholder = "该分类"+filterName[cacheFilters.Time] + " " + video_num + " 个视频 ";
+          $("search").placeholder = "该分类"+ filterName[cacheFilters.Time] + " " + formatNum(video_num) + " 个视频 ";
         }else{
-          $("search").placeholder = filterName[cacheFilters.Time] + " " + video_num + " 个视频 ";
+          $("search").placeholder = filterName[cacheFilters.Time] + " " + formatNum(video_num) + " 个视频 ";
         }
         $("searchResult").text = "";
       }
@@ -1200,6 +1216,11 @@ function getVideoData() {
 }
 
 function getFavoriteData(vid) {
+  if($("player")){
+    $("player").pause();
+    $("player").stopLoading();
+    $("player").remove();
+  }
   url = "https://api.avgle.com/v1/video/" + vid;
   $("searchResult").text = "";
   $http.request({
@@ -1219,7 +1240,7 @@ function getFavoriteData(vid) {
         duration: formatDuration(i.duration),
         like: "❤️ " + i.likes + " 🖤 " + i.dislikes + " ▶️ " + i.viewnumber,
         hd: i.hd == true ? false : true,
-        vid: i.vid
+        vid: i.vid,
       };
       $("videos").data = $("videos").data.concat({
         interface: {
@@ -1229,14 +1250,15 @@ function getFavoriteData(vid) {
           text: i.title
         },
         time: {
-          text: formatTime(i.addtime)
+          text: formatTime(i.addtime),
+          info: i.preview_url
         },
         duration: {
           text: formatDuration(i.duration)
         },
         like: {
           text: "❤️ " + i.likes + " 🖤 " + i.dislikes + " ▶️ " + i.viewnumber,
-          alpha: 0.7
+          alpha: 0.7,
         },
         hd: {
           hidden: i.hd == true ? false : true
@@ -1265,6 +1287,11 @@ function getFavoriteData(vid) {
 }
 
 function getCollectionData() {
+  if($("player")){
+    $("player").pause();
+    $("player").stopLoading();
+    $("player").remove();
+  }
   $ui.loading(true)
   $("loading").text = "Loading..."
   $("searchResult").text = "";
@@ -1308,7 +1335,7 @@ function getCollectionData() {
         })
       })
       $("search").text = ""
-      $("search").placeholder = "共计 " + resp.data.response.total_collections + " 个合集"
+      $("search").placeholder = "共计 " + formatNum(resp.data.response.total_collections) + " 个合集"
       $ui.loading(false)
   $("loading").text = ""
     }
@@ -1317,6 +1344,11 @@ function getCollectionData() {
 }
 
 function getCategoryData() { // category and collection
+if($("player")){
+    $("player").pause();
+    $("player").stopLoading();
+    $("player").remove();
+  }
   $ui.loading(true)
   $("loading").text = "Loading..."
   $("searchResult").text = "";
@@ -1420,7 +1452,7 @@ function formatTime(ns) {
   } else if (timeDiff / 3600 < 24) {
     return Math.floor(timeDiff / 3600) + " 小时前"
   } else {
-    return Math.floor(timeDiff / 3600 / 25) + " 天前"
+    return Math.floor(timeDiff / 3600 / 24) + " 天前"
   }
 
 }
@@ -1473,41 +1505,64 @@ function codeCorrectify(detect) {
 
 }
 
-function play(url, indexPath, poster) {
+function play(url, indexPath, poster, videoMode) {
   $ui.loading(true);
-  $ui.toast("正在加载视频…", 10);
-  $http.request({
-    url: url,
-    handler: function(resp) {
-      $ui.loading(false);
-      $ui.toast("", 0.1);
-      var reg = /<video id[\s\S]*?<\/video>/g;
-      var match = resp.data.match(reg);
-      var videoUrl = /<source src="([\s\S]*?)" data/g.exec(match)[1]
-      if (!videoUrl) {
-        $ui.alert("❌ 视频加载失败！")
-        return
+  if (videoMode == "video"){
+    $ui.toast("正在加载视频…", 10);
+    $http.request({
+      url: url,
+      handler: function(resp) {
+        $ui.loading(false);
+        $ui.toast("", 0.1);
+        var reg = /<video id[\s\S]*?<\/video>/g;
+        var match = resp.data.match(reg);
+        var videoUrl = /<source src="([\s\S]*?)" data/g.exec(match)[1]
+        if (!videoUrl) {
+          $ui.alert("❌ 视频加载失败！")
+          return
+        } 
+        if ($("player")) {
+          $("player").pause()
+          $("player").stopLoading();
+          $("player").remove()
+        };
+        $("videos").cell(indexPath).add({
+          type: "video",
+          props: {
+            id: "player",
+            src: videoUrl,
+            poster: poster,
+          },
+          layout: function(make, view) {
+            var scale = 16 / 9;
+            make.top.left.right.inset(0)
+            make.height.equalTo(view.width).dividedBy(scale);
+          }
+        });
       }
+    })
+  }else if(videoMode == "preview"){
+    $ui.toast("正在加载预览视频…", 20);
+    if ($("player")) {
+      $("player").pause()
+      $("player").stopLoading();
+      $("player").remove()
+    };
+    $("videos").cell(indexPath).add({
+      type: "video",
+      props: {
+        id: "player",
+        src: url,
+        poster: poster,
+      },
+      layout: function(make, view) {
+        var scale = 16 / 9;
+        make.top.left.right.inset(0)
+        make.height.equalTo(view.width).dividedBy(scale);
+      }
+    });
+  }
 
-      if ($("player")) {
-        $("player").stopLoading();
-        $("player").remove()
-      };
-      $("videos").cell(indexPath).add({
-        type: "video",
-        props: {
-          id: "player",
-          src: videoUrl,
-          poster: poster,
-        },
-        layout: function(make, view) {
-          var scale = 16 / 9;
-          make.top.left.right.inset(0)
-          make.height.equalTo(view.width).dividedBy(scale);
-        }
-      });
-    }
-  })
 }
 
 const checkAdultView ={
@@ -1567,7 +1622,7 @@ const checkAdultView ={
     }, {
       type: "text",
       props: {
-        text: "本脚本运行内容包含成人视频、图片，可能会引起你的不适，请谨慎运行。\n未满十八岁，禁止运行。\n\n脚本运行需代理，请将 Https://avgle.com 加入代理。",
+        text: "本脚本运行内容包含成人视频、图片，可能会引起你的不适，请谨慎运行。\n未满十八岁，禁止运行。\n\n脚本运行需代理，请将 https://avgle.com 加入代理。",
         textColor: $color("white"),
         font: $font("bold", 14),
         bgcolor: $color("clear"),
