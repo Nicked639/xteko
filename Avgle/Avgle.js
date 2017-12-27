@@ -31,7 +31,7 @@
 
 */
 
-version = 1.7
+version = 1.71
 
 const filters = {
   "Time": {
@@ -264,6 +264,11 @@ const contentView = {
           $("CCList").contentOffset = $point(0, 0);   
           getCategoryData()
         } else if (c == "收藏夹") {
+          if($("player")){
+    $("player").pause();
+    $("player").stopLoading();
+    $("player").remove();
+  }
           cacheContent = "收藏夹";
           $cache.set("cacheContent", cacheContent);
           contentMode = "Favorites"
@@ -297,7 +302,8 @@ const contentView = {
                 text: i.title
               },
               time: {
-                text: i.time
+                title: i.time,
+                info: i.image
               },
               duration: {
                 text: i.duration
@@ -965,11 +971,12 @@ const VFView = { // Video and Favorite
           temp.map(function(i) {
             getFavoriteData(i)
           });
+          $ui.toast("更新成功！",1)
         }else{
-          getVideoData()
+          getVideoData();
+          $ui.toast("更新成功！",1);
         }
         $("videos").endRefreshing();
-        $ui.toast("更新成功！",1)
       },
       willBeginDragging(sender) {
         startY = sender.contentOffset.y;
@@ -977,7 +984,7 @@ const VFView = { // Video and Favorite
       },
       didEndDragging(sender) {
         endY = sender.contentOffset.y;
-        if (Math.abs(endY - startY) > 100) {
+        if (Math.abs(endY - startY) > 150) {
           if (filterExist) {
             $("filterView").remove();
             filterExist = false
@@ -1090,7 +1097,7 @@ const CCView = { // category and collection
       },
       didEndDragging(sender) {
         endY = sender.contentOffset.y;
-        if (Math.abs(endY - startY) > 100) {
+        if (Math.abs(endY - startY) > 150) {
           if (filterExist) {
             $("filterView").remove();
             filterExist = false
@@ -1227,11 +1234,16 @@ function getFavoriteData(vid) {
     url: url,
     handler: function(resp) {
       var success = resp.data.success;
-      if (!success || !resp.response) {
+      if (!resp.response) {
         $ui.alert("❌ 网络连接出错！");
         //$ui.toast("",0.1)
         return
       }
+      if(!success){
+        $ui.alert(url + "❌ 该影片连接出错！\n请稍候再试。")
+        return
+      }
+      
       var i = resp.data.response.video;
       var info = {
         title: i.title,
@@ -1250,7 +1262,7 @@ function getFavoriteData(vid) {
           text: i.title
         },
         time: {
-          text: formatTime(i.addtime),
+          title: formatTime(i.addtime),
           info: i.preview_url
         },
         duration: {
@@ -1745,6 +1757,6 @@ $ui.render({
   layout: $layout.fill
 })
 
-LocalDataPath = "drive://Avgle.json";
+LocalDataPath = "drive://Avgle 3.json";
 scriptVersionUpdate()
 main()
