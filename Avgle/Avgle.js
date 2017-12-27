@@ -1417,8 +1417,8 @@ function favButtonTapped(sender,info,idx){
       data[idx].favorite.alpha = 1;
       $("videos").data = data;
     }
-    LocalData.favorite.push(info);
-    LocalFavList.push(info.vid)
+    LocalData.favorite.unshift(info);
+    LocalFavList.unshift(info.vid)
     writeCache();
     $ui.toast("😍 已收藏！", 1)
   }else if(sender.title == "😍"){
