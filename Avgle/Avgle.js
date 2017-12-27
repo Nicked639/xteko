@@ -31,7 +31,7 @@
 
 */
 
-version = 1.71
+version = 1.72
 
 const filters = {
   "Time": {
@@ -356,9 +356,9 @@ const template = [{ // Video and Favorite
       radius: 5
     },
     layout: function(make, view) {
-      var scale = 16 / 9;
+      var imgScale = 16 / 9;
       make.top.left.right.inset(10)
-      make.height.equalTo(view.width).dividedBy(scale)
+      make.height.equalTo(view.width).dividedBy(imgScale)
       //make.bottom.inset(55)
     }
   }, {
@@ -513,12 +513,7 @@ const templateC = [{ // Catagory and Collection
       radius: 5,
       bgcolor: $color("white")
     },
-    layout: function(make, view) {
-      var scale = 16 / 9;
-      make.top.left.right.inset(0)
-      make.height.equalTo(view.width).dividedBy(scale)
-      //make.bottom.inset(55)
-    }
+    layout: $layout.fill
   }, {
     type: "label",
     props: {
@@ -673,6 +668,7 @@ const info = {
     make.left.right.bottom.inset(0)
   }
 }
+
 
 const statusView = {
   type: "view",
@@ -901,6 +897,9 @@ const statusView = {
 
 }
 
+var scale = $device.info.screen.scale
+var VFHeight = (($device.info.screen.width-30)*16/9 + 120)/scale
+var CCHeight = ($device.info.screen.width-50)*16/9/scale
 const VFView = { // Video and Favorite
   type: "view",
   props: {
@@ -911,7 +910,7 @@ const VFView = { // Video and Favorite
     type: "matrix",
     props: {
       id: "videos",
-      itemHeight: 250,
+      itemHeight: VFHeight,
       columns: 1,
       spacing: 15,
       square: false,
@@ -1015,7 +1014,7 @@ const CCView = { // category and collection
     type: "matrix",
     props: {
       id: "CCList",
-      itemHeight: 190,
+      itemHeight: CCHeight,
       columns: 1,
       spacing: 15,
       square: false,
@@ -1711,6 +1710,7 @@ function initial() {
   VFExist = true; // videos and favorites
   CCExist = false; // categories and collections 
   page = -1;
+  
 }
 
 function scriptVersionUpdate() {
