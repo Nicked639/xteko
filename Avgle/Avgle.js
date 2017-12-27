@@ -21,9 +21,9 @@
 
  1.点击片名左下角时间可预览视频;
 
- 2.点击片名左下角 🤔 收藏影片;
+ 2.点击片名左下角 🤔 收藏视频;
 
- 3.点击收藏按钮旁边的按钮可分享视频;
+ 3.点击收藏按钮右侧的按钮可分享视频;
 
  3.点击图片中央或下方标题播放完整视频;
 
@@ -59,9 +59,7 @@ const filterName = {
   "tf": "Top Favorites"
 }
 
-
 const content = ["影片", "合集", "分类", "收藏夹"]
-
 
 const filterView = {
   type: "view",
@@ -103,11 +101,11 @@ const filterView = {
         $cache.set("cacheFilters", cacheFilters);
         page = -1;
         $("videos").data = [];
-        if(mode == "Cat"){
+        if (mode == "Cat") {
           getVideoData();
-        } else if (mode == "Search"){
+        } else if (mode == "Search") {
           getVideoData();
-        }else{
+        } else {
           $("search").text = "";
           mode = "Videos";
           getVideoData();
@@ -149,7 +147,7 @@ const filterView = {
         filterExist = false;
         cacheFilters.View = filters.View[data.filterLabel.text];
         $cache.set("cacheFilters", cacheFilters);
-        if(contentMode == "Collections"){
+        if (contentMode == "Collections") {
           page = -1
           $("CCList").contentOffset = $point(0, 0);
           getCollectionData()
@@ -158,14 +156,14 @@ const filterView = {
         $("videos").contentOffset = $point(0, 0);
         page = -1;
         $("videos").data = [];
-        if(mode == "Cat"){
+        if (mode == "Cat") {
           getVideoData();
-        } else if (mode == "Search"){
+        } else if (mode == "Search") {
           getVideoData();
-        }else {
+        } else {
           $("search").text = "";
           mode = "Videos";
-          getVideoData();         
+          getVideoData();
         }
       },
 
@@ -239,7 +237,7 @@ const contentView = {
           cacheContent = "合集";
           $cache.set("cacheContent", cacheContent);
           cacheFilters.View = "bw";
-          $cache.set("cacheFiltes",cacheFilters)
+          $cache.set("cacheFiltes", cacheFilters)
           contentMode = "Collections";
           if (VFExist == true) {
             VFExist = false;
@@ -261,14 +259,14 @@ const contentView = {
             CCExist = true;
             $("Avgle").add(CCView)
           }
-          $("CCList").contentOffset = $point(0, 0);   
+          $("CCList").contentOffset = $point(0, 0);
           getCategoryData()
         } else if (c == "收藏夹") {
-          if($("player")){
-    $("player").pause();
-    $("player").stopLoading();
-    $("player").remove();
-  }
+          if ($("player")) {
+            $("player").pause();
+            $("player").stopLoading();
+            $("player").remove();
+          }
           cacheContent = "收藏夹";
           $cache.set("cacheContent", cacheContent);
           contentMode = "Favorites"
@@ -284,13 +282,13 @@ const contentView = {
           contentExist = false;
           if (LocalFavList.length == 0) {
             cacheContent = "影片"
-            $cache.set("cacheContent",cacheContent)
+            $cache.set("cacheContent", cacheContent)
             $ui.alert("Get Some Favorites!")
             contentMode = "Videos";
             return
           }
           $("videos").contentOffset = $point(0, 0);
-          $("search").placeholder = "共计 " + formatNum(LocalFavList.length)  + " 个收藏"
+          $("search").placeholder = "共计 " + formatNum(LocalFavList.length) + " 个收藏"
           $("searchResult").text = "";
           $("videos").data = [];
           LocalData.favorite.map(function(i) {
@@ -386,17 +384,17 @@ const template = [{ // Video and Favorite
       make.bottom.inset(4)
       make.left.inset(10)
     },
-    events:{
-      tapped(sender){
-        var preview = /https.*\//g.exec(sender.info)!= false?/https.*\//g.exec(sender.info)[0]+"preview.mp4":false
+    events: {
+      tapped(sender) {
+        var preview = /https.*\//g.exec(sender.info) != false ? /https.*\//g.exec(sender.info)[0] + "preview.mp4" : false
         var cell = sender.super.super.super;
         var view = $("videos").runtimeValue();
         var indexPath = view.invoke("indexPathForCell", cell).rawValue();
-        play(preview,indexPath,sender.info,"preview")
+        play(preview, indexPath, sender.info, "preview")
         $delay(0.5, function() {
           $("player").play()
         })
-        $ui.toast("",0.1)
+        $ui.toast("", 0.1)
       }
     }
   }, {
@@ -468,7 +466,7 @@ const template = [{ // Video and Favorite
         var view = $("videos").runtimeValue();
         var index = view.invoke("indexPathForCell", cell).rawValue();
         var idx = index.row;
-        favButtonTapped(sender,info,idx)
+        favButtonTapped(sender, info, idx)
         if (contentMode == "Favorites") {
           $("search").placeholder = "共计 " + formatNum(LocalFavList.length) + " 个收藏";
           $("searchResult").text = "";
@@ -638,7 +636,7 @@ const info = {
       make.left.inset(130)
     }
 
-  },  {
+  }, {
     type: "image",
     props: {
       src: "https://i.loli.net/2017/12/22/5a3cd0ff0b781.jpeg",
@@ -653,10 +651,10 @@ const info = {
       make.right.inset(130)
     }
 
-  },{
+  }, {
     type: "text",
     props: {
-      id:"loading",
+      id: "loading",
       text: "Loading...",
       bgcolor: $color("#dddddd"),
       textColor: $color("#888888"),
@@ -670,7 +668,7 @@ const info = {
       make.width.equalTo($device.info.screen.width)
     }
   }],
-  layout:function(make,view){
+  layout: function(make, view) {
     make.top.equalTo($("search").bottom)
     make.left.right.bottom.inset(0)
   }
@@ -729,8 +727,8 @@ const statusView = {
             $("search").text = keyword
           } else {
             keyword = sender.text;
-          }         
-          if(CCExist){
+          }
+          if (CCExist) {
             $("CCView").remove();
             CCExist = false;
             $("Avgle").add(VFView);
@@ -739,16 +737,16 @@ const statusView = {
           }
           contentMode = "Videos";
           cacheContent = "影片";
-          $cache.set("cacheContent",cacheContent);
+          $cache.set("cacheContent", cacheContent);
           $("videos").contentOffset = $point(0, 0);
           $("videos").data = [];
           page = -1;
           cacheFilters.Time = "a";
           cacheFilters.View = "bw"
-          $cache.set("cacheFilters",cacheFilters)
+          $cache.set("cacheFilters", cacheFilters)
           getVideoData()
         } else {
-          if(CCExist){
+          if (CCExist) {
             $("CCView").remove();
             CCExist = false;
             $("Avgle").add(VFView);
@@ -756,7 +754,7 @@ const statusView = {
           }
           contentMode = "Videos";
           cacheContent = "影片";
-          $cache.set("cacheContent",cacheContent);
+          $cache.set("cacheContent", cacheContent);
           mode = "Videos";
           $("videos").contentOffset = $point(0, 0);
           $("videos").data = [];
@@ -820,7 +818,7 @@ const statusView = {
             }
           })
         })
-        $("filtersT").data = [{title:"     时间线",rows:data}]
+        $("filtersT").data = [{ title: "     时间线", rows: data }]
         data = []
         Object.keys(filters.View).map(function(i) {
           data.push({
@@ -831,7 +829,7 @@ const statusView = {
             }
           })
         })
-        $("filtersV").data = [{title:"   影片类型",rows:data}]
+        $("filtersV").data = [{ title: "   影片类型", rows: data }]
         filterExist = true;
         $("filterView").updateLayout(function(make) {
           make.height.equalTo(145)
@@ -844,7 +842,7 @@ const statusView = {
     props: {
       id: "contentButton",
       bgcolor: $color("#dddddd"),
-      icon: $icon("067", $color("#ffffff"),$size(25,25))
+      icon: $icon("067", $color("#ffffff"), $size(25, 25))
     },
     layout: function(make, view) {
       make.top.inset(12)
@@ -909,7 +907,7 @@ const VFView = { // Video and Favorite
     id: "VFView",
     bgcolor: $color("#dddddd"),
   },
-  views: [statusView,info,{
+  views: [statusView, info, {
     type: "matrix",
     props: {
       id: "videos",
@@ -935,9 +933,9 @@ const VFView = { // Video and Favorite
           contentExist = false;
         }
         var url = "https://avgle.com/video/" + data.share.info;
-        play(url, indexPath, data.interface.src,"video")
+        play(url, indexPath, data.interface.src, "video");
         $delay(2, function() {
-        $("player").play()
+          $("player").play();
         })
       },
       didReachBottom(sender) {
@@ -946,7 +944,7 @@ const VFView = { // Video and Favorite
           return
         }
         if (mode == "Search") {
-          getVideoData()
+          getVideoData();
         } else {
           getVideoData();
         }
@@ -971,10 +969,10 @@ const VFView = { // Video and Favorite
           temp.map(function(i) {
             getFavoriteData(i)
           });
-          $ui.toast("更新成功！",1)
-        }else{
+          $ui.toast("更新成功！", 1)
+        } else {
           getVideoData();
-          $ui.toast("更新成功！",1);
+          $ui.toast("更新成功！", 1);
         }
         $("videos").endRefreshing();
       },
@@ -984,26 +982,27 @@ const VFView = { // Video and Favorite
       },
       didEndDragging(sender) {
         endY = sender.contentOffset.y;
-        if (Math.abs(endY - startY) > 150) {
+        if (Math.abs(endY - startY) > 180) {
           if (filterExist) {
             $("filterView").remove();
-            filterExist = false
+            filterExist = false;
           }
           if (contentExist) {
             $("contentView").remove();
             contentExist = false;
           }
           if ($("player")) {
-            //$("player").stopLoading();
-           // $("player").remove()
-           $("player").toggle()
+            $("player").pause();
+            $("player").stopLoading();
+            $("player").remove();
+            $ui.loading(false);
           }
         }
       }
 
     }
   }, ],
-  layout:$layout.fill
+  layout: $layout.fill
 }
 
 const CCView = { // category and collection
@@ -1012,7 +1011,7 @@ const CCView = { // category and collection
     id: "CCView",
     bgcolor: $color("#dddddd"),
   },
-  views: [statusView,info,{
+  views: [statusView, info, {
     type: "matrix",
     props: {
       id: "CCList",
@@ -1040,36 +1039,43 @@ const CCView = { // category and collection
         $("CCView").remove()
         CCExist = false
         $("Avgle").add(VFView);
-        VFExist = true;   
-        page = -1; 
+        //$ui.render(VFView)
+        VFExist = true;
+        page = -1;
         $("videos").data = [];
-        $("videos").contentOffset = $point(0,0);
-        cacheFilters.Time = "a"
-        cacheFilters.View = "bw"
-        $cache.set("cacheFilters",cacheFilters)
-        if(contentMode == "Categories"){
+        $("videos").contentOffset = $point(0, 0);
+        cacheFilters.Time = "a";
+        cacheFilters.View = "bw";
+        $cache.set("cacheFilters", cacheFilters);
+        if (contentMode == "Categories") {
           contentMode = "Videos";
-          mode = "Cat"
-          CHID = data.info
-          getVideoData()
-        }else if(contentMode == "Collections"){
+          mode = "Cat";
+          CHID = data.info;
+          var name = /(.*)・(.*)/g.exec(data.CCName.text);
+          if (!name) {
+            catName = data.CCName.text
+          } else {
+            catName = name[1]
+          }
+          getVideoData();
+        } else if (contentMode == "Collections") {
           contentMode = "Videos";
-          mode = "Search"
-          keyword = data.info
-          $("search").text = data.info
-          getVideoData()
+          mode = "Search";
+          keyword = data.info;
+          $("search").text = data.info;
+          getVideoData();
         }
 
       },
       didReachBottom(sender) {
         sender.endFetchingMore();
         if (contentMode == "Collections") {
-          getCollectionData()
+          getCollectionData();
         }
       },
       pulled(sender) {
         if (filterExist) {
-          $("filterView").remove()
+          $("filterView").remove();
           filterExist = false;
         }
         if (contentExist) {
@@ -1077,18 +1083,18 @@ const CCView = { // category and collection
           contentExist = false;
         }
         $("search").text = "";
-        if(contentMode == "Categories"){
-          $("CCList").data = []
-          page = -1
-          getCategoryData()
-        }else if (contentMode == "Collections"){
-          $("CCList").data = []
-          page = -1
-          getCollectionData()
+        if (contentMode == "Categories") {
+          $("CCList").data = [];
+          page = -1;
+          getCategoryData();
+        } else if (contentMode == "Collections") {
+          $("CCList").data = [];
+          page = -1;
+          getCollectionData();
         }
-        $ui.toast("更新成功！",0.1)
+        $ui.toast("更新成功！", 0.1);
 
-        $("CCList").endRefreshing()
+        $("CCList").endRefreshing();
 
       },
       willBeginDragging(sender) {
@@ -1097,19 +1103,21 @@ const CCView = { // category and collection
       },
       didEndDragging(sender) {
         endY = sender.contentOffset.y;
-        if (Math.abs(endY - startY) > 150) {
+        if (Math.abs(endY - startY) > 180) {
           if (filterExist) {
             $("filterView").remove();
-            filterExist = false
+            filterExist = false;
           }
           if (contentExist) {
             $("contentView").remove();
             contentExist = false;
           }
           if ($("player")) {
-            //$("player").stopLoading();
-            //$("player").remove()
-            $("player").toggle()
+            $("player").pause();
+            $("player").stopLoading();
+            $("player").remove();
+            $ui.loading(false);
+
           }
         }
       }
@@ -1120,7 +1128,7 @@ const CCView = { // category and collection
 }
 
 function getVideoData() {
-  if($("player")){
+  if ($("player")) {
     $("player").pause();
     $("player").stopLoading();
     $("player").remove();
@@ -1128,11 +1136,11 @@ function getVideoData() {
   $ui.loading(true)
   $("loading").text = "Loading..."
   page++;
-  if(mode == "Cat"){
-    url = "https://api.avgle.com/v1/videos/"+page+"?limit=10&c="+CHID+"&t="+ cacheFilters.Time + "&o=" +cacheFilters.View;
-  }else{
+  if (mode == "Cat") {
+    url = "https://api.avgle.com/v1/videos/" + page + "?limit=10&c=" + CHID + "&t=" + cacheFilters.Time + "&o=" + cacheFilters.View;
+  } else {
     if (mode == "Search") {
-      url = "https://api.avgle.com/v1/search/" + encodeURI(keyword) + "/" + page + "?limit=10&t=" + cacheFilters.Time + "&o=" +cacheFilters.View
+      url = "https://api.avgle.com/v1/search/" + encodeURI(keyword) + "/" + page + "?limit=10&t=" + cacheFilters.Time + "&o=" + cacheFilters.View
     } else {
       url = "https://api.avgle.com/v1/videos/" + page + "?limit=10&t=" + cacheFilters.Time + "&o=" + cacheFilters.View;
     }
@@ -1205,14 +1213,14 @@ function getVideoData() {
       })
       //$ui.toast("", 0.1);
       $ui.loading(false);
-        $("loading").text = ""
+      $("loading").text = ""
       if (mode == "Search") {
-        $("searchResult").text = filterName[cacheFilters.Time]+"找到 " + formatNum(video_num) + " 个视频";
+        $("searchResult").text = filterName[cacheFilters.Time] + "找到 " + formatNum(video_num) + " 个视频";
         $("search").placeholder = "";
       } else {
-        if(mode == "Cat"){
-          $("search").placeholder = "该分类"+ filterName[cacheFilters.Time] + " " + formatNum(video_num) + " 个视频 ";
-        }else{
+        if (mode == "Cat") {
+          $("search").placeholder = catName + " | " + filterName[cacheFilters.Time] + " " + formatNum(video_num) + " 个视频 ";
+        } else {
           $("search").placeholder = filterName[cacheFilters.Time] + " " + formatNum(video_num) + " 个视频 ";
         }
         $("searchResult").text = "";
@@ -1223,7 +1231,7 @@ function getVideoData() {
 }
 
 function getFavoriteData(vid) {
-  if($("player")){
+  if ($("player")) {
     $("player").pause();
     $("player").stopLoading();
     $("player").remove();
@@ -1239,11 +1247,11 @@ function getFavoriteData(vid) {
         //$ui.toast("",0.1)
         return
       }
-      if(!success){
+      if (!success) {
         $ui.alert(url + "❌ 该影片连接出错！\n请稍候再试。")
         return
       }
-      
+
       var i = resp.data.response.video;
       var info = {
         title: i.title,
@@ -1299,7 +1307,7 @@ function getFavoriteData(vid) {
 }
 
 function getCollectionData() {
-  if($("player")){
+  if ($("player")) {
     $("player").pause();
     $("player").stopLoading();
     $("player").remove();
@@ -1349,14 +1357,14 @@ function getCollectionData() {
       $("search").text = ""
       $("search").placeholder = "共计 " + formatNum(resp.data.response.total_collections) + " 个合集"
       $ui.loading(false)
-  $("loading").text = ""
+      $("loading").text = ""
     }
   })
-  
+
 }
 
 function getCategoryData() { // category and collection
-if($("player")){
+  if ($("player")) {
     $("player").pause();
     $("player").stopLoading();
     $("player").remove();
@@ -1401,17 +1409,16 @@ if($("player")){
       $("search").text = ""
       $("search").placeholder = "搜索"
       $ui.loading(false)
-        $("loading").text = ""
+      $("loading").text = ""
     }
   })
 }
 
-
-function favButtonTapped(sender,info,idx){
-  if (sender.title == "🤔"){
-    if($("player")){
+function favButtonTapped(sender, info, idx) {
+  if (sender.title == "🤔") {
+    if ($("player")) {
       sender.title = "😍"
-    }else{
+    } else {
       var data = $("videos").data;
       data[idx].favorite.title = "😍";
       data[idx].favorite.alpha = 1;
@@ -1421,10 +1428,10 @@ function favButtonTapped(sender,info,idx){
     LocalFavList.unshift(info.vid)
     writeCache();
     $ui.toast("😍 已收藏！", 1)
-  }else if(sender.title == "😍"){
-    if($("player")){
+  } else if (sender.title == "😍") {
+    if ($("player")) {
       sender.title = "🤔"
-    }else{
+    } else {
       var data = $("videos").data;
       data[idx].favorite.title = "🤔";
       data[idx].favorite.alpha = 1;
@@ -1487,17 +1494,17 @@ function writeCache() {
   })
 }
 
-function clipboardDetect(){
+function clipboardDetect() {
   var str = $clipboard.text
   if (!str) {
     return "none"
-  }else{
+  } else {
     var reg = /[sS][nN][iI][sS][\s\-]?\d{3}|[aA][bB][pP][\s\-]?\d{3}|[iI][pP][zZ][\s\-]?\d{3}|[sS][wW][\s\-]?\d{3}|[jJ][uU][xX][\s\-]?\d{3}|[mM][iI][aA][dD][\s\-]?\d{3}|[mM][iI][dD][eE][\s\-]?\d{3}|[mM][iI][dD][dD][\s\-]?\d{3}|[pP][gG][dD][\s\-]?\d{3}|[sS][tT][aA][rR][\s\-]?\d{3}|[eE][bB][oO][dD][\s\-]?\d{3}|[iI][pP][tT][dD][\s\-]?\d{3}|[cC][hH][nN][\s\-]?\d{3}/g;
     var match = str.match(reg);
-    if(match){
+    if (match) {
       var detect = /([a-zA-Z]{3,5})[\s\-]?(\d{3})/g.exec(match[0])
-      return detect[1]+"-"+detect[2]
-    }else{
+      return detect[1] + "-" + detect[2]
+    } else {
       return "none"
     }
   }
@@ -1519,7 +1526,7 @@ function codeCorrectify(detect) {
 
 function play(url, indexPath, poster, videoMode) {
   $ui.loading(true);
-  if (videoMode == "video"){
+  if (videoMode == "video") {
     $ui.toast("正在加载视频…", 10);
     $http.request({
       url: url,
@@ -1532,7 +1539,7 @@ function play(url, indexPath, poster, videoMode) {
         if (!videoUrl) {
           $ui.alert("❌ 视频加载失败！")
           return
-        } 
+        }
         if ($("player")) {
           $("player").pause()
           $("player").stopLoading();
@@ -1553,7 +1560,7 @@ function play(url, indexPath, poster, videoMode) {
         });
       }
     })
-  }else if(videoMode == "preview"){
+  } else if (videoMode == "preview") {
     $ui.toast("正在加载预览视频…", 20);
     if ($("player")) {
       $("player").pause()
@@ -1577,113 +1584,113 @@ function play(url, indexPath, poster, videoMode) {
 
 }
 
-const checkAdultView ={
-    type: "view",
+const checkAdultView = {
+  type: "view",
+  props: {
+    id: "checkAdult",
+    bgcolor: $color("black")
+  },
+  views: [{
+    type: "text",
     props: {
-      id: "checkAdult",
-      bgcolor: $color("black")
+      text: "FBI WARNING",
+      textColor: $color("white"),
+      font: $font("Helvetica-Bold", 25),
+      bgcolor: $color("red"),
+      insets: $insets(5, 0, 0, 0),
+      align: $align.center,
+      editable: false
     },
-    views: [{
-      type: "text",
-      props: {
-        text: "FBI WARNING",
-        textColor: $color("white"),
-        font: $font("Helvetica-Bold", 25),
-        bgcolor: $color("red"),
-        insets: $insets(5, 0, 0, 0),
-        align: $align.center,
-        editable: false
-      },
-      layout: function(make, view) {
-        make.top.inset(55)
-        make.left.right.inset(90)
-        make.height.equalTo(40)
+    layout: function(make, view) {
+      make.top.inset(55)
+      make.left.right.inset(90)
+      make.height.equalTo(40)
+    }
+  }, {
+    type: "text",
+    props: {
+      text: "Federal law provides severe civil and criminal penalties for the unauthorized reproduction, distribution, or exhibition of copyrighted motion pictures (Title 17, United States Code, Sections 501 and 508). The Federal Bureau of Investigation investigates allegations of criminal copyright infringement (Title 17, United States Code, Section 506).",
+      textColor: $color("white"),
+      font: $font("bold", 14),
+      bgcolor: $color("clear"),
+      insets: $insets(0, 0, 0, 0),
+      align: $align.justified,
+      editable: false
+    },
+    layout: function(make, view) {
+      make.top.inset(120)
+      make.left.right.inset(10)
+      make.height.equalTo(160)
+    }
+  }, {
+    type: "text",
+    props: {
+      text: "警告 ⚠️",
+      textColor: $color("white"),
+      font: $font("Helvetica-Bold", 25),
+      bgcolor: $color("red"),
+      insets: $insets(5, 0, 0, 0),
+      align: $align.center,
+      editable: false
+    },
+    layout: function(make, view) {
+      make.top.inset(280)
+      make.left.right.inset(130)
+      make.height.equalTo(40)
+    }
+  }, {
+    type: "text",
+    props: {
+      text: "本脚本运行内容包含成人视频、图片，可能会引起你的不适，请谨慎运行。\n未满十八岁，禁止运行。\n\n脚本运行需代理，请将 https://avgle.com 加入代理。",
+      textColor: $color("white"),
+      font: $font("bold", 14),
+      bgcolor: $color("clear"),
+      insets: $insets(0, 0, 0, 0),
+      align: $align.center,
+      editable: false
+    },
+    layout: function(make, view) {
+      make.top.inset(350)
+      make.left.right.inset(10)
+      make.height.equalTo(160)
+    }
+  }, {
+    type: "button",
+    props: {
+      title: "已满十八岁",
+      titleColor: $color("black"),
+      bgcolor: $color("white")
+    },
+    layout: function(make, view) {
+      make.left.right.inset(120)
+      make.bottom.inset(100)
+      make.height.equalTo(30)
+    },
+    events: {
+      tapped: function(sender) {
+        $("checkAdult").remove()
+        $cache.set("ADULT", true)
       }
-    }, {
-      type: "text",
-      props: {
-        text: "Federal law provides severe civil and criminal penalties for the unauthorized reproduction, distribution, or exhibition of copyrighted motion pictures (Title 17, United States Code, Sections 501 and 508). The Federal Bureau of Investigation investigates allegations of criminal copyright infringement (Title 17, United States Code, Section 506).",
-        textColor: $color("white"),
-        font: $font("bold", 14),
-        bgcolor: $color("clear"),
-        insets: $insets(0, 0, 0, 0),
-        align: $align.justified,
-        editable: false
-      },
-      layout: function(make, view) {
-        make.top.inset(120)
-        make.left.right.inset(10)
-        make.height.equalTo(160)
+    }
+  }, {
+    type: "button",
+    props: {
+      title: "未满十八岁",
+      titleColor: $color("white"),
+      bgcolor: $color("red")
+    },
+    layout: function(make, view) {
+      make.left.right.inset(120)
+      make.bottom.inset(40)
+      make.height.equalTo(30)
+    },
+    events: {
+      tapped: function(sender) {
+        $app.close()
       }
-    }, {
-      type: "text",
-      props: {
-        text: "警告 ⚠️",
-        textColor: $color("white"),
-        font: $font("Helvetica-Bold", 25),
-        bgcolor: $color("red"),
-        insets: $insets(5, 0, 0, 0),
-        align: $align.center,
-        editable: false
-      },
-      layout: function(make, view) {
-        make.top.inset(280)
-        make.left.right.inset(130)
-        make.height.equalTo(40)
-      }
-    }, {
-      type: "text",
-      props: {
-        text: "本脚本运行内容包含成人视频、图片，可能会引起你的不适，请谨慎运行。\n未满十八岁，禁止运行。\n\n脚本运行需代理，请将 https://avgle.com 加入代理。",
-        textColor: $color("white"),
-        font: $font("bold", 14),
-        bgcolor: $color("clear"),
-        insets: $insets(0, 0, 0, 0),
-        align: $align.center,
-        editable: false
-      },
-      layout: function(make, view) {
-        make.top.inset(350)
-        make.left.right.inset(10)
-        make.height.equalTo(160)
-      }
-    },{
-      type: "button",
-      props: {
-        title: "已满十八岁",
-        titleColor: $color("black"),
-        bgcolor: $color("white")
-      },
-      layout: function(make, view) {
-        make.left.right.inset(120)
-        make.bottom.inset(100)
-        make.height.equalTo(30)
-      },
-      events: {
-        tapped: function(sender) {
-          $("checkAdult").remove()
-          $cache.set("ADULT",true)
-        }
-      }
-    }, {
-      type: "button",
-      props: {
-        title: "未满十八岁",
-        titleColor: $color("white"),
-        bgcolor: $color("red")
-      },
-      layout: function(make, view) {
-        make.left.right.inset(120)
-        make.bottom.inset(40)
-        make.height.equalTo(30)
-      },
-      events: {
-        tapped: function(sender) {
-          $app.close()
-        }
-      }
-    }],
-    layout: $layout.fill
+    }
+  }],
+  layout: $layout.fill
 }
 
 function initial() {
@@ -1733,8 +1740,8 @@ function scriptVersionUpdate() {
 }
 
 function main() {
-  if($cache.get("ADULT")){
-      $("checkAdult").remove()
+  if ($cache.get("ADULT")) {
+    $("checkAdult").remove()
   }
   initial();
   keyword = clipboardDetect()
@@ -1753,7 +1760,7 @@ $ui.render({
     bgcolor: $color("#dddddd"),
     id: "Avgle"
   },
-  views: [VFView,checkAdultView],
+  views: [VFView, checkAdultView],
   layout: $layout.fill
 })
 
