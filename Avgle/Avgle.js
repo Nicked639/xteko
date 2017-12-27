@@ -1757,6 +1757,6 @@ $ui.render({
   layout: $layout.fill
 })
 
-LocalDataPath = "drive://Avgle 3.json";
+LocalDataPath = "drive://Avgle.json";
 scriptVersionUpdate()
 main()
