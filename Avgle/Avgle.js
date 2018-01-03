@@ -753,7 +753,7 @@ const wechat = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBYRXhpZgAAT
      props: {
        id: "search",
        bgcolor: $color("#fdfdfd"),
-       placeholder: "搜索影片",
+       placeholder: "搜索影片中...",
        font: $font(15)
      },
      layout: function(make, view) {
@@ -1519,7 +1519,7 @@ const wechat = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBYRXhpZgAAT
          })
        })
        $("search").text = ""
-       $("search").placeholder = "搜索影片"
+       $("search").placeholder = "搜索番号或者名字"
        $ui.loading(false)
        $("loading").text = ""
      }
