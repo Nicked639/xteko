@@ -1331,7 +1331,7 @@ const wechat = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBYRXhpZgAAT
          $("search").placeholder = "";
        } else {
          if (mode == "Cat") {
-           $("search").placeholder = catName + " | " + filterName[cacheFilters.Time] + " " + formatNum(video_num) + " 部影片 ";
+           $("search").placeholder = "#"+catName + " | " + filterName[cacheFilters.Time] + " " + formatNum(video_num) + " 部影片 ";
          } else {
            $("search").placeholder = filterName[cacheFilters.Time] + " " + formatNum(video_num) + " 部影片 ";
          }
