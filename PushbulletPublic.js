@@ -28,11 +28,11 @@ if ($app.env == $env.today) {
   } else {
     var message = {
       title: "Access Token Missing 😅",
-      message: "Execute This xTeko In Pin App For More Information.",
+      message: "Execute This xTeko In JSBox App For More Information.",
       actions: [{
-          title: "Open Pin",
+          title: "Open JSBox",
           handler: function() {
-            $app.openURL("pin://jslab")
+            $app.openURL("JSBox://")
           }
         },
         {
@@ -155,8 +155,8 @@ function pushbullet(accesstoken) {
                     var url = push[idx].file_url
                     $clipboard.text = url
                     $ui.toast("File URL Copied 📌")
-                    selectResult2(title, url)
-
+                    //selectResult(title, url,url,quicklook=1)
+selectResult2(title,url)
                   }
                 },
                 finished: function(cancelled) {
@@ -228,7 +228,7 @@ function pushbullet(accesstoken) {
                     toast(resp)
                     var push = resp.data.pushes
                     if (push.length == 0) {
-                      $ui.alert("NO PUSHES❌")
+                      $ui.alert("NO PUSHES ❌")
                       $app.close()
                     } else {
                       $ui.menu({
@@ -289,7 +289,14 @@ function pushbullet(accesstoken) {
             }, {
               title: "ALL",
               handler: function() {
-                $ui.loading("Loading...")
+                $ui.alert({
+                  title: "Confirm Again",
+                  message: "Sure to DELETE ALL PUSHES?",
+                  actions: [
+                  {
+                    title: "Sure",
+                    handler: function(){
+                      $ui.loading("Loading...")
                 $http.request({
                   method: "DELETE",
                   url: "https://api.pushbullet.com/v2/pushes",
@@ -302,18 +309,27 @@ function pushbullet(accesstoken) {
                     delayClose()
 
                   }
-                })
+                })           
+                    }
+                  },
+                  {
 
-              }
-            },
-            {
-
-              title: "Cancel",
-              handler: function() {
-                $app.close()
-              }
-
+                   title: "Cancel",
+                   handler: function()         
+                 {
+                    $app.close()                 
+                }
             }
+                  
+              ]
+                
+                  
+                })
+                
+            
+              
+            }
+           }         
           ]
         })
       }
@@ -426,7 +442,7 @@ function getToken() {
 
 function toast(resp) {
   if (resp.response) {
-    $ui.toast("Request Succeeded💡")
+    $ui.toast("Request Succeeded💡",0.5)
     $ui.loading(false)
   } else {
     $ui.toast("Request Timeout, Try Again Later ❌")
