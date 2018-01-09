@@ -1,4 +1,4 @@
 {
-  "version": 1.83,
-  "msg": "更新说明：\n1.修复多页内容最后一页不显示的错误\n注意：本版可能用到 Testflight 功能，如果为正式版 JSBox 出错，请使用 1.62 版 Avgle."
+  "version": 2.0,
+  "msg": "更新说明：\n1.现在 Avgle 支持翻页与跳页\n\nTips: 触摸屏幕左右边缘进行山下翻页\n注意：本版可能用到 Testflight 功能，如果为正式版 JSBox 出错，请使用 1.62 版 Avgle."
 }
