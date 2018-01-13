@@ -228,12 +228,7 @@ const wechat = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBYRXhpZgAAT
          contentExist = false;
          $("search").text = "";
          var c = data.contentLabel.text;
-         if (c == "影片") {
-           $("next").hidden = false;
-           $("pre").hidden = false;
-           $("nextB").hidden = false;
-           $("preB").hidden = false;
-           $("page").hidden = false;
+         if (c == "影片") {   
            cacheContent = "影片";
            $cache.set("cacheContent", cacheContent);
            contentMode = "Videos";
@@ -243,12 +238,17 @@ const wechat = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBYRXhpZgAAT
               makeUI("Avgle",VFView)
             }else{         
             $("CCView").remove();
-            $("Avgle").add(VFView);           
+            $("Avgle").add(VFView);        
             }          
           }
           CCLevel = 1
           CCExist = false;
           VFExist = true;
+          $("next").hidden = false;
+           $("pre").hidden = false;
+           $("nextB").hidden = false;
+           $("preB").hidden = false;
+           $("page").hidden = false;
            mode = "Videos";
            $("videos").contentOffset = $point(0, 0);
            $("videos").data = [];
@@ -263,16 +263,18 @@ const wechat = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBYRXhpZgAAT
            contentMode = "Collections";
            if(CCExist == true){
             if(CCLevel == 2){
-              $("VFView").remove();
-              $ui.pop();
-              CCLevel = 1;
-            }
+              $("Avgle").remove()
+              makeUI("Avgle",CCView)
+            }else{         
             $("CCView").remove();
-            $("Avgle").add(CCView);
+            $("Avgle").add(CCView);           
+            }          
           }else{
+            $("VFView").remove()
             $("Avgle").add(CCView);
-            CCExist = true;
           }
+          CCLevel = 1
+          CCExist = true;
           VFExist = false;
            $("CCList").contentOffset = $point(0, 0);
            cpage = -1;
@@ -285,16 +287,18 @@ const wechat = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBYRXhpZgAAT
            contentMode = "Categories"
            if(CCExist == true){
             if(CCLevel == 2){
-              $("VFView").remove();
-              $ui.pop();
-              CCLevel = 1;
-            }
+              $("Avgle").remove()
+              makeUI("Avgle",CCView)
+            }else{         
             $("CCView").remove();
-            $("Avgle").add(CCView);
+            $("Avgle").add(CCView);           
+            }          
           }else{
+            $("VFView").remove()
             $("Avgle").add(CCView);
-            CCExist = true;
           }
+          CCLevel = 1
+          CCExist = true;
           VFExist = false;
            $("CCList").contentOffset = $point(0, 0);
            $("CCList").data = []
