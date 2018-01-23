@@ -378,7 +378,7 @@ const wechat = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBYRXhpZgAAT
      type: "button",
      props: {
        id: "pay",
-       title: "赞赏|说明",
+       title: "赞赏|提示",
        titleColor:$color("white"),
        bgcolor:$color("#e0b741"),
        font:$font("bold",15)
@@ -395,7 +395,7 @@ const wechat = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBYRXhpZgAAT
          $("contentView").remove();
          contentExist = false;
          $ui.menu({
-           items:["领门店红包","支付宝","微信","使用说明"],
+           items:["领门店红包","支付宝","微信","使用提示"],
            handler: function(title,idx){
              switch(idx){
                case 0:
