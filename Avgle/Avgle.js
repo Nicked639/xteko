@@ -1865,7 +1865,7 @@ $ui.animate({
 }
 
 function decode(code) {
-  let kode = '';
+  var kode = '';
   const c = code.split(' ');
   let ohash = '', hash = '', ts = 0, vid = 0;
 
@@ -1889,10 +1889,10 @@ function decode(code) {
 
   const hexs = [0x2, 0x3, 0x5, 0x7, 0xb, 0xd, 0x11, 0x13, 0x17, 0x1d].reverse();
   
-  for (let i = 0; i < ohash.length; i++) {
-      let ai = -1;
-      for (let j = 0; j < hexs.length; j++) {
-          let hex = hexs[j];
+  for (var i = 0; i < ohash.length; i++) {
+      var ai = -1;
+      for (var j = 0; j < hexs.length; j++) {
+          var hex = hexs[j];
           if (i > hex && i % hex == 0) {
               ai = i / hex;
               break;
