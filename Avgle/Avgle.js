@@ -34,7 +34,7 @@ const wechat = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBYRXhpZgAAT
 
  const filters = {
    "Time": {
-     "全部视频": "a",
+     "全部影片": "a",
      "今日新增": "t",
      "本周新增": "w",
      "本月新增": "m"
@@ -1985,7 +1985,7 @@ function play(url, indexPath, poster, videoMode) {
  }
 
 function tutorial(){
-  var text = "提示\n- 点击片名左下角影片上传时间预览 8 秒视频，拒绝封杀；\n- 点击片名左下角 🤔 收藏视频；\n- 点击收藏右侧按钮可分享视频名字链接；\n- 点击预览图片或下方标题播放完整视频；\n- 点击屏幕右边缘向下翻页，左边缘向上翻页,或滑至底部出现翻页按钮；\n- 点击左上角 Avgle Logo 可筛选视频；\n- 请合理安排娱乐与工作时间, 劳逸结合，强身健体。"
+  var text = "提示\n- 点击片名左下角影片上传时间预览 8 秒影片，拒绝封杀；\n- 点击片名左下角 🤔 收藏影片；\n- 点击收藏右侧按钮可分享影片名字链接；\n- 点击预览图片或下方标题播放完整影片；\n- 点击屏幕右边缘向下翻页，左边缘向上翻页,或滑至底部出现翻页按钮；\n- 点击左上角 Avgle Logo 可筛选影片；\n- 请合理安排娱乐与工作时间, 劳逸结合，强身健体。"
 
   // Views
   var hintView = $objc("BaseHintView").invoke("alloc").invoke("initWithText", text)
@@ -2072,7 +2072,7 @@ const checkAdultView = {
    }, {
      type: "text",
      props: {
-       text: "本脚本运行内容包含成人视频、图片，可能会引起你的不适，请谨慎运行。\n未满十八岁，禁止运行。\n\n脚本运行需代理，请将 https://avgle.com 加入代理。\n关于使用说明，请打开脚本代码看首段注释。",
+       text: "本脚本运行内容包含成人影片、图片，可能会引起你的不适，请谨慎运行。\n未满十八岁，禁止运行。\n\n脚本运行需代理，请将 https://avgle.com 加入代理。\n关于使用说明，请打开脚本代码看首段注释。",
        textColor: $color("white"),
        font: $font("bold", 14),
        bgcolor: $color("clear"),
