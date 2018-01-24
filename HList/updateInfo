@@ -1,6 +1,6 @@
 {
-  "version": 1.41,
-  "msg": "更新说明：\n1.此版本开始后续更新都将安装在jsbox",
+  "version": 1.5,
+  "msg": "更新说明：\n1.细节优化",
   "wfVersion":1.1,
   "wfMsg": "更新说明：xxx",
   "workflow": "https://workflow.is/workflows/a5e03887209b4eed8642d524004f36fc"
