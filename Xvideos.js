@@ -1,5 +1,4 @@
 var scale = 600 / 337;
-
 const searchPreview = {
   type: "view",
   props: {
@@ -46,29 +45,229 @@ const searchPreview = {
     layout: $layout.fill,
     events: {
       didSelect(sender, indexPath, data) {
-        searchKeyword = data.title.text;
+        $device.taptic(0);
+        $("input").text = searchKeyword = data.title.text;
         $("preview").remove();
         $("input").blur();
-        $device.taptic(0);
-        page = -1;
-        $("input").text = searchKeyword;
+        searchPage = -1;
         getSearchVideoList()
       }
     }
   }]
 }
 
+const filters = {
+  "sort": {
+    "相关度": "relevance",
+    "上传日期": "uploaddate",
+    "评分": "rating",
+    "时长": "length",
+    "观看次数": "views"
+  },
+  "datef": {
+    "不限": "all",
+    "最近三天": "today",
+    "本周": "week",
+    "本月": "month",
+    "最近三月": "3month",
+    "最近六月": "6month"
+  },
+  "durf": {
+    "不限": "allduration",
+    "1-3分钟": "1-3min",
+    "3-10分钟": "3-10min",
+    "10-20分钟": "10-20min",
+    "20分钟+": "20min_more"
+  },
+  "typef": {
+    "直男": "straight",
+    "男同": "gay",
+    "人妖": "shemale"
+  }
+}
+
+function refreshFilterData() {
+  $("sort").data = Object.keys(filters.sort).map(function(i) {
+    return {
+      title: {
+        text: i,
+        textColor: searchFilters.sort == filters.sort[i] ? $color("red") : $color("black")
+      }
+    }
+  })
+  $("datef").data = Object.keys(filters.datef).map(function(i) {
+    return {
+      title: {
+        text: i,
+        textColor: searchFilters.datef == filters.datef[i] ? $color("red") : $color("black")
+      }
+    }
+  })
+  $("durf").data = Object.keys(filters.durf).map(function(i) {
+    return {
+      title: {
+        text: i,
+        textColor: searchFilters.durf == filters.durf[i] ? $color("red") : $color("black")
+      }
+    }
+  })
+  $("typef").data = Object.keys(filters.typef).map(function(i) {
+    return {
+      title: {
+        text: i,
+        textColor: searchFilters.typef == filters.typef[i] ? $color("red") : $color("black")
+      }
+    }
+  })
+}
+
+function makeView(title, id, num) {
+  return {
+    type: "list",
+    props: {
+      id: id,
+      info: id,
+      rowHeight: 30,
+      separatorHidden: true,
+      scrollEnabled: true,
+      selectable:true,
+      header: {
+        type: "label",
+        props: {
+          height: 30,
+          text: "       " + title,
+          textColor: $color("darkGray"),
+          font: $font("bold", 16)
+        }
+      },
+      template: [{
+        type: "label",
+        props: {
+          id: "title",
+          font: $font(14)
+        },
+        layout: function(make) {
+          make.edges.insets($insets(0, 30, 0, 0))
+        }
+      }]
+    },
+    layout: function(make) {
+      make.top.inset(0)
+      make.height.equalTo(180)
+      make.left.inset($device.info.screen.width / 4 * num)
+      make.width.equalTo($device.info.screen.width / 4)
+    },
+    events: {
+      didSelect(sender, indexPath, data) {
+        switch (sender.info) {
+          case "sort":
+          $ui.alert("t")
+            searchFilters.sort = filters.sort[data.title.text];
+            break;
+          case "datef":
+            searchFilters.datef = filters.datef[data.title.text];
+            break;
+          case "durf":
+            searchFilters.durf = filters.durf[data.title.text];
+            break;
+          case "typef":
+            searchFilters.typef = filters.typef[data.title.text];
+            break
+        };
+        $cache.set("searchFilters",searchFilters);
+        refreshFilterData()
+      }
+    }
+  }
+}
+
+const searchFilterView = {
+  type: "view",
+  props: {
+    id: "searchFilterView"
+  },
+  layout: function(make) {
+    make.top.left.right.inset(0)
+    make.height.equalTo(0)
+  },
+  views: [
+    makeView("排序方式", "sort", 0),
+    makeView("日期", "datef", 1),
+    makeView("时长", "durf", 2),
+    makeView("类型", "typef", 3),
+    {
+      type: "button",
+      props: {
+        title: "重置条件",
+        radius: 0,
+        bgcolor: $color("white"),
+        titleColor: $color("darkGray")
+      },
+      layout: function(make, view) {
+        make.bottom.left.inset(0)
+        make.height.equalTo(41)
+        make.width.equalTo(view.super).dividedBy(2)
+      },
+      events: {
+        tapped(sender) {
+          sender.super.remove();
+          searchFilters = { "sort": "relevance", "datef": "all", "durf": "allduration", "typef": "straight" };
+$cache.clear("searchFilters");
+          if (searchKeyword) {
+            $device.taptic(0);
+            searchPage = -1;
+            getSearchVideoList()
+          }
+        }
+      }
+    }, {
+      type: "button",
+      props: {
+        title: "应用条件",
+        radius: 0,
+        bgcolor: $color("white"),
+        titleColor: $color("black")
+      },
+      layout: function(make, view) {
+        make.bottom.right.inset(0)
+        make.height.equalTo(41)
+        make.width.equalTo(view.super).dividedBy(2)
+      },
+      events: {
+        tapped(sender) {
+          sender.super.remove();
+          $cache.set("searchFilters", searchFilters);
+          if (searchKeyword) {
+            $device.taptic(0);
+            searchPage = -1;
+            getSearchVideoList()
+          }
+        }
+      }
+    }, {
+      type: "view",
+      props: {
+        bgcolor: $color("darkGray")
+      },
+      layout: function(make) {
+        make.bottom.left.right.inset(0)
+        make.height.equalTo(1)
+      }
+    }
+  ]
+}
+
 const searchVideoListView = {
   type: "list",
   props: {
-    id: "videoList",
+    id: "searchVideoList",
     rowHeight: rowHeight(),
     separatorHidden: true,
-    selectable: false,
+    selectable: true,
     header: {
       type: "view",
       props: {
-        height: 50
+        height: 30
       },
       views: [{
         type: "input",
@@ -87,7 +286,7 @@ const searchVideoListView = {
           didEndEditing(sender) {
             if (!sender.text) {
               $("inputBg").hidden = false
-            }
+            };
             $("preview").remove();
           },
           changed(sender) {
@@ -101,12 +300,13 @@ const searchVideoListView = {
             sender.blur();
             $device.taptic(0);
             if (sender.text) {
-              page = -1;
+              searchPage = -1;
               searchKeyword = sender.text;
               getSearchVideoList()
             } else {
-              page = -1;
               searchKeyword = null;
+              $cache.remove("searchKeyword");
+              searchPage = -1;
               getSearchVideoList()
             };
             $("preview").remove()
@@ -116,12 +316,43 @@ const searchVideoListView = {
         type: "label",
         props: {
           id: "inputBg",
-          text: "Enter search keywords",
+          text: "输入关键字搜索...",
+          font:$font(14),
           textColor: $color("#aaaaaa"),
         },
         layout: function(make) {
           make.top.bottom.inset(5)
           make.left.inset(15)
+        }
+      }, {
+        type: "button",
+        props: {
+          title: "Filters",
+          font:$font(14),
+          bgcolor: $rgba(0,0,0,0.2),
+          titleColor: $color("white"),
+         
+        },
+        layout: function(make) {
+          make.top.bottom.inset(5)
+          make.right.inset(20)
+          make.width.equalTo(60)
+        },
+        events: {
+          tapped(sender) {
+            $device.taptic(0);
+            $("content").add(searchFilterView);
+            refreshFilterData();
+            $("searchFilterView").updateLayout(function(make) {
+              make.height.equalTo(221)
+            });
+            $ui.animate({
+              duration: 0.3,
+              animation: function() {
+                $("searchFilterView").relayout()
+              }
+            })
+          }
         }
       }]
     },
@@ -140,12 +371,12 @@ const searchVideoListView = {
       props: {
         id: "videoCover",
         borderWidth: 1,
-        radius: 6
+        radius: 5
       },
       layout: function(make) {
-        make.top.inset(12.5)
-        make.left.right.inset(25)
-        make.height.equalTo(($device.info.screen.width - 50) / scale)
+        make.top.inset(10)
+        make.left.right.inset(20)
+        make.height.equalTo(($device.info.screen.width - 40) / scale)
       }
     }, {
       type: "label",
@@ -173,9 +404,12 @@ const searchVideoListView = {
       events: {
         tapped(sender) {
           videoInfoButtonTapped(sender.info[0]);
-          var data = $("videoList").data;
+          var data = $("searchVideoList").data;
           data[0].rows[sender.info[1].row].videoInfo.bgcolor = $color("red");
-          $("videoList").data = data
+          $("searchVideoList").data = data
+        },
+        longPressed(sender) {
+          download(sender.sender.info[0].url,sender.sender.info[0].title)
         }
       },
       layout: function(make, view) {
@@ -202,18 +436,26 @@ const searchVideoListView = {
     }]
   },
   events: {
+    pulled(sender) {
+      searchPage = -1;
+      getSearchVideoList()
+    },
     didReachBottom(sender) {
       $device.taptic(0);
-      getSearchVideoList();
+      getSearchVideoList()
     },
     didSelect(sender, indexPath, data) {
-      if ($("player")) {
-        $("player").stopLoading();
-        $("player").remove();
-      };
+     $("input").blur()
+     if($("searchFilterView")){
+       $("searchFilterView").remove()
+     }
       play(data.url, indexPath)
     },
     willBeginDragging(sender) {
+       if($("searchFilterView")){
+       $("searchFilterView").remove()
+     }
+       $("input").blur()
       startY = sender.contentOffset.y;
       if ($("preview")) {
         $("preview").remove()
@@ -222,6 +464,7 @@ const searchVideoListView = {
     didEndDragging(sender) {
       endY = sender.contentOffset.y;
       if (Math.abs(endY - startY) > 120 && $("player")) {
+        $("player").pause()
         $("player").stopLoading();
         $("player").remove()
       }
@@ -233,21 +476,21 @@ const searchVideoListView = {
 const localVideoListView = {
   type: "list",
   props: {
-    id: "videoList",
+    id: "localFavVideoList",
     rowHeight: rowHeight(),
     separatorHidden: true,
-    selectable: false,
+    selectable: true,
     template: [{
       type: "image",
       props: {
         id: "videoCover",
         borderWidth: 1,
-        radius: 6
+        radius: 5
       },
       layout: function(make) {
-        make.top.inset(12.5)
-        make.left.right.inset(25)
-        make.height.equalTo(($device.info.screen.width - 50) / scale)
+        make.top.inset(10)
+        make.left.right.inset(20)
+        make.height.equalTo(($device.info.screen.width - 40) / scale)
       }
     }, {
       type: "label",
@@ -275,7 +518,10 @@ const localVideoListView = {
       },
       events: {
         tapped(sender) {
-          videoFavoriteUpdate("del", sender.info)
+          videoFavoriteUpdate("del", sender.info.i)
+        },
+        longPressed(sender) {
+          download(sender.sender.info.url,sender.sender.info.name)
         }
       },
       layout: function(make, view) {
@@ -303,18 +549,19 @@ const localVideoListView = {
   },
   events: {
     didSelect(sender, indexPath, data) {
-      if ($("player")) {
-        $("player").stopLoading();
-        $("player").remove();
-      };
+
+      
       play(data.url, indexPath)
+
     },
     willBeginDragging(sender) {
+    
       startY = sender.contentOffset.y
     },
     didEndDragging(sender) {
       endY = sender.contentOffset.y;
       if (Math.abs(endY - startY) > 120 && $("player")) {
+        $("player").pause();            
         $("player").stopLoading();
         $("player").remove()
       }
@@ -329,7 +576,7 @@ const starCountryListView = {
     id: "starCountryList",
     columns: 2,
     spacing: 1,
-    itemHeight: 40,
+    itemHeight: 60,
     template: [{
       type: "label",
       props: {
@@ -339,7 +586,7 @@ const starCountryListView = {
       },
       layout: function(make, view) {
         make.top.bottom.inset(0)
-        make.left.inset(5)
+        make.left.inset(30)
         make.width.lessThanOrEqualTo($device.info.screen.width / 2 - 25)
       }
     }, {
@@ -364,11 +611,12 @@ const starCountryListView = {
   events: {
     didReachBottom(sender) {
       sender.endFetchingMore();
-      if (starCountryData.length > 0) {
-        $device.taptic(0);
+      if (starCountryData) {
         sender.data = sender.data.concat(starCountryData.splice(0, 30))
       }
-
+    },
+    pulled(sender) {
+      getStarCountryList()
     },
     didSelect(sender, indexPath, data) {
       $device.taptic(0);
@@ -444,7 +692,7 @@ const channelListView = {
       $device.taptic(0);
       channelUrl = data.url;
       genericVideoListView(data.channelName.text)
-      page = -1;
+      videoPage = -1;
       getChannelVideoList()
     }
   }
@@ -465,7 +713,7 @@ function starListView(country) {
         spacing: 10,
         itemHeight: rowHeight(2, 10),
         separatorHidden: true,
-        selectable: false,
+        selectable: true,
         template: [{
           type: "image",
           props: {
@@ -519,7 +767,7 @@ function starListView(country) {
         didSelect(sender, indexPath, data) {
           $device.taptic(0)
           genericVideoListView(data.starName.text)
-          page = -1;
+          videoPage = -1;
           starUrl = data.url;
           getStarVideoList()
         }
@@ -540,13 +788,14 @@ function genericVideoListView(title) {
         id: "videoList",
         rowHeight: rowHeight(),
         separatorHidden: true,
-        selectable: false,
+        selectable: true,
         footer: {
           type: "label",
           props: {
             id: "footer",
             height: 40,
             text: "Loading...",
+            font:$font(15),
             align: $align.center,
             textColor: $color("#aaaaaa")
           }
@@ -556,12 +805,12 @@ function genericVideoListView(title) {
           props: {
             id: "videoCover",
             borderWidth: 1,
-            radius: 6
+            radius: 5
           },
           layout: function(make) {
-            make.top.inset(12.5)
-            make.left.right.inset(25)
-            make.height.equalTo(($device.info.screen.width - 50) / scale)
+            make.top.inset(10)
+            make.left.right.inset(20)
+            make.height.equalTo(($device.info.screen.width - 40) / scale)
           }
         }, {
           type: "label",
@@ -594,7 +843,7 @@ function genericVideoListView(title) {
               $("videoList").data = data
             },
             longPressed(sender) {
-              download(sender.sender.info[0].url)
+              download(sender.sender.info[0].url,sender.sender.info[0].title)
             }
           },
           layout: function(make, view) {
@@ -623,13 +872,16 @@ function genericVideoListView(title) {
       events: {
         didReachBottom(sender) {
           $device.taptic(0);
-          getStarVideoList();
+          switch ($("menu").index) {
+            case 2:
+              getStarVideoList();
+              break;
+            case 3:
+              getChannelVideoList();
+              break
+          }
         },
         didSelect(sender, indexPath, data) {
-          if ($("player")) {
-            $("player").stopLoading();
-            $("player").remove()
-          };
           play(data.url, indexPath)
         },
         willBeginDragging(sender) {
@@ -638,6 +890,7 @@ function genericVideoListView(title) {
         didEndDragging(sender) {
           endY = sender.contentOffset.y;
           if (Math.abs(endY - startY) > 120 && $("player")) {
+            $("player").pause()
             $("player").stopLoading();
             $("player").remove()
           }
@@ -656,7 +909,7 @@ $ui.render({
     type: "menu",
     props: {
       id: "menu",
-      items: ["收藏", "搜索", "明星", "频道"]
+      items: ["收藏","搜索", "明星", "频道"]
     },
     layout: function(make) {
       make.top.left.right.inset(0)
@@ -664,24 +917,47 @@ $ui.render({
     },
     events: {
       changed(sender) {
+        $device.taptic(0);
         $("content").views.map(i => i.remove());
-        page = -1;
         switch (sender.index) {
+          case 0:
+            $("content").add(localVideoListView);
+            getLocalFavVideos();
+            break;
           case 1:
             $("content").add(searchVideoListView);
-            getSearchVideoList();
-            break;
-          case 3:
-            $("content").add(channelListView);
-            getChannelList();
+            searchKeyword = $cache.get("searchKeyword") || null;
+            searchFilters = $cache.get("searchFilters") || { "sort": "relevance", "datef": "all", "durf": "allduration", "typef": "straight" };
+            if ($cache.get("searchVideoList")) {
+              searchPage = $cache.get("searchPage");
+              $("searchVideoList").data = $cache.get("searchVideoList");
+              $("footer").text = searchPage+" Done!"
+            } else {
+              searchPage = -1;
+              getSearchVideoList()
+            };
+            $("input").focus()
             break;
           case 2:
             $("content").add(starCountryListView);
-            getStarCountryList();
+            if ($cache.get("starCountryList")) {
+              starCountryData = $cache.get("starCountryList");
+              $("starCountryList").data = starCountryData.splice(0, 30)
+            } else {
+              getStarCountryList()
+            };
             break;
-          case 0:
-            $("content").add(localVideoListView);
-            getLocalVideoList()
+          case 3:
+            $("content").add(channelListView);
+            if ($cache.get("channelList")) {
+              channelPage = $cache.get("channelPage");
+              channelData = $cache.get("channelList");
+              $("channelList").data = channelData.splice(0, 20)
+            } else {
+              channelPage = -1;
+              getChannelList();
+              break
+            }
         }
       }
     }
@@ -726,20 +1002,22 @@ function search(keyword) {
 function getSearchVideoList() {
   $("footer").text = "Loading...";
   $ui.loading(true);
-  page++;
+  $cache.set("searchPage", ++searchPage);
+  var filter = `&sort=${searchFilters.sort}&datef=${searchFilters.datef}&durf=${searchFilters.durf}&typef=${searchFilters.typef}`;
   if (searchKeyword) {
-    var url = encodeURI(`${domain}/?k=${searchKeyword}&p=${page}`)
+    var url = `${domain}/?k=${encodeURI(searchKeyword)}&p=${searchPage}${filter}`
   } else {
-    var url = page == 0 ? domain : domain + "/new/" + page
+    var url = searchPage == 0 ? domain : domain + "/new/" + searchPage
   };
+  var num = searchPage==0?0:$("searchVideoList").data[0].rows.length;
   $http.get({
     url: url,
     handler: function(resp) {
       var count = searchKeyword ? /<span\sclass="sub">.*?<\/span>/g.exec(resp.data)[0].replace(/\D*/g, "") : null;
       var match = resp.data.match(/<div\sid="video[\s\S]*?<\/script>/g);
-      if ((page > 0 && $("videoList").data[0].rows.length == count) || !match) {
+      if ((searchPage > 0 && $("searchVideoList").data[0].rows.length == count) || !match) {
         $("footer").text = "Done!"
-        $("videoList").endFetchingMore();
+        $("searchVideoList").endFetchingMore();
         return
       };
       var items = match.map(function(i, idx) {
@@ -748,7 +1026,7 @@ function getSearchVideoList() {
         var views = /\d*?.\sViews/.exec(i)[0];
         var url = /<a\shref="(.*?)">/.exec(i)[1];
         var image = /data-src="(.*?)"/.exec(i)[1].replace("thumbs169", "thumbs169lll").replace("THUMBNUM", "20");
-        var title = /title="(.*?)"/.exec(i)[1];
+        var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
         try {
           var tag = /<span\sclass="video-hd-mark">(.*?)<\/span>/.exec(i)[1]
         } catch (error) {
@@ -764,9 +1042,9 @@ function getSearchVideoList() {
             text: title
           },
           videoInfo: {
-            info: [{ "id": videoid, "title": title, "url": url, "cover": image, "tag": tag, "views": views, "time": time }, { "section": page, "row": idx }],
+            info: [{ "id": videoid, "title": title, "url": url, "cover": image, "tag": tag, "views": views, "time": time }, { "section": 0, "row": idx + num }],
             title: "  " + time + " - " + views + "  ",
-            bgcolor: LocalVideos.indexOf(videoid) > -1 ? $color("red") : $color("#7d7d7d")
+            bgcolor: LocalFavVideos.indexOf(videoid) > -1 ? $color("red") : $color("#7d7d7d")
           },
           videoTag: {
             text: tag,
@@ -774,15 +1052,16 @@ function getSearchVideoList() {
           }
         })
       });
-      var rows = page > 0 ? $("videoList").data[0].rows.concat(items) : items;
-      $("videoList").endFetchingMore();
-      if ($("menu").index == 1) {
-        $("videoList").data = [{
-          title: searchKeyword ? `${searchKeyword}   (${rows.length}/${count})` : "Recent Update",
-          rows: rows
-        }];
-        $("footer").text = "Page" + (page + 1) + " Done!"
-      }
+      var rows = searchPage !=0 ? $("searchVideoList").data[0].rows.concat(items) : items;
+      $("searchVideoList").endFetchingMore();
+      $("searchVideoList").endRefreshing();
+      $("searchVideoList").data = [{
+        title: searchKeyword ? `${searchKeyword}   (${rows.length}/${count})` : "Rencent Update",
+        rows: rows
+      }];
+      $("footer").text = "Page" + (searchPage + 1) + " Done!";
+      $cache.set("searchVideoList", $("searchVideoList").data);
+      $cache.set("searchKeyword", searchKeyword)
     }
   })
 }
@@ -790,9 +1069,9 @@ function getSearchVideoList() {
 function getStarVideoList() {
   $("footer").text = "Loading...";
   $ui.loading(true);
-  page++;
+  videoPage++;
   $http.get({
-    url: encodeURI(domain + starUrl + "/videos/pornstar/" + page),
+    url: encodeURI(domain + starUrl + "/videos/pornstar/" + videoPage),
     handler: function(resp) {
       var match = resp.data.match(/<div\sid="video[\s\S]*?<\/script>/g);
       if (!match) {
@@ -806,7 +1085,7 @@ function getStarVideoList() {
         var views = /\d*?.\sViews/.exec(i)[0];
         var url = /<a\shref="(.*?)">/.exec(i)[1];
         var image = /data-src="(.*?)"/.exec(i)[1].replace("thumbs169", "thumbs169lll").replace("THUMBNUM", "20");
-        var title = /title="(.*?)"/.exec(i)[1];
+        var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
         try {
           var tag = /<span\sclass="video-hd-mark">(.*?)<\/span>/.exec(i)[1]
         } catch (error) {
@@ -822,9 +1101,9 @@ function getStarVideoList() {
             text: title
           },
           videoInfo: {
-            info: [{ "id": videoid, "title": title, "url": url, "cover": image, "tag": tag, "views": views, "time": time }, { "section": page, "row": idx }],
+            info: [{ "id": videoid, "title": title, "url": url, "cover": image, "tag": tag, "views": views, "time": time }, { "section": videoPage, "row": idx }],
             title: "  " + time + " - " + views + "  ",
-            bgcolor: LocalVideos.indexOf(videoid) > -1 ? $color("red") : $color("#7d7d7d")
+            bgcolor: LocalFavVideos.indexOf(videoid) > -1 ? $color("red") : $color("#7d7d7d")
           },
           videoTag: {
             text: tag,
@@ -833,14 +1112,12 @@ function getStarVideoList() {
         })
       });
       var data = [{
-        title: `Page${page+1}`,
+        title: `Page${videoPage+1}`,
         rows: items
       }];
       $("videoList").endFetchingMore();
-      if ($("menu").index == 2) {
-        $("videoList").data = $("videoList").data.concat(data);
-        $("footer").text = "Page" + (page + 1) + " Done!"
-      }
+      $("videoList").data = $("videoList").data.concat(data);
+      $("footer").text = "Page" + (videoPage + 1) + " Done!"
     }
   })
 }
@@ -848,9 +1125,9 @@ function getStarVideoList() {
 function getChannelVideoList() {
   $("footer").text = "Loading...";
   $ui.loading(true);
-  page++;
+  videoPage++;
   $http.get({
-    url: encodeURI(domain + channelUrl + "/videos/best/" + page),
+    url: encodeURI(domain + channelUrl + "/videos/best/" + videoPage),
     handler: function(resp) {
       var match = resp.data.match(/<div\sid="video[\s\S]*?<\/script>/g);
       if (!match) {
@@ -864,7 +1141,7 @@ function getChannelVideoList() {
         var views = /\d*?.\sViews/.exec(i)[0];
         var url = /<a\shref="(.*?)">/.exec(i)[1];
         var image = /data-src="(.*?)"/.exec(i)[1].replace("thumbs169", "thumbs169lll").replace("THUMBNUM", "20");
-        var title = /title="(.*?)"/.exec(i)[1];
+        var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
         try {
           var tag = /<span\sclass="video-hd-mark">(.*?)<\/span>/.exec(i)[1]
         } catch (error) {
@@ -880,9 +1157,9 @@ function getChannelVideoList() {
             text: title
           },
           videoInfo: {
-            info: [{ "id": videoid, "title": title, "url": url, "cover": image, "tag": tag, "views": views, "time": time }, { "section": page, "row": idx }],
+            info: [{ "id": videoid, "title": title, "url": url, "cover": image, "tag": tag, "views": views, "time": time }, { "section": videoPage, "row": idx }],
             title: "  " + time + " - " + views + "  ",
-            bgcolor: LocalVideos.indexOf(videoid) > -1 ? $color("red") : $color("#7d7d7d")
+            bgcolor: LocalFavVideos.indexOf(videoid) > -1 ? $color("red") : $color("#7d7d7d")
           },
           videoTag: {
             text: tag,
@@ -891,14 +1168,12 @@ function getChannelVideoList() {
         })
       });
       var data = [{
-        title: `Page${page+1}`,
+        title: `Page${videoPage+1}`,
         rows: items
       }];
       $("videoList").endFetchingMore();
-      if ($("menu").index == 3) {
-        $("videoList").data = $("videoList").data.concat(data);
-        $("footer").text = "Page" + (page + 1) + " Done!"
-      }
+      $("videoList").data = $("videoList").data.concat(data);
+      $("footer").text = "Page" + (videoPage + 1) + " Done!"
     }
   })
 }
@@ -922,9 +1197,10 @@ function getStarCountryList() {
           }
         }
       });
-      starCountryData = data;
-      $("starCountryList").data = $("starCountryList").data.concat(starCountryData.splice(0, 30));
-      $ui.loading(false)
+      $("starCountryList").endRefreshing();
+      $("starCountryList").data = data;
+      $ui.loading(false);
+      $cache.set("starCountryList", data)
     }
   })
 }
@@ -960,10 +1236,10 @@ function getStarList(url) {
 }
 
 function getChannelList() {
-  page++;
   $ui.loading(true);
+  $cache.set("chanelPage", ++channelPage);
   $http.get({
-    url: domain + "/channels/" + page,
+    url: domain + "/channels/" + channelPage,
     handler: function(resp) {
       var match = resp.data.match(/xv\.thumbs\.replaceThumbUrl[\s\S]*?profile-counts[\s\S]*?<\/p>/g);
       var data = match.map(function(i) {
@@ -985,7 +1261,8 @@ function getChannelList() {
       });
       channelData = data;
       $("channelList").data = $("channelList").data.concat(channelData.splice(0, 20));
-      $ui.loading(false)
+      $ui.loading(false);
+      $cache.set("channelList", data)
     }
   })
 }
@@ -1000,7 +1277,22 @@ function play(url, indexPath, mode) {
       $ui.toast("✅", 0.1);
       var url = /setVideoUrlHigh\('(.*?)'\)/g.exec(resp.data)[1];
       var thumb = /setThumbUrl\('(.*?)'\)/g.exec(resp.data)[1].replace("thumbs169", "thumbs169lll");
-      var listView = mode ? $("localVideoList") : $("videoList");
+      switch ($("menu").index) {
+        case 0:
+          var listView = $("localFavVideoList");
+          break;
+        case 1:
+          var listView = $("searchVideoList");
+          break;
+        default:
+          var listView = $("videoList");
+          break;
+      };
+      if ($("player")) {
+        $("player").stopLoading();
+        $("player").pause()
+        $("player").remove()
+      };
       listView.cell(indexPath).add({
         type: "video",
         props: {
@@ -1016,11 +1308,14 @@ function play(url, indexPath, mode) {
           make.height.equalTo(($device.info.screen.width - 50) / scale)
         }
       });
+        $delay(0.5, function() {
+    $("player").play()
+  })
     }
   })
 }
 
-function download(url) {
+function download(url,name) {
   $ui.menu({
     items: ["低画质下载", "高画质下载"],
     handler: function(title, idx) {
@@ -1050,8 +1345,19 @@ function download(url) {
                 $ui.toast(`⏳下载中......${writeSize.toFixed(1)}/${totalSize}(${precent}%)`, 1)
               },
               handler: function(resp) {
-                $ui.toast("✅ 下载完成", 0.5);
-                $share.sheet(resp.data)
+                $ui.toast("✅ 下载完成已经存到 iCloud", 1);
+                let types = resp.data.fileName.split(".").pop()
+                let path = "drive://xvideos/"+name +"."+types
+                let i = 1
+                while($file.exists(path)){
+                  var dname = name + `(${i})`
+                  path = "drive://xvideos/"+dname +"."+types
+                  i++
+                }
+                $file.write({
+                  data: resp.data,
+                  path: path
+                })
               }
             })
           }
@@ -1069,8 +1375,12 @@ function rowHeight(columns, spacing) {
   return Math.ceil(($device.info.screen.width - (c + 1) * s1) / c / scale) + s2 + 50;
 }
 
+function escapeStr(str) {
+  return str.replace(/&.*?;/ig, "")
+}
+
 function videoInfoButtonTapped(data) {
-  if (LocalVideos.indexOf(data.id) > -1) {
+  if (LocalFavVideos.indexOf(data.id) > -1) {
     $ui.toast("⚠️ 此视频已在收藏列表中", 0.5)
   } else {
     videoFavoriteUpdate("add", data)
@@ -1080,16 +1390,16 @@ function videoInfoButtonTapped(data) {
 function videoFavoriteUpdate(mode, data) {
   switch (mode) {
     case "add":
-      LocalData.video.push(data);
-      LocalVideos.push(data.id);
+      LocalData.favorites.push(data);
+      LocalFavVideos.push(data.id);
       $ui.toast("✅ 已收藏", 0.5);
       break;
     case "del":
-      var idx = LocalVideos.indexOf(data.id);
-      LocalData.video.splice(idx, 1);
-      LocalVideos.splice(idx, 1);
-      getLocalVideoList();
+      var idx = LocalFavVideos.indexOf(data.id);
+      LocalData.favorites.splice(idx, 1);
+      LocalFavVideos.splice(idx, 1);
       $ui.toast("❎ 已删除", 0.5);
+      getLocalFavVideos();
       break;
   };
   writeCache()
@@ -1102,8 +1412,8 @@ function writeCache() {
   })
 }
 
-function getLocalVideoList() {
-  var rows = LocalData.video.map(function(i) {
+function getLocalFavVideos() {
+  var rows = LocalData.favorites.map(function(i) {
     return {
       videoid: i.id,
       url: i.url,
@@ -1114,7 +1424,7 @@ function getLocalVideoList() {
         text: i.title
       },
       videoInfo: {
-        info: i,
+        info: {i:i, url:i.url,name:i.title},
         title: "  " + i.time + " — " + i.views + "  "
       },
       videoTag: {
@@ -1123,27 +1433,28 @@ function getLocalVideoList() {
       }
     }
   });
-  $("videoList").data = [{
+  $("localFavVideoList").data = [{
     title: `${rows.length}  ${rows.length>1?"Favorites":"Favorite"}`,
     rows: rows
   }]
 }
 
 function main() {
-  domain = "https://www.xvideos.com";
-  searchKeyword = null;
-  page = -1;
+  $app.tips("1.轻按视频下方时间戳收藏视频\n2.长按视频下方时间戳下载视频")
+
   $("content").add(localVideoListView);
   if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
-    LocalVideos = LocalData.video.map(i => i.id)
   } else {
-    LocalData = { "video": [] };
-    LocalVideos = []
+    $file.mkdir("drive://xvideos");
+    LocalData = { "favorites": []};
   };
-  getLocalVideoList()
+  LocalFavVideos = LocalData.favorites.map(i => i.id);
+  getLocalFavVideos()
 }
 
-LocalDataPath = "drive://xvideos.json"
+var LocalDataPath = "drive://xvideos/config.json";
+
+var domain = "https://www.xvideos.com";
 
 main()
