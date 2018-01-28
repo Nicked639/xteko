@@ -1556,6 +1556,11 @@ function scriptVersionUpdate() {
 
 //初始化设定
 function initial() {
+  var current = $addin.current;
+current.author = "Nicked";
+current.website = "https://t.me/nicked";
+current.version = version;
+
   if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
     LocalFavList = LocalData.favorite.map(i => i.shortCode);
