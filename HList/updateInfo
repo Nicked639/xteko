@@ -1,7 +1,7 @@
 {
   "version": 1.5,
   "msg": "更新说明：\n1.细节优化",
-  "wfVersion":1.1,
-  "wfMsg": "更新说明：xxx",
-  "workflow": "https://workflow.is/workflows/a5e03887209b4eed8642d524004f36fc"
+  "wfVersion":1.2,
+  "wfMsg": "更新说明：修复储存时的错误",
+  "workflow": "https://workflow.is/workflows/eac43693094b491993e65659f228964a"
 }
