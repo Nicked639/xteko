@@ -21,7 +21,7 @@
 
    */
 
-version = 2.9
+version = 2.91
 times = $cache.get("times") || 3
 var current = $addin.current
 current.author = "nick"
