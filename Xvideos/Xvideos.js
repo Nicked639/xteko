@@ -982,7 +982,8 @@ function genericVideoListView(title) {
   })
 }
 
-$ui.render({
+const mainUI = {
+  type: "view",
   props: {
     title: "Xvideos"
   },
@@ -1051,8 +1052,9 @@ $ui.render({
       make.top.equalTo($("menu").bottom)
       make.left.right.bottom.inset(0)
     }
-  }]
-})
+  }],
+  layout: $layout.fill
+}
 
 function search(keyword) {
   $http.get({
@@ -1563,9 +1565,151 @@ function scriptVersionUpdate() {
   })
 }
 
-function main() {
-  $app.tips("1.轻按视频下方时间戳收藏视频\n2.长按视频下方时间戳下载视频")
+const checkAdultView = {
+  type: "view",
+  props: {
+    id: "checkAdult",
+    bgcolor: $color("black")
+  },
+  views: [{
+    type: "text",
+    props: {
+      text: "FBI WARNING",
+      textColor: $color("white"),
+      font: $font("Helvetica-Bold", 25),
+      bgcolor: $color("red"),
+      insets: $insets(5, 0, 0, 0),
+      align: $align.center,
+      editable: false
+    },
+    layout: function(make, view) {
+      make.top.inset(55)
+      make.left.right.inset(90)
+      make.height.equalTo(40)
+    }
+  }, {
+    type: "text",
+    props: {
+      text: "Federal law provides severe civil and criminal penalties for the unauthorized reproduction, distribution, or exhibition of copyrighted motion pictures (Title 17, United States Code, Sections 501 and 508). The Federal Bureau of Investigation investigates allegations of criminal copyright infringement (Title 17, United States Code, Section 506).",
+      textColor: $color("white"),
+      font: $font("bold", 14),
+      bgcolor: $color("clear"),
+      insets: $insets(0, 0, 0, 0),
+      align: $align.justified,
+      editable: false
+    },
+    layout: function(make, view) {
+      make.top.inset(120)
+      make.left.right.inset(10)
+      make.height.equalTo(160)
+    }
+  }, {
+    type: "text",
+    props: {
+      text: "警告 ⚠️",
+      textColor: $color("white"),
+      font: $font("Helvetica-Bold", 25),
+      bgcolor: $color("red"),
+      insets: $insets(5, 0, 0, 0),
+      align: $align.center,
+      editable: false
+    },
+    layout: function(make, view) {
+      make.top.inset(280)
+      make.left.right.inset(130)
+      make.height.equalTo(40)
+    }
+  }, {
+    type: "text",
+    props: {
+      text: "本脚本运行内容包含成人影片、图片，可能会引起你的不适，请谨慎运行。\n未满十八岁，禁止运行。",
+      textColor: $color("white"),
+      font: $font("bold", 14),
+      bgcolor: $color("clear"),
+      insets: $insets(0, 0, 0, 0),
+      align: $align.center,
+      editable: false
+    },
+    layout: function(make, view) {
+      make.top.inset(350)
+      make.left.right.inset(10)
+      make.height.equalTo(160)
+    }
+  }, {
+    type: "text",
+    props: {
+      text: "提示",
+      textColor: $color("red"),
+      font: $font("Helvetica-Bold", 20),
+      bgcolor: $color("black"),
+      insets: $insets(5, 0, 0, 0),
+      align: $align.center,
+      editable: false
+    },
+    layout: function(make, view) {
+      make.top.inset(450)
+      make.left.right.inset(130)
+      make.height.equalTo(40)
+    }
+  },{
+    type: "text",
+    props: {
+      text: "\n1.请将 http://xvideos.com 加入代理。\n2.轻按视频下方时间戳收藏视频\n3.长按视频下方时间戳下载视频",
+      textColor: $color("red"),
+      font: $font("bold", 14),
+      bgcolor: $color("clear"),
+      insets: $insets(0, 0, 0, 0),
+      align: $align.center,
+      editable: false
+    },
+    layout: function(make, view) {
+      make.top.inset(470)
+      make.left.right.inset(10)
+      make.height.equalTo(160)
+    }
+  }, {
+    type: "button",
+    props: {
+      title: "已满十八岁",
+      titleColor: $color("black"),
+      bgcolor: $color("white")
+    },
+    layout: function(make, view) {
+      make.left.right.inset(120)
+      make.bottom.inset(100)
+      make.height.equalTo(30)
+    },
+    events: {
+      tapped: function(sender) {
+        $("checkAdult").remove()
+        $cache.set("ADULT", true)
+      }
+    }
+  }, {
+    type: "button",
+    props: {
+      title: "未满十八岁",
+      titleColor: $color("white"),
+      bgcolor: $color("red")
+    },
+    layout: function(make, view) {
+      make.left.right.inset(120)
+      make.bottom.inset(40)
+      make.height.equalTo(30)
+    },
+    events: {
+      tapped: function(sender) {
+        $app.close()
+      }
+    }
+  }],
+  layout: $layout.fill
+}
 
+function main() {
+  if ($cache.get("ADULT")) {
+    $("checkAdult").remove()
+  }
   $("content").add(localVideoListView);
   if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
@@ -1581,4 +1725,19 @@ var LocalDataPath = "drive://xvideos/config.json";
 
 var domain = "https://www.xvideos.com";
 
-main()
+
+if ($app.env == $env.today) {
+  var name = $addin.current.name.split(".js")
+  $app.openURL("jsbox://run?name=" + name[0])
+} else {
+  scriptVersionUpdate()
+  $ui.render({
+    props: {
+      title: "Xvideos",
+      bgcolor: $color("white"),
+    },
+    views: [mainUI, checkAdultView],
+    layout: $layout.fill
+  })
+  main()
+}
