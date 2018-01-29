@@ -21,7 +21,7 @@
 
    */
 
-version = 1.0
+version = 1.1
 
 var scale = 600 / 337;
 const searchPreview = {
