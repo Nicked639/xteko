@@ -944,7 +944,8 @@ const prePageButton =
        id: "search",
        bgcolor: $color("#fdfdfd"),
        placeholder: "搜索影片中...",
-       font: $font(15)
+       font: $font(15),
+       clearButtonMode:0
      },
      layout: function(make, view) {
        make.top.inset(10)
@@ -976,11 +977,20 @@ const prePageButton =
          }
        },
        returned(sender) {
+         contentMode = "Videos";
+           cacheContent = "影片";
+           $cache.set("cacheContent", cacheContent);
+       
          sender.blur();
          if (CCLevel == 2) {
            $ui.pop()
          }
          if (sender.text) {
+           if(VFExist){
+                       
+             PREDATA = JSON.parse(JSON.stringify($("videos").data))
+           }
+         
            mode = "Search";
            var code = codeCorrectify(sender.text);
            if (code !== "none") {
@@ -996,10 +1006,7 @@ const prePageButton =
              VFExist = true;
              $("search").text = keyword
            }
-           contentMode = "Videos";
-           cacheContent = "影片";
-           $cache.set("cacheContent", cacheContent);
-           $("videos").contentOffset = $point(0, 0);
+           //$("videos").contentOffset = $point(0, 0);
            $("videos").data = [];
            page = 0;
            has_next = true
@@ -1487,9 +1494,12 @@ $ui.animate({
          //$("search").text = "";
          $ui.alert("❌ 没有搜索结果！");
          $ui.loading(false);
+         $("videos").data = PREDATA
+          $("searchResult").text = filterName[cacheFilters.Time] + "找到 0" + " 部影片";
          $("loading").text = ""
          return
        }
+       $("videos").contentOffset = $point(0, 0);
        if (!resp.data.response.has_more) {
          if(has_next == false){
           $ui.toast("🙈 已经到底了", 1);
