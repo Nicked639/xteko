@@ -1875,7 +1875,8 @@ async function getInfo (url) {
             type: 'web',
             props: {
                 id: 'avgle_web',
-                url: url
+                url: url,
+                hidden:true,
             },
             // layout: $layout.fill,
             layout (make) {
