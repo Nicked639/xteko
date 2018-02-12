@@ -1,7 +1,7 @@
 {
   "version": 1.6,
   "msg": "更新说明：\n1.细节优化",
-  "wfVersion":1.2,
-  "wfMsg": "更新说明：修复储存时的错误",
-  "workflow": "https://workflow.is/workflows/237070a4606b4b279cbb3fcc155e7657"
+  "wfVersion":1.3,
+  "wfMsg": "更新说明：修复剪贴板为空时的效果",
+  "workflow": "https://workflow.is/workflows/41ad696da8f04baea635ec222806b621"
 }
