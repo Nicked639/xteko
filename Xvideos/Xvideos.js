@@ -1314,6 +1314,7 @@ function getStarList(url) {
         var [url, name] = /<a\shref="(.*?)">(.*?)<\/a>/.exec(i).splice(1, 2);
         var cover = /<img\ssrc="(.*?)"/.exec(i)[1].replace("thumbs169ll", "thumbs169lll");
         var count = /<p\sclass="profile-counts">([\s\S]*?)<\/p>/.exec(i)[1].replace(/\s|(&nbsp;)/g, "");
+        count = /\d+/.exec(count)[0] + " videos"
         return {
           url: url,
           starCover: {
@@ -1345,6 +1346,7 @@ function getChannelList() {
         var [url, name] = /<a\shref="(.*?)">(.*?)<\/a>/.exec(i).splice(1, 2);
         var cover = /<img\ssrc="(.*?)"/.exec(i)[1].replace("thumbs169ll", "thumbs169lll");
         var count = /<p\sclass="profile-counts">([\s\S]*?)<\/p>/.exec(i)[1].replace(/\s|(&nbsp;)/g, "");
+        count = /\d+/.exec(count)[0] + " videos"
         return {
           url: url,
           channelCover: {
