@@ -1445,13 +1445,13 @@ function download(url,name) {
                 $ui.toast(`⏳下载中......${writeSize.toFixed(1)}/${totalSize}(${precent}%)`, 1)
               },
               handler: function(resp) {
-                $ui.toast("✅ 下载完成已经存到 iCloud", 1);
+                $ui.toast("✅ 下载完成已存至脚本文件管理器内", 1);
                 let types = resp.data.fileName.split(".").pop()
-                let path = "drive://xvideos/"+name +"."+types
+                let path = name +"."+types
                 let i = 1
                 while($file.exists(path)){
                   var dname = name + `(${i})`
-                  path = "drive://xvideos/"+dname +"."+types
+                  path = dname +"."+types
                   i++
                 }
                 $file.write({
