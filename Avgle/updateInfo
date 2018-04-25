@@ -1,4 +1,4 @@
 {
-  "version": 3.0,
-  "msg": "感谢 Mu Wei 大佬，感谢钟大，值此新春佳节之际为我们带来了这样的更新，复活了 Avgle！ 注意：需最新版Testflight的JSBox"
+  "version": 3.1,
+  "msg": "支持从 HList 传递番号参数直接用于搜索"
 }
