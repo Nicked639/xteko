@@ -21,7 +21,7 @@
 
    */
 
-version = 
+version = 3.1
 $addin.current.version = version
 times = $cache.get("times") || 4
 
@@ -2180,7 +2180,7 @@ current.version = version;
            actions: [{
              title: "更新",
              handler: function() {
-               var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/Avgle.js&name=Avgle" + afterVersion + "&icon=icon_135.png&types=1&version="+afterversion+"&author=Nicked&website=https://t.me/nicked";
+               var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/Avgle.js&name=Avgle" + afterVersion + "&icon=icon_135.png&types=1&version="+afterVersion+"&author=Nicked&website=https://t.me/nicked";
                $app.openURL(encodeURI(url));
                $app.close()
              }
