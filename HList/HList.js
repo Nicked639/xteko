@@ -500,11 +500,13 @@ const detailView = {
           })
              }else if(idx ==1){
 //               $clipboard.text = favCode;
-              var js = jsDetect()
-              $console.log(js)
-              if(js){
+              var js = jsDetect()["js"]
+              var num = jsDetect()["num"].version
+//              $console.log($addin.list[num].version)
+//
+              if(js && num >3){
                 $addin.run({
-                name: "Avgle",
+                name: js,
                 query: {
                 "code": favCode
                 }
@@ -512,7 +514,7 @@ const detailView = {
 //                $app.openExtension(js+".js")
               }else {
                 $ui.alert({
-                  title: "Avgle 脚本不存在",
+                  title: "请更新至最新版本 Avgle",
                   message: "是否安装?\n安装完成后请再次点击。" ,
                   actions: [{
                     title: "安装",
@@ -1615,7 +1617,10 @@ function jsDetect() {
   for (var i = 0; i < js.length; i++) {
     var match = /Avgle[\s\S]*?/g.exec(js[i])
     if (match) {
-      return js[i]
+      return {
+        "js":js[i],
+        "num":i
+      }
     }
   }
   return false
