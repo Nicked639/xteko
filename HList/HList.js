@@ -501,10 +501,11 @@ const detailView = {
              }else if(idx ==1){
 //               $clipboard.text = favCode;
               var js = jsDetect()["js"]
-              var num = jsDetect()["num"].version
-//              $console.log($addin.list[num].version)
-//
-              if(js && num >3){
+              var num = jsDetect()["num"]
+              if(js){
+                var version = $addin.list[num].version
+              $console.log(version)
+              if(version>3){              
                 $addin.run({
                 name: js,
                 query: {
@@ -512,6 +513,7 @@ const detailView = {
                 }
                })              
 //                $app.openExtension(js+".js")
+              }
               }else {
                 $ui.alert({
                   title: "请更新至最新版本 Avgle",
@@ -519,7 +521,7 @@ const detailView = {
                   actions: [{
                     title: "安装",
                     handler: function() {
-                      var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/Avgle.js&name=Avgle&icon=icon_135.png";
+                      var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/Avgle.js&name=Avgle&icon=icon_135.png&types=1&version=3.1&author=Nicked&website=https://t.me/nicked";
                       $app.openURL(encodeURI(url));
                       $app.close()
                     }
@@ -1641,7 +1643,7 @@ function main() {
         page = 0
         //$ui.action(match)
         homepage = match[1] + "/cn/";
-        
+        $console.log(homepage)
         homeMoviePage = homepage + "movie/";
         homeSearchPage = homepage + "search/"
         homeStarPage = homepage + "star/";
