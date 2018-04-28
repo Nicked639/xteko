@@ -87,19 +87,24 @@ return {
     },
     events: {
       returned: function(sender) {
-		if($("searchView").super == $("JavBus")){
+        let index = $("tabC").index
+        if(index == 2) homepage = "https://www.javbus.org/";
+        else homepage = "https://www.javbus.com/";
+        homeSearchPage = homepage + "search/"
+        if($("searchView").super == $("JavBus")){
 			$("searchView").remove()
 		  }
-		  $("JavBus").add(searchView(180))
-		  $("input").text = sender.text
+		$("JavBus").add(searchView(180))
+        $("tabC").index = index 
+		$("input").text = sender.text
         sender.blur()
         $("initialView").data = [];
         $ui.loading(true)
-        $("loading").text = "Loading.."
+        $("loading").text = "Loading..."
         if (sender.text) {
           mode = "search";
           keyword = sender.text.replace(/\s+/g,"");
-          sender.text = keyword
+          $("input").text = keyword
           page = 0;
           getInitial(mode, keyword);
         } else {
@@ -307,7 +312,7 @@ return {
     props: {
       id: "tabC",
       hidden: false,
-      items: ["有码", "无码"],
+      items: ["有码", "无码","欧美"],
       tintColor: $color("tint"),
       radius: 5,
       bgcolor: $color("white"),
@@ -323,7 +328,19 @@ return {
         $("initialView").data = [];
         $("initialView").contentOffset = $point(0, 0);
         $("input").text = ("")
-        $("loading").text = "Loading..."
+		$("loading").text = "Loading..."
+		if (sender.index == 2) {
+			url = "https://www.javbus.org/";
+			if($("menu").index == 1){
+			  if($("searchView").super == $("JavBus")){
+				$("searchView").remove();
+				}
+			  $("JavBus").add(searchView(180));
+			}
+			$("menu").index = 0;
+           	$("tabC").index = 2;		
+            main(url)
+		}
         if($("menu").index == 0){
           if (sender.index == 0) {
             url = "https://www.javbus.com/"
@@ -477,7 +494,7 @@ const detailView = {
     }, {
       type: "text",
       props: {
-        text: "参演女优:",
+        text: "参演嘉宾:",
         bgcolor: $color("white"),
         id: "whoInFilm",
         font: $font("bold", 17),
@@ -1233,7 +1250,6 @@ function getInitial(mode, keyword) {
         url = encodeURI(homeSearchPage + keyword+"/")
       }    
     }
-    
   }
  // $console.log(page)
   $http.request({
@@ -1259,6 +1275,9 @@ function getInitial(mode, keyword) {
         
       }
       uncensored = /class="active"><a href="[\s\S]*?">/.exec(resp.data)[0].includes("uncensored")
+      if(uncensored) $("tabC").index = 1;
+      else if(homepage.includes("org")) $("tabC").index = 2;
+       else $("tabC").index = 0;
       var reg = /<a class="movie-box"[\s\S]*?<\/span>/g;
       var match = resp.data.match(reg)
       var data = []
@@ -1518,7 +1537,7 @@ function favActressButtonTapped(mode, data) {
   if (mode == "add") {
     LocalData.actress.push(data)
     LocalActressList.push(data.shortCode)
-    if ($("menu").index == 1 && $("tab").index == 1) {
+    if ($("menu").index == 2 && $("tab").index == 1) {
       $("initialView").data = $("initialView").data.concat({
         link: homeStarPage + data.shortCode,
         //code:code,
@@ -1532,12 +1551,12 @@ function favActressButtonTapped(mode, data) {
     }
 
   } else if (mode == "del") {
-
+    $ui.pop()  
     idx = LocalActressList.indexOf(data.shortCode)
     //$ui.action(idx)
     LocalActressList.splice(idx, 1)
     LocalData.actress.splice(idx, 1)
-    if ($("menu").index == 1 && $("tab").index == 1) {
+    if ($("menu").index == 2 && $("tab").index == 1) {
       // $ui.action(data.link)
       $("initialView").delete(idx)
     }
@@ -1553,7 +1572,7 @@ function favoriteButtonTapped(mode, data) {
     //$ui.pop();
     LocalData.favorite.push(data)
     LocalFavList.push(data.shortCode)
-    if ($("menu").index == 1 && $("tab").index == 0) {
+    if ($("menu").index == 2 && $("tab").index == 0) {
       $("initialView").data = $("initialView").data.concat({
         link: homepage + shortCode,
         code: data.code,
