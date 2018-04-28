@@ -89,6 +89,7 @@ const searchView = {
         sender.blur()
         $("initialView").data = [];
         $ui.loading(true)
+        $("loading").text = "Loading.."
         if (sender.text) {
           mode = "search";
           keyword = sender.text.replace(/\s+/g,"");
@@ -153,7 +154,11 @@ const searchView = {
         if ($("menu").index == 0) {
           $ui.loading(true)
           getInitial(mode, keyword);
-
+        }else if($("menu").index == 1){
+          $ui.loading(true)
+          if ($("tabC").index == 0) url = "https://www.javbus.com/actresses/";
+          else url = url = "https://www.javbus.com/uncensored/actresses/"
+          getInitialActress(url)
         }
 
       },
@@ -165,11 +170,11 @@ const searchView = {
         favLink = data.link
         shortCode = favLink.split('/').pop()
         favCode = shortCode
-        if ($("tab").hidden == false && $("tab").index == 1) {
+        // 演员tab
+        if ($("tab").hidden == false && $("tab").index == 1 || $("menu").index ==1) {
           favActressCover = favSrc
           favActressName = favInfo
           url = favLink
-
           actressView(favInfo, favSrc)
           actressPage = 0
           getActress(favLink)
@@ -182,7 +187,7 @@ const searchView = {
         } else {
           getDetail(data.link)
           $ui.push(detailView)
-          if ($("menu").index == 0) {
+          if ($("menu").index == 0 || $("menu").index == 1) {
             if (LocalFavList.indexOf(shortCode) > -1) {
               $("favorite").title = "取消收藏"
               $("favorite").bgcolor = $color("#f25959")
@@ -190,7 +195,7 @@ const searchView = {
               $("favorite").title = "已归档"
               $("favorite").bgcolor = $color("#aaaaaa")
             }
-          } else if ($("menu").index == 1) {
+          } else if ($("menu").index == 2) {
             if (LocalFavList.indexOf(shortCode) > -1) {
               $("favorite").title = "归档"
 
@@ -211,9 +216,8 @@ const searchView = {
     type: "tab",
     props: {
       id: "tab",
-      hidden: false,
       items: ["影片", "演员"],
-      tintColor: $color("black"),
+      tintColor: $color("tint"),
       radius: 5,
       bgcolor: $color("white"),
       hidden: true
@@ -240,7 +244,7 @@ const searchView = {
           LocalData.favorite.map(function(i) {
             $("initialView").data = $("initialView").data.concat({
               code: i.code,
-              link: homeMoviePage + i.shortCode,
+              link: homepage + i.shortCode,
               initialCover: {
                 src: i.src
               },
@@ -276,12 +280,73 @@ const searchView = {
       }
     }
 
+  },{
+    type: "tab",
+    props: {
+      id: "tabC",
+      hidden: false,
+      items: ["有码", "无码"],
+      tintColor: $color("tint"),
+      radius: 5,
+      bgcolor: $color("white"),
+    },
+    layout: function(make) {
+      make.left.right.inset(120)
+      make.bottom.inset(20)
+      make.height.equalTo(22)
+      //make.width.equalTo(40)
+    },
+    events: {
+      changed(sender) {
+        $("initialView").data = [];
+        $("initialView").contentOffset = $point(0, 0);
+        $("input").text = ("")
+        $("loading").text = "Loading..."
+        if($("menu").index == 0){
+          if (sender.index == 0) {
+            url = "https://www.javbus.com/"
+            main(url)
+          } else if (sender.index == 1) {
+            url = "https://www.javbus.com/uncensored/"
+            main(url)
+          }
+        }else if ($("menu").index == 1){
+          page = 0;
+          if (sender.index == 0){
+            url = "https://www.javbus.com/actresses/";
+            getInitialActress(url)
+          } else if (sender.index == 1){
+            url = "https://www.javbus.com/uncensored/actresses/";
+            getInitialActress(url)
+          }
+        }
+
+      }
+    }
+
   }],
   layout: function(make, view) {
     make.left.right.bottom.inset(0)
     make.top.equalTo($("menu").bottom)
   }
 
+}
+
+const magnet = {
+  type: "view",
+  props: {
+    title: "磁链",
+    //scrollEnabled: true,
+    //contentSize: $size(0, 1000)
+  },
+  views:[{
+    type: "list",
+    props: {
+      data: ["JavaScript", "Swift"]
+    },
+    layout: $layout.fill,
+  }],
+  layout:$layout.fill,
 }
 
 const detailView = {
@@ -503,22 +568,7 @@ const detailView = {
            items:["磁链","Avgle","nyaa","复制番号"],
            handler:function(title,idx){
              if(idx==0){
-                         $http.request({
-            url: "https://btso.pw",
-            timeout: 1,
-            handler: function(resp) {
-              if (resp.data) {
-                $safari.open({
-                  url: "http://btso.pw/search/" + encodeURI(favCode)
-                })
-              } else {
-                $safari.open({
-                  url: "http://www.nms999.com/l/" + encodeURI(favCode) + "-hot-desc-1"
-                })
-              }
-
-            }
-          })
+               $ui.push(magnet)
              }else if(idx ==1){
 //               $clipboard.text = favCode;
               var js = jsDetect()["js"]
@@ -938,14 +988,14 @@ function actressView(actress, cover) {
             $("favorite").title = "收藏"
           }*/
 
-          if ($("menu").index == 0) {
+          if ($("menu").index == 0 || $("menu").index == 1 ) {
             if (LocalFavList.indexOf(shortCode) > -1) {
               $("favorite").title = "取消收藏"
             } else if (LocalArcList.indexOf(shortCode) > -1) {
               $("favorite").title = "已归档"
               $("favorite").bgcolor = $color("#aaaaaa")
             }
-          } else if ($("menu").index == 1) {
+          } else if ($("menu").index == 2) {
             if (LocalFavList.indexOf(shortCode) > -1) {
               $("favorite").title = "归档"
             } else if ((LocalArcList.indexOf(shortCode) > -1)) {
@@ -957,7 +1007,7 @@ function actressView(actress, cover) {
               $("favorite").title = "收藏"
 
             }
-          } else if ($("menu").index == 2) {
+          } else if ($("menu").index == 3) {
             if (LocalArcList.indexOf(shortCode) > -1) {
               $("favorite").title = "删除"
               $("favorite").bgcolor = $color("#f25959");
@@ -985,7 +1035,7 @@ $ui.render({
       type: "menu",
       props: {
         id: "menu",
-        items: ["搜索", "收藏", "归档"]
+        items: ["影片", "女优", "收藏", "归档"]
       },
       layout: function(make) {
         make.top.left.right.inset(0)
@@ -995,23 +1045,44 @@ $ui.render({
         changed(sender) {
           switch (sender.index) {
             case 0:
+              $("loading").text = "Loading..."
               $("bgInfo").hidden = false;
               $("bgImage").hidden = false;
               $("tab").hidden = true;
+              $("tabC").hidden = false;
+              $("tabC").index = 0;
               $("input").placeholder = "输入番号或演员进行搜索"
               $("initialView").hidden = false
-
               $("initialView").data = []
               $("initialView").contentOffset = $point(0, 0)
+              homepage = "https://www.javbus.com/";
               page = 0
               mode = "home"
               keyword = ""
               getInitial(mode)
               break;
             case 1:
+              $("loading").text = "Loading..."
+              $("bgInfo").hidden = false;
+              $("bgImage").hidden = false;
+              $("tab").hidden = true;
+              $("tabC").hidden = false;
+              $("tabC").index = 0;
+              $("input").text = ""
+              $("input").placeholder = "输入番号或演员进行搜索";
+              $("initialView").hidden = false;
+
+              $("initialView").data = [];
+              $("initialView").contentOffset = $point(0, 0);
+              page = 0;
+              url = "https://www.javbus.com/actresses/";
+              getInitialActress(url);
+              break;
+            case 2:
               $("bgInfo").hidden = true;
               $("bgImage").hidden = true;
               $("tab").hidden = false;
+              $("tabC").hidden = true;
               $("initialView").data = [];
               $("initialView").contentOffset = $point(0, 0);
 
@@ -1029,7 +1100,7 @@ $ui.render({
                 LocalData.favorite.map(function(i) {
                   $("initialView").data = $("initialView").data.concat({
                     code: i.code,
-                    link: homeMoviePage + i.shortCode,
+                    link: homepage + i.shortCode,
                     initialCover: {
                       src: i.src
                     },
@@ -1056,10 +1127,11 @@ $ui.render({
               }
 
               break;
-            case 2:
+            case 3:
               $("bgInfo").hidden = true;
               $("bgImage").hidden = true;
               $("tab").hidden = true;
+              $("tabC").hidden = true;
               var length = LocalArcList.length;
               $("input").text = ("")
               $("input").placeholder = "已归档 " + length + " 部影片"
@@ -1073,7 +1145,7 @@ $ui.render({
               LocalData.archive.map(function(i) {
                 $("initialView").data = $("initialView").data.concat({
                   code: i.code,
-                  link: homeMoviePage + i.shortCode,
+                  link: homepage + i.shortCode,
                   initialCover: {
                     src: i.src
                   },
@@ -1093,7 +1165,6 @@ $ui.render({
 })
 
 function getInitial(mode, keyword) {
- // homepage = "https://javmoo.net/cn/"
   page++;
   //$ui.toast("⏱ 搜索中", 100)
   if (mode == "home") {
@@ -1110,13 +1181,12 @@ function getInitial(mode, keyword) {
     }
     
   }
+ // $console.log(page)
   $http.request({
     url: url + page,
     timeout: timeout,
     handler: function(resp) {
       $ui.loading(false);
-//      $console.log(resp.data)
-      $console.log(url+page)
       if (!resp.response) {
         $ui.toast("❌ 网络连接错误")
         return
@@ -1167,13 +1237,43 @@ function getInitial(mode, keyword) {
       }
       $("input").placeholder = "输入番号或演员进行搜索"
       //$ui.toast("", 0.1)
-      if(mode =="home" && page == 1){
-        $ui.toast("载入成功", 1)
-      }
+      // if(mode =="home" && page == 1){
+      //   $ui.toast("载入成功", 1)
+      // }
       $("loading").text=""
     }
   })
 
+}
+
+function getInitialActress(url){
+  page ++;
+  $console.log(page)
+  $http.request({
+    url: url + page,
+    handler: function(resp) {
+      $ui.loading(false);
+      var reg = /<a class="avatar-box text-center"[\s\S]*?<\/span>/g;
+      var match = resp.data.match(reg)
+      var data = []
+      match.map(function(i) {
+        var link = /href="([\s\S]*?)(")/.exec(i)[1];
+        var image = /<img src="([\s\S]*?)(")/.exec(i)[1];
+        var title = /title="(.*?)(">)/.exec(i)[1];
+        $("initialView").data = $("initialView").data.concat({
+          link: link,
+          initialCover: {
+            src: image
+          },
+          info: {
+            text: title
+          }
+        });
+
+      })
+      $("loading").text=""
+    }
+  })
 }
 
 function getDetail(url) {
@@ -1257,8 +1357,11 @@ function getDetail(url) {
       } else {
         screenData = "no"
       }
+      //磁链获取
+      var regMagnet = /window.open\('(.*?)',/g
+      var match = resp.data.match(regMagnet)
+      $console.log(resp.data)
       $("share").hidden = false
-
     }
   })
 
@@ -1397,7 +1500,7 @@ function favoriteButtonTapped(mode, data) {
     LocalFavList.push(data.shortCode)
     if ($("menu").index == 1 && $("tab").index == 0) {
       $("initialView").data = $("initialView").data.concat({
-        link: homeMoviePage + shortCode,
+        link: homepage + shortCode,
         code: data.code,
         initialCover: {
           src: data.src
@@ -1421,14 +1524,14 @@ function favoriteButtonTapped(mode, data) {
     var idx = LocalFavList.indexOf(data.shortCode)
     LocalFavList.splice(idx, 1)
     LocalData.favorite.splice(idx, 1)
-    if ($("menu").index == 1) {
+    if ($("menu").index == 2) {
       //$ui.action($("initialView").data)
       $("initialView").delete(idx)
       var length = LocalFavList.length;
       $("input").placeholder = "已收藏 " + length + " 部影片"
-    } else if ($("menu").index == 2) {
+    } else if ($("menu").index == 3) {
       $("initialView").data = [{
-        link: homeMoviePage + shortCode,
+        link: homepage + shortCode,
         code: data.code,
         initialCover: {
           src: data.src
@@ -1448,7 +1551,7 @@ function favoriteButtonTapped(mode, data) {
     var idx = LocalArcList.indexOf(data.shortCode)
     LocalArcList.splice(idx, 1)
     LocalData.archive.splice(idx, 1)
-    if ($("menu").index == 2) {
+    if ($("menu").index == 3) {
       $("initialView").delete(idx)
       var length = LocalArcList.length;
       $("input").placeholder = "已归档 " + length + " 部影片"
@@ -1554,7 +1657,7 @@ function checkAdult() {
           })
 
           sender.super.remove()
-          main()
+          main(url)
         }
       }
     }, {
@@ -1626,8 +1729,10 @@ function initial() {
   };
 
   mode = "home";
-  keyword = ""
-  uncensored = false
+  keyword = "";
+  uncensored = false;
+  timeout = 5;
+  scriptVersionUpdate()
 }
 
 //剪贴板检测
@@ -1672,14 +1777,10 @@ function jsDetect() {
   return false
 }
 
-function main() {
-  initial()
-  scriptVersionUpdate()
-  page = 0
-  //$ui.action(match)
-  homepage = "https://www.javbus.com/";
-  homeMoviePage = homepage;
-  homeSearchPage = homepage + "search/"
+function main(url) {
+  page = 0;
+  homepage = url
+  homeSearchPage = homepage + "search/";
   homeStarPage = homepage + "star/";
   if ($clipboard.text) {
     var detect = clipboardDetect()
@@ -1692,13 +1793,14 @@ function main() {
   getInitial(detect.mode, detect.keyword)
   // $("input").placeholder = "输入番号或演员进行搜索"
       
-
 }
 
 LocalDataPath = "drive://JavBus.json";
+url = "https://www.javbus.com/"
 var check = $cache.get("adultCheck")
 if (!check) {
   checkAdult()
 } else {
-  main()
+  initial()
+  main(url)
 }
