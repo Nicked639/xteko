@@ -1367,7 +1367,7 @@ function favActressButtonTapped(mode, data) {
   if (mode == "add") {
     LocalData.actress.push(data)
     LocalActressList.push(data.shortCode)
-    if ($("menu").index == 1 && $("tab").index == 1) {
+    if ($("menu").index == 2 && $("tab").index == 1) {
       $("initialView").data = $("initialView").data.concat({
         link: homeStarPage + data.shortCode,
         //code:code,
@@ -1386,7 +1386,7 @@ function favActressButtonTapped(mode, data) {
     //$ui.action(idx)
     LocalActressList.splice(idx, 1)
     LocalData.actress.splice(idx, 1)
-    if ($("menu").index == 1 && $("tab").index == 1) {
+    if ($("menu").index == 2 && $("tab").index == 1) {
       // $ui.action(data.link)
       $("initialView").delete(idx)
     }
@@ -1402,7 +1402,7 @@ function favoriteButtonTapped(mode, data) {
     //$ui.pop();
     LocalData.favorite.push(data)
     LocalFavList.push(data.shortCode)
-    if ($("menu").index == 1 && $("tab").index == 0) {
+    if ($("menu").index == 2 && $("tab").index == 0) {
       $("initialView").data = $("initialView").data.concat({
         link: homeMoviePage + shortCode,
         code: data.code,
@@ -1428,12 +1428,12 @@ function favoriteButtonTapped(mode, data) {
     var idx = LocalFavList.indexOf(data.shortCode)
     LocalFavList.splice(idx, 1)
     LocalData.favorite.splice(idx, 1)
-    if ($("menu").index == 1) {
+    if ($("menu").index == 2) {
       //$ui.action($("initialView").data)
       $("initialView").delete(idx)
       var length = LocalFavList.length;
       $("input").placeholder = "已收藏 " + length + " 部影片"
-    } else if ($("menu").index == 2) {
+    } else if ($("menu").index == 3) {
       $("initialView").data = [{
         link: homeMoviePage + shortCode,
         code: data.code,
@@ -1455,7 +1455,7 @@ function favoriteButtonTapped(mode, data) {
     var idx = LocalArcList.indexOf(data.shortCode)
     LocalArcList.splice(idx, 1)
     LocalData.archive.splice(idx, 1)
-    if ($("menu").index == 2) {
+    if ($("menu").index == 3) {
       $("initialView").delete(idx)
       var length = LocalArcList.length;
       $("input").placeholder = "已归档 " + length + " 部影片"
