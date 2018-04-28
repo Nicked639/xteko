@@ -285,14 +285,6 @@ const searchView = {
 
 }
 
-const magnet = {
-  type: "list",
-  props: {
-    data: ["JavaScript", "Swift"]
-  },
-  layout: $layout.fill,
-}
-
 const detailView = {
   type: "view",
   props: {
@@ -492,7 +484,22 @@ const detailView = {
            items:["磁链","Avgle","nyaa","复制番号"],
            handler:function(title,idx){
              if(idx==0){
-               $ui.push(magnet) 
+            $http.request({
+            url: "https://btso.pw",
+            timeout: 1,
+            handler: function(resp) {
+              if (resp.data) {
+                $safari.open({
+                  url: "http://btso.pw/search/" + encodeURI(favCode)
+                })
+              } else {
+                $safari.open({
+                  url: "http://www.nms999.com/l/" + encodeURI(favCode) + "-hot-desc-1"
+                })
+              }
+
+            }
+          })
              }else if(idx ==1){
 //               $clipboard.text = favCode;
               var js = jsDetect()["js"]
