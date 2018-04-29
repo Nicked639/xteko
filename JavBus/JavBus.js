@@ -371,22 +371,6 @@ return {
 
 }
 }
-const magnet = {
-  type: "view",
-  props: {
-    title: "磁链",
-    //scrollEnabled: true,
-    //contentSize: $size(0, 1000)
-  },
-  views:[{
-    type: "list",
-    props: {
-      data: ["JavaScript", "Swift"]
-    },
-    layout: $layout.fill,
-  }],
-  layout:$layout.fill,
-}
 
 const detailView = {
   type: "view",
@@ -604,25 +588,24 @@ const detailView = {
           //$clipboard.text = favCode
           //$ui.action(favCode)
          $ui.menu({
-           items:["磁链","Avgle","nyaa","复制番号"],
+           items:["磁链","Avgle","nyaa"],
            handler:function(title,idx){
              if(idx==0){
-               $ui.push(magnet)
+              $ui.push(megnetList(favCode))
+              getMegnet(favCode)
              }else if(idx ==1){
-//               $clipboard.text = favCode;
               var js = jsDetect()["js"]
               var num = jsDetect()["num"]
               if(js){
                 var version = $addin.list[num].version
-              $console.log(version)
-              if(version>3){              
+                $console.log(version)
+                if(version>3){              
                 $addin.run({
                 name: js,
                 query: {
                 "code": favCode
                 }
                })              
-//                $app.openExtension(js+".js")
               }
               }else {
                 $ui.alert({
@@ -640,18 +623,10 @@ const detailView = {
                   }]
                 })
               }
-              //  $clipboard.text = favCode;
-              //  $app.openExtension("Avgle.js")
-               
-             /*$safari.open({
-               url:"https://avgle.com/search/videos?search_query="+encodeURI(favCode)+"&search_type=videos"
-             })*/
            }else if (idx == 2){
              $safari.open({
                url:"https://sukebei.nyaa.si/?q=" + favCode + "&f=0&c=0_0"
              })
-           }else{
-             $clipboard.text = favCode
            }
            }
          }) 
@@ -808,6 +783,133 @@ const detailView = {
 
 }
 
+const urls = [/*{
+  name: "磁力猫",
+  pattern: "http://www.cilimao.me/api/search?size=10&sortDirections=desc&page=0&word="
+}, */{
+  name: "种子搜",
+  pattern: "http://bt.xiandan.in/search-json?site=%E7%A7%8D%E5%AD%90%E6%90%9C&keyword="
+}, {
+  name: "屌丝搜",
+  pattern: "http://bt.xiandan.in/search-json?site=%E5%B1%8C%E4%B8%9D%E6%90%9C&keyword="
+}
+, {
+  name: "磁力吧",
+  pattern: "http://bt.xiandan.in/search-json?site=%E7%A3%81%E5%8A%9B%E5%90%A7&keyword="
+},{
+  name: "cililiana",
+  pattern: "http://bt.xiandan.in/search-json?site=cililiana&keyword="
+}, 
+]
+
+const mTemplate = {
+  props: {
+    bgcolor: $color("clear")
+  },
+  views: [
+    {
+      type: "label",
+      props: {
+        id: "mFileName",
+        bgcolor: $color("clear"),
+        textColor: $color("black"),
+        align: $align.left,
+        font: $font(18)
+      },
+      layout: function(make,view){
+        make.left.inset(10)      
+        make.right.inset(10)
+        make.top.inset(10)
+        //make.center.equalTo(view.super)
+        
+      }
+    },{
+      type: "label",
+      props: {
+        id: "mFileSize",
+        bgcolor: $color("clear"),
+        textColor: $color("gray"),
+        align: $align.center,
+        font: $font(13),
+        hidden: false
+      },
+      layout: function(make,view){
+        make.left.inset(10)      
+        make.bottom.inset(5)
+      }
+    },{
+      type: "label",
+      props: {
+        id: "mTime",
+        bgcolor: $color("clear"),
+        textColor: $color("gray"),
+        align: $align.center,
+        font: $font(13),
+        hidden: false
+      },
+      layout: function(make,view){
+        make.right.inset(10)      
+        make.bottom.inset(5)
+      }
+    },
+  ]
+}
+
+function megnetList(code) {
+  return {
+  props: {
+    title: code
+  },
+  views: [{
+    type: "menu",
+    props: {
+    items: urls.map(i => i.name),
+    index: 0,
+    id: "mMenu"
+    },
+    layout: function(make) {
+      make.left.top.right.equalTo(0)
+      make.height.equalTo(40)
+    },
+    events: {
+    changed: function(sender) {
+      $("mlist").data = []
+      getMegnet(code);
+      }
+    }
+},{
+    type: "list",
+    props: {
+      id: "mlist",
+      rowHeight:60,
+      template: mTemplate,
+      stickyHeader: false,
+      actions: [
+        {
+          title: "share",
+          handler: function(sender, indexPath) {
+            let magnet = sender.data[indexPath.row].info
+            $share.sheet(magnet)
+          }
+        }
+      ]
+    },
+    events: {
+        didSelect: function (sender, indexPath, data) {
+            let magnet = sender.data[indexPath.row].info
+            $clipboard.text = magnet
+            $ui.toast("磁链已复制");
+
+        }
+      },
+    layout:function(make,view){
+      make.top.inset(40)
+      make.left.bottom.right.inset(0)
+   }
+  },],
+  layout:$layout.fill
+}
+}
 const screenshotView = {
 
   type: "view",
@@ -1432,9 +1534,9 @@ function getDetail(url) {
         screenData = "no"
       }
       //磁链获取
-      var regMagnet = /window.open\('(.*?)',/g
-      var match = resp.data.match(regMagnet)
-      $console.log(resp.data)
+      // var regMagnet = /window.open\('(.*?)',/g
+      // var match = resp.data.match(regMagnet)
+      // $console.log(resp.data)
       $("share").hidden = false
     }
   })
@@ -1753,6 +1855,32 @@ function checkAdult() {
       }
     }],
     layout: $layout.fill
+  })
+}
+
+function getMegnet(code){
+  $app.tips("单击复制磁链，左滑分享磁链")
+  $ui.loading(true)
+  $http.request({
+      url: urls[$("mMenu").index].pattern + code,
+      handler: function(resp) {
+          var data = resp.data
+          data.map(function(i){
+            $("mlist").data = $("mlist").data.concat({
+                mFileName:{
+                    text: i.name,
+                  },
+                mFileSize:{
+                    text: i.size,
+                  },
+                mTime:{
+                    text: i.count
+                  },
+                info: i.magnet
+            })
+          })
+          $ui.loading(false)
+      }
   })
 }
 
