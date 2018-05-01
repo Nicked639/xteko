@@ -74,7 +74,7 @@ return {
       text: "Loading...",
       bgcolor: $color("clear"),
       textColor: $color("#888888"),
-      font: $font(20),
+      font: $font("Georgia-BoldItalic",20),
       align: $align.center
     },
 
@@ -162,7 +162,43 @@ return {
           make.bottom.inset(0)
           make.height.equalTo(20)
         },
-      },],
+      },{
+      type: "label",
+      props: {
+        text:"高清",
+        id: "HD",
+        bgcolor: $rgb(114,148,177),
+        textColor: $color("white"),
+        align: $align.center,
+        font: $font("bold",12),
+        radius: 4,
+        hidden: true,
+        alpha: 0.8
+      },
+      layout: function(make,view){
+        make.top.left.inset(0)      
+        make.height.equalTo(18)
+        make.width.equalTo(34)
+      }
+    },{
+      type: "label",
+      props: {
+        text:"字幕",
+        id: "SUB",
+        bgcolor: $rgb(242,184,103),
+        textColor: $color("white"),
+        align: $align.center,
+        font: $font("bold",12),
+        radius: 4,
+        hidden: true,
+        alpha:0.8
+      },
+      layout: function(make,view){
+        make.top.right.inset(0)      
+        make.height.equalTo(18)
+        make.width.equalTo(34)
+      }
+    },],
     },
     layout: function(make, view) {
       make.left.right.bottom.inset(5)
@@ -177,7 +213,7 @@ return {
         }else if($("menu").index == 1){
           $ui.loading(true)
           if ($("tabC").index == 0) url = "https://www.javbus.com/actresses/";
-          else url = url = "https://www.javbus.com/uncensored/actresses/"
+          else url = "https://www.javbus.com/uncensored/actresses/"
           getInitialActress(url)
         }
 
@@ -824,7 +860,7 @@ const detailView = {
       text: "Loading...",
       bgcolor: $color("clear"),
       textColor: $color("#888888"),
-      font: $font(20),
+      font: $font("Georgia-BoldItalic",20),
       align: $align.center
     },
 
@@ -984,7 +1020,7 @@ function magnetList(code) {
             textColor: $color("black"),
             bgcolor:$color("white"),
             align: $align.center,
-            font: $font("bold",18)
+            font: $font("Georgia-BoldItalic",18)
             },
             layout:function(make,view){
           make.left.inset(0)      
@@ -1556,6 +1592,7 @@ function getInitial(mode, keyword) {
        else $("tabC").index = 0;
       var reg = /<a class="movie-box"[\s\S]*?<\/span>/g;
       var match = resp.data.match(reg)
+//      $console.log(match)
       var data = []
       match.map(function(i) {
         var link = /href="([\s\S]*?)(")/.exec(i)[1];
@@ -1563,6 +1600,8 @@ function getInitial(mode, keyword) {
         var title = /title="(.*?)(">)/.exec(i)[1];
         var code = /<date>(.*?)<\/date>/.exec(i)[1];
         var date = /\/\s<date>(.*?)<\/date><\/span>/.exec(i)[1];
+        let hd = i.includes("高清")
+        let sub = i.includes("字幕")
         $("initialView").data = $("initialView").data.concat({
           title: title,
           link: link,
@@ -1572,6 +1611,12 @@ function getInitial(mode, keyword) {
           },
           info: {
             text: code + " | " + date
+          },
+          HD:{
+            hidden: !hd
+          },
+          SUB:{
+            hidden: !sub
           }
         });
 
@@ -2245,12 +2290,30 @@ function main(url) {
       
 }
 
+function start(){
+   let check = $cache.get("adultCheck")
+      if (!check) {
+        checkAdult()
+      } else {
+        initial()
+        main(url)
+      }
+}
+
 LocalDataPath = "drive://JavBus.json";
 url = "https://www.javbus.com/"
-var check = $cache.get("adultCheck")
-if (!check) {
-  checkAdult()
-} else {
-  initial()
-  main(url)
-}
+
+//let LAContext = $objc("LAContext").invoke("alloc.init");
+//
+//let handler = $block("void, BOOL", success => $thread.main({
+//  delay: 1,
+//  handler: function() {
+//    if (success) {
+//      start()
+//    } else $ui.alert("验证失败")
+//  }
+//}))
+
+//LAContext.invoke("evaluatePolicy:localizedReason:reply:", 2, "验证以继续", handler);
+start()
+
