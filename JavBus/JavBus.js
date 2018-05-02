@@ -98,7 +98,8 @@ return {
       returned: function(sender) {
         let index = $("tabC").index
         if(index == 2) homepage = "https://www.javbus.org/";
-        else homepage = "https://www.javbus.com/";
+        else if(index == 0) homepage = "https://www.javbus.com/";
+        else hompage = "https://www.javbus.com/uncensored/"
         homeSearchPage = homepage + "search/"
         if($("searchView").super == $("JavBus")){
 			$("searchView").remove()
@@ -110,6 +111,7 @@ return {
         $("initialView").data = [];
         $ui.loading(true)
         $("loading").text = "Loading..."
+        keyword = sender.text
         if (sender.text) {
           mode = "search";
           keyword = sender.text.replace(/\s+/g,"");
@@ -153,7 +155,8 @@ return {
         page = 0;
         $("initialView").data = [];
         $("loading").text = "Loading...";
-        getInitial();
+        //$ui.action(keyword)
+        getInitial(mode,keyword);
       }
     }
   },{
@@ -315,6 +318,7 @@ return {
       tintColor: $color("tint"),
       radius: 5,
       bgcolor: $color("white"),
+      alpha: 0.7,
       hidden: true
     },
     layout: function(make) {
@@ -400,6 +404,7 @@ return {
       tintColor: $color("tint"),
       radius: 5,
       bgcolor: $color("white"),
+      alpha:0.7
     },
     layout: function(make) {
       make.left.right.inset(120)
@@ -411,11 +416,15 @@ return {
       changed(sender) {
 //        $ui.action("f")       
         $("initialView").data = [];
-        page = 0
         $("initialView").contentOffset = $point(0, 0);
         $("loading").text = "Loading..."
-        if (sender.index == 2) {   
-          url = "https://www.javbus.org/";
+//        mode = "home";
+//        keyword = "";
+        page = 0;
+        if (sender.index == 2) { 
+          uncensored = false                  
+          homepage = "https://www.javbus.org/";
+          homeSearchPage = homepage + "search/";
           if($("menu").index == 1){
             if($("searchView").super == $("JavBus")){
             $("searchView").remove();
@@ -425,17 +434,23 @@ return {
           }
           $("menu").index = 0;
           $("tabC").index = 2;		
-          main(url)
+          $("input").text = keyword
+          getInitial(mode,keyword)
           return
         }
         if($("menu").index == 0){
-          $("input").text = ""
-          if (sender.index == 0) url = "https://www.javbus.com/";
-          else if (sender.index == 1) url = "https://www.javbus.com/uncensored/";          
+//          $("input").text = ""
+//          if (sender.index == 0) url = "https://www.javbus.com/";
+//          else if (sender.index == 1) url = "https://www.javbus.com/uncensored/";
+          url = "https://www.javbus.com/";
+          if(sender.index == 1) {            
+            url = url+ "uncensored/"
+            uncensored = true
+          } else uncensored= false;         
           homepage = url
           homeSearchPage = homepage + "search/";
           homeStarPage = homepage + "star/";
-          getInitial()
+          getInitial(mode,keyword)
         }else if ($("menu").index == 1){
           page = 0;
           $("input").text = ""
@@ -1428,140 +1443,143 @@ $ui.render({
       events: {
         changed(sender) {
           switch (sender.index) {
-			case 0:
+			case 0: // 影片
 			  if($("searchView").super == $("JavBus")){
 				$("searchView").remove()
 			  }
-			  $("JavBus").add(searchView(180))
-              $("loading").text = "Loading..."
-              $("bgInfo").hidden = false;
-              $("bgImage").hidden = false;
-              $("tab").hidden = true;
-              $("tabC").hidden = false;
-              $("tabC").index = 0;
-              $("input").placeholder = "输入番号或演员进行搜索"
-              $("initialView").hidden = false
-              $("initialView").data = []
-              $("initialView").contentOffset = $point(0, 0)
-              homepage = "https://www.javbus.com/";
-              page = 0
-              mode = "home"
-              keyword = ""
-              getInitial(mode)
-              break;
-			case 1:
+        $("JavBus").add(searchView(180))
+        $("tabAll").hidden = false;
+        $("loading").text = "Loading...";
+        $("bgInfo").hidden = false;;
+        $("bgImage").hidden = false;
+        $("tab").hidden = true;
+        $("tabC").hidden = false;
+        $("tabC").index = 0;
+        $("input").placeholder = "输入番号或演员进行搜索";
+        $("initialView").hidden = false;
+        $("initialView").data = [];
+        $("initialView").contentOffset = $point(0, 0);
+        homepage = "https://www.javbus.com/";
+        page = 0;
+        mode = "home";
+        keyword = "";
+        getInitial(mode);
+        break;
+			case 1: //女优
 			  if($("searchView").super == $("JavBus")){
 				$("searchView").remove()
 			  }
 			  $("JavBus").add(searchView(120))
-			  $("JavBus").add(searchView(120))
-              $("loading").text = "Loading..."
-              $("bgInfo").hidden = false;
-              $("bgImage").hidden = false;
-              $("tab").hidden = true;
-              $("tabC").hidden = false;
-              $("tabC").index = 0;
-              $("input").text = ""
-              $("input").placeholder = "输入番号或演员进行搜索";
-              $("initialView").hidden = false;
+        $("tabAll").hidden = true
+        $("loading").text = "Loading..."
+        $("bgInfo").hidden = false;
+        $("bgImage").hidden = false;
+        $("tab").hidden = true;
+        $("tabC").hidden = false;
+        $("tabC").index = 0;
+        $("input").text = ""
+        $("input").placeholder = "输入番号或演员进行搜索";
+        $("initialView").hidden = false;
 
-              $("initialView").data = [];
-              $("initialView").contentOffset = $point(0, 0);
-              page = 0;
-              url = "https://www.javbus.com/actresses/";
-              getInitialActress(url);
-              break;
-			case 3:
+        $("initialView").data = [];
+        $("initialView").contentOffset = $point(0, 0);
+        page = 0;
+        url = "https://www.javbus.com/actresses/";
+        getInitialActress(url);
+        break;
+			case 3: // 收藏
 			  if($("searchView").super == $("JavBus")){
 				$("searchView").remove()
 			  }
-			  $("JavBus").add(searchView(180))
+        $("JavBus").add(searchView(180))
+        $("tabAll").hidden = true
 			  $("loading").text = ""
-            //   $("bgInfo").hidden = true;
-            //   $("bgImage").hidden = true;
-              $("tab").hidden = false;
-              $("tabC").hidden = true;
-              $("initialView").data = [];
-              $("initialView").contentOffset = $point(0, 0);
+      //   $("bgInfo").hidden = true;
+      //   $("bgImage").hidden = true;
+        $("tab").hidden = false;
+        $("tabC").hidden = true;
+        $("initialView").data = [];
+        $("initialView").contentOffset = $point(0, 0);
 
-              var length = LocalFavList.length;
-              $("input").text = ("")
-              if (length == 0) {
-                $("initialView").hidden = true
+        var length = LocalFavList.length;
+        $("input").text = ("")
+        if (length == 0) {
+          $("initialView").hidden = true
 
-              } else {
-                $("initialView").hidden = false
+        } else {
+          $("initialView").hidden = false
+        }
+        if ($("tab").index == 0) {
+
+          $("input").placeholder = "已收藏 " + length + " 部影片";
+          LocalData.favorite.map(function(i) {
+            $("initialView").data = $("initialView").data.concat({
+              code: i.code,
+              link: homepage + i.shortCode,
+              initialCover: {
+                src: i.src
+              },
+              info: {
+                text: i.info
               }
-              if ($("tab").index == 0) {
+            })
+          })
 
-                $("input").placeholder = "已收藏 " + length + " 部影片";
-                LocalData.favorite.map(function(i) {
-                  $("initialView").data = $("initialView").data.concat({
-                    code: i.code,
-                    link: homepage + i.shortCode,
-                    initialCover: {
-                      src: i.src
-                    },
-                    info: {
-                      text: i.info
-                    }
-                  })
-                })
-
-              } else if ($("tab").index == 1) {
-                var length = LocalActressList.length;
-                $("input").placeholder = "已收藏 " + length + " 位演员";
-                LocalData.actress.map(function(i) {
-                  $("initialView").data = $("initialView").data.concat({
-                    link: homeStarPage + i.shortCode,
-                    initialCover: {
-                      src: i.src
-                    },
-                    info: {
-                      text: i.info
-                    }
-                  })
-                })
-			  }
-			  if ($("initialView").data.length == 1) {
-				$("bgInfo").hidden = true;
-				$("bgImage").hidden = true;
-			  } else {
-				$("bgInfo").hidden = false;
-				$("bgImage").hidden = false;
-			  }
-              break;
-			case 4:
+        } else if ($("tab").index == 1) {
+          var length = LocalActressList.length;
+          $("input").placeholder = "已收藏 " + length + " 位演员";
+          LocalData.actress.map(function(i) {
+            $("initialView").data = $("initialView").data.concat({
+              link: homeStarPage + i.shortCode,
+              initialCover: {
+                src: i.src
+              },
+              info: {
+                text: i.info
+              }
+            })
+          })
+        }
+        if ($("initialView").data.length == 1) {
+        $("bgInfo").hidden = true;
+        $("bgImage").hidden = true;
+        } else {
+        $("bgInfo").hidden = false;
+        $("bgImage").hidden = false;
+        }
+        break;
+			case 4: //归档
 			  if($("searchView").super == $("JavBus")){
 				$("searchView").remove()
 			  }
-			  $("JavBus").add(searchView(180))
+        $("JavBus").add(searchView(180))
+        $("tabAll").hidden = true
 			  $("loading").text = ""
-            //   $("bgInfo").hidden = true;
-            //   $("bgImage").hidden = true;
-              $("tab").hidden = true;
-              $("tabC").hidden = true;
-              var length = LocalArcList.length;
-              $("input").text = ("")
-              $("input").placeholder = "已归档 " + length + " 部影片"
-              if (length == 0) {
-                $("initialView").hidden = true
-              } else {
-                $("initialView").hidden = false
-              }
-              $("initialView").data = []
-              $("initialView").contentOffset = $point(0, 0)
-              LocalData.archive.map(function(i) {
-                $("initialView").data = $("initialView").data.concat({
-                  code: i.code,
-                  link: homepage + i.shortCode,
-                  initialCover: {
-                    src: i.src
-                  },
-                  info: {
-                    text: i.info
-                  }
-                })
+      //   $("bgInfo").hidden = true;
+      //   $("bgImage").hidden = true;
+        $("tab").hidden = true;
+        $("tabC").hidden = true;
+        var length = LocalArcList.length;
+        $("input").text = ("")
+        $("input").placeholder = "已归档 " + length + " 部影片"
+        if (length == 0) {
+          $("initialView").hidden = true
+        } else {
+          $("initialView").hidden = false
+        }
+        $("initialView").data = []
+        $("initialView").contentOffset = $point(0, 0)
+        LocalData.archive.map(function(i) {
+          $("initialView").data = $("initialView").data.concat({
+            code: i.code,
+            link: homepage + i.shortCode,
+            initialCover: {
+              src: i.src
+            },
+            info: {
+              text: i.info
+            }
+          })
 			  })
 			  if ($("initialView").data.length == 1) {
 				$("bgInfo").hidden = true;
@@ -1570,7 +1588,7 @@ $ui.render({
 				$("bgInfo").hidden = false;
 				$("bgImage").hidden = false;
 			  }
-              break;
+        break;
 
           }
         }
@@ -1586,19 +1604,20 @@ function getInitial(mode="home", keyword="") {
   if (mode == "home") {
     url = homepage + "page/"
   } else if (mode == "search") {
-    if(page == 1) {
-      url = encodeURI(homeSearchPage + keyword+"&parent=ce/")
-    } else{
-      if(uncensored){
-        url = encodeURI(homepage + "uncensored/search/"+keyword+"/")
-      }else{
-        url = encodeURI(homeSearchPage + keyword+"/")
-      }    
-    }
+//    if(page == 1) {
+//      url = encodeURI(homeSearchPage + keyword+"&parent=ce/")
+//    } else{
+//      if(uncensored){
+//        url = encodeURI(homepage + "uncensored/search/"+keyword+"/")
+//      }else{
+//        url = encodeURI(homeSearchPage + keyword+"/")
+//      }    
+    //}
+    url = encodeURI(homeSearchPage + keyword+"/")
   }
   let cookies = {}
   if(ALL) cookies = {"cookie":"existmag=all"};
- // $console.log(page)
+  $console.log(url)
   $http.request({
     url: url + page,
     timeout: timeout,
@@ -1617,15 +1636,16 @@ function getInitial(mode="home", keyword="") {
           $ui.toast("🙈 到底了")
           return
         } else {
-          $ui.alert("💔 搜索无果,车牌无效")
+          $ui.alert("💔 搜索无果,车牌无效");
+          
           return
         }
         
       }
-      uncensored = /class="active"><a href="[\s\S]*?">/.exec(resp.data)[0].includes("uncensored")
-      if(uncensored) $("tabC").index = 1;
-      else if(homepage.includes("org")) $("tabC").index = 2;
-       else $("tabC").index = 0;
+//      uncensored = /class="active"><a href="[\s\S]*?">/.exec(resp.data)[0].includes("uncensored")
+//      if(uncensored) $("tabC").index = 1;
+//      else if(homepage.includes("org")) $("tabC").index = 2;
+//       else $("tabC").index = 0;
       var reg = /<a class="movie-box"[\s\S]*?<\/span>/g;
       var match = resp.data.match(reg)
 //      $console.log(match)
@@ -2315,15 +2335,15 @@ function main(url) {
   homeStarPage = homepage + "star/";
   let clip = $clipboard.text
   let link = $detector.link(clip)
-  if ($("tabC").index == 2 || clip.length==0 || link.length>0){
-//     $ui.action("d") 
+   
+  if ($("tabC").index == 2 || clip == null || link.length>0){
     getInitial()
   } else {
       let detect = clipboardDetect()
       getInitial(detect.mode, detect.keyword)
     }   
   // $("input").placeholder = "输入番号或演员进行搜索"
-      
+   
 }
 
 function start(){
