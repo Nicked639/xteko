@@ -293,7 +293,7 @@ return {
             $("favActress").borderColor = $color("#f25959");
           }
         } else {
-          $ui.push(detailView)        
+          $ui.push(detailView(favCode))        
           getDetail(data.link)
           if ($("menu").index == 0 || $("menu").index == 1 || $("menu").index ==2) {
             if (LocalFavList.indexOf(shortCode) > -1) {
@@ -489,11 +489,12 @@ return {
 }
 }
 
-const detailView = {
+function detailView(code){
+  return {
   type: "view",
   props: {
-    title: "详情页",
-    id:"detailView",
+    title: code,
+    id: "detailView",
     //scrollEnabled: true,
     //contentSize: $size(0, 1000)
   },
@@ -935,7 +936,7 @@ const detailView = {
   layout: $layout.fill
 
 }
-
+}
 const urls = [/*{
   name: "磁力猫",
   pattern: "http://www.cilimao.me/api/search?size=10&sortDirections=desc&page=0&word="
@@ -1397,7 +1398,7 @@ function actressView(actress, cover) {
           shortCode = favLink.split("/").pop()
           favCode = data.code
           //$ui.action(data.code)
-          $ui.push(detailView)
+          $ui.push(detailView(favCode))
           getDetail(data.link)
 
           if ($("menu").index == 0 || $("menu").index == 1 ) {
