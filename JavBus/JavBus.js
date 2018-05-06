@@ -14,9 +14,14 @@
 
 3. 支持分类选择浏览
 
-4. 支持磁链搜索优化显示
+4. 支持 Avgle 联动
 
-5. 支持 Avgle 联动
+5. 支持收藏与归档影片
+
+6. 支持磁链搜索优化显示
+
+7. 支持番号图像与视频预览
+
 
 
  By Nicked
@@ -25,9 +30,10 @@
 
 */
 
-version = 2.0
+version = 3.0
 ALL = true;
-Again = 0;
+Again = 0; // 搜索有码无码
+Oumei = 0; // 搜索有码无码
 catUrl = "https://www.javbus.com/genre";
 Titles = ["主題", "角色", "服裝", "體型", "行為", "玩法", "類別"];
 Utitles = ["主題", "角色", "服裝", "體型", "行為", "玩法", "其他", "場景"];
@@ -112,7 +118,7 @@ function searchView(height, catname) {
         returned: function(sender) {
           Again = 0
           let index = $("tabC").index
-          if (index == 2) homepage = "https://www.javbus.org/";
+          if (index == 2) {homepage = "https://www.javbus.org/"; Oumei = 1;}
           else if (index == 0) homepage = "https://www.javbus.com/";
           else hompage = "https://www.javbus.com/uncensored/"
           homeSearchPage = homepage + "search/"
@@ -436,15 +442,16 @@ function searchView(height, catname) {
         changed(sender) {
           Again = 0
           $("input").placeholder = "载入中, 请稍候..."
-          //        $ui.action("f")       
           $("initialView").data = [];
           $("initialView").contentOffset = $point(0, 0);
           $("loading").text = "Loading..."
-          //        mode = "home";
-          //        keyword = "";
+          mode = "home";
+          keyword = "";
+          $("input").text = ""
           page = 0;
           if (sender.index == 2) {
             // 欧美
+            Oumei = 1
             $("input").text = ""
             uncensored = false
             homepage = "https://www.javbus.org/";
@@ -459,7 +466,7 @@ function searchView(height, catname) {
             $("menu").index = 0;
             $("tabC").index = 2;
 //            $("input").text = keyword
-            mode = "home"
+//            mode = "home"
             getInitial()
             return
           }
@@ -850,7 +857,7 @@ function detailView(code) {
                   getMagnet(favCode)
                   $("javbusList").data = javMagData
                   if (javMagData.length == 0) {
-                    $("loadingm").text = "JavBus 暂无磁链"
+                    $("loadingm").text = "☹️ JavBus 暂无磁链"
                     $("loadingm").hidden = false
                   } else $("loadingm").hidden = true;
                 } else if (idx == 1) {
@@ -899,7 +906,7 @@ function detailView(code) {
           id: "check",
           bgcolor: $color("#ededed"),
           radius: 0,
-          title: "截图",
+          title: "预览",
           font: $font("bold", 16),
           titleColor: $color("black"),
           alpha: 0.9,
@@ -913,22 +920,24 @@ function detailView(code) {
         },
         events: {
           tapped(sender) {
-            if (screenData == "no") {
-              $ui.toast("☹️ 暂无截图", 1)
-              return
-            } else {
-              $ui.push(screenshotView)
-              $("screenshot").data = screenData
-              // screenData.map(function(i) {
-              //   //$ui.action(i.link)
-              //   $("screenshot").data = $("screenshot").data.concat({
-              //     screenshotCover: {
-              //       src: i.link
-              //     },
-              //     link: i.link
-              //   })
-              // })
-            }
+            $app.tips("预览视频来自 Avgle，请将 Avgle.com 加入代理")
+            $ui.menu({
+              items: ["样品图像","八秒视频"],
+              handler: function(title, idx) {
+                if (idx == 0){
+                  if (screenData == "no") {
+                    $ui.toast("☹️ 暂无图像", 1)
+                    return
+                  } else {
+                    $ui.push(screenshotView)
+                    $("screenshot").data = screenData
+                  }
+                }else if(idx == 1){                 
+                  getAvglePreview(sender.info)
+                }
+              }
+            })
+
 
           }
 
@@ -1215,7 +1224,7 @@ function magnetList(code) {
           didSelect: function(sender, indexPath, data) {
             let magnet = sender.data[indexPath.row].info
             $clipboard.text = magnet
-            $ui.toast("磁链已复制");
+            $ui.toast("💡 磁链已复制");
 
           },
           pulled(sender) {
@@ -1307,7 +1316,7 @@ function magnetList(code) {
           didSelect: function(sender, indexPath, data) {
             let magnet = sender.data[indexPath.row].info
             $clipboard.text = magnet
-            $ui.toast("磁链已复制");
+            $ui.toast("💡 磁链已复制");
 
           },
           pulled(sender) {
@@ -1332,7 +1341,7 @@ function magnetList(code) {
   }
 }
 
-let sh = $device.info.screen.width / 16 * 9 - 30
+let sh = $device.info.screen.width / 9 * 16 - 70
 
 const screenshotView = {
 
@@ -1344,8 +1353,8 @@ const screenshotView = {
     type: "matrix",
     props: {
       id: "screenshot",
-      itemHeight: sh,
-      columns: 3,
+      itemHeight: 120,
+      columns: 2,
       spacing: 1,
       square: false,
       bgcolor: $color("clear"),
@@ -1363,11 +1372,14 @@ const screenshotView = {
     layout: $layout.fill,
     events: {
       didSelect(sender, indexPath, data) {
-        //$ui.action(data.actressName.text)
-        url = data.link
-        //        $clipboard.text = url
+        var v = $("screenshot").cell(indexPath).views[0].views[0]
+        let imageUrls=[]
+        for(let i=0;i<screenData.length;i++){
+          imageUrls.push(sender.data[i].link)
+        }
         $quicklook.open({
-          url: url
+//          list:imageUrls
+          image: v.image
         })
       }
     }
@@ -1861,7 +1873,6 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
     timeout: timeout,
     header: cookies,
     handler: function(resp) {
-      $ui.loading(false);
       if (resp.data.indexOf("404 Page Not Found") > -1) {
         $ui.toast("🙈 到底了")
         return
@@ -1873,6 +1884,7 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
           if (Again == 1) {
             $ui.alert("💔 搜索无果,车牌无效")
             $("loading").text = ""
+            $ui.loading(false);
             return
           } else if (mode == "search") {
             if (uncensored) {
@@ -1882,14 +1894,17 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
               $("tabC").index = 0
 
             } else {
-              homepage = "https://www.javbus.com/uncensored/"
+              homepage = "https://www.javbus.com/uncensored/";
               homeSearchPage = homepage + "search/";
-              uncensored = true
-              $("tabC").index = 1
+              uncensored = true;
+              $("tabC").index = 1;
             }
-            Again = 1
-            page = 0
-            getInitial(mode, $("input").text)
+            if(Oumei == 1) Again = 0;
+            else Again = 1;
+            Oumei = 0;
+            page = 0;
+            getInitial(mode, $("input").text);
+            return
           }
         }
 
@@ -1897,9 +1912,10 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
       if (!resp.response) {
         $ui.alert("❌ 网络错误或无法访问")
         $("loading").text = ""
+        $ui.loading(false);
         return
-
       }
+      $ui.loading(false);
       //      uncensored = /class="active"><a href="[\s\S]*?">/.exec(resp.data)[0].includes("uncensored")
       //      if(uncensored) $("tabC").index = 1;
       //      else if(homepage.includes("org")) $("tabC").index = 2;
@@ -2052,13 +2068,79 @@ async function getJavMag(link) {
     })
   })
   if (javMagData.length == 0) {
-    $("loadingm").text = "JavBus 暂无磁链"
+    $("loadingm").text = "☹️ JavBus 暂无磁链"
     $("loadingm").hidden = false
   } else $("loadingm").hidden = true;
   $("javbusList").data = javMagData
   $("javbusList").hidden = false
   $("javbusList").endRefreshing();
 }
+
+function getAvglePreview(keyword) {
+  let url = "https://api.avgle.com/v1/search/" + encodeURI(keyword) + "/0?limit=10&t=a&o=bw"
+  $http.request({
+    url: url,
+    handler: function(resp) {
+      var success = resp.data.success;
+      if (!success || !resp.response) {
+        $ui.alert("❌ 网络连接出错！");
+        return
+      }
+      let video_num = resp.data.response.total_videos
+//      $console.log(video_num)
+      if (video_num == 0) {
+        $ui.alert("❌ 暂无视频资源！");
+        $ui.loading(false);
+        return
+      }
+      let infos = resp.data.response.videos;
+      let videoUrl = infos[0].preview_video_url
+      $("detailView").add({
+        type: "video",
+        props: {
+          id: "player",
+          src: videoUrl,
+          //poster: poster,
+        },
+        layout: function(make, view) {
+          let width = $device.info.screen.width - 20;
+          let height = width * 67 / 100
+          make.left.inset(10)
+          make.top.equalTo($("filmName").bottom).offset(5)
+          make.size.equalTo($size(width, height))
+        }
+      });
+      $("detailView").add({
+        type:"button",
+        props: {
+          title:"X",
+          id:"X",
+          bgcolor:$color("clear")
+        },
+        layout:function(make,view){
+          make.top.equalTo($("filmName").bottom).offset(6)
+          make.right.inset(11)
+          make.width.equalTo(20)
+          make.height.equalTo(20)
+        },
+        events:{
+          tapped(sender){
+            if ($("player")) {
+              $("player").pause()
+              $("player").stopLoading();
+              $("player").remove()
+            };
+            $("X").hidden = true
+          }
+        }
+      })
+      $delay(0.5, function() {
+        $("player").play()
+      })
+    }
+  })
+}
+
 
 function getDetail(url) {
   $http.request({
@@ -2070,7 +2152,7 @@ function getDetail(url) {
         return
       }
       javbusLink = url
-      //演员头像
+      // 演员头像
       var actressReg = /<a class="avatar-box"[\s\S]*?<\/a>/g;
       var match = resp.data.match(actressReg)
       if (match) {
@@ -2134,6 +2216,7 @@ function getDetail(url) {
       }
       $("filmInfo").text = filmTime + "  " + filmLast;
       var code = /<span class="header">識別碼:[\s\S]*?">([\s\S]*?)<\/span>/.exec(resp.data)[1];
+      $("check").info = code
       $("aboutFilm").hidden = false;
       $("share").info = code;
       $("filmEstabName").text = filmEstabName;
@@ -2150,24 +2233,26 @@ function getDetail(url) {
       if (match) {
         match.map(function(i) {
           var screenshot = /<a class="sample-box" href="(.*?)"[\s\S]*?<img src="(.*?)">/g.exec(i)[1];
+//         var resp = await $http.get(screenshot);
           var screenshotCover = /<a class="sample-box" href="(.*?)"[\s\S]*?<img src="(.*?)"\s/g.exec(i)[2];
           screenData.push({
             screenshotCover: {
-              src: screenshot
+//              data: resp.data
+               src:screenshot
             },
             link: screenshot
           })
 
         })
-        // $ui.action(screenData)
       } else {
         screenData = "no"
       }
       $("share").hidden = false
-      getJavMag(url)
       $("loading1").hidden = true
+      // 磁链获取
+      getJavMag(url)
       if (javMagData.length == 0) {
-        $("loadingm").text = "JavBus 暂无磁链"
+        $("loadingm").text = "☹️ JavBus 暂无磁链"
         $("loadingm").hidden = false
       } else $("loadingm").hidden = true;
     }
