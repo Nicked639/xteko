@@ -1,6 +1,6 @@
 /*
 
- 简介：
+简介：
 
 你口袋中的 AV 辞典
 
@@ -8,24 +8,29 @@
 
 特色：
 
+
 1. 支持无码片源检索
 
 2. 支持演员类目浏览
 
 3. 支持分类选择浏览
 
-4. 支持磁链搜索优化显示
+4. 支持 Avgle 联动
 
-5. 支持 Avgle 联动
+5. 支持收藏与归档影片
+
+6. 支持图像与视频预览
+
+7. 支持磁链搜索优化显示
 
 
- By Nicked
+By Nicked
 
- https://t.me/nicked
+https://t.me/nicked
 
 */
 
-version = 2.0
+version = 3.0
 ALL = true;
 Again = 0; // 搜索有码无码
 Oumei = 0; // 搜索有码无码
@@ -312,10 +317,9 @@ function searchView(height, catname) {
         index: ALL ? 0 : 1
       },
       layout: function(make) {
-        make.right.inset(10)
-        make.top.inset(8.5)
+        make.centerX.equalTo()
+        make.bottom.inset(20)
         make.height.equalTo(22)
-        make.width.equalTo(70)
       },
       events: {
         changed(sender) {
@@ -349,13 +353,14 @@ function searchView(height, catname) {
       },
       events: {
         changed(sender) {
+          if ($("searchView").super == $("JavBus")) {
+            $("searchView").remove()
+          }
           if (sender.index == 0) {
-            if ($("searchView").super == $("JavBus")) {
-              $("searchView").remove()
-            }
             $("JavBus").add(searchView(180))
             $("tab").hidden = false;
             $("tabC").hidden = true;
+            $("tabAll").hidden = true;
             $("loading").text = ""
             $("tab").index = 0;
             $("initialView").data = [];
@@ -382,12 +387,10 @@ function searchView(height, catname) {
             })
 
           } else if (sender.index == 1) {
-            if ($("searchView").super == $("JavBus")) {
-              $("searchView").remove()
-            }
             $("JavBus").add(searchView(120))
             $("tab").hidden = false;
             $("tabC").hidden = true;
+            $("tabAll").hidden = true;
             $("loading").text = ""
             $("tab").index = 1;
             $("initialView").data = [];
@@ -427,11 +430,10 @@ function searchView(height, catname) {
         alpha: 0.8
       },
       layout: function(make) {
-        //      make.left.right.inset(120)
-        make.centerX.equalTo()
-        make.bottom.inset(20)
+        make.right.inset(10)
+        make.top.inset(8.5)
         make.height.equalTo(22)
-        //make.width.equalTo(40)
+        make.width.equalTo(100)
       },
       events: {
         changed(sender) {
@@ -1608,10 +1610,9 @@ function actressView(actress, cover) {
         index: ALL ? 0 : 1
       },
       layout: function(make) {
+        make.centerX.equalTo()
         make.bottom.inset(20)
         make.height.equalTo(22)
-        make.width.equalTo(70)
-        make.centerX.equalTo()
       },
       events: {
         changed(sender) {
@@ -1831,10 +1832,8 @@ function pushCat(sender) {
   $("tabAll").hidden = false
   $("tabAll").remakeLayout(function(make) {
     let height = $device.info.screen.height
-
     make.bottom.inset(20)
     make.height.equalTo(22)
-    make.width.equalTo(70)
     make.centerX.equalTo()
   })
   $("input").updateLayout(function(make) {
@@ -2723,11 +2722,9 @@ function iniCat(titles) {
         hidden: false
       },
       layout: function(make) {
-        //      make.left.right.inset(120)
         make.centerX.equalTo()
         make.bottom.inset(20)
         make.height.equalTo(22)
-        //make.width.equalTo(40)
       },
       events: {
         changed(sender) {
