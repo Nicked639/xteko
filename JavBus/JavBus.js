@@ -14,14 +14,9 @@
 
 3. 支持分类选择浏览
 
-4. 支持 Avgle 联动
+4. 支持磁链搜索优化显示
 
-5. 支持收藏与归档影片
-
-6. 支持磁链搜索优化显示
-
-7. 支持番号图像与视频预览
-
+5. 支持 Avgle 联动
 
 
  By Nicked
@@ -30,7 +25,7 @@
 
 */
 
-version = 3.0
+version = 2.0
 ALL = true;
 Again = 0; // 搜索有码无码
 Oumei = 0; // 搜索有码无码
@@ -2089,7 +2084,7 @@ function getAvglePreview(keyword) {
       let video_num = resp.data.response.total_videos
 //      $console.log(video_num)
       if (video_num == 0) {
-        $ui.alert("❌ 暂无视频资源！");
+        $ui.alert("☹️ 暂无视频资源！");
         $ui.loading(false);
         return
       }
