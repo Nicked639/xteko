@@ -1344,7 +1344,7 @@ const screenshotView = {
 
   type: "view",
   props: {
-    title: "影片截图"
+    title: "样品图像"
   },
   views: [{
     type: "matrix",
