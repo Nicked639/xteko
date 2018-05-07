@@ -549,6 +549,13 @@ function detailView(code) {
           make.left.inset(10)
           make.top.equalTo($("filmName").bottom).offset(5)
           make.size.equalTo($size(width, height))
+        },
+        events:{
+          tapped(sender){            
+            $quicklook.open({
+              image: $("filmCover").image
+            })
+          }
         }
       }, {
         type: "text",
@@ -1869,10 +1876,12 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
     handler: function(resp) {
       if (resp.data.indexOf("404 Page Not Found") > -1) {
         $ui.toast("🙈 到底了")
+        $ui.loading(false)
         return
       } else if (resp.data.indexOf("沒有您要的結果") > -1) {
         if (mode == "search" && $("initialView").data.length > 0) {
           $ui.toast("🙈 到底了")
+          $ui.loading(false)
           return
         } else {
           if (Again == 1) {
@@ -2268,8 +2277,9 @@ function getActress(url) {
         $ui.toast("❌ 网络连接错误")
         return
       }
-      if (resp.data.indexOf("404 Not Found") > -1) {
+      if (resp.data.indexOf("404 Page Not Found") > -1) {
         $ui.toast("🙈 到底了")
+        $ui.loading(false)
         return
       }
       //$ui.toast("搜索中")
