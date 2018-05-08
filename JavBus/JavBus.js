@@ -135,7 +135,7 @@ mainTemplate = {
   }]
 }
 
-function searchView(height, catname, cols = 3) {
+function searchView(height, catname, cols = 3, spa = 1) {
   return {
     type: "view",
     props: {
@@ -255,7 +255,7 @@ function searchView(height, catname, cols = 3) {
         id: "initialView",
         itemHeight: height,
         columns: cols,
-        spacing: 1,
+        spacing: spa,
         square: false,
         bgcolor: $color("clear"),
         template: mainTemplate,
@@ -449,7 +449,7 @@ function searchView(height, catname, cols = 3) {
               })
             })
           } else if (sender.index >= 2) {
-            $("JavBus").add(searchView(60, "", 2))
+            $("JavBus").add(searchView(60, "", 2,5))
             $("tab").hidden = false;
             $("tabC").hidden = true;
             $("tabAll").hidden = true;
@@ -3009,6 +3009,9 @@ function getCat(url) {
             mlabel: {
               text: name,
               info: link
+            },
+            gradient:{
+              colors:[random256(),random256()]
             }
           })
         })
@@ -3057,13 +3060,25 @@ function iniCat(titles) {
         itemHeight: 40,
         spacing: 10,
         template: [{
+    type: "gradient",
+    props: {
+      id: "gradient",
+      colors: [$rgb(0, 0, 0), $rgb(155, 155, 155),$rgb(255, 255, 255)],
+      locations: [0.0, 1.0],
+      startPoint: $point(0, 0),
+      endPoint: $point(1, 1),
+      radius: 8,
+      hidden: false
+    },
+    layout: $layout.fill
+  },{
           type: "label",
           props: {
             id: "mlabel",
             radius: 8,
-            bgcolor: $color("white"),
+            bgcolor: $color("clear"),
             alpha: 1,
-            textColor: $color("black"),
+            textColor: $color("white"),
             align: $align.center,
             font: $font("font", 10),
             autoFontSize: true,
@@ -3277,7 +3292,7 @@ function start() {
   }
 }
 
-LocalDataPath = "drive://JavBus.json";
+LocalDataPath = "drive://JavBusBackup.json";
 url = "https://www.javbus.com/"
 
 //let LAContext = $objc("LAContext").invoke("alloc.init");
