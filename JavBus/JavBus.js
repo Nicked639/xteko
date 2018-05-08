@@ -30,7 +30,7 @@ https://t.me/nicked
 
 */
 
-version = 3.0
+version = 4.0
 ALL = false;
 ALLC = false;
 Again = 0; // 搜索有码无码
