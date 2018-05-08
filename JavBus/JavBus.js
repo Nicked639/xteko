@@ -112,8 +112,8 @@ mainTemplate = {
     type: "gradient",
     props: {
       id: "gradient",
-      colors: [$rgb(0, 0, 0), $rgb(255, 255, 255)],
-      locations: [0.0, 2.0],
+      colors: [$rgb(0, 0, 0), $rgb(155, 155, 155),$rgb(255, 255, 255)],
+      locations: [0.0,0.5, 1.0],
       startPoint: $point(0, 0),
       endPoint: $point(1, 1),
       radius: 8,
@@ -302,13 +302,13 @@ function searchView(height, catname, cols = 3) {
             }
           } else if ($("tab").hidden == false && $("tab").index > 1) {
             // 导演,制作商,发行商tab
-            if ($("tab").index == 2) {
-              let sender = {
-                "text": data.name.text,
-                "info": data.link
-              }
-              pushCat(sender, "director")
+            let sender = {
+              "text": data.name.text,
+              "info": data.link
             }
+            if ($("tab").index == 2) pushCat(sender, "director");
+            else if($("tab").index == 3) pushCat(sender,"filmMaker");
+            else if($("tab").index == 4) pushCat(sender,"filmEstab");          
           } else {
             $ui.push(detailView(favCode))
             getDetail(data.link)
@@ -454,12 +454,12 @@ function searchView(height, catname, cols = 3) {
             $("tabC").hidden = true;
             $("tabAll").hidden = true;
             $("loading").text = ""
-            $("tab").index = 2;
             $("initialView").data = [];
             $("input").text = ""
             let hp = "https://www.javbus.com/"
-            if ($("tab").index == 2) {
-              // 导演tab           
+            if (sender.index == 2) {
+              // 导演tab
+              $("tab").index = 2;           
               var length = LocalDirectorList.length;
               $("input").placeholder = "已收藏 " + length + " 个导演"
               if (length == 0) {
@@ -476,7 +476,7 @@ function searchView(height, catname, cols = 3) {
                   },
                   gradient: {
                     hidden: false,
-                    colors: [random256(), random256()]
+                    colors: [random256(), random256(), random256()]
                   },
                   info: {
                     hidden: true
@@ -486,15 +486,72 @@ function searchView(height, catname, cols = 3) {
                   }
                 })
               })
-              if ($("initialView").data.length > 0) {
-                $("bgInfo").hidden = true;
-                $("bgImage").hidden = true;
-              } else {
-                $("bgInfo").hidden = false;
-                $("bgImage").hidden = false;
-              }
+            } else if(sender.index == 3){
+                // 制作商tab
+                $("tab").index = 3;
+                var length = LocalFilmMakerList.length;
+                $("input").placeholder = "已收藏 " + length + " 个制作商"
+                if (length == 0) {
+                  $("initialView").hidden = true
+                } else {
+                  $("initialView").hidden = false
+                }
+                LocalData.filmMaker.map(function(i) {
+                  $("initialView").data = $("initialView").data.concat({
+                    link: hp + "studio/" + i.shortCode,
+                    name: {
+                      text: i.name,
+                      hidden: false
+                    },
+                    gradient: {
+                      hidden: false,
+                      colors: [random256(),random256(), random256()]
+                    },
+                    info: {
+                      hidden: true
+                    },
+                    initialCover: {
+                      hidden: true
+                    }
+                  })
+                })
+            } else if(sender.index == 4){
+                // 发行商tab
+                $("tab").index = 4;
+                var length = LocalFilmEstabList.length;
+                $("input").placeholder = "已收藏 " + length + " 个发行商"
+                if (length == 0) {
+                  $("initialView").hidden = true
+                } else {
+                  $("initialView").hidden = false
+                }
+                LocalData.filmEstab.map(function(i) {
+                  $("initialView").data = $("initialView").data.concat({
+                    link: hp + "label/" + i.shortCode,
+                    name: {
+                      text: i.name,
+                      hidden: false
+                    },
+                    gradient: {
+                      hidden: false,
+                      colors: [random256(),random256(), random256()]
+                    },
+                    info: {
+                      hidden: true
+                    },
+                    initialCover: {
+                      hidden: true
+                    }
+                  })
+                })
             }
-
+            if ($("initialView").data.length > 0) {
+              $("bgInfo").hidden = true;
+              $("bgImage").hidden = true;
+            } else {
+              $("bgInfo").hidden = false;
+              $("bgImage").hidden = false;
+            }
           }
         }
       }
