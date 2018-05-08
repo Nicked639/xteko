@@ -30,7 +30,7 @@ https://t.me/nicked
 
 */
 
-version = 4.0
+version = 4.1
 ALL = false;
 ALLC = false;
 Again = 0; // 搜索有码无码
@@ -112,8 +112,8 @@ mainTemplate = {
     type: "gradient",
     props: {
       id: "gradient",
-      colors: [$rgb(0, 0, 0), $rgb(155, 155, 155),$rgb(255, 255, 255)],
-      locations: [0.0,0.5, 1.0],
+      colors: [$rgb(0, 0, 0), $rgb(155, 155, 155), $rgb(255, 255, 255)],
+      locations: [0.0, 0.5, 1.0],
       startPoint: $point(0, 0),
       endPoint: $point(1, 1),
       radius: 8,
@@ -267,7 +267,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
       events: {
         didReachBottom(sender) {
           sender.endFetchingMore();
-          if ($("menu").index == 0 || $("menu").index == 2) {
+          if ($("menu").index == 0 || $("menu").index == 2 || ("menu").index == 3) {
             $ui.loading(true)
             getInitial(mode, keyword);
           } else if ($("menu").index == 1) {
@@ -307,8 +307,8 @@ function searchView(height, catname, cols = 3, spa = 1) {
               "info": data.link
             }
             if ($("tab").index == 2) pushCat(sender, "director");
-            else if($("tab").index == 3) pushCat(sender,"filmMaker");
-            else if($("tab").index == 4) pushCat(sender,"filmEstab");          
+            else if ($("tab").index == 3) pushCat(sender, "filmMaker");
+            else if ($("tab").index == 4) pushCat(sender, "filmEstab");
           } else {
             $ui.push(detailView(favCode))
             getDetail(data.link)
@@ -449,7 +449,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
               })
             })
           } else if (sender.index >= 2) {
-            $("JavBus").add(searchView(60, "", 2,5))
+            $("JavBus").add(searchView(60, "", 2, 5))
             $("tab").hidden = false;
             $("tabC").hidden = true;
             $("tabAll").hidden = true;
@@ -459,7 +459,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
             let hp = "https://www.javbus.com/"
             if (sender.index == 2) {
               // 导演tab
-              $("tab").index = 2;           
+              $("tab").index = 2;
               var length = LocalDirectorList.length;
               $("input").placeholder = "已收藏 " + length + " 个导演"
               if (length == 0) {
@@ -486,64 +486,64 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   }
                 })
               })
-            } else if(sender.index == 3){
-                // 制作商tab
-                $("tab").index = 3;
-                var length = LocalFilmMakerList.length;
-                $("input").placeholder = "已收藏 " + length + " 个制作商"
-                if (length == 0) {
-                  $("initialView").hidden = true
-                } else {
-                  $("initialView").hidden = false
-                }
-                LocalData.filmMaker.map(function(i) {
-                  $("initialView").data = $("initialView").data.concat({
-                    link: hp + "studio/" + i.shortCode,
-                    name: {
-                      text: i.name,
-                      hidden: false
-                    },
-                    gradient: {
-                      hidden: false,
-                      colors: [random256(),random256(), random256()]
-                    },
-                    info: {
-                      hidden: true
-                    },
-                    initialCover: {
-                      hidden: true
-                    }
-                  })
+            } else if (sender.index == 3) {
+              // 制作商tab
+              $("tab").index = 3;
+              var length = LocalFilmMakerList.length;
+              $("input").placeholder = "已收藏 " + length + " 个制作商"
+              if (length == 0) {
+                $("initialView").hidden = true
+              } else {
+                $("initialView").hidden = false
+              }
+              LocalData.filmMaker.map(function(i) {
+                $("initialView").data = $("initialView").data.concat({
+                  link: hp + "studio/" + i.shortCode,
+                  name: {
+                    text: i.name,
+                    hidden: false
+                  },
+                  gradient: {
+                    hidden: false,
+                    colors: [random256(), random256(), random256()]
+                  },
+                  info: {
+                    hidden: true
+                  },
+                  initialCover: {
+                    hidden: true
+                  }
                 })
-            } else if(sender.index == 4){
-                // 发行商tab
-                $("tab").index = 4;
-                var length = LocalFilmEstabList.length;
-                $("input").placeholder = "已收藏 " + length + " 个发行商"
-                if (length == 0) {
-                  $("initialView").hidden = true
-                } else {
-                  $("initialView").hidden = false
-                }
-                LocalData.filmEstab.map(function(i) {
-                  $("initialView").data = $("initialView").data.concat({
-                    link: hp + "label/" + i.shortCode,
-                    name: {
-                      text: i.name,
-                      hidden: false
-                    },
-                    gradient: {
-                      hidden: false,
-                      colors: [random256(),random256(), random256()]
-                    },
-                    info: {
-                      hidden: true
-                    },
-                    initialCover: {
-                      hidden: true
-                    }
-                  })
+              })
+            } else if (sender.index == 4) {
+              // 发行商tab
+              $("tab").index = 4;
+              var length = LocalFilmEstabList.length;
+              $("input").placeholder = "已收藏 " + length + " 个发行商"
+              if (length == 0) {
+                $("initialView").hidden = true
+              } else {
+                $("initialView").hidden = false
+              }
+              LocalData.filmEstab.map(function(i) {
+                $("initialView").data = $("initialView").data.concat({
+                  link: hp + "label/" + i.shortCode,
+                  name: {
+                    text: i.name,
+                    hidden: false
+                  },
+                  gradient: {
+                    hidden: false,
+                    colors: [random256(), random256(), random256()]
+                  },
+                  info: {
+                    hidden: true
+                  },
+                  initialCover: {
+                    hidden: true
+                  }
                 })
+              })
             }
             if ($("initialView").data.length > 0) {
               $("bgInfo").hidden = true;
@@ -1685,7 +1685,7 @@ function actressView(actress, cover) {
         make.top.equalTo($("actressInfo").bottom).offset(-15)
       },
       events: {
-        didReachBottom(sender, data) {
+        didReachBottom(sender) {
           $ui.loading(true)
           sender.endFetchingMore();
           getActress(url);
@@ -2029,7 +2029,7 @@ function catCover(title) {
       events: {
         didReachBottom(sender) {
           sender.endFetchingMore();
-          if ($("menu").index == 0 || $("menu").index == 2) {
+          if ($("menu").index == 0 || $("menu").index == 2 || $("tab").index > 1) {
             $ui.loading(true)
             getInitial(mode, keyword);
           } else if ($("menu").index == 1) {
@@ -2438,6 +2438,11 @@ function getAvglePreview(keyword) {
   $http.request({
     url: url,
     handler: function(resp) {
+      if ($("player")) {
+        $("player").pause()
+        $("player").stopLoading();
+        $("player").remove()
+      };
       var success = resp.data.success;
       if (!success || !resp.response) {
         $ui.alert("❌ 网络连接出错！");
@@ -3010,8 +3015,8 @@ function getCat(url) {
               text: name,
               info: link
             },
-            gradient:{
-              colors:[random256(),random256()]
+            gradient: {
+              colors: [random256(), random256()]
             }
           })
         })
@@ -3060,18 +3065,18 @@ function iniCat(titles) {
         itemHeight: 40,
         spacing: 10,
         template: [{
-    type: "gradient",
-    props: {
-      id: "gradient",
-      colors: [$rgb(0, 0, 0), $rgb(155, 155, 155),$rgb(255, 255, 255)],
-      locations: [0.0, 1.0],
-      startPoint: $point(0, 0),
-      endPoint: $point(1, 1),
-      radius: 8,
-      hidden: false
-    },
-    layout: $layout.fill
-  },{
+          type: "gradient",
+          props: {
+            id: "gradient",
+            colors: [$rgb(0, 0, 0), $rgb(155, 155, 155), $rgb(255, 255, 255)],
+            locations: [0.0, 1.0],
+            startPoint: $point(0, 0),
+            endPoint: $point(1, 1),
+            radius: 8,
+            hidden: false
+          },
+          layout: $layout.fill
+        }, {
           type: "label",
           props: {
             id: "mlabel",
