@@ -23,6 +23,8 @@
 
 7. 支持磁链搜索优化显示
 
+8. 支持剪贴板与分享扩展检测
+
 
 By Nicked
 
@@ -30,17 +32,36 @@ https://t.me/nicked
 
 */
 
-version = 4.1
-ALL = false;
-ALLC = false;
-Again = 0; // 搜索有码无码
-Oumei = 0; // 搜索有码无码
+version = 4.2
+ALL = false; // 全部与收录
+ALLC = false;// 详细类目下的
+Again = 0; // 用于二次搜索
+Oumei = 0; // 欧美状态
 catUrl = "https://www.javbus.com/genre";
 Titles = ["主題", "角色", "服裝", "體型", "行為", "玩法", "類別"];
 Utitles = ["主題", "角色", "服裝", "體型", "行為", "玩法", "其他", "場景"];
 Category = [];
-Menustatus = 0;
-Trans = 0;
+Menustatus = 0;// 分类选中状态
+Trans = 0;// 翻译状态
+uncensored = false;// 无码状态
+timeout = 5;
+var colorData = [
+  [$color("#fd354a"), $color("#da0a6f")],
+  [$color("#f97227"), $color("#f52156")],
+  [$color("#edb319"), $color("#e47b18")],
+  [$color("#eecb01"), $color("#e8a400")],
+  [$color("#7ace1e"), $color("#5aba23")],
+  [$color("#25c578"), $color("#3ab523")],
+  [$color("#24d59a"), $color("#24bb9d")],
+  [$color("#00c0c8"), $color("#00a0ca")],
+  [$color("#12b7de"), $color("#2193e6")],
+  [$color("#2f74e0"), $color("#5d44e0")],
+  [$color("#825af6"), $color("#6251f5")],
+  [$color("#cc3ec8"), $color("#9f0cdd")],
+  [$color("#f66295"), $color("#cf30a0")],
+  [$color("#728199"), $color("#54617e")],
+  [$color("#1f436a"), $color("#003268")]
+]
 const nickIcon = "data:image/jpeg;base64,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QTFGRjdDMUM0XzE1MTQ3MTcxNDg3MzAiLCJlbnRyeV9wb2ludCI6ImNyZWF0ZV9mbG93X2Z0ZSIsInBob3Rvc19hZGRlZCI6MCwidG90YWxfZWZmZWN0c190aW1lIjowLCJ0b29sc191c2VkIjp7InRpbHRfc2hpZnQiOjAsInJlc2l6ZSI6MiwiYWRqdXN0IjowLCJjdXJ2ZXMiOjAsIm1vdGlvbiI6MCwicGVyc3BlY3RpdmUiOjAsImNsb25lIjowLCJjcm9wIjowLCJlbmhhbmNlIjowLCJzZWxlY3Rpb24iOjAsImZyZWVfY3JvcCI6MCwiZmxpcF9yb3RhdGUiOjAsInNoYXBlX2Nyb3AiOjAsInN0cmV0Y2giOjB9LCJ3aWR0aCI6MTAwLCJzb3VyY2UiOiJzaGFyZV9hY3Rpb25fc2hlZXQiLCJvcmlnaW4iOiJnYWxsZXJ5IiwiaGVpZ2h0IjoxMDAsInN1YnNvdXJjZSI6ImRvbmVfYnV0dG9uIiwidG90YWxfZWRpdG9yX3RpbWUiOjYxLCJicnVzaGVzX3VzZWQiOjB9AAAAAGcAAAAZAAAAZwAAABkAAAALAAAABQAAAAsAAAAFQXBwbGUAaVBob25lIDVzIGJhY2sgY2FtZXJhIDQuMTJtbSBmLzIuMgAA/+ENymh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8APD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bXA6Q3JlYXRlRGF0ZT0iMjAxNC0wMS0xM1QxNzo1MjowMCIgeG1wOk1vZGlmeURhdGU9IjIwMTQtMDEtMTNUMTc6NTI6MDAiIHhtcDpDcmVhdG9yVG9vbD0iUGljc0FydCIgcGhvdG9zaG9wOkRhdGVDcmVhdGVkPSIyMDE0LTAxLTEzVDE3OjUyOjAwIj4gPGRjOmRlc2NyaXB0aW9uPiA8cmRmOkFsdD4gPHJkZjpsaSB4bWw6bGFuZz0ieC1kZWZhdWx0Ij57InRvdGFsX2VmZmVjdHNfYWN0aW9ucyI6MCwidG90YWxfZHJhd190aW1lIjowLCJsYXllcnNfdXNlZCI6MCwiZWZmZWN0c190cmllZCI6MCwidG90YWxfZHJhd19hY3Rpb25zIjowLCJ0b3RhbF9lZGl0b3JfYWN0aW9ucyI6eyJib3JkZXIiOjAsImZyYW1lIjowLCJtYXNrIjowLCJsZW5zZmxhcmUiOjAsImNsaXBhcnQiOjAsInRleHQiOjAsInNxdWFyZV9maXQiOjAsInNoYXBlX21hc2siOjAsImNhbGxvdXQiOjB9LCJlZmZlY3RzX2FwcGxpZWQiOjAsInVpZCI6IjM2REEyRDBCLTM1NTUtNDY3QS1BNjUwLTRCOUExRkY3QzFDNF8xNTE0NzE3MTQ4NzMwIiwiZW50cnlfcG9pbnQiOiJjcmVhdGVfZmxvd19mdGUiLCJwaG90b3NfYWRkZWQiOjAsInRvdGFsX2VmZmVjdHNfdGltZSI6MCwidG9vbHNfdXNlZCI6eyJ0aWx0X3NoaWZ0IjowLCJyZXNpemUiOjIsImFkanVzdCI6MCwiY3VydmVzIjowLCJtb3Rpb24iOjAsInBlcnNwZWN0aXZlIjowLCJjbG9uZSI6MCwiY3JvcCI6MCwiZW5oYW5jZSI6MCwic2VsZWN0aW9uIjowLCJmcmVlX2Nyb3AiOjAsImZsaXBfcm90YXRlIjowLCJzaGFwZV9jcm9wIjowLCJzdHJldGNoIjowfSwid2lkdGgiOjEwMCwic291cmNlIjoic2hhcmVfYWN0aW9uX3NoZWV0Iiwib3JpZ2luIjoiZ2FsbGVyeSIsImhlaWdodCI6MTAwLCJzdWJzb3VyY2UiOiJkb25lX2J1dHRvbiIsInRvdGFsX2VkaXRvcl90aW1lIjo2MSwiYnJ1c2hlc191c2VkIjowfTwvcmRmOmxpPiA8L3JkZjpBbHQ+IDwvZGM6ZGVzY3JpcHRpb24+IDxkYzpjcmVhdG9yPiA8cmRmOlNlcT4gPHJkZjpsaT5uaWNrdGltZWJyZWFrPC9yZGY6bGk+IDwvcmRmOlNlcT4gPC9kYzpjcmVhdG9yPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8P3hwYWNrZXQgZW5kPSJ3Ij8+AP/tADhQaG90b3Nob3AgMy4wADhCSU0EBAAAAAAAADhCSU0EJQAAAAAAENQdjNmPALIE6YAJmOz4Qn7/wAARCABkAGQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmq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"
 
 //$cache.clear()
@@ -112,8 +133,8 @@ mainTemplate = {
     type: "gradient",
     props: {
       id: "gradient",
-      colors: [$rgb(0, 0, 0), $rgb(155, 155, 155), $rgb(255, 255, 255)],
-      locations: [0.0, 0.5, 1.0],
+      colors: colorData[randomColor(0,11)],
+      locations: [0.0, 1.0],
       startPoint: $point(0, 0),
       endPoint: $point(1, 1),
       radius: 8,
@@ -461,7 +482,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
               // 导演tab
               $("tab").index = 2;
               var length = LocalDirectorList.length;
-              $("input").placeholder = "已收藏 " + length + " 个导演"
+              $("input").placeholder = "已收藏 " + length + " 位导演"
               if (length == 0) {
                 $("initialView").hidden = true
               } else {
@@ -476,7 +497,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   },
                   gradient: {
                     hidden: false,
-                    colors: [random256(), random256(), random256()]
+                    colors: colorData[randomColor(0,11)]
                   },
                   info: {
                     hidden: true
@@ -505,7 +526,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   },
                   gradient: {
                     hidden: false,
-                    colors: [random256(), random256(), random256()]
+                    colors: colorData[randomColor(0,11)]
                   },
                   info: {
                     hidden: true
@@ -534,7 +555,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   },
                   gradient: {
                     hidden: false,
-                    colors: [random256(), random256(), random256()]
+                    colors: colorData[randomColor(0,11)]
                   },
                   info: {
                     hidden: true
@@ -3016,7 +3037,7 @@ function getCat(url) {
               info: link
             },
             gradient: {
-              colors: [random256(), random256()]
+              colors: colorData[randomColor(0,11)]
             }
           })
         })
@@ -3068,7 +3089,7 @@ function iniCat(titles) {
           type: "gradient",
           props: {
             id: "gradient",
-            colors: [$rgb(0, 0, 0), $rgb(155, 155, 155), $rgb(255, 255, 255)],
+            colors: colorData[randomColor(0,11)],
             locations: [0.0, 1.0],
             startPoint: $point(0, 0),
             endPoint: $point(1, 1),
@@ -3216,25 +3237,23 @@ function initial() {
 
   mode = "home";
   keyword = "";
-  uncensored = false;
-  timeout = 5;
+
   scriptVersionUpdate();
   $("JavBus").add(searchView(180));
-
 }
 
 //剪贴板检测
-function clipboardDetect() {
-  var str = $clipboard.text
-  var reg1 = /[sS][nN][iI][sS][\s\-]?\d{3}|[aA][bB][pP][\s\-]?\d{3}|[iI][pP][zZ][\s\-]?\d{3}|[sS][wW][\s\-]?\d{3}|[jJ][uU][xX][\s\-]?\d{3}|[mM][iI][aA][dD][\s\-]?\d{3}|[mM][iI][dD][eE][\s\-]?\d{3}|[mM][iI][dD][dD][\s\-]?\d{3}|[pP][gG][dD][\s\-]?\d{3}|[sS][tT][aA][rR][\s\-]?\d{3}|[eE][bB][oO][dD][\s\-]?\d{3}|[iI][pP][tT][dD][\s\-]?\d{3}/g;
-  var reg2 = /[a-zA-Z]{3,5}[\s\-]?\d{3,4}/g;
-  var match = str.match(reg1);
+function clipboardDetect(clip) {
+  let str = clip
+  let reg1 = /[sS][nN][iI][sS][\s\-]?\d{3}|[aA][bB][pP][\s\-]?\d{3}|[iI][pP][zZ][\s\-]?\d{3}|[sS][wW][\s\-]?\d{3}|[jJ][uU][xX][\s\-]?\d{3}|[mM][iI][aA][dD][\s\-]?\d{3}|[mM][iI][dD][eE][\s\-]?\d{3}|[mM][iI][dD][dD][\s\-]?\d{3}|[pP][gG][dD][\s\-]?\d{3}|[sS][tT][aA][rR][\s\-]?\d{3}|[eE][bB][oO][dD][\s\-]?\d{3}|[iI][pP][tT][dD][\s\-]?\d{3}/g;
+  let reg2 = /[a-zA-Z]{3,5}[\s\-]?\d{3,4}/g;
+  let match = str.match(reg1);
   if (match) {
     mode = "search";
     keyword = match[0].replace(/\s+/g, "");
     $("input").text = keyword
   } else {
-    var match = str.match(reg2);
+    let match = str.match(reg2);
     if (match) {
       mode = "search";
       keyword = match[0].replace(/\s+/g, "");
@@ -3251,8 +3270,20 @@ function clipboardDetect() {
   }
 }
 
-function random256() {
-  return $rgb(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256))
+function random256(begin,end) {
+//  return $rgb(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256))
+return $rgb(randomColor(begin,end),randomColor(begin,end),randomColor(begin,end))
+}
+
+function randomColor(begin,end){
+  return Math.floor(Math.random()*(end-begin))+begin;
+}
+
+function randomColor(Min,Max){
+  var Range = Max - Min;
+  var Rand = Math.random();
+  var num = Min + Math.round(Rand * Range);
+  return num;
 }
 
 function jsDetect() {
@@ -3276,15 +3307,20 @@ function main(url) {
   //  homeStarPage = homepage + "star/";
   let clip = $clipboard.text
   let link = $detector.link(clip)
-
-  if ($("tabC").index == 2 || clip == null || link.length > 0) {
+  let detect = {
+    "mode":"home",
+    "keyword":""
+  }
+  if (!$context.textItems && ($("tabC").index == 2 || clip == null || link.length > 0)) {
     getInitial()
   } else {
-    let detect = clipboardDetect()
+    if($context.textItems){
+      detect = clipboardDetect($context.textItems[0])
+    }else{
+      detect = clipboardDetect(clip)
+    }
     getInitial(detect.mode, detect.keyword)
   }
-  // $("input").placeholder = "输入番号或演员进行搜索"
-
 }
 
 function start() {
