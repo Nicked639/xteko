@@ -32,18 +32,18 @@ https://t.me/nicked
 
 */
 
-version = 4.2
+version = 4.3
 ALL = false; // 全部与收录
-ALLC = false;// 详细类目下的
+ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
 Oumei = 0; // 欧美状态
 catUrl = "https://www.javbus.com/genre";
 Titles = ["主題", "角色", "服裝", "體型", "行為", "玩法", "類別"];
 Utitles = ["主題", "角色", "服裝", "體型", "行為", "玩法", "其他", "場景"];
 Category = [];
-Menustatus = 0;// 分类选中状态
-Trans = 0;// 翻译状态
-uncensored = false;// 无码状态
+Menustatus = 0; // 分类选中状态
+Trans = 0; // 翻译状态
+uncensored = false; // 无码状态
 timeout = 5;
 var colorData = [
   [$color("#fd354a"), $color("#da0a6f")],
@@ -133,7 +133,7 @@ mainTemplate = {
     type: "gradient",
     props: {
       id: "gradient",
-      colors: colorData[randomColor(0,11)],
+      colors: colorData[randomColor(0, 11)],
       locations: [0.0, 1.0],
       startPoint: $point(0, 0),
       endPoint: $point(1, 1),
@@ -497,7 +497,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   },
                   gradient: {
                     hidden: false,
-                    colors: colorData[randomColor(0,11)]
+                    colors: colorData[randomColor(0, 11)]
                   },
                   info: {
                     hidden: true
@@ -526,7 +526,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   },
                   gradient: {
                     hidden: false,
-                    colors: colorData[randomColor(0,11)]
+                    colors: colorData[randomColor(0, 11)]
                   },
                   info: {
                     hidden: true
@@ -555,7 +555,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   },
                   gradient: {
                     hidden: false,
-                    colors: colorData[randomColor(0,11)]
+                    colors: colorData[randomColor(0, 11)]
                   },
                   info: {
                     hidden: true
@@ -2145,8 +2145,9 @@ function catCover(title) {
           if (sender.index == 0) ALLC = true;
           else ALLC = false;
           page = 0;
+//          $ui.action("d")
           $("initialViewCat").data = [];
-          $("loading").text = "Loading...";
+          $("loadingc").text = "Loading...";
           //$ui.action(keyword)
           getInitial(mode, keyword);
         }
@@ -2240,14 +2241,15 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
     url = keyword + "/"
   }
   let cookies = {}
-  if (ALL) cookies = { "cookie": "existmag=all" };
   // 是否来自导演等类目
   if (mode == "cat") {
     matrixID = "initialViewCat";
-    loadingID = "loadingc"
+    loadingID = "loadingc";
+    if (ALLC) cookies = { "cookie": "existmag=all" };
   } else {
-    matrixID = "initialView"
-    loadingID = "loading"
+    matrixID = "initialView";
+    loadingID = "loading";
+    if (ALL) cookies = { "cookie": "existmag=all" };
   }
   $http.request({
     url: url + page,
@@ -3037,7 +3039,7 @@ function getCat(url) {
               info: link
             },
             gradient: {
-              colors: colorData[randomColor(0,11)]
+              colors: colorData[randomColor(0, 11)]
             }
           })
         })
@@ -3089,7 +3091,7 @@ function iniCat(titles) {
           type: "gradient",
           props: {
             id: "gradient",
-            colors: colorData[randomColor(0,11)],
+            colors: colorData[randomColor(0, 11)],
             locations: [0.0, 1.0],
             startPoint: $point(0, 0),
             endPoint: $point(1, 1),
@@ -3270,16 +3272,16 @@ function clipboardDetect(clip) {
   }
 }
 
-function random256(begin,end) {
-//  return $rgb(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256))
-return $rgb(randomColor(begin,end),randomColor(begin,end),randomColor(begin,end))
+function random256(begin, end) {
+  //  return $rgb(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256))
+  return $rgb(randomColor(begin, end), randomColor(begin, end), randomColor(begin, end))
 }
 
-function randomColor(begin,end){
-  return Math.floor(Math.random()*(end-begin))+begin;
+function randomColor(begin, end) {
+  return Math.floor(Math.random() * (end - begin)) + begin;
 }
 
-function randomColor(Min,Max){
+function randomColor(Min, Max) {
   var Range = Max - Min;
   var Rand = Math.random();
   var num = Min + Math.round(Rand * Range);
@@ -3308,15 +3310,15 @@ function main(url) {
   let clip = $clipboard.text
   let link = $detector.link(clip)
   let detect = {
-    "mode":"home",
-    "keyword":""
+    "mode": "home",
+    "keyword": ""
   }
   if (!$context.textItems && ($("tabC").index == 2 || clip == null || link.length > 0)) {
     getInitial()
   } else {
-    if($context.textItems){
+    if ($context.textItems) {
       detect = clipboardDetect($context.textItems[0])
-    }else{
+    } else {
       detect = clipboardDetect(clip)
     }
     getInitial(detect.mode, detect.keyword)
