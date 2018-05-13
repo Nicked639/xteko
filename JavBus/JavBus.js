@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 4.3
+version = 4.4
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -328,8 +328,9 @@ function searchView(height, catname, cols = 3, spa = 1) {
               "info": data.link
             }
             if ($("tab").index == 2) pushCat(sender, "director");
-            else if ($("tab").index == 3) pushCat(sender, "filmMaker");
-            else if ($("tab").index == 4) pushCat(sender, "filmEstab");
+            else if ($("tab").index == 3) pushCat(sender, "series");
+            else if ($("tab").index == 4) pushCat(sender, "filmMaker");
+            else if ($("tab").index == 5) pushCat(sender, "filmEstab");
           } else {
             $ui.push(detailView(favCode))
             getDetail(data.link)
@@ -392,7 +393,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
       type: "tab",
       props: {
         id: "tab",
-        items: ["影片", "演员", "导演", "制作商", "发行商"],
+        items: ["影片", "演员", "导演", "系列","制作商", "发行商"],
         tintColor: $color("tint"),
         radius: 5,
         bgcolor: $color("white"),
@@ -507,9 +508,38 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   }
                 })
               })
-            } else if (sender.index == 3) {
-              // 制作商tab
+            } else if (sender.index ==3 ){
+              // 系列tab
               $("tab").index = 3;
+              var length = LocalDirectorList.length;
+              $("input").placeholder = "已收藏 " + length + " 个系列"
+              if (length == 0) {
+                $("initialView").hidden = true
+              } else {
+                $("initialView").hidden = false
+              }
+              LocalData.series.map(function(i) {
+                $("initialView").data = $("initialView").data.concat({
+                  link: hp + "series/" + i.shortCode,
+                  name: {
+                    text: i.name,
+                    hidden: false
+                  },
+                  gradient: {
+                    hidden: false,
+                    colors: colorData[randomColor(0, 11)]
+                  },
+                  info: {
+                    hidden: true
+                  },
+                  initialCover: {
+                    hidden: true
+                  }
+                })
+              })
+            }else if (sender.index == 4) {
+              // 制作商tab
+              $("tab").index = 4;
               var length = LocalFilmMakerList.length;
               $("input").placeholder = "已收藏 " + length + " 个制作商"
               if (length == 0) {
@@ -536,9 +566,9 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   }
                 })
               })
-            } else if (sender.index == 4) {
+            } else if (sender.index == 5) {
               // 发行商tab
-              $("tab").index = 4;
+              $("tab").index = 5;
               var length = LocalFilmEstabList.length;
               $("input").placeholder = "已收藏 " + length + " 个发行商"
               if (length == 0) {
@@ -869,9 +899,9 @@ function detailView(code) {
       }, {
         type: "text",
         props: {
-          text: "导演:",
+          text: "系列:",
           bgcolor: $color("white"),
-          id: "director",
+          id: "series",
           font: $font("bold", 17),
           editable: false,
           textColor: $color("black"),
@@ -891,7 +921,7 @@ function detailView(code) {
         props: {
           hidden: false,
           bgcolor: $color("white"),
-          id: "directorName",
+          id: "seriesName",
           //text:"这是一粉色",
           font: $font(15),
           editable: false,
@@ -904,6 +934,54 @@ function detailView(code) {
         layout: function(make, view) {
           make.left.inset(86)
           make.top.equalTo($("filmMaker").bottom).offset(6)
+          //make.height.equalTo(20)
+        },
+        events: {
+          tapped(sender) {
+            if (sender.text !== "未知") {
+              pushCat(sender, "series")
+            }
+          }
+        }
+
+      },{
+        type: "text",
+        props: {
+          text: "导演:",
+          bgcolor: $color("white"),
+          id: "director",
+          font: $font("bold", 17),
+          editable: false,
+          textColor: $color("black"),
+          align: $align.left,
+          //autoFontSize: true,
+          scrollEnabled: false,
+          hidden: true,
+          insets: $insets(0, 0, 0, 0)
+        },
+        layout: function(make, view) {
+          make.left.inset(5)
+          make.top.equalTo($("series").bottom).offset(5)
+          //make.height.equalTo(20)
+        },
+      }, {
+        type: "text",
+        props: {
+          hidden: false,
+          bgcolor: $color("white"),
+          id: "directorName",
+          //text:"这是一粉色",
+          font: $font(15),
+          editable: false,
+          textColor: $color("black"),
+          align: $align.left,
+          //autoFontSize: true,
+          scrollEnabled: false,
+          insets: $insets(0, 0, 0, 0)
+        },
+        layout: function(make, view) {
+          make.left.inset(86)
+          make.top.equalTo($("series").bottom).offset(6)
           //make.height.equalTo(20)
         },
         events: {
@@ -2166,7 +2244,9 @@ function favDetailTapped(mode, Button) {
     if (Button.position == "director") {
       LocalDirectorList.push(data.shortCode)
       LocalData.director.push(data)
-
+    } else if (Button.position == "series") {
+      LocalSeriesList.push(data.shortCode)
+      LocalData.series.push(data)
     } else if (Button.position == "filmMaker") {
       LocalFilmMakerList.push(data.shortCode)
       LocalData.filmMaker.push(data)
@@ -2182,16 +2262,21 @@ function favDetailTapped(mode, Button) {
       LocalDirectorList.splice(idx, 1)
       LocalData.director.splice(idx, 1)
       if ($("tab").hidden == false && $("tab").index == 2) $("initialView").delete(idx);
+    } else if (Button.position == "series") {
+      let idx = LocalSeriesList.indexOf(data.shortCode)
+      LocalSeriesList.splice(idx, 1)
+      LocalData.series.splice(idx, 1)
+      if ($("tab").hidden == false && $("tab").index == 3) $("initialView").delete(idx);
     } else if (Button.position == "filmMaker") {
       let idx = LocalFilmMakerList.indexOf(data.shortCode)
       LocalFilmMakerList.splice(idx, 1)
       LocalData.filmMaker.splice(idx, 1)
-      if ($("tab").hidden == false && $("tab").index == 3) $("initialView").delete(idx);
+      if ($("tab").hidden == false && $("tab").index == 4) $("initialView").delete(idx);
     } else if (Button.position == "filmEstab") {
       let idx = LocalFilmEstabList.indexOf(data.shortCode)
       LocalFilmEstabList.splice(idx, 1)
       LocalData.filmEstab.splice(idx, 1)
-      if ($("tab").hidden == false && $("tab").index == 4) $("initialView").delete(idx);
+      if ($("tab").hidden == false && $("tab").index == 5) $("initialView").delete(idx);
     }
   }
   writeCache()
@@ -2213,6 +2298,11 @@ function pushCat(sender, position = "") {
       $("favDetail").title = "取消收藏"
       $("favDetail").bgcolor = $color("#f25959")
     }
+  } else if (position == "series") {
+    if (LocalSeriesList.indexOf(shortCode) > -1) {
+      $("favDetail").title = "取消收藏"
+      $("favDetail").bgcolor = $color("#f25959")
+    }
   } else if (position == "filmMaker") {
     if (LocalFilmMakerList.indexOf(shortCode) > -1) {
       $("favDetail").title = "取消收藏"
@@ -2220,6 +2310,11 @@ function pushCat(sender, position = "") {
     }
   } else if (position == "filmEstab") {
     if (LocalFilmEstabList.indexOf(shortCode) > -1) {
+      $("favDetail").title = "取消收藏"
+      $("favDetail").bgcolor = $color("#f25959")
+    }
+  }else if (position == "series") {
+    if (LocalSeriesList.indexOf(shortCode) > -1) {
       $("favDetail").title = "取消收藏"
       $("favDetail").bgcolor = $color("#f25959")
     }
@@ -2596,6 +2691,13 @@ function getDetail(url) {
       } else {
         var filmMakerName = "未知"
       }
+      var temp = /<span class="header">系列:[\s\S]*?"(.*?)">(.*?)<\/a>/.exec(resp.data);
+      if (temp) {
+        var seriesName = temp[2]
+        $("seriesName").info = temp[1]
+      } else {
+        var seriesName = "未知"
+      }
       var temp = /<span class="header">導演:[\s\S]*?"(.*?)">(.*?)<\/a>/.exec(resp.data);
       if (temp) {
         var directorName = temp[2]
@@ -2612,6 +2714,8 @@ function getDetail(url) {
       $("filmEstab").hidden = false;
       $("filmMakerName").text = filmMakerbName;
       $("filmMaker").hidden = false;
+      $("series").hidden = false;
+      $("seriesName").text = seriesName
       $("directorName").text = directorName;
       $("director").hidden = false;
       //$ui.action(filmSource)
@@ -3227,14 +3331,17 @@ function initial() {
     LocalDirectorList = LocalData.director.map(i => i.shortCode);
     LocalFilmMakerList = LocalData.filmMaker.map(i => i.shortCode);
     LocalFilmEstabList = LocalData.filmEstab.map(i => i.shortCode);
+    if(!LocalData.series) LocalData.series=[]
+    LocalSeriesList = LocalData.series.map(i => i.shortCode)
   } else {
-    LocalData = { "favorite": [], "actress": [], "archive": [], "director": [], "filmMaker": [], "filmEstab": [] };
+    LocalData = { "favorite": [], "actress": [], "archive": [], "director": [], "filmMaker": [], "filmEstab": [], "series":[] };
     LocalFavList = [];
     LocalArcList = [];
     LocalActressList = [];
     LocalDirectorList = [];
     LocalFilmMakerList = [];
     LocalFilmEstabList = [];
+    LocalSeriesList = []
   };
 
   mode = "home";
