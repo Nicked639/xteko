@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 4.4
+version = 4.5
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -1312,16 +1312,16 @@ const urls = [
   }, */
   {
     name: "种子搜",
-    pattern: "http://bt.xiandan.in/search-json?site=%E7%A7%8D%E5%AD%90%E6%90%9C&keyword="
+    pattern: "http://bt.xiandan.in/api/search?source=%E7%A7%8D%E5%AD%90%E6%90%9C&keyword="
   }, {
     name: "屌丝搜",
-    pattern: "http://bt.xiandan.in/search-json?site=%E5%B1%8C%E4%B8%9D%E6%90%9C&keyword="
+    pattern: "http://bt.xiandan.in/api/search?source=E5%B1%8C%E4%B8%9D%E6%90%9C&keyword="
   }, {
     name: "磁力吧",
-    pattern: "http://bt.xiandan.in/search-json?site=%E7%A3%81%E5%8A%9B%E5%90%A7&keyword="
+    pattern: "http://bt.xiandan.in/api/search?source=%E7%A3%81%E5%8A%9B%E5%90%A7&keyword="
   }, {
     name: "cililiana",
-    pattern: "http://bt.xiandan.in/search-json?site=cililiana&keyword="
+    pattern: "http://bt.xiandan.in/api/search?source=cililiana&keyword="
   },
 ]
 
@@ -3099,23 +3099,36 @@ function getMagnet(code) {
   $app.tips("单击复制磁链，\n左滑分享磁链,\n若无磁链，尝试下拉刷新")
   $ui.loading(true)
   $http.request({
-    url: urls[$("mMenu").index].pattern + code,
+    url: urls[$("mMenu").index].pattern + code+"&page=1",
     handler: function(resp) {
-      var data = resp.data
-      data.map(function(i) {
-        $("mlist").data = $("mlist").data.concat({
-          mFileName: {
-            text: i.name,
-          },
-          mFileSize: {
-            text: i.size,
-          },
-          mTime: {
-            text: i.count
-          },
-          info: i.magnet
+      var data = resp.data.results
+      if(!data){
+        $("mlist").data = [{ mFileName: {
+          text: "无资源",
+        },mFileSize: {
+          text: "请切换源",
+        },
+        mTime: {
+          text: ""
+        },
+        info: ""}]
+      } else{
+        data.map(function(i) {
+          $("mlist").data = $("mlist").data.concat({
+            mFileName: {
+              text: i.name,
+            },
+            mFileSize: {
+              text: i.formatSize,
+            },
+            mTime: {
+              text: i.count
+            },
+            info: i.magnet
+          })
         })
-      })
+      }
+
       $ui.loading(false)
       $("mlist").endRefreshing()
     }
