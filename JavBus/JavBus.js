@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 4.5
+version = 4.6
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -2611,6 +2611,25 @@ function getAvglePreview(keyword) {
               $("player").remove()
             };
             $("X").hidden = true
+          }
+        }
+      })
+      $("detailView").add({
+        type: "button",
+        props: {
+          title: "↗",
+          id: "shareVideo",
+          bgcolor: $color("clear")
+        },
+        layout: function(make, view) {
+          make.top.equalTo($("player").bottom).offset(-20)
+          make.right.inset(11)
+          make.width.equalTo(20)
+          make.height.equalTo(20)
+        },
+        events: {
+          tapped(sender) {
+            $share.sheet([videoUrl])
           }
         }
       })
