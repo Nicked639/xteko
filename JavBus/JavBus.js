@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 4.6
+version = 4.7
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -1962,6 +1962,7 @@ $ui.render({
             //            if ($("searchView").super == $("JavBus")) {
             //              $("searchView").remove()
             //            }
+            Category = []
             iniCat(Titles)
             getCat(catUrl)
             break;
@@ -3306,6 +3307,7 @@ function iniCat(titles) {
             url = "https://www.javbus.com/uncensored/genre";
 
           }
+          Category = []
           iniCat(catTitles)
           $("loading2").hidden = false
           $("ctab").index = url.includes("uncensored") ? 1 : 0
