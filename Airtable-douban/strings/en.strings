@@ -4,6 +4,6 @@
 "START" = "Please run in Safari or copy link";
 "SUCCEED" = "Succeed!";
 "ERROR" = "Error ❌";
-"DBERROR" = "Douban Book URL Error ❌";
+"DBERROR" = "Douban  URL Error ❌";
 "LOAD" = "Loading...";
-"WRONG" = "Cannot Detect Book ID ❌";
+"WRONG" = "Cannot Detect ID ❌";
