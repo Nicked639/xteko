@@ -1,0 +1,23 @@
+{
+  "widget" : {
+    "tintColor" : "",
+    "iconColor" : "",
+    "height" : 0
+  },
+  "info" : {
+    "website" : "",
+    "author" : "",
+    "types" : 15,
+    "name" : "Airtable-Book",
+    "url" : "",
+    "version" : "1.0.0"
+  },
+  "settings" : {
+    "minOSVer" : "10.0.0",
+    "minSDKVer" : "1.0.0",
+    "rotateDisabled" : false,
+    "autoKeyboardEnabled" : false,
+    "keyboardToolbarEnabled" : false,
+    "idleTimerDisabled" : false
+  }
+}
