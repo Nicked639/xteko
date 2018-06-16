@@ -2490,77 +2490,102 @@ function getInitialActress(url) {
   })
 }
 
-async function getInfo(link) {
-  javMagData = []
-  return new Promise(resolve => {
-    $('detailView').add({
-      type: 'web',
-      props: {
-        id: 'magnet',
-        url: link,
-        showsProgress: false
-      },
-      layout: function(make) {
-        make.size.equalTo($size(0, 0));
-      },
-      events: {
-        didSendRequest(request) {
-          if (!/uncledatoolsbyajax\.php/.test(request.url)) return;
-          $('magnet').eval({ script: `$.get('${request.url}', function(rep){$notify('getUrl', rep);})` });
-        },
-        getUrl(data) {
-          resolve(data);
-          //$ui.action(data)
-          $('magnet').remove();
-        }
-      }
-    });
-  });
-}
+//async function getInfo(link) {
+//  javMagData = []
+//  return new Promise(resolve => {
+//    $('detailView').add({
+//      type: 'web',
+//      props: {
+//        id: 'magnet',
+//        url: link,
+//        showsProgress: false
+//      },
+//      layout: function(make) {
+//        make.size.equalTo($size(0, 0));
+//      },
+//      events: {
+//        didSendRequest(request) {
+//          if (!/uncledatoolsbyajax\.php/.test(request.url)) return;
+//          $('magnet').eval({ script: `$.get('${request.url}', function(rep){$notify('getUrl', rep);})` });
+//        },
+//        getUrl(data) {
+//          resolve(data);
+//          //$ui.action(data)
+//          $('magnet').remove();
+//        }
+//      }
+//    });
+//  });
+//}
 
-async function getJavMag(link) {
-  let html = await getInfo(link);
-  let pattern = /<tr onmouseover[\s\S]*?<\/tr>/g
-  let match = html.match(pattern)
-  //  $console.log(match)
-  match.map(function(i) {
-    let maglink = /window.open\('([\s\S]*?)'/g.exec(i)[1]
-    let name = decodeURI(/dn=(.*)/g.exec(maglink)[1])
-    let pat = /href[\s\S]*?<\/a>/g
-    let m = i.match(pat)
-    //let name = /href[\s\S]*?>([\s\S]*?)<\/a>/g.exec(m[0])[1]
-    let size = /href[\s\S]*?>([\s\S]*?)<\/a>/g.exec(m[1])[1]
-    size = size.replace(/\s+/g, "")
-    let time = /href[\s\S]*?>([\s\S]*?)<\/a>/g.exec(m[2])[1]
-    time = time.replace(/\s+/g, "")
-    let hd = i.includes("高清")
-    let sub = i.includes("字幕")
-    javMagData.push({
-      info: maglink,
-      mFileName: {
-        text: name
+function getJavMag(link) {
+
+  $('detailView').add({
+    type: 'web',
+    props: {
+      id: 'magnet',
+      url: link,
+      showsProgress: false
+    },
+    layout: function(make) {
+      make.size.equalTo($size(0, 0));
+    },
+    events: {
+      didSendRequest(request) {
+        if (!/uncledatoolsbyajax\.php/.test(request.url)) return;
+        $('magnet').eval({ script: `$.get('${request.url}', function(rep){$notify('getUrl', rep);})` });
       },
-      mFileSize: {
-        text: size
-      },
-      mTime: {
-        text: time
-      },
-      HD: {
-        hidden: !hd
-      },
-      SUB: {
-        hidden: !sub
+      getUrl(data) {
+        //resolve(data);
+        //$ui.action(data)
+        $('magnet').remove();
+        javMagData = []
+        //          let html = await getInfo(link)
+        let html = data;
+        let pattern = /<tr onmouseover[\s\S]*?<\/tr>/g
+        let match = html.match(pattern)
+        //  $console.log(match)
+        match.map(function(i) {
+          let maglink = /window.open\('([\s\S]*?)'/g.exec(i)[1]
+          let name = decodeURI(/dn=(.*)/g.exec(maglink)[1])
+          let pat = /href[\s\S]*?<\/a>/g
+          let m = i.match(pat)
+          //let name = /href[\s\S]*?>([\s\S]*?)<\/a>/g.exec(m[0])[1]
+          let size = /href[\s\S]*?>([\s\S]*?)<\/a>/g.exec(m[1])[1]
+          size = size.replace(/\s+/g, "")
+          let time = /href[\s\S]*?>([\s\S]*?)<\/a>/g.exec(m[2])[1]
+          time = time.replace(/\s+/g, "")
+          let hd = i.includes("高清")
+          let sub = i.includes("字幕")
+          javMagData.push({
+            info: maglink,
+            mFileName: {
+              text: name
+            },
+            mFileSize: {
+              text: size
+            },
+            mTime: {
+              text: time
+            },
+            HD: {
+              hidden: !hd
+            },
+            SUB: {
+              hidden: !sub
+            }
+          })
+        })
+        if (javMagData.length == 0) {
+          $("loadingm").text = "☹️ JavBus 暂无磁链"
+          $("loadingm").hidden = false
+        } else $("loadingm").hidden = true;
+        $("javbusList").data = javMagData
+        $("javbusList").hidden = false
+        $("javbusList").endRefreshing();
       }
-    })
-  })
-  if (javMagData.length == 0) {
-    $("loadingm").text = "☹️ JavBus 暂无磁链"
-    $("loadingm").hidden = false
-  } else $("loadingm").hidden = true;
-  $("javbusList").data = javMagData
-  $("javbusList").hidden = false
-  $("javbusList").endRefreshing();
+    }
+  });
 }
 
 function getAvglePreview(keyword) {
