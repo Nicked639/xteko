@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 5.0
+version = 5.1
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -1115,7 +1115,7 @@ function detailView(code) {
             //$clipboard.text = favCode
             //$ui.action(favCode)
             $ui.menu({
-              items: ["磁链", "Avgle", "nyaa"],
+              items: ["磁链", "Avgle", "nyaa","JavLibrary"],
               handler: function(title, idx) {
                 if (idx == 0) {
                   $ui.push(magnetList(favCode))
@@ -1157,6 +1157,10 @@ function detailView(code) {
                 } else if (idx == 2) {
                   $safari.open({
                     url: "https://sukebei.nyaa.si/?q=" + favCode + "&f=0&c=0_0"
+                  })
+                } else if(idx==3){
+                  $safari.open({
+                    url:"http://www.javlibrary.com/cn/vl_searchbyid.php?keyword="+favCode
                   })
                 }
               }
