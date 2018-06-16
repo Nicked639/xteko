@@ -32,6 +32,7 @@ https://t.me/nicked
 
 */
 
+version = 5.0
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -167,7 +168,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
       type: "text",
       props: {
         id: "bgInfo",
-        text: "Originated in Power Flow\n\nhttps://t.me/nicked",
+        text: "Originated in Power Flow\n\n\n\nhttps://t.me/nicked",
         editable: false,
         textColor: $color("#CCCCCC"),
         font: $font(10),
@@ -176,7 +177,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
       },
 
       layout: function(make, view) {
-        make.top.inset(40)
+        make.top.inset(35)
         make.height.equalTo(100)
         make.width.equalTo($device.info.screen.width)
       }
@@ -192,7 +193,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
       },
       layout: function(make, view) {
         make.size.equalTo($size(50, 50))
-        make.top.inset(100)
+        make.top.inset(120)
         make.left.inset(162)
       }
 
@@ -285,6 +286,17 @@ function searchView(height, catname, cols = 3, spa = 1) {
         make.top.equalTo($("input").bottom).offset(5)
       },
       events: {
+        pulled(sender){
+          $("initialView").endRefreshing()
+          $ui.menu({
+            items:["微信打赏"],
+            handler:function(title,idx){
+              if(idx == 0){
+                wechatPay()
+              }
+            }
+          })
+        },
         didReachBottom(sender) {
           sender.endFetchingMore();
           if ($("menu").index == 0 || $("menu").index == 2 || ("menu").index == 3) {
@@ -1179,7 +1191,7 @@ function detailView(code) {
               handler: function(title, idx) {
                 if (idx == 0) {
                   if (screenData == "no") {
-                    $ui.toast("☹️ 暂无图像", 1)
+                    $ui.error("☹️ 暂无图像", 1)
                     return
                   } else {
                     $ui.push(screenshotView)
@@ -1311,16 +1323,16 @@ const urls = [
   }, */
   {
     name: "种子搜",
-    pattern: "http://bt.xiandan.in/search-json?site=%E7%A7%8D%E5%AD%90%E6%90%9C&keyword="
+    pattern: "http://bt.xiandan.in/api/search?source=%E7%A7%8D%E5%AD%90%E6%90%9C&keyword="
   }, {
     name: "屌丝搜",
-    pattern: "http://bt.xiandan.in/search-json?site=%E5%B1%8C%E4%B8%9D%E6%90%9C&keyword="
+    pattern: "http://bt.xiandan.in/api/search?source=E5%B1%8C%E4%B8%9D%E6%90%9C&keyword="
   }, {
     name: "磁力吧",
-    pattern: "http://bt.xiandan.in/search-json?site=%E7%A3%81%E5%8A%9B%E5%90%A7&keyword="
+    pattern: "http://bt.xiandan.in/api/search?source=%E7%A3%81%E5%8A%9B%E5%90%A7&keyword="
   }, {
     name: "cililiana",
-    pattern: "http://bt.xiandan.in/search-json?site=cililiana&keyword="
+    pattern: "http://bt.xiandan.in/api/search?source=cililiana&keyword="
   },
 ]
 
@@ -1961,6 +1973,7 @@ $ui.render({
             //            if ($("searchView").super == $("JavBus")) {
             //              $("searchView").remove()
             //            }
+            Category = []
             iniCat(Titles)
             getCat(catUrl)
             break;
@@ -2477,8 +2490,36 @@ function getInitialActress(url) {
   })
 }
 
+//async function getInfo(link) {
+//  javMagData = []
+//  return new Promise(resolve => {
+//    $('detailView').add({
+//      type: 'web',
+//      props: {
+//        id: 'magnet',
+//        url: link,
+//        showsProgress: false
+//      },
+//      layout: function(make) {
+//        make.size.equalTo($size(0, 0));
+//      },
+//      events: {
+//        didSendRequest(request) {
+//          if (!/uncledatoolsbyajax\.php/.test(request.url)) return;
+//          $('magnet').eval({ script: `$.get('${request.url}', function(rep){$notify('getUrl', rep);})` });
+//        },
+//        getUrl(data) {
+//          resolve(data);
+//          //$ui.action(data)
+//          $('magnet').remove();
+//        }
+//      }
+//    });
+//  });
+//}
+
 function getJavMag(link) {
-  javMagData = []
+
   $('detailView').add({
     type: 'web',
     props: {
@@ -2494,8 +2535,13 @@ function getJavMag(link) {
         if (!/uncledatoolsbyajax\.php/.test(request.url)) return;
         $('magnet').eval({ script: `$.get('${request.url}', function(rep){$notify('getUrl', rep);})` });
       },
-      getUrl(html) {
+      getUrl(data) {
+        //resolve(data);
+        //$ui.action(data)
         $('magnet').remove();
+        javMagData = []
+        //          let html = await getInfo(link)
+        let html = data;
         let pattern = /<tr onmouseover[\s\S]*?<\/tr>/g
         let match = html.match(pattern)
         //  $console.log(match)
@@ -2537,7 +2583,6 @@ function getJavMag(link) {
         $("javbusList").data = javMagData
         $("javbusList").hidden = false
         $("javbusList").endRefreshing();
-
       }
     }
   });
@@ -2555,13 +2600,13 @@ function getAvglePreview(keyword) {
       };
       var success = resp.data.success;
       if (!success || !resp.response) {
-        $ui.alert("❌ 网络连接出错！");
+        $ui.error("❌ 网络连接出错！");
         return
       }
       let video_num = resp.data.response.total_videos
       //      $console.log(video_num)
       if (video_num == 0) {
-        $ui.alert("☹️ 暂无视频资源！");
+        $ui.error("☹️ 暂无视频资源！");
         $ui.loading(false);
         return
       }
@@ -2606,6 +2651,25 @@ function getAvglePreview(keyword) {
           }
         }
       })
+      $("detailView").add({
+        type: "button",
+        props: {
+          title: "↗",
+          id: "shareVideo",
+          bgcolor: $color("clear")
+        },
+        layout: function(make, view) {
+          make.top.equalTo($("player").bottom).offset(-20)
+          make.right.inset(11)
+          make.width.equalTo(20)
+          make.height.equalTo(20)
+        },
+        events: {
+          tapped(sender) {
+            $share.sheet([videoUrl])
+          }
+        }
+      })
       $delay(0.5, function() {
         $("player").play()
       })
@@ -2620,7 +2684,7 @@ function getDetail(url) {
     timeout: timeout,
     handler: function(resp) {
       if (!resp.response) {
-        $ui.toast("❌ 网络连接错误")
+        $ui.error("❌ 网络连接错误")
         return
       }
       javbusLink = url
@@ -2756,7 +2820,7 @@ function getActress(url) {
     handler: function(resp) {
 
       if (!resp.response) {
-        $ui.toast("❌ 网络连接错误")
+        $ui.error("❌ 网络连接错误")
         return
       }
       if (resp.data.indexOf("404 Page Not Found") > -1) {
@@ -3091,23 +3155,36 @@ function getMagnet(code) {
   $app.tips("单击复制磁链，\n左滑分享磁链,\n若无磁链，尝试下拉刷新")
   $ui.loading(true)
   $http.request({
-    url: urls[$("mMenu").index].pattern + code,
+    url: urls[$("mMenu").index].pattern + code+"&page=1",
     handler: function(resp) {
-      var data = resp.data
-      data.map(function(i) {
-        $("mlist").data = $("mlist").data.concat({
-          mFileName: {
-            text: i.name,
-          },
-          mFileSize: {
-            text: i.size,
-          },
-          mTime: {
-            text: i.count
-          },
-          info: i.magnet
+      var data = resp.data.results
+      if(!data){
+        $("mlist").data = [{ mFileName: {
+          text: "无资源",
+        },mFileSize: {
+          text: "请切换源",
+        },
+        mTime: {
+          text: ""
+        },
+        info: ""}]
+      } else{
+        data.map(function(i) {
+          $("mlist").data = $("mlist").data.concat({
+            mFileName: {
+              text: i.name,
+            },
+            mFileSize: {
+              text: i.formatSize,
+            },
+            mTime: {
+              text: i.count
+            },
+            info: i.magnet
+          })
         })
-      })
+      }
+
       $ui.loading(false)
       $("mlist").endRefreshing()
     }
@@ -3118,7 +3195,7 @@ function getCat(url) {
   $http.request({
     url: url,
     handler: function(resp) {
-      if (!resp.response) $ui.alert("❌ 网络错误或无法访问")
+      if (!resp.response) $ui.error("❌ 网络错误或无法访问")
       let catTitles = url.includes("uncensored") ? Utitles : Titles
       $("catMatrix").data = []
       for (let i = 0; i < catTitles.length; i++) {
@@ -3266,6 +3343,7 @@ function iniCat(titles) {
             url = "https://www.javbus.com/uncensored/genre";
 
           }
+          Category = []
           iniCat(catTitles)
           $("loading2").hidden = false
           $("ctab").index = url.includes("uncensored") ? 1 : 0
@@ -3308,6 +3386,41 @@ function scriptVersionUpdate() {
   })
 }
 
+function wechatPay() {
+  $ui.alert({
+    title: "确定赞赏？",
+    message: "点击确定二维码图片会自动存入相册同时会跳转至微信扫码,请选择相册中的二维码图片进行赞赏。",
+    actions: [{
+        title: "确定",
+        handler: function() {
+          let payUrl = "weixin://scanqrcode"
+          $http.download({
+            url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/wechat.jpg",
+            progress: function(bytesWritten, totalBytes) {
+              var percentage = bytesWritten * 1.0 / totalBytes
+            },
+            handler: function(resp) {
+              $photo.save({
+                data: resp.data,
+                handler: function(success) {
+                  if (success) {
+                    $app.openURL(payUrl)
+                  }
+                }
+              })
+            }
+          })
+        }
+      },
+      {
+        title: "取消",
+        handler: function() {
+
+        }
+      }
+    ]
+  })
+}
 //初始化设定
 function initial() {
   var current = $addin.current;
