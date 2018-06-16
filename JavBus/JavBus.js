@@ -2523,7 +2523,7 @@ function getInitialActress(url) {
 //}
 
 function getJavMag(link) {
-
+  javMagData = []
   $('detailView').add({
     type: 'web',
     props: {
@@ -2543,7 +2543,6 @@ function getJavMag(link) {
         //resolve(data);
         //$ui.action(data)
         $('magnet').remove();
-        javMagData = []
         //          let html = await getInfo(link)
         let html = data;
         let pattern = /<tr onmouseover[\s\S]*?<\/tr>/g
