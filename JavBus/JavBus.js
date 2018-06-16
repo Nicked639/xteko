@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 4.7
+version = 5.0
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -168,7 +168,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
       type: "text",
       props: {
         id: "bgInfo",
-        text: "Originated in Power Flow\n\nhttps://t.me/nicked",
+        text: "Originated in Power Flow\n\n\n\nhttps://t.me/nicked",
         editable: false,
         textColor: $color("#CCCCCC"),
         font: $font(10),
@@ -177,7 +177,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
       },
 
       layout: function(make, view) {
-        make.top.inset(40)
+        make.top.inset(35)
         make.height.equalTo(100)
         make.width.equalTo($device.info.screen.width)
       }
@@ -193,7 +193,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
       },
       layout: function(make, view) {
         make.size.equalTo($size(50, 50))
-        make.top.inset(100)
+        make.top.inset(120)
         make.left.inset(162)
       }
 
@@ -286,6 +286,17 @@ function searchView(height, catname, cols = 3, spa = 1) {
         make.top.equalTo($("input").bottom).offset(5)
       },
       events: {
+        pulled(sender){
+          $("initialView").endRefreshing()
+          $ui.menu({
+            items:["微信打赏"],
+            handler:function(title,idx){
+              if(idx == 0){
+                wechatPay()
+              }
+            }
+          })
+        },
         didReachBottom(sender) {
           sender.endFetchingMore();
           if ($("menu").index == 0 || $("menu").index == 2 || ("menu").index == 3) {
@@ -1180,7 +1191,7 @@ function detailView(code) {
               handler: function(title, idx) {
                 if (idx == 0) {
                   if (screenData == "no") {
-                    $ui.toast("☹️ 暂无图像", 1)
+                    $ui.error("☹️ 暂无图像", 1)
                     return
                   } else {
                     $ui.push(screenshotView)
@@ -2564,13 +2575,13 @@ function getAvglePreview(keyword) {
       };
       var success = resp.data.success;
       if (!success || !resp.response) {
-        $ui.alert("❌ 网络连接出错！");
+        $ui.error("❌ 网络连接出错！");
         return
       }
       let video_num = resp.data.response.total_videos
       //      $console.log(video_num)
       if (video_num == 0) {
-        $ui.alert("☹️ 暂无视频资源！");
+        $ui.error("☹️ 暂无视频资源！");
         $ui.loading(false);
         return
       }
@@ -2648,7 +2659,7 @@ function getDetail(url) {
     timeout: timeout,
     handler: function(resp) {
       if (!resp.response) {
-        $ui.toast("❌ 网络连接错误")
+        $ui.error("❌ 网络连接错误")
         return
       }
       javbusLink = url
@@ -2784,7 +2795,7 @@ function getActress(url) {
     handler: function(resp) {
 
       if (!resp.response) {
-        $ui.toast("❌ 网络连接错误")
+        $ui.error("❌ 网络连接错误")
         return
       }
       if (resp.data.indexOf("404 Page Not Found") > -1) {
@@ -3159,7 +3170,7 @@ function getCat(url) {
   $http.request({
     url: url,
     handler: function(resp) {
-      if (!resp.response) $ui.alert("❌ 网络错误或无法访问")
+      if (!resp.response) $ui.error("❌ 网络错误或无法访问")
       let catTitles = url.includes("uncensored") ? Utitles : Titles
       $("catMatrix").data = []
       for (let i = 0; i < catTitles.length; i++) {
@@ -3350,6 +3361,41 @@ function scriptVersionUpdate() {
   })
 }
 
+function wechatPay() {
+  $ui.alert({
+    title: "确定赞赏？",
+    message: "点击确定二维码图片会自动存入相册同时会跳转至微信扫码,请选择相册中的二维码图片进行赞赏。",
+    actions: [{
+        title: "确定",
+        handler: function() {
+          let payUrl = "weixin://scanqrcode"
+          $http.download({
+            url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/wechat.jpg",
+            progress: function(bytesWritten, totalBytes) {
+              var percentage = bytesWritten * 1.0 / totalBytes
+            },
+            handler: function(resp) {
+              $photo.save({
+                data: resp.data,
+                handler: function(success) {
+                  if (success) {
+                    $app.openURL(payUrl)
+                  }
+                }
+              })
+            }
+          })
+        }
+      },
+      {
+        title: "取消",
+        handler: function() {
+
+        }
+      }
+    ]
+  })
+}
 //初始化设定
 function initial() {
   var current = $addin.current;
