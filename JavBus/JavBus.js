@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 5.1
+version = 5.2
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -759,7 +759,7 @@ function detailView(code) {
         layout: function(make, view) {
           var width = $device.info.screen.width - 20;
           var height = width * 67 / 100
-          make.left.inset(10)
+          make.left.right.inset(10)
           make.top.equalTo($("filmName").bottom).offset(5)
           make.size.equalTo($size(width, height))
         },
@@ -1202,6 +1202,7 @@ function detailView(code) {
                     $("screenshot").data = screenData
                   }
                 } else if (idx == 1) {
+                  $device.taptic(1)
                   getAvglePreview(sender.info)
                 }
               }
@@ -1272,7 +1273,9 @@ function detailView(code) {
         },
         layout: function(make, view) {
           make.right.inset(10)
-          make.top.equalTo($("filmCover").bottom).offset(5)
+          if(isInToday()) make.top.equalTo($("filmCover").bottom).offset(30);
+          else make.top.equalTo($("filmCover").bottom).offset(5)
+          
           make.width.equalTo(60)
           make.height.equalTo(20)
         },
@@ -1280,7 +1283,7 @@ function detailView(code) {
           tapped(sender) {
             //$clipboard.text = favCode
             $ui.menu({
-              items: ["打开 Safari", "复制番号", "分享"],
+              items: ["打开 Safari", "复制番号", "分享链接","脚本打开"],
               handler: function(title, idx) {
                 if (idx == 0) $safari.open({
                   url: favLink
@@ -1288,7 +1291,12 @@ function detailView(code) {
                 else if (idx == 1) {
                   $clipboard.text = sender.info
                   $ui.toast("番号 " + sender.info + "已复制")
-                } else $share.sheet(favLink);
+                } else if (idx == 2) $share.sheet(favLink);
+                else{
+                  $app.openURL(
+                    "jsbox://run?name=JavBus"
+                  )
+                }
               },
 
             })
@@ -1906,7 +1914,8 @@ function actressView(actress, cover) {
 $ui.render({
   props: {
     title: "JavBus",
-    id: "JavBus"
+    id: "JavBus",
+    navBarHidden: isInToday()
   },
   views: [{
     type: "menu",
@@ -2625,7 +2634,7 @@ function getAvglePreview(keyword) {
         layout: function(make, view) {
           let width = $device.info.screen.width - 20;
           let height = width * 67 / 100
-          make.left.inset(10)
+          make.left.right.inset(10)
           make.top.equalTo($("filmName").bottom).offset(5)
           make.size.equalTo($size(width, height))
         }
@@ -2765,18 +2774,23 @@ function getDetail(url) {
         var directorName = "未知"
       }
       $("filmInfo").text = filmTime + "  " + "(" + filmLast + ")";
+      $("filmInfo").hidden = isInToday();
       var code = /<span class="header">識別碼:[\s\S]*?">([\s\S]*?)<\/span>/.exec(resp.data)[1];
       $("check").info = code
-      $("aboutFilm").hidden = false;
+      $("aboutFilm").hidden = isInToday();
       $("share").info = code;
       $("filmEstabName").text = filmEstabName;
-      $("filmEstab").hidden = false;
+      $("filmEstabName").hidden = isInToday();
+      $("filmEstab").hidden = isInToday();
       $("filmMakerName").text = filmMakerbName;
-      $("filmMaker").hidden = false;
-      $("series").hidden = false;
+      $("filmMakerName").hidden = isInToday();
+      $("filmMaker").hidden = isInToday();
+      $("series").hidden = isInToday();
       $("seriesName").text = seriesName
+      $("seriesName").hidden = isInToday()
       $("directorName").text = directorName;
-      $("director").hidden = false;
+      $("directorName").hidden = isInToday();
+      $("director").hidden = isInToday();
       //$ui.action(filmSource)
       //影片截图
       screenData = []
@@ -3387,6 +3401,10 @@ function scriptVersionUpdate() {
       }
     }
   })
+}
+
+function isInToday() {
+  return ($app.env == $env.today)?true:false
 }
 
 function wechatPay() {
