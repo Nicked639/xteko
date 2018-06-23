@@ -286,12 +286,12 @@ function searchView(height, catname, cols = 3, spa = 1) {
         make.top.equalTo($("input").bottom).offset(5)
       },
       events: {
-        pulled(sender){
+        pulled(sender) {
           $("initialView").endRefreshing()
           $ui.menu({
-            items:["微信打赏"],
-            handler:function(title,idx){
-              if(idx == 0){
+            items: ["微信打赏"],
+            handler: function(title, idx) {
+              if (idx == 0) {
                 wechatPay()
               }
             }
@@ -404,7 +404,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
       type: "tab",
       props: {
         id: "tab",
-        items: ["影片", "演员", "导演", "系列","制作商", "发行商"],
+        items: ["影片", "演员", "导演", "系列", "制作商", "发行商"],
         tintColor: $color("tint"),
         radius: 5,
         bgcolor: $color("white"),
@@ -519,7 +519,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   }
                 })
               })
-            } else if (sender.index ==3 ){
+            } else if (sender.index == 3) {
               // 系列tab
               $("tab").index = 3;
               var length = LocalDirectorList.length;
@@ -548,7 +548,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   }
                 })
               })
-            }else if (sender.index == 4) {
+            } else if (sender.index == 4) {
               // 制作商tab
               $("tab").index = 4;
               var length = LocalFilmMakerList.length;
@@ -955,7 +955,7 @@ function detailView(code) {
           }
         }
 
-      },{
+      }, {
         type: "text",
         props: {
           text: "导演:",
@@ -1115,7 +1115,7 @@ function detailView(code) {
             //$clipboard.text = favCode
             //$ui.action(favCode)
             $ui.menu({
-              items: ["磁链", "Avgle", "nyaa","JavLibrary"],
+              items: ["磁链", "Avgle", "nyaa", "JavLibrary"],
               handler: function(title, idx) {
                 if (idx == 0) {
                   $ui.push(magnetList(favCode))
@@ -1158,9 +1158,9 @@ function detailView(code) {
                   $safari.open({
                     url: "https://sukebei.nyaa.si/?q=" + favCode + "&f=0&c=0_0"
                   })
-                } else if(idx==3){
+                } else if (idx == 3) {
                   $safari.open({
-                    url:"http://www.javlibrary.com/cn/vl_searchbyid.php?keyword="+favCode
+                    url: "http://www.javlibrary.com/cn/vl_searchbyid.php?keyword=" + favCode
                   })
                 }
               }
@@ -1273,17 +1273,18 @@ function detailView(code) {
         },
         layout: function(make, view) {
           make.right.inset(10)
-          if(isInToday()) make.top.equalTo($("filmCover").bottom).offset(30);
+          if (isInToday()) make.top.equalTo($("filmCover").bottom).offset(10);
           else make.top.equalTo($("filmCover").bottom).offset(5)
-          
+
           make.width.equalTo(60)
           make.height.equalTo(20)
         },
         events: {
           tapped(sender) {
             //$clipboard.text = favCode
+            let items = ["打开 Safari", "复制番号", "分享链接"];
             $ui.menu({
-              items: ["打开 Safari", "复制番号", "分享链接","脚本打开"],
+              items: items,
               handler: function(title, idx) {
                 if (idx == 0) $safari.open({
                   url: favLink
@@ -1292,14 +1293,44 @@ function detailView(code) {
                   $clipboard.text = sender.info
                   $ui.toast("番号 " + sender.info + "已复制")
                 } else if (idx == 2) $share.sheet(favLink);
-                else{
+                else {
                   $app.openURL(
-                    "jsbox://run?name=JavBus"
+                    "jsbox://run?name=JavBus&code=" + sender.info + "&link=" + favLink
                   )
                 }
               },
 
             })
+
+          }
+        }
+
+      }, {
+        type: "button",
+        props: {
+          id: "openJS",
+          bgcolor: $color("#ededed"),
+          title: "脚本打开",
+          hidden: !isInToday(),
+          font: $font(11),
+          //icon: $icon("022", $color("#666666"), $size(15, 15))
+          titleColor: $color("black"),
+          //alpha: 1,
+          radius: 6
+        },
+        layout: function(make, view) {
+          make.left.inset(10)
+          make.top.equalTo($("filmCover").bottom).offset(10)
+          make.width.equalTo(60)
+          make.height.equalTo(20)
+        },
+        events: {
+          tapped(sender) {
+            //$clipboard.text = favCode            
+
+            $app.openURL(
+              "jsbox://run?name=JavBus&code=" + $("share").info + "&link=" + favLink
+            )
 
           }
         }
@@ -2248,7 +2279,7 @@ function catCover(title) {
           if (sender.index == 0) ALLC = true;
           else ALLC = false;
           page = 0;
-//          $ui.action("d")
+          //          $ui.action("d")
           $("initialViewCat").data = [];
           $("loadingc").text = "Loading...";
           //$ui.action(keyword)
@@ -2338,7 +2369,7 @@ function pushCat(sender, position = "") {
       $("favDetail").title = "取消收藏"
       $("favDetail").bgcolor = $color("#f25959")
     }
-  }else if (position == "series") {
+  } else if (position == "series") {
     if (LocalSeriesList.indexOf(shortCode) > -1) {
       $("favDetail").title = "取消收藏"
       $("favDetail").bgcolor = $color("#f25959")
@@ -2963,7 +2994,7 @@ function favoriteButtonTapped(mode, data) {
     //$ui.pop();
     LocalData.favorite.push(data)
     LocalFavList.push(data.shortCode)
-    if ($("menu").index == 3 && $("tab").index == 0) {
+    if (!$context.query.code && $("menu").index == 3 && $("tab").index == 0) {
       $("initialView").data = $("initialView").data.concat({
         link: homepage + shortCode,
         code: data.code,
@@ -2974,12 +3005,13 @@ function favoriteButtonTapped(mode, data) {
           text: data.info
         }
       })
+      alert(data)
       var length = LocalFavList.length;
       $("input").placeholder = "已收藏 " + length + " 部影片";
     }
 
   } else if (mode == "cancel") {
-    $ui.pop();
+    if (!isInToday()) $ui.pop();
     var idx = LocalFavList.indexOf(data.shortCode)
     LocalFavList.splice(idx, 1)
     LocalData.favorite.splice(idx, 1)
@@ -3172,20 +3204,23 @@ function getMagnet(code) {
   $app.tips("单击复制磁链，\n左滑分享磁链,\n若无磁链，尝试下拉刷新")
   $ui.loading(true)
   $http.request({
-    url: urls[$("mMenu").index].pattern + code+"&page=1",
+    url: urls[$("mMenu").index].pattern + code + "&page=1",
     handler: function(resp) {
       var data = resp.data.results
-      if(!data){
-        $("mlist").data = [{ mFileName: {
-          text: "无资源",
-        },mFileSize: {
-          text: "请切换源",
-        },
-        mTime: {
-          text: ""
-        },
-        info: ""}]
-      } else{
+      if (!data) {
+        $("mlist").data = [{
+          mFileName: {
+            text: "无资源",
+          },
+          mFileSize: {
+            text: "请切换源",
+          },
+          mTime: {
+            text: ""
+          },
+          info: ""
+        }]
+      } else {
         data.map(function(i) {
           $("mlist").data = $("mlist").data.concat({
             mFileName: {
@@ -3404,7 +3439,7 @@ function scriptVersionUpdate() {
 }
 
 function isInToday() {
-  return ($app.env == $env.today)?true:false
+  return ($app.env == $env.today) ? true : false
 }
 
 function wechatPay() {
@@ -3457,10 +3492,10 @@ function initial() {
     LocalDirectorList = LocalData.director.map(i => i.shortCode);
     LocalFilmMakerList = LocalData.filmMaker.map(i => i.shortCode);
     LocalFilmEstabList = LocalData.filmEstab.map(i => i.shortCode);
-    if(!LocalData.series) LocalData.series=[]
+    if (!LocalData.series) LocalData.series = []
     LocalSeriesList = LocalData.series.map(i => i.shortCode)
   } else {
-    LocalData = { "favorite": [], "actress": [], "archive": [], "director": [], "filmMaker": [], "filmEstab": [], "series":[] };
+    LocalData = { "favorite": [], "actress": [], "archive": [], "director": [], "filmMaker": [], "filmEstab": [], "series": [] };
     LocalFavList = [];
     LocalArcList = [];
     LocalActressList = [];
@@ -3546,6 +3581,13 @@ function main(url) {
     "mode": "home",
     "keyword": ""
   }
+  if ($context.query.code) {
+    $ui.render(detailView($context.query.code))
+    getDetail($context.query.link)
+    //    getInitial("search",$context.query.code);
+    return
+  }
+
   if (!$context.textItems && ($("tabC").index == 2 || clip == null || link.length > 0)) {
     getInitial()
   } else {
