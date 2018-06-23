@@ -1311,7 +1311,7 @@ function detailView(code) {
           id: "openJS",
           bgcolor: $color("#ededed"),
           title: "脚本打开",
-          hidden: !isInToday(),
+          hidden: true,
           font: $font(11),
           //icon: $icon("022", $color("#666666"), $size(15, 15))
           titleColor: $color("black"),
@@ -2845,6 +2845,7 @@ function getDetail(url) {
         screenData = "no"
       }
       $("share").hidden = false
+      $("openJS").hidden = !isInToday()
       $("loading1").hidden = true
       // 磁链获取
       getJavMag(url)
@@ -3005,7 +3006,6 @@ function favoriteButtonTapped(mode, data) {
           text: data.info
         }
       })
-      alert(data)
       var length = LocalFavList.length;
       $("input").placeholder = "已收藏 " + length + " 部影片";
     }
@@ -3017,7 +3017,7 @@ function favoriteButtonTapped(mode, data) {
     LocalData.favorite.splice(idx, 1)
 
   } else if (mode == "archive") {
-    $ui.pop();
+    if (!isInToday()) $ui.pop();
     var idx = LocalFavList.indexOf(data.shortCode)
     LocalFavList.splice(idx, 1)
     LocalData.favorite.splice(idx, 1)
@@ -3582,12 +3582,20 @@ function main(url) {
     "keyword": ""
   }
   if ($context.query.code) {
-    $ui.render(detailView($context.query.code))
-    getDetail($context.query.link)
-    //    getInitial("search",$context.query.code);
-    return
-  }
-
+  let code = $context.query.code
+//  favCode = code
+//  $ui.render(detailView(code))
+//  getDetail($context.query.link)
+//  if (LocalFavList.indexOf(code) > -1) {
+//    $("favorite").title = "取消收藏"
+//    $("favorite").bgcolor = $color("#f25959")
+//  } else if (LocalArcList.indexOf(code) > -1) {
+//    $("favorite").title = "已归档"
+//    $("favorite").bgcolor = $color("#aaaaaa")
+//  }
+  getInitial("search",$context.query.code);
+  return
+}
   if (!$context.textItems && ($("tabC").index == 2 || clip == null || link.length > 0)) {
     getInitial()
   } else {
