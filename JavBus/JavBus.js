@@ -1480,7 +1480,8 @@ function magnetList(code) {
         textColor: $color("#888888"),
         font: $font("HelveticaNeue-BoldItalic", 20),
         align: $align.center,
-        editable: false
+        editable: false,
+        hidden: isInToday()
       },
 
       layout: function(make, view) {
@@ -2805,7 +2806,7 @@ function getDetail(url) {
       } else {
         var directorName = "未知"
       }
-      $("filmInfo").text = filmTime + "  " + "(" + filmLast + ")";
+      $("filmInfo").text = filmTime + "  " + "(时长 " + filmLast + ")";
       $("filmInfo").hidden = isInToday();
       var code = /<span class="header">識別碼:[\s\S]*?">([\s\S]*?)<\/span>/.exec(resp.data)[1];
       $("check").info = code
