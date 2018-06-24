@@ -21,7 +21,7 @@
 
    */
 
-version = 1.1
+version = 1.2
 
 var scale = 600 / 337;
 const searchPreview = {
@@ -481,10 +481,11 @@ const searchVideoListView = {
   },
   events: {
     pulled(sender) {
-      $("searchVideoList").data = []
+//      $("searchVideoList").data = []
       searchKeyword = null;
       searchPage = -1;
       getSearchVideoList()
+      $("searchVideoList").endRefreshing()
       $("input").text = ""
     },
     didReachBottom(sender) {
@@ -991,7 +992,7 @@ const mainUI = {
     type: "menu",
     props: {
       id: "menu",
-      items: ["收藏","搜索", "明星", "频道"]
+      items: ["收藏","搜索", /*"明星",*/ "频道"]
     },
     layout: function(make) {
       make.top.left.right.inset(0)
@@ -1020,16 +1021,16 @@ const mainUI = {
               getSearchVideoList()
             };    
             break;
+//          case 2:
+//            $("content").add(starCountryListView);
+//            if ($cache.get("starCountryList")) {
+//              starCountryData = $cache.get("starCountryList");
+//              $("starCountryList").data = starCountryData.splice(0, 40)
+//            } else {
+//              getStarCountryList()
+//            };
+//            break;
           case 2:
-            $("content").add(starCountryListView);
-            if ($cache.get("starCountryList")) {
-              starCountryData = $cache.get("starCountryList");
-              $("starCountryList").data = starCountryData.splice(0, 40)
-            } else {
-              getStarCountryList()
-            };
-            break;
-          case 3:
             $("content").add(channelListView);
             if ($cache.get("channelList")) {
               channelPage = $cache.get("channelPage");
@@ -1108,6 +1109,7 @@ function getSearchVideoList() {
   $http.get({
     url: url,
     handler: function(resp) {
+      
       var count = searchKeyword ? /<span\sclass="sub">.*?<\/span>/g.exec(resp.data)[0].replace(/\D*/g, "") : null;
       var match = resp.data.match(/<div\sid="video[\s\S]*?<\/script>/g);
       if ((searchPage > 0 && $("searchVideoList").data[0].rows.length == count) || !match) {
@@ -1149,14 +1151,13 @@ function getSearchVideoList() {
       });
       var rows = searchPage !=0 ? $("searchVideoList").data[0].rows.concat(items) : items;
       $("searchVideoList").endFetchingMore();
-      $("searchVideoList").endRefreshing();
       $("searchVideoList").data = [{
         title: searchKeyword ? `${searchKeyword}   (${rows.length}/${count})` : "最近更新",
         rows: rows
       }];
       $("footer").text = "Page" + (searchPage + 1) + " Done!";
       if(!searchKeyword){
-        $("searchVideoList").contentOffset = $point(0, 0);
+//        $("searchVideoList").contentOffset = $point(0, 0);
         $cache.set("searchVideoList", $("searchVideoList").data);
         $cache.set("searchKeyword", searchKeyword)
         $cache.set("searchPage", searchPage)
@@ -1280,7 +1281,7 @@ function getChannelVideoList() {
 function getStarCountryList() {
   $ui.loading(true);
   $http.get({
-    url: "https://www.xvideos.com/pornstars/countries",
+    url: "https://www.xvideos.com/pornstars-index/countries",
     handler: function(resp) {
       var match = resp.data.match(/<li>.*?flag-small.*?<\/li>/g);
       var data = match.map(function(i, idx) {
@@ -1334,7 +1335,6 @@ function getStarList(url) {
     }
   })
 }
-
 function getChannelList() {
   $ui.loading(true);
   channelPage++
@@ -1344,6 +1344,7 @@ function getChannelList() {
       var match = resp.data.match(/xv\.thumbs\.replaceThumbUrl[\s\S]*?profile-counts[\s\S]*?<\/p>/g);
       var data = match.map(function(i) {
         var [url, name] = /<a\shref="(.*?)">(.*?)<\/a>/.exec(i).splice(1, 2);
+
         var cover = /<img\ssrc="(.*?)"/.exec(i)[1].replace("thumbs169ll", "thumbs169lll");
         var count = /<p\sclass="profile-counts">([\s\S]*?)<\/p>/.exec(i)[1].replace(/\s|(&nbsp;)/g, "");
         count = /\d+/.exec(count)[0] + " videos"
