@@ -21,7 +21,7 @@
 
    */
 
-version = 1.2
+version = 1.3
 
 var scale = 600 / 337;
 const searchPreview = {
@@ -1061,10 +1061,12 @@ function search(keyword) {
   $http.get({
     url: encodeURI(domain + "/search-suggest/" + keyword),
     handler: function(resp) {
+      
       if (resp.data.KEYWORDS.length > 0) {
-        if ($ui.window.views.length == 3) {          
+        if ($ui.window.views.length == 2) {          
           $ui.window.add(searchPreview)
         };
+//        $ui.window.add(searchPreview)
         var data = resp.data.KEYWORDS.map(function(i) {
           return {
             title: {
