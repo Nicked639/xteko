@@ -1241,10 +1241,7 @@ function detailView(code) {
           tapped(sender) {
             let data = {}
             if ($context.query.code && flag == 1)  data = $cache.get("cacheData");
-            else  {
-              data = favData;  
-              alert("d")
-            }         
+            else  data = favData;  
             if ($("favorite").title == "收藏") {
               $("favorite").title = "取消收藏"
               $("favorite").bgcolor = $color("#f25959");
