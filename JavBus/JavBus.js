@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 5.2
+version = 5.3
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -45,6 +45,7 @@ Menustatus = 0; // 分类选中状态
 Trans = 0; // 翻译状态
 uncensored = false; // 无码状态
 timeout = 5;
+flag = 0; // 用于判断从通知中心启动的状态
 var colorData = [
   [$color("#fd354a"), $color("#da0a6f")],
   [$color("#f97227"), $color("#f52156")],
@@ -318,6 +319,13 @@ function searchView(height, catname, cols = 3, spa = 1) {
           favLink = data.link
           shortCode = favLink.split('/').pop()
           favCode = shortCode
+          favData = {
+              "code": favCode,
+              "src": favSrc,
+              "info": favInfo,
+              "shortCode": shortCode
+            }
+           if (isInToday()) $cache.set("cacheData",favData);
           // 演员tab
           if ($("tab").hidden == false && $("tab").index == 1 || $("menu").index == 1) {
             favActressCover = favSrc
@@ -722,7 +730,7 @@ function detailView(code) {
           textColor: $color("black"),
           font: $font(15),
           align: $align.left,
-          //autoFontSize: true,
+//          autoFontSize: true,
           scrollEnabled: false,
           hidden: false,
           lines: 1,
@@ -732,7 +740,7 @@ function detailView(code) {
         layout: function(make, view) {
           make.top.inset(10)
           make.left.right.inset(5)
-          //make.height.equalTo(70)
+          if(isInToday()) make.height.equalTo(20)
         },
         events: {
           tapped(sender) {
@@ -1231,12 +1239,12 @@ function detailView(code) {
         },
         events: {
           tapped(sender) {
-            var data = {
-              "code": favCode,
-              "src": favSrc,
-              "info": favInfo,
-              "shortCode": shortCode
-            }
+            let data = {}
+            if ($context.query.code && flag == 1)  data = $cache.get("cacheData");
+            else  {
+              data = favData;  
+              alert("d")
+            }         
             if ($("favorite").title == "收藏") {
               $("favorite").title = "取消收藏"
               $("favorite").bgcolor = $color("#f25959");
@@ -1293,11 +1301,7 @@ function detailView(code) {
                   $clipboard.text = sender.info
                   $ui.toast("番号 " + sender.info + "已复制")
                 } else if (idx == 2) $share.sheet(favLink);
-                else {
-                  $app.openURL(
-                    "jsbox://run?name=JavBus&code=" + sender.info + "&link=" + favLink
-                  )
-                }
+                
               },
 
             })
@@ -1310,7 +1314,7 @@ function detailView(code) {
         props: {
           id: "openJS",
           bgcolor: $color("#ededed"),
-          title: "脚本打开",
+          title: "应用打开",
           hidden: true,
           font: $font(11),
           //icon: $icon("022", $color("#666666"), $size(15, 15))
@@ -1326,8 +1330,7 @@ function detailView(code) {
         },
         events: {
           tapped(sender) {
-            //$clipboard.text = favCode            
-
+            //$clipboard.text = favCode    
             $app.openURL(
               "jsbox://run?name=JavBus&code=" + $("share").info + "&link=" + favLink
             )
@@ -2721,6 +2724,7 @@ function getAvglePreview(keyword) {
 }
 
 function getDetail(url) {
+  flag++
   Trans = 0;
   $http.request({
     url: url,
@@ -3570,6 +3574,12 @@ function jsDetect() {
   return false
 }
 
+function openJS(code, link) {
+  $ui.push(detailView(code))
+  getDetail(link)
+  getInitial()
+}
+
 function main(url) {
   page = 0;
   homepage = url
@@ -3583,17 +3593,15 @@ function main(url) {
   }
   if ($context.query.code) {
   let code = $context.query.code
-//  favCode = code
-//  $ui.render(detailView(code))
-//  getDetail($context.query.link)
-//  if (LocalFavList.indexOf(code) > -1) {
-//    $("favorite").title = "取消收藏"
-//    $("favorite").bgcolor = $color("#f25959")
-//  } else if (LocalArcList.indexOf(code) > -1) {
-//    $("favorite").title = "已归档"
-//    $("favorite").bgcolor = $color("#aaaaaa")
-//  }
-  getInitial("search",$context.query.code);
+  openJS(code,$context.query.link)
+  if (LocalFavList.indexOf(code) > -1) {
+    $("favorite").title = "取消收藏"
+    $("favorite").bgcolor = $color("#f25959")
+  } else if (LocalArcList.indexOf(code) > -1) {
+    $("favorite").title = "已归档"
+    $("favorite").bgcolor = $color("#aaaaaa")
+  }
+//  getInitial("search",$context.query.code);
   return
 }
   if (!$context.textItems && ($("tabC").index == 2 || clip == null || link.length > 0)) {
