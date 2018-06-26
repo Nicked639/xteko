@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 5.3
+version = 5.4
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -1852,6 +1852,12 @@ function actressView(actress, cover) {
           favLink = data.link
           shortCode = favLink.split("/").pop()
           favCode = data.code
+          favData = {
+              "code": favCode,
+              "src": favSrc,
+              "info": favInfo,
+              "shortCode": shortCode
+            }
           //$ui.action(data.code)
           $ui.push(detailView(favCode))
           getDetail(data.link)
