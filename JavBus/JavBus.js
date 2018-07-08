@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 5.4
+version = 5.5
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -1163,13 +1163,9 @@ function detailView(code) {
                     })
                   }
                 } else if (idx == 2) {
-                  $safari.open({
-                    url: "https://sukebei.nyaa.si/?q=" + favCode + "&f=0&c=0_0"
-                  })
+                  $app.openURL("https://sukebei.nyaa.si/?q=" + favCode + "&f=0&c=0_0")
                 } else if (idx == 3) {
-                  $safari.open({
-                    url: "http://www.javlibrary.com/cn/vl_searchbyid.php?keyword=" + favCode
-                  })
+                  $app.openURL("http://www.javlibrary.com/cn/vl_searchbyid.php?keyword=" + favCode)
                 }
               }
             })
@@ -1291,9 +1287,7 @@ function detailView(code) {
             $ui.menu({
               items: items,
               handler: function(title, idx) {
-                if (idx == 0) $safari.open({
-                  url: favLink
-                });
+                if (idx == 0) $app.openURL(favLink);
                 else if (idx == 1) {
                   $clipboard.text = sender.info
                   $ui.toast("番号 " + sender.info + "已复制")
@@ -1535,8 +1529,12 @@ function magnetList(code) {
 
           },
           pulled(sender) {
+            if($("javbusList").data.length==0){
+              $("javbusList").endRefreshing()
+              return
+            }
             $("javbusList").data = [];
-            getJavMag(javbusLink);
+            getJavMag(javbusLink,"pulled");
             //$("javbusList").data = javMagData        
             //$("javbusList").endRefreshing();
           }
@@ -2569,7 +2567,7 @@ function getInitialActress(url) {
 //  });
 //}
 
-function getJavMag(link) {
+function getJavMag(link,flag="0") {
   javMagData = []
   $('detailView').add({
     type: 'web',
@@ -2589,11 +2587,12 @@ function getJavMag(link) {
       getUrl(data) {
         //resolve(data);
         //$ui.action(data)
-        $('magnet').remove();
+        if($('magnet'))$('magnet').remove();
         //          let html = await getInfo(link)
         let html = data;
         let pattern = /<tr onmouseover[\s\S]*?<\/tr>/g
         let match = html.match(pattern)
+        if(!match) return
         //  $console.log(match)
         match.map(function(i) {
           let maglink = /window.open\('([\s\S]*?)'/g.exec(i)[1]
@@ -2626,13 +2625,16 @@ function getJavMag(link) {
             }
           })
         })
-        if (javMagData.length == 0) {
-          $("loadingm").text = "☹️ JavBus 暂无磁链"
-          $("loadingm").hidden = false
-        } else $("loadingm").hidden = true;
-        $("javbusList").data = javMagData
+//        if (javMagData.length == 0) {
+//          $("loadingm").text = "☹️ JavBus 暂无磁链"
+//          $("loadingm").hidden = false
+//        } else $("loadingm").hidden = true;
+        if (flag=="pulled"){
+          $("javbusList").data = javMagData
         $("javbusList").hidden = false
         $("javbusList").endRefreshing();
+        }
+        
       }
     }
   });
@@ -2857,10 +2859,10 @@ function getDetail(url) {
       $("loading1").hidden = true
       // 磁链获取
       getJavMag(url)
-      if (javMagData.length == 0) {
-        $("loadingm").text = "☹️ JavBus 暂无磁链"
-        $("loadingm").hidden = false
-      } else $("loadingm").hidden = true;
+//      if (javMagData.length == 0) {
+//        $("loadingm").text = "☹️ JavBus 暂无磁链"
+//        $("loadingm").hidden = false
+//      } else $("loadingm").hidden = true;
     }
   })
 
@@ -3597,6 +3599,7 @@ function main(url) {
   }
   if ($context.query.code) {
   let code = $context.query.code
+  favCode = code
   openJS(code,$context.query.link)
   if (LocalFavList.indexOf(code) > -1) {
     $("favorite").title = "取消收藏"
