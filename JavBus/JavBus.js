@@ -43,7 +43,8 @@ Utitles = ["主題", "角色", "服裝", "體型", "行為", "玩法", "其他",
 Category = [];
 Menustatus = 0; // 分类选中状态
 Trans = 0; // 翻译状态
-uncensored = false; // 无码状态
+uncensored = false; // 无码状态 
+JavMag = 0 // 磁链获取状态 
 timeout = 5;
 flag = 0; // 用于判断从通知中心启动的状态
 var colorData = [
@@ -1126,6 +1127,19 @@ function detailView(code) {
               items: ["磁链", "Avgle", "nyaa", "JavLibrary"],
               handler: function(title, idx) {
                 if (idx == 0) {
+                  if(JavMag == 0){
+                    $ui.toast("磁链加载中...",2)
+                    $delay(2,function(){
+                                        $ui.push(magnetList(favCode))
+                  getMagnet(favCode)
+                  $("javbusList").data = javMagData
+                  if (javMagData.length == 0) {
+                    $("loadingm").text = "☹️ JavBus 暂无磁链"
+                    $("loadingm").hidden = false
+                  } else $("loadingm").hidden = true;
+                    })
+                    return
+                  }
                   $ui.push(magnetList(favCode))
                   getMagnet(favCode)
                   $("javbusList").data = javMagData
@@ -1535,6 +1549,7 @@ function magnetList(code) {
             }
             $("javbusList").data = [];
             getJavMag(javbusLink,"pulled");
+            
             //$("javbusList").data = javMagData        
             //$("javbusList").endRefreshing();
           }
@@ -2113,6 +2128,15 @@ $ui.render({
     }
   }, ]
 })
+function aboutMag(){
+                    $ui.push(magnetList(favCode))
+                  getMagnet(favCode)
+                  $("javbusList").data = javMagData
+                  if (javMagData.length == 0) {
+                    $("loadingm").text = "☹️ JavBus 暂无磁链"
+                    $("loadingm").hidden = false
+                  } else $("loadingm").hidden = true;
+}
 
 function catCover(title) {
   return {
@@ -2634,7 +2658,7 @@ function getJavMag(link,flag="0") {
         $("javbusList").hidden = false
         $("javbusList").endRefreshing();
         }
-        
+        JavMag = 1;
       }
     }
   });
@@ -2858,6 +2882,7 @@ function getDetail(url) {
       $("openJS").hidden = !isInToday()
       $("loading1").hidden = true
       // 磁链获取
+      JavMag = 0
       getJavMag(url)
 //      if (javMagData.length == 0) {
 //        $("loadingm").text = "☹️ JavBus 暂无磁链"
