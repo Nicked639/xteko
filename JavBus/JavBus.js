@@ -365,6 +365,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
             } else if ($("menu").index == 3) {
               if (LocalFavList.indexOf(shortCode) > -1) {
                 $("favorite").title = "归档"
+                $("favorite").bgcolor = $color("#22bdcc")
 
               } else {
                 $("favorite").title = "收藏"
