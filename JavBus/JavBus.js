@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 5.5
+version = 5.6
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -1705,7 +1705,79 @@ const screenshotView = {
       }
     }
 
-  }],
+  },{
+    type:"button",
+    props: {
+      bgcolor: $color("tint"),
+      titleColor: $color("white"),
+      align: $align.center,
+      font: $font("bold", 14),
+      alpha: 0.7,
+      autoFontSize: true,
+      radius: 5,
+      title: "批量下载",
+      id: "download"
+    },
+    layout: function(make, view) {
+      make.centerX.equalTo()
+      make.bottom.inset(20)
+      make.height.equalTo(28)
+      make.width.equalTo(120)
+    },
+    events: {
+      tapped: function(sender){
+        if ($("download").title == "批量下载") {
+            $device.taptic(1)
+            sender.title = "正在下载...";
+            let folderName = ""
+            if ($("filmActress").data.length == 1)
+               folderName = $("filmActress").data[0].actressName.text
+            else  folderName = favCode
+            if (!$drive.exists("样品图像/"+folderName)) {
+              $drive.mkdir("样品图像/"+folderName)
+            }
+            $("progress").value = 0;
+            var count = 0
+            for (var i = 0; i < screenData.length; i++) {
+              $http.download({
+                url: screenData[i].link,
+                handler: function(resp) {
+                  count++;
+                  sender.title = "下载第 " + count + " 幅图";
+                  $("progress").value = count * 1.0 / screenData.length
+                  if (count == screenData.length) {
+                    sender.title = "完成!"
+                    $device.taptic(1)
+                    $("progress").value = 0
+                  }
+                  var path = "样品图像/"+folderName + "/" + resp.response.suggestedFilename
+                  $drive.write({
+                    data: resp.data,
+                    path: path
+                  })
+                }
+              })
+            }
+          }
+      }
+    }
+  },{
+      type: "progress",
+      props: {
+        id: "progress",
+        value: 0,
+        trackColor: $color("clear"),
+        alpha: 0.8,
+        progressColor: $color("green"),
+        userInteractionEnabled: false
+      },
+      layout: function(make, view) {
+        make.centerX.equalTo()
+        make.bottom.inset(20)
+        make.height.equalTo(28)
+        make.width.equalTo(120)
+      }
+    }],
   layout: $layout.fill
 }
 
@@ -2869,7 +2941,6 @@ function getDetail(url) {
           var screenshotCover = /<a class="sample-box" href="(.*?)"[\s\S]*?<img src="(.*?)"\s/g.exec(i)[2];
           screenData.push({
             screenshotCover: {
-              //              data: resp.data
               src: screenshot
             },
             link: screenshot
