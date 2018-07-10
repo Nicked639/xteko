@@ -1217,6 +1217,7 @@ var CCHeight = ($device.info.screen.width - 50) * 16 / 9 / scale
            contentExist = false;
          }
          var url = "https://avgle.com/video/" + data.share.info.vid;
+//         alert(url)
          play(url, indexPath, data.interface.src, "video");
        },
        didReachBottom(sender) {
@@ -1856,7 +1857,9 @@ $ui.animate({
 // }
 
 function clipboardDetect() {
-  var str = $clipboard.text
+  let str = ""
+  if ($clipboard.text)
+     str = $clipboard.text
   var reg1 = /[sS][nN][iI][sS][\s\-]?\d{3}|[aA][bB][pP][\s\-]?\d{3}|[iI][pP][zZ][\s\-]?\d{3}|[sS][wW][\s\-]?\d{3}|[jJ][uU][xX][\s\-]?\d{3}|[mM][iI][aA][dD][\s\-]?\d{3}|[mM][iI][dD][eE][\s\-]?\d{3}|[mM][iI][dD][dD][\s\-]?\d{3}|[pP][gG][dD][\s\-]?\d{3}|[sS][tT][aA][rR][\s\-]?\d{3}|[eE][bB][oO][dD][\s\-]?\d{3}|[iI][pP][tT][dD][\s\-]?\d{3}/g;
   var reg2 = /[a-zA-Z]{3,5}[\s\-]?\d{3,4}/g;
   var match = str.match(reg1);
@@ -1872,7 +1875,12 @@ function clipboardDetect() {
     var match = str.match(reg2);
     if (match) {
       var detect = /([a-zA-Z]{3,5})[\s\-]?(\d{3,4})/g.exec(match[0])
-       var keyword = detect[1] + "-" + detect[2]
+      let heyzo = /[Hh][Ee][Yy][Zz][Oo]/g.exec(detect[1])
+      if(heyzo){
+        var keyword = detect[1]+" "+detect[2]
+      }else{
+        var keyword = detect[1] + "-" + detect[2]
+      }
        if(keyword.length > 20){
          return "none"
        }else{
@@ -1969,7 +1977,7 @@ function addPlayer(videoUrl,indexPath, poster){
     $("player").stopLoading();
     $("player").remove()
   };
-  $clipboard.text = videoUrl
+
   $("videos").cell(indexPath).add({
     type: "video",
     props: {
