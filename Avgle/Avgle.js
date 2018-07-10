@@ -21,7 +21,7 @@
 
    */
 
-version = 3.1
+version = 3.2
 $addin.current.version = version
 times = $cache.get("times") || 4
 
