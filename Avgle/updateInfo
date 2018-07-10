@@ -1,4 +1,4 @@
 {
-  "version": 3.1,
-  "msg": "支持从 HList 传递番号参数直接用于搜索"
+  "version": 3.2,
+  "msg": "一个 workaround：先通过 Safari 完成一次播放后，（接下去的几小时）就能用脚本播放"
 }
