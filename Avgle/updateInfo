@@ -1,4 +1,4 @@
 {
-  "version": 3.2,
-  "msg": "一个 workaround：先通过 Safari 完成一次播放后，（接下去的几小时）就能用脚本播放"
+  "version": 4.0,
+  "msg": "1. 增加内嵌/网页播放选项\n2. 修复少量bug优化部分逻辑\n3. 欢迎通过右上角菜单进入赞赏作者\n\n视频教程详见 https://t.me/Flow_Script"
 }
