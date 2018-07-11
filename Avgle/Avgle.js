@@ -21,7 +21,7 @@
 
      */
 
- version = 4.0
+ version = 4.1
  $addin.current.version = version
  times = $cache.get("times") || 4
 
@@ -283,11 +283,7 @@
            $("CCList").data = []
            getCategoryData()
          } else if (c == "收藏夹") {
-           if ($("player")) {
-             $("player").pause();
-             $("player").stopLoading();
-             $("player").remove();
-           }
+           delPlayer()
            $ui.loading(false)
            cacheContent = "收藏夹";
            $cache.set("cacheContent", cacheContent);
@@ -1261,12 +1257,8 @@
          endY = sender.contentOffset.y;
          if (Math.abs(endY - startY) > 150) {
 
-           if ($("player")) {
-             $("player").pause();
-             $("player").stopLoading();
-             $("player").remove();
-             $ui.loading(false);
-           }
+           delPlayer()
+           $ui.loading(false)
          }
 
        }
@@ -1416,13 +1408,8 @@
          endY = sender.contentOffset.y;
          if (Math.abs(endY - startY) > 180) {
 
-           if ($("player")) {
-             $("player").pause();
-             $("player").stopLoading();
-             $("player").remove();
-             $ui.loading(false);
-
-           }
+           delPlayer()
+           $ui.loading(false)
          }
        }
 
@@ -1432,11 +1419,7 @@
  }
 
  function getVideoData() {
-   if ($("player")) {
-     $("player").pause();
-     $("player").stopLoading();
-     $("player").remove();
-   }
+   delPlayer()
    $ui.loading(true)
    $("loading").text = "Loading..."
    $ui.toast("载入中...", 10)
@@ -1549,11 +1532,7 @@
  }
 
  function getFavoriteData(vid) {
-   if ($("player")) {
-     $("player").pause();
-     $("player").stopLoading();
-     $("player").remove();
-   }
+   delPlayer()
    url = "https://api.avgle.com/v1/video/" + vid;
    $("searchResult").text = "";
    $http.request({
@@ -1625,11 +1604,7 @@
  }
 
  function getCollectionData() {
-   if ($("player")) {
-     $("player").pause();
-     $("player").stopLoading();
-     $("player").remove();
-   }
+   delPlayer()
    $ui.loading(true)
    $("loading").text = "Loading..."
    $("searchResult").text = "";
@@ -1682,11 +1657,7 @@
  }
 
  function getCategoryData() { // category and collection
-   if ($("player")) {
-     $("player").pause();
-     $("player").stopLoading();
-     $("player").remove();
-   }
+   delPlayer()
    $ui.loading(true)
    $("loading").text = "Loading..."
    $("searchResult").text = "";
@@ -1940,31 +1911,46 @@
 
        },
        didSendRequest(request) {
-         if (!/video-url\.php/.test(request.url)) {
+         //$ui.alert(request.url)       
+         if (!/video-url\.php/.test(request.url)) {        
            return
-         }
+         }         
          let vInfo = {},
-           params = request.url.match(/\?(.*)/)[1];
+         params = request.url.match(/\?(.*)/)[1];
          $('avgle_web').remove();
+         Status = "closed"
          $http.get({
            url: `https://avgle.com/video-url.php?${params}`,
            timeout: 5,
            handler: function(resp) {
              videoUrl = resp.data.url
-             $ui.loading(false);
-             if (!videoUrl) {
-               $ui.alert("❌ 影片加载失败！")
-               return
-             }
-             $ui.toast("", 0.1)
-             if (typeof addPlayer === 'function') {
-               addPlayer(videoUrl, indexPath, poster);
-             } else if (addPlayer == "share") {
-               $share.sheet(videoUrl)
-             } else {
-               //          $ui.action("dd")        
-               $app.openURL("nplayer-" + videoUrl)
-             }
+             //$ui.alert(videoUrl)
+             $http.get({
+               url: videoUrl,
+               handler: function(resp) {
+                 $ui.loading(false);
+                 var data = resp.data
+                 if(data == "Wrong key"){
+                   WrongKey(OriUrl, Status)
+                   Status = "Opened"
+                   return
+                 } else{
+                  if (!videoUrl) {
+                    $ui.alert("❌ 影片加载失败！")
+                    return
+                  }
+                  $ui.toast("", 0.1)
+                  if (typeof addPlayer === 'function') {
+                    addPlayer(videoUrl, indexPath, poster);
+                  } else if (addPlayer == "share") {
+                    $share.sheet(videoUrl)
+                  } else {      
+                    $app.openURL("nplayer-" + videoUrl)
+                  } 
+                  return
+                 }
+               }
+             })
            }
          })
        }
@@ -1972,24 +1958,8 @@
    });
    $delay(20, function() {
      if (videoUrl == false) {
-       $ui.alert({
-         title: "无法播放",
-         message: "请先用弹出的网页版完成一次播放再返回用脚本进行播放",
-         actions: [{
-             title: "确定",
-             handler: function() {
-               return
-             }
-           },
-           {
-             title: "Cancel",
-             handler: function() {
-               return
-             }
-           }
-         ]
-       })
-       avgleWeb(OriUrl)
+      WrongKey(OriUrl,Status)
+      return
      }
    })
  }
@@ -2010,6 +1980,30 @@
 
      }]
    });
+ }
+
+ function WrongKey(url,Status){
+  if(Status!=="Opened"){
+    $ui.alert({
+      title: "需要验证",
+      message: "请先用弹出的网页版完成一次验证播放再返回用脚本进行播放",
+      actions: [{
+          title: "确定",
+          handler: function() {
+            return
+          }
+        },
+        {
+          title: "Cancel",
+          handler: function() {
+            return
+          }
+        }
+      ]
+    })
+    avgleWeb(url)
+  }
+
  }
 
  //async function videoUrlCatch(url, indexPath, poster, addPlayer){
@@ -2040,11 +2034,7 @@
  //}
  //
  function addPlayer(videoUrl, indexPath, poster) {
-   if ($("player")) {
-     $("player").pause()
-     $("player").stopLoading();
-     $("player").remove()
-   };
+   delPlayer()
 
    $("videos").cell(indexPath).add({
      type: "video",
@@ -2064,7 +2054,15 @@
    })
  }
 
- function play(url, indexPath, poster, videoMode) {
+function delPlayer() {
+  if ($("player")) {
+    $("player").pause();
+    $("player").stopLoading();
+    $("player").remove();
+  }
+}
+
+function play(url, indexPath, poster, videoMode) {
    $ui.loading(true);
    if (videoMode == "video") {
      videoUrlCatch(url, indexPath, poster, addPlayer)
