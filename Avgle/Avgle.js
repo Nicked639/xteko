@@ -21,7 +21,7 @@
 
      */
 
- version = 3.2
+ version = 4.0
  $addin.current.version = version
  times = $cache.get("times") || 4
 
@@ -1190,8 +1190,11 @@
            contentExist = false;
          }
          var url = "https://avgle.com/video/" + data.share.info.vid;
-
-         //         avgleWeb(url)
+         if($("playerMode").index == 1){
+           avgleWeb(url)
+           return
+         }
+           
          play(url, indexPath, data.interface.src, "video");
        },
        didReachBottom(sender) {
@@ -1269,7 +1272,31 @@
        }
 
      }
-   }, nextPageView, prePageView, pageView, nextPageButton, prePageButton],
+   }, {
+      type: "tab",
+      props: {
+        id: "playerMode",
+        items: ["内嵌", "网页"],
+        tintColor: $color("tint"),
+        radius: 5,
+        bgcolor: $color("white"),
+        hidden: false,
+        alpha: 0.8,
+        index: $cache.get("playerMode") || 0
+      },
+      layout: function(make) {
+        make.centerX.equalTo()
+        make.bottom.inset(20)
+        make.height.equalTo(22)
+      },
+      events: {
+        changed(sender) {
+          if (sender.index == 0) $cache.set("playerMode",0);
+          else $cache.set("playerMode",1);
+          
+        }
+      }
+    },nextPageView, prePageView, pageView, nextPageButton, prePageButton],
    layout: $layout.fill
  }
 
