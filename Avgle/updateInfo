@@ -1,4 +1,4 @@
 {
-  "version": 4.1,
-  "msg": "1. 支持iOS10以下设备\n2. 增加内嵌/网页播放选项\n3. 修复少量bug优化部分逻辑\n4. 欢迎通过右上角菜单进入赞赏作者\n\n视频教程详见 https://t.me/Flow_Script"
+  "version": 4.2,
+  "msg": "1. 修复一个Status的bug\n2. 目前发现avgle提供的api有问题，部分视频虽然能看到封面但点击并没有相关视频\n3. 欢迎通过右上角菜单进入赞赏作者\n\n视频教程详见 https://t.me/Flow_Script"
 }
