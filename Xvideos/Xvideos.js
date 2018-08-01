@@ -21,7 +21,7 @@
 
    */
 
-version = 1.3
+version = 1.4
 
 var scale = 600 / 337;
 const searchPreview = {
@@ -614,6 +614,17 @@ const localVideoListView = {
       play(data.url, indexPath)
 
     },
+    pulled(sender) {
+          $("localFavVideoList").endRefreshing()
+          $ui.menu({
+            items: ["微信打赏"],
+            handler: function(title, idx) {
+              if (idx == 0) {
+                wechatPay()
+              }
+            }
+          })
+        },
     willBeginDragging(sender) {
     
       startY = sender.contentOffset.y
@@ -1341,7 +1352,7 @@ function getChannelList() {
   $ui.loading(true);
   channelPage++
   $http.get({
-    url: domain + "/channels/" + channelPage,
+    url: domain + "/channels-index/" + channelPage,
     handler: function(resp) {
       var match = resp.data.match(/xv\.thumbs\.replaceThumbUrl[\s\S]*?profile-counts[\s\S]*?<\/p>/g);
       var data = match.map(function(i) {
@@ -1422,20 +1433,74 @@ function play(url, indexPath, mode) {
 
 function download(url,name) {
   $ui.menu({
-    items: ["低画质下载", "高画质下载"],
-    handler: function(title, idx) {
+    items: ["低画质下载", "高画质下载","复制下载地址","Safari打开"],
+    handler: async function(title, idx) {
       switch (idx) {
         case 0:
           selectReg = /setVideoUrlLow\('(.*?)'\)/g;
+          downloadVideo(url)
           break;
         case 1:
           selectReg = /setVideoUrlHigh\('(.*?)'\)/g;
+          downloadVideo(url)
           break;
+        case 2:
+          selectReg = /setVideoUrlHigh\('(.*?)'\)/g
+          $ui.toast("地址获取中...")
+          let dUrl = domain + url
+          let resp = await $http.get(dUrl);
+          $ui.toast("复制成功！")
+          $clipboard.text = selectReg.exec(resp.data)[1];
+          break
+        case 3:
+////          dUrl = domain + url;
+//          $ui.alert(domain+url)
+          $app.openURL(encodeURI(domain+url))
+          break
       }
     },
-    finished: function(c) {
-      if (!c) {
-        $ui.loading(true);
+//    finished: function(c) {
+//      if (!c) {
+//        $ui.loading(true);
+//        $http.get({
+//          url: domain + url,
+//          handler: function(resp) {
+//            $ui.loading(false);
+//            var videoUrl = selectReg.exec(resp.data)[1];
+//            $http.download({
+//              url: videoUrl,
+//              progress: function(write, total) {
+//                var precent = (write / total * 100).toFixed(1);
+//                var totalSize = total / 1000 < 1000 ? (total / 1000).toFixed(1) + "KB" : (total / 1000 / 1000).toFixed(1) + "MB";
+//                var writeSize = write / 1000 < 1000 ? write / 1000 : write / 1000 / 1000;
+//                $ui.toast(`⏳下载中......${writeSize.toFixed(1)}/${totalSize}(${precent}%)`, 1)
+//              },
+//              handler: function(resp) {
+//                $ui.toast("✅ 下载完成已存至脚本文件管理器内", 1);
+//                let types = resp.data.fileName.split(".").pop()
+//                let path = name +"."+types
+//                let i = 1
+//                while($file.exists(path)){
+//                  var dname = name + `(${i})`
+//                  path = dname +"."+types
+//                  i++
+//                }
+//                $file.write({
+//                  data: resp.data,
+//                  path: path
+//                })
+//              }
+//            })
+//          }
+//
+//        })
+//      }
+//    }
+  });
+}
+
+function downloadVideo(url){
+  $ui.loading(true);
         $http.get({
           url: domain + url,
           handler: function(resp) {
@@ -1468,9 +1533,6 @@ function download(url,name) {
           }
 
         })
-      }
-    }
-  });
 }
 
 function rowHeight(columns, spacing) {
@@ -1709,6 +1771,42 @@ const checkAdultView = {
     }
   }],
   layout: $layout.fill
+}
+
+function wechatPay() {
+  $ui.alert({
+    title: "确定赞赏？",
+    message: "点击确定二维码图片会自动存入相册同时会跳转至微信扫码,请选择相册中的二维码图片进行赞赏。",
+    actions: [{
+        title: "确定",
+        handler: function() {
+          let payUrl = "weixin://scanqrcode"
+          $http.download({
+            url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/wechat.jpg",
+            progress: function(bytesWritten, totalBytes) {
+              var percentage = bytesWritten * 1.0 / totalBytes
+            },
+            handler: function(resp) {
+              $photo.save({
+                data: resp.data,
+                handler: function(success) {
+                  if (success) {
+                    $app.openURL(payUrl)
+                  }
+                }
+              })
+            }
+          })
+        }
+      },
+      {
+        title: "取消",
+        handler: function() {
+
+        }
+      }
+    ]
+  })
 }
 
 function main() {
