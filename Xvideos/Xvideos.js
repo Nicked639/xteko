@@ -1433,7 +1433,7 @@ function play(url, indexPath, mode) {
 
 function download(url,name) {
   $ui.menu({
-    items: ["低画质下载", "高画质下载","复制下载地址","Safari打开"],
+    items: ["低画质下载", "高画质下载","复制下载地址","Safari打开","nplayer打开"],
     handler: async function(title, idx) {
       switch (idx) {
         case 0:
@@ -1448,7 +1448,7 @@ function download(url,name) {
           selectReg = /setVideoUrlHigh\('(.*?)'\)/g
           $ui.toast("地址获取中...")
           let dUrl = domain + url
-          let resp = await $http.get(dUrl);
+          let resp = await $http.get(domain+url);
           $ui.toast("复制成功！")
           $clipboard.text = selectReg.exec(resp.data)[1];
           break
@@ -1456,7 +1456,13 @@ function download(url,name) {
 ////          dUrl = domain + url;
 //          $ui.alert(domain+url)
           $app.openURL(encodeURI(domain+url))
-          break
+          break;
+        case 4:
+          selectReg = /setVideoUrlHigh\('(.*?)'\)/g
+          $ui.toast("地址获取中...")
+          let r = await $http.get(domain+url);
+          videoUrl = selectReg.exec(r.data)[1];
+          $app.openURL("nplayer-" + videoUrl)
       }
     },
 //    finished: function(c) {
