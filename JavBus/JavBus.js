@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 5.6
+version = 5.7
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -1168,7 +1168,7 @@ function detailView(code) {
                       actions: [{
                         title: "安装",
                         handler: function() {
-                          var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/Avgle.js&name=Avgle&icon=icon_135.png&types=1&version=3.1&author=Nicked&website=https://t.me/nicked";
+                          var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/Avgle.js&name=Avgle&icon=icon_87.png&types=1&version=4.1&author=Nicked&website=https://t.me/nicked";
                           $app.openURL(encodeURI(url));
                           $app.close()
                         }
@@ -1540,6 +1540,7 @@ function magnetList(code) {
           didSelect: function(sender, indexPath, data) {
             let magnet = sender.data[indexPath.row].info
             $clipboard.text = magnet
+            $device.taptic(0)
             $ui.toast("💡 磁链已复制");
 
           },
