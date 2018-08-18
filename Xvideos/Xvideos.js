@@ -21,7 +21,7 @@
 
    */
 
-version = 1.4
+version = 1.5
 
 var scale = 600 / 337;
 const searchPreview = {
@@ -965,14 +965,15 @@ function genericVideoListView(title) {
       events: {
         didReachBottom(sender) {
           $device.taptic(0);
-          switch ($("menu").index) {
-            case 2:
-              getStarVideoList();
-              break;
-            case 3:
-              getChannelVideoList();
-              break
-          }
+          getChannelVideoList();
+//          switch ($("menu").index) {
+//            case 2:
+//              getStarVideoList();
+//              break;
+//            case 3:
+//              getChannelVideoList();
+//              break
+//          }
         },
         didSelect(sender, indexPath, data) {
           play(data.url, indexPath)
@@ -1625,7 +1626,7 @@ function scriptVersionUpdate() {
           actions: [{
             title: "更新",
             handler: function() {
-              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Xvideos/Xvideos.js&name=Xvideos" + afterVersion + "&icon=icon_135.png";
+              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Xvideos/Xvideos.js&name=Xvideos&icon=icon_135.png";
               $app.openURL(encodeURI(url));
               $app.close()
             }
