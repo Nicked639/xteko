@@ -2287,7 +2287,7 @@ function catCover(title) {
       events: {
         didReachBottom(sender) {
           sender.endFetchingMore();
-          if ($("menu").index == 0 || $("menu").index == 2 || $("tab").index > 1) {
+          if ($("menu").index !== 1 || $("menu").index == 2 || $("tab").index > 1) {
             $ui.loading(true)
             getInitial(mode, keyword);
           } else if ($("menu").index == 1) {
@@ -2306,6 +2306,12 @@ function catCover(title) {
           favLink = data.link
           shortCode = favLink.split('/').pop()
           favCode = shortCode
+          favData = {
+              "code": favCode,
+              "src": favSrc,
+              "info": favInfo,
+              "shortCode": shortCode
+            }
           $ui.push(detailView(favCode))
           getDetail(data.link)
           if ($("menu").index == 0 || $("menu").index == 1 || $("menu").index == 2) {
@@ -3101,8 +3107,8 @@ function favActressButtonTapped(mode, data) {
 function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
     //$ui.pop();
-    LocalData.favorite.push(data)
-    LocalFavList.push(data.shortCode)
+    LocalData.favorite.unshift(data)
+    LocalFavList.unshift(data.shortCode)
     if (!$context.query.code && $("menu").index == 3 && $("tab").index == 0) {
       $("initialView").data = $("initialView").data.concat({
         link: homepage + shortCode,
@@ -3529,11 +3535,11 @@ function scriptVersionUpdate() {
       if (afterVersion > version) {
         $ui.alert({
           title: "检测到新的版本！V" + afterVersion,
-          message: "是否更新?\n更新完成后请退出至扩展列表重新启动新版本。\n" + msg,
+          message: "是否覆盖更新?\n更新完成后请退出至扩展列表重新启动新版本。\n" + msg,
           actions: [{
             title: "更新",
             handler: function() {
-              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js&name=JavBus" + afterVersion + "&icon=icon_087.png&types=1&author=Nicked&website=https://t.me/nicked";
+              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js&name=JavBus&icon=icon_087.png&types=1&author=Nicked&website=https://t.me/nicked";
               $app.openURL(encodeURI(url));
               $app.close()
             }
