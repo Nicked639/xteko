@@ -31,7 +31,7 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 5.91
+version = 5.92
 
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
@@ -47,7 +47,7 @@ uncensored = false; // 无码状态
 JavMag = 0 // 磁链获取状态 
 timeout = 5;
 flag = 0; // 用于判断从通知中心启动的状态
-runWhere()
+if(isInToday()) runWhere();
 var colorData = [
   [$color("#fd354a"), $color("#da0a6f")],
   [$color("#f97227"), $color("#f52156")],
@@ -3600,14 +3600,14 @@ function runWhere() {
     "keyword": ""
   }
   if (clip) detect = clipboardDetect(clip);
-  if (isInToday()) {
-    if (detect.keyword == "") {
-      $delay(0.5, function() {
-        $app.openURL("jsbox://run?name=JavBus");
-      })
-    }
-    return
+
+  if (detect.keyword == "") {
+    $delay(0.5, function() {
+      $app.openURL("jsbox://run?name=JavBus");
+    })
   }
+  return
+
 }
 //初始化设定
 function initial() {
@@ -3757,7 +3757,6 @@ function start() {
 
 LocalDataPath = "drive://JavBusBackup.json";
 url = "https://www.javbus.com/"
-
 //let LAContext = $objc("LAContext").invoke("alloc.init");
 //
 //let handler = $block("void, BOOL", success => $thread.main({
