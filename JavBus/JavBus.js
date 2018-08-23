@@ -31,7 +31,7 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 5.9
+version = 5.91
 
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
@@ -3599,9 +3599,9 @@ function runWhere() {
     "mode": "home",
     "keyword": ""
   }
-  detect = clipboardDetect(clip)
+  if (clip) detect = clipboardDetect(clip);
   if (isInToday()) {
-    if (!detect.keyword) {
+    if (detect.keyword == "") {
       $delay(0.5, function() {
         $app.openURL("jsbox://run?name=JavBus");
       })
