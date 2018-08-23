@@ -31,8 +31,8 @@ By Nicked
 https://t.me/nicked
 
 */
+version = 5.9
 
-version = 5.8
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -47,6 +47,7 @@ uncensored = false; // 无码状态
 JavMag = 0 // 磁链获取状态 
 timeout = 5;
 flag = 0; // 用于判断从通知中心启动的状态
+runWhere()
 var colorData = [
   [$color("#fd354a"), $color("#da0a6f")],
   [$color("#f97227"), $color("#f52156")],
@@ -3590,6 +3591,23 @@ function wechatPay() {
       }
     ]
   })
+}
+
+function runWhere() {
+  let clip = $clipboard.text
+  let detect = {
+    "mode": "home",
+    "keyword": ""
+  }
+  detect = clipboardDetect(clip)
+  if (isInToday()) {
+    if (!detect.keyword) {
+      $delay(0.5, function() {
+        $app.openURL("jsbox://run?name=JavBus");
+      })
+    }
+    return
+  }
 }
 //初始化设定
 function initial() {
