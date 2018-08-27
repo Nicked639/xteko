@@ -31,9 +31,8 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 5.93
+version = 5.92
 
-Recom = "Snis488"
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -3566,8 +3565,7 @@ function scriptVersionUpdate() {
                           actions: [{
                             title: "OK",
                             handler: function() {
-                              $app.openExtension($addin.current.name)
-$ui.alert(Recom)                            
+                              $app.openExtension($addin.current.name)                           
                             }
                           }]
                         })
