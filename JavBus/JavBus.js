@@ -31,7 +31,7 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 5.92
+version = 5.93
 
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
