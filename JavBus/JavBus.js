@@ -33,6 +33,7 @@ https://t.me/nicked
 */
 version = 5.93
 
+Recom = "Snis488"
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -3566,7 +3567,7 @@ function scriptVersionUpdate() {
                             title: "OK",
                             handler: function() {
                               $app.openExtension($addin.current.name)
-                              $cache.set("recom","1")
+$ui.alert(Recom)                            
                             }
                           }]
                         })
@@ -3806,8 +3807,3 @@ url = "https://www.javbus.com/"
 
 //LAContext.invoke("evaluatePolicy:localizedReason:reply:", 2, "验证以继续", handler);
 start()
-let r = $cache.get("recom")
-if(r=="1"){
-  $ui.alert("recom")
-  $cache.set("recom","0")
-}
