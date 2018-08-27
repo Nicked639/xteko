@@ -31,7 +31,7 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 5.92
+version = 5.93
 
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
@@ -47,7 +47,7 @@ uncensored = false; // 无码状态
 JavMag = 0 // 磁链获取状态 
 timeout = 5;
 flag = 0; // 用于判断从通知中心启动的状态
-if(isInToday()) runWhere();
+if (isInToday()) runWhere();
 var colorData = [
   [$color("#fd354a"), $color("#da0a6f")],
   [$color("#f97227"), $color("#f52156")],
@@ -322,12 +322,12 @@ function searchView(height, catname, cols = 3, spa = 1) {
           shortCode = favLink.split('/').pop()
           favCode = shortCode
           favData = {
-              "code": favCode,
-              "src": favSrc,
-              "info": favInfo,
-              "shortCode": shortCode
-            }
-           if (isInToday()) $cache.set("cacheData",favData);
+            "code": favCode,
+            "src": favSrc,
+            "info": favInfo,
+            "shortCode": shortCode
+          }
+          if (isInToday()) $cache.set("cacheData", favData);
           // 演员tab
           if ($("tab").hidden == false && $("tab").index == 1 || $("menu").index == 1) {
             favActressCover = favSrc
@@ -733,7 +733,7 @@ function detailView(code) {
           textColor: $color("black"),
           font: $font(15),
           align: $align.left,
-//          autoFontSize: true,
+          //          autoFontSize: true,
           scrollEnabled: false,
           hidden: false,
           lines: 1,
@@ -743,7 +743,7 @@ function detailView(code) {
         layout: function(make, view) {
           make.top.inset(10)
           make.left.right.inset(5)
-          if(isInToday()) make.height.equalTo(20)
+          if (isInToday()) make.height.equalTo(20)
         },
         events: {
           tapped(sender) {
@@ -1129,16 +1129,16 @@ function detailView(code) {
               items: ["磁链", "Avgle", "nyaa", "JavLibrary"],
               handler: function(title, idx) {
                 if (idx == 0) {
-                  if(JavMag == 0){
-                    $ui.toast("磁链加载中...",2)
-                    $delay(2,function(){
-                                        $ui.push(magnetList(favCode))
-                  getMagnet(favCode)
-                  $("javbusList").data = javMagData
-                  if (javMagData.length == 0) {
-                    $("loadingm").text = "☹️ JavBus 暂无磁链"
-                    $("loadingm").hidden = false
-                  } else $("loadingm").hidden = true;
+                  if (JavMag == 0) {
+                    $ui.toast("磁链加载中...", 2)
+                    $delay(2, function() {
+                      $ui.push(magnetList(favCode))
+                      getMagnet(favCode)
+                      $("javbusList").data = javMagData
+                      if (javMagData.length == 0) {
+                        $("loadingm").text = "☹️ JavBus 暂无磁链"
+                        $("loadingm").hidden = false
+                      } else $("loadingm").hidden = true;
                     })
                     return
                   }
@@ -1252,8 +1252,8 @@ function detailView(code) {
         events: {
           tapped(sender) {
             let data = {}
-            if ($context.query.code && flag == 1)  data = $cache.get("cacheData");
-            else  data = favData;  
+            if ($context.query.code && flag == 1) data = $cache.get("cacheData");
+            else data = favData;
             if ($("favorite").title == "收藏") {
               $("favorite").title = "取消收藏"
               $("favorite").bgcolor = $color("#f25959");
@@ -1308,7 +1308,7 @@ function detailView(code) {
                   $clipboard.text = sender.info
                   $ui.toast("番号 " + sender.info + "已复制")
                 } else if (idx == 2) $share.sheet(favLink);
-                
+
               },
 
             })
@@ -1546,13 +1546,13 @@ function magnetList(code) {
 
           },
           pulled(sender) {
-            if($("javbusList").data.length==0){
+            if ($("javbusList").data.length == 0) {
               $("javbusList").endRefreshing()
               return
             }
             $("javbusList").data = [];
-            getJavMag(javbusLink,"pulled");
-            
+            getJavMag(javbusLink, "pulled");
+
             //$("javbusList").data = javMagData        
             //$("javbusList").endRefreshing();
           }
@@ -1707,8 +1707,8 @@ const screenshotView = {
       }
     }
 
-  },{
-    type:"button",
+  }, {
+    type: "button",
     props: {
       bgcolor: $color("tint"),
       titleColor: $color("white"),
@@ -1727,59 +1727,59 @@ const screenshotView = {
       make.width.equalTo(120)
     },
     events: {
-      tapped: function(sender){
+      tapped: function(sender) {
         if ($("download").title == "批量下载") {
-            $device.taptic(1)
-            sender.title = "正在下载...";
-            let folderName = ""
-            if ($("filmActress").data.length == 1)
-               folderName = $("filmActress").data[0].actressName.text
-            else  folderName = favCode
-            if (!$drive.exists("样品图像/"+folderName)) {
-              $drive.mkdir("样品图像/"+folderName)
-            }
-            $("progress").value = 0;
-            var count = 0
-            for (var i = 0; i < screenData.length; i++) {
-              $http.download({
-                url: screenData[i].link,
-                handler: function(resp) {
-                  count++;
-                  sender.title = "下载第 " + count + " 幅图";
-                  $("progress").value = count * 1.0 / screenData.length
-                  if (count == screenData.length) {
-                    sender.title = "完成!"
-                    $device.taptic(1)
-                    $("progress").value = 0
-                  }
-                  var path = "样品图像/"+folderName + "/" + resp.response.suggestedFilename
-                  $drive.write({
-                    data: resp.data,
-                    path: path
-                  })
-                }
-              })
-            }
+          $device.taptic(1)
+          sender.title = "正在下载...";
+          let folderName = ""
+          if ($("filmActress").data.length == 1)
+            folderName = $("filmActress").data[0].actressName.text
+          else folderName = favCode
+          if (!$drive.exists("样品图像/" + folderName)) {
+            $drive.mkdir("样品图像/" + folderName)
           }
+          $("progress").value = 0;
+          var count = 0
+          for (var i = 0; i < screenData.length; i++) {
+            $http.download({
+              url: screenData[i].link,
+              handler: function(resp) {
+                count++;
+                sender.title = "下载第 " + count + " 幅图";
+                $("progress").value = count * 1.0 / screenData.length
+                if (count == screenData.length) {
+                  sender.title = "完成！"
+                  $device.taptic(1)
+                  $("progress").value = 0
+                }
+                var path = "样品图像/" + folderName + "/" + resp.response.suggestedFilename
+                $drive.write({
+                  data: resp.data,
+                  path: path
+                })
+              }
+            })
+          }
+        }
       }
     }
-  },{
-      type: "progress",
-      props: {
-        id: "progress",
-        value: 0,
-        trackColor: $color("clear"),
-        alpha: 0.8,
-        progressColor: $color("green"),
-        userInteractionEnabled: false
-      },
-      layout: function(make, view) {
-        make.centerX.equalTo()
-        make.bottom.inset(20)
-        make.height.equalTo(28)
-        make.width.equalTo(120)
-      }
-    }],
+  }, {
+    type: "progress",
+    props: {
+      id: "progress",
+      value: 0,
+      trackColor: $color("clear"),
+      alpha: 0.8,
+      progressColor: $color("green"),
+      userInteractionEnabled: false
+    },
+    layout: function(make, view) {
+      make.centerX.equalTo()
+      make.bottom.inset(20)
+      make.height.equalTo(28)
+      make.width.equalTo(120)
+    }
+  }],
   layout: $layout.fill
 }
 
@@ -1941,11 +1941,11 @@ function actressView(actress, cover) {
           shortCode = favLink.split("/").pop()
           favCode = data.code
           favData = {
-              "code": favCode,
-              "src": favSrc,
-              "info": favInfo,
-              "shortCode": shortCode
-            }
+            "code": favCode,
+            "src": favSrc,
+            "info": favInfo,
+            "shortCode": shortCode
+          }
           //$ui.action(data.code)
           $ui.push(detailView(favCode))
           getDetail(data.link)
@@ -2203,14 +2203,15 @@ $ui.render({
     }
   }, ]
 })
-function aboutMag(){
-                    $ui.push(magnetList(favCode))
-                  getMagnet(favCode)
-                  $("javbusList").data = javMagData
-                  if (javMagData.length == 0) {
-                    $("loadingm").text = "☹️ JavBus 暂无磁链"
-                    $("loadingm").hidden = false
-                  } else $("loadingm").hidden = true;
+
+function aboutMag() {
+  $ui.push(magnetList(favCode))
+  getMagnet(favCode)
+  $("javbusList").data = javMagData
+  if (javMagData.length == 0) {
+    $("loadingm").text = "☹️ JavBus 暂无磁链"
+    $("loadingm").hidden = false
+  } else $("loadingm").hidden = true;
 }
 
 function catCover(title) {
@@ -2308,11 +2309,11 @@ function catCover(title) {
           shortCode = favLink.split('/').pop()
           favCode = shortCode
           favData = {
-              "code": favCode,
-              "src": favSrc,
-              "info": favInfo,
-              "shortCode": shortCode
-            }
+            "code": favCode,
+            "src": favSrc,
+            "info": favInfo,
+            "shortCode": shortCode
+          }
           $ui.push(detailView(favCode))
           getDetail(data.link)
           if ($("menu").index == 0 || $("menu").index == 1 || $("menu").index == 2) {
@@ -2672,7 +2673,7 @@ function getInitialActress(url) {
 //  });
 //}
 
-function getJavMag(link,flag="0") {
+function getJavMag(link, flag = "0") {
   javMagData = []
   $('detailView').add({
     type: 'web',
@@ -2692,12 +2693,12 @@ function getJavMag(link,flag="0") {
       getUrl(data) {
         //resolve(data);
         //$ui.action(data)
-        if($('magnet'))$('magnet').remove();
+        if ($('magnet')) $('magnet').remove();
         //          let html = await getInfo(link)
         let html = data;
         let pattern = /<tr onmouseover[\s\S]*?<\/tr>/g
         let match = html.match(pattern)
-        if(!match) return
+        if (!match) return
         //  $console.log(match)
         match.map(function(i) {
           let maglink = /window.open\('([\s\S]*?)'/g.exec(i)[1]
@@ -2730,14 +2731,14 @@ function getJavMag(link,flag="0") {
             }
           })
         })
-//        if (javMagData.length == 0) {
-//          $("loadingm").text = "☹️ JavBus 暂无磁链"
-//          $("loadingm").hidden = false
-//        } else $("loadingm").hidden = true;
-        if (flag=="pulled"){
+        //        if (javMagData.length == 0) {
+        //          $("loadingm").text = "☹️ JavBus 暂无磁链"
+        //          $("loadingm").hidden = false
+        //        } else $("loadingm").hidden = true;
+        if (flag == "pulled") {
           $("javbusList").data = javMagData
-        $("javbusList").hidden = false
-        $("javbusList").endRefreshing();
+          $("javbusList").hidden = false
+          $("javbusList").endRefreshing();
         }
         JavMag = 1;
       }
@@ -2964,10 +2965,10 @@ function getDetail(url) {
       // 磁链获取
       JavMag = 0
       getJavMag(url)
-//      if (javMagData.length == 0) {
-//        $("loadingm").text = "☹️ JavBus 暂无磁链"
-//        $("loadingm").hidden = false
-//      } else $("loadingm").hidden = true;
+      //      if (javMagData.length == 0) {
+      //        $("loadingm").text = "☹️ JavBus 暂无磁链"
+      //        $("loadingm").hidden = false
+      //      } else $("loadingm").hidden = true;
     }
   })
 
@@ -3540,9 +3541,39 @@ function scriptVersionUpdate() {
           actions: [{
             title: "更新",
             handler: function() {
-              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js&name=JavBus&icon=icon_087.png&types=1&author=Nicked&website=https://t.me/nicked";
-              $app.openURL(encodeURI(url));
-              $app.close()
+              //              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js&name=JavBus&icon=icon_087.png&types=1&author=Nicked&website=https://t.me/nicked";
+              //              $app.openURL(encodeURI(url));
+              //              $app.close()
+              $http.download({
+                url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js",
+                handler: resp => {
+                  let box = resp.data
+                  $addin.save({
+                    name: "Javbus",
+                    data: box,
+                    version: afterVersion,
+                    author: "Nicked",
+                    icon: "icon_087",
+                    handler: (success) => {
+                      if (success) {
+                        $device.taptic(2)
+                        $delay(0.2, function() {
+                          $device.taptic(2)
+                        })
+                        $ui.alert({
+                          title: "静默更新已完成",
+                          actions: [{
+                            title: "OK",
+                            handler: function() {
+                              $app.openExtension($addin.current.name)
+                            }
+                          }]
+                        })
+                      }
+                    }
+                  })
+                }
+              })
             }
           }, {
             title: "取消"
@@ -3595,18 +3626,21 @@ function wechatPay() {
 
 function runWhere() {
   let clip = $clipboard.text
+  let link = $detector.link(clip)
   let detect = {
-    "mode": "home",
+    "mode": "",
     "keyword": ""
   }
   if (clip) detect = clipboardDetect(clip);
-
-  if (detect.keyword == "") {
-    $delay(0.5, function() {
+  //  $ui.alert(detect)
+  if (detect.keyword == "" || link.length > 0) {
+    $delay(0.1, function() {
       $app.openURL("jsbox://run?name=JavBus");
     })
   }
   return
+
+  //  $app.close()
 
 }
 //初始化设定
@@ -3720,19 +3754,19 @@ function main(url) {
     "keyword": ""
   }
   if ($context.query.code) {
-  let code = $context.query.code
-  favCode = code
-  openJS(code,$context.query.link)
-  if (LocalFavList.indexOf(code) > -1) {
-    $("favorite").title = "取消收藏"
-    $("favorite").bgcolor = $color("#f25959")
-  } else if (LocalArcList.indexOf(code) > -1) {
-    $("favorite").title = "已归档"
-    $("favorite").bgcolor = $color("#aaaaaa")
+    let code = $context.query.code
+    favCode = code
+    openJS(code, $context.query.link)
+    if (LocalFavList.indexOf(code) > -1) {
+      $("favorite").title = "取消收藏"
+      $("favorite").bgcolor = $color("#f25959")
+    } else if (LocalArcList.indexOf(code) > -1) {
+      $("favorite").title = "已归档"
+      $("favorite").bgcolor = $color("#aaaaaa")
+    }
+    //  getInitial("search",$context.query.code);
+    return
   }
-//  getInitial("search",$context.query.code);
-  return
-}
   if (!$context.textItems && ($("tabC").index == 2 || clip == null || link.length > 0)) {
     getInitial()
   } else {
