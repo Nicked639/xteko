@@ -3561,11 +3561,12 @@ function scriptVersionUpdate() {
                           $device.taptic(2)
                         })
                         $ui.alert({
-                          title: "静默更新已完成",
+                          title: "更新已完成",
                           actions: [{
                             title: "OK",
                             handler: function() {
                               $app.openExtension($addin.current.name)
+                              $cache.set("recom","1")
                             }
                           }]
                         })
@@ -3805,3 +3806,8 @@ url = "https://www.javbus.com/"
 
 //LAContext.invoke("evaluatePolicy:localizedReason:reply:", 2, "验证以继续", handler);
 start()
+let r = $cache.get("recom")
+if(r=="1"){
+  $ui.alert("recom")
+  $cache.set("recom","0")
+}
