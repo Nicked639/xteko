@@ -1626,7 +1626,7 @@ function scriptVersionUpdate() {
           actions: [{
             title: "更新",
             handler: function() {
-              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Xvideos/Xvideos.js&name=Xvideos&icon=icon_135.png";
+              var url = "jsbox://import?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Xvideos/Xvideos.js&name=Xvideos&icon=icon_135.png";
               $app.openURL(encodeURI(url));
               $app.close()
             }
