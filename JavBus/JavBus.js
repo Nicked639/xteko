@@ -31,7 +31,7 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 5.93
+version = 5.94
 
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
@@ -48,6 +48,25 @@ JavMag = 0 // 磁链获取状态
 timeout = 5;
 flag = 0; // 用于判断从通知中心启动的状态
 if (isInToday()) runWhere();
+
+if ($cache.get("samp") === undefined) {
+  $http.get({
+    url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Readme.txt",
+    handler: function(resp) {
+    $ui.push({
+      views: [{
+        type: "markdown",
+        props: {
+          content: resp.data
+        },
+        layout: $layout.fill
+      }]
+    })
+    }
+  })
+  $cache.set("samp", "1")
+}
+
 var colorData = [
   [$color("#fd354a"), $color("#da0a6f")],
   [$color("#f97227"), $color("#f52156")],
@@ -292,7 +311,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
         pulled(sender) {
           $("initialView").endRefreshing()
           $ui.menu({
-            items: ["微信打赏"],
+            items: ["微信赞赏"],
             handler: function(title, idx) {
               if (idx == 0) {
                 wechatPay()
