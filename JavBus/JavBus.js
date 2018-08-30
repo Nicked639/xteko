@@ -3568,7 +3568,7 @@ function scriptVersionUpdate() {
                 handler: resp => {
                   let box = resp.data
                   $addin.save({
-                    name: "Javbus",
+                    name: "JavBus",
                     data: box,
                     version: afterVersion,
                     author: "Nicked",
