@@ -1,6 +1,6 @@
 # JavBus V5.93
 
-*欢迎使用 JavBus*
+**欢迎使用 JavBus**
 
 ## 本次更新
 
@@ -14,4 +14,4 @@
  
 - snis-375 葵
 
-- snis-839 snis-839
+- snis-839 明日花绮罗
