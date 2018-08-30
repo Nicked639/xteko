@@ -3554,12 +3554,6 @@ function scriptVersionUpdate() {
       var afterVersion = resp.data.version;
       var msg = resp.data.msg;
       if (afterVersion > version) {
-        $ui.alert({
-          title: "检测到新的版本！V" + afterVersion,
-          message: "是否覆盖更新?\n更新完成后请退出至扩展列表重新启动新版本。\n" + msg,
-          actions: [{
-            title: "更新",
-            handler: function() {
               //              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js&name=JavBus&icon=icon_087.png&types=1&author=Nicked&website=https://t.me/nicked";
               //              $app.openURL(encodeURI(url));
               //              $app.close()
@@ -3594,11 +3588,9 @@ function scriptVersionUpdate() {
                   })
                 }
               })
-            }
-          }, {
-            title: "取消"
-          }]
-        })
+            
+          
+        
       }
     }
   })
