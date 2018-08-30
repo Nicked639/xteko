@@ -1,6 +1,6 @@
-# JavBus V5.93
+# JavBus V5.94
 
-**欢迎使用 JavBus**
+**欢迎使用 JavBus 下拉微信赞赏作者**
 
 ## 本次更新
 
