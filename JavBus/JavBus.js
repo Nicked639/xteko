@@ -3579,6 +3579,7 @@ function scriptVersionUpdate() {
                         $delay(0.2, function() {
                           $device.taptic(2)
                         })
+                        $cache.clear()
                         $ui.alert({
                           title: "更新已完成",
                           actions: [{
