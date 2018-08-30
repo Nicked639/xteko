@@ -53,15 +53,15 @@ if ($cache.get("samp") === undefined) {
   $http.get({
     url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Readme.txt",
     handler: function(resp) {
-    $ui.push({
-      views: [{
-        type: "markdown",
-        props: {
-          content: resp.data
-        },
-        layout: $layout.fill
-      }]
-    })
+      $ui.push({
+        views: [{
+          type: "markdown",
+          props: {
+            content: resp.data
+          },
+          layout: $layout.fill
+        }]
+      })
     }
   })
   $cache.set("samp", "1")
@@ -3554,43 +3554,44 @@ function scriptVersionUpdate() {
       var afterVersion = resp.data.version;
       var msg = resp.data.msg;
       if (afterVersion > version) {
-              //              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js&name=JavBus&icon=icon_087.png&types=1&author=Nicked&website=https://t.me/nicked";
-              //              $app.openURL(encodeURI(url));
-              //              $app.close()
-              $http.download({
-                url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js",
-                handler: resp => {
-                  let box = resp.data
-                  $addin.save({
-                    name: "JavBus",
-                    data: box,
-                    version: afterVersion,
-                    author: "Nicked",
-                    icon: "icon_087",
-                    handler: (success) => {
-                      if (success) {
-                        $device.taptic(2)
-                        $delay(0.2, function() {
-                          $device.taptic(2)
-                        })
-                        $cache.clear()
-                        $ui.alert({
-                          title: "更新已完成",
-                          actions: [{
-                            title: "OK",
-                            handler: function() {
-                              $app.openExtension($addin.current.name)                           
-                            }
-                          }]
-                        })
+
+        $ui.toast("检测到脚本更新...")
+        //              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js&name=JavBus&icon=icon_087.png&types=1&author=Nicked&website=https://t.me/nicked";
+        //              $app.openURL(encodeURI(url));
+        //              $app.close()
+
+        $http.download({
+          url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js",
+          handler: resp => {
+            let box = resp.data
+            $addin.save({
+              name: "JavBus",
+              data: box,
+              version: afterVersion,
+              author: "Nicked",
+              icon: "icon_087",
+              handler: (success) => {
+                if (success) {
+                  $device.taptic(2)
+                  $delay(0.2, function() {
+                    $device.taptic(2)
+                  })
+                  $cache.clear()
+                  $ui.alert({
+                    title: "更新已完成",
+                    actions: [{
+                      title: "OK",
+                      handler: function() {
+                        $app.openExtension($addin.current.name)
                       }
-                    }
+                    }]
                   })
                 }
-              })
-            
-          
-        
+              }
+            })
+          }
+        })
+
       }
     }
   })
