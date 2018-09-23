@@ -41,6 +41,7 @@ function mainUI(column,rowHeight) {
   $ui.render({
     props: {
       title: "秀美眉",
+      id:"main"
     },
     views: [{
         type: "text",
@@ -85,6 +86,7 @@ function mainUI(column,rowHeight) {
         },
         events: {
           changed(sender) {
+            $("main").remove()
             if (sender.index !== 1) {
               mainUI(2,280)
               $("menu").index = sender.index;
@@ -93,7 +95,7 @@ function mainUI(column,rowHeight) {
               $("preView").data = [];
               getPostData()
             } else {
-              mainUI(4,150)
+              mainUI(4,140)
               $("menu").index = 1
               if (LocalList.length == 0) {
                 $ui.toast("暂无收藏内容，请收藏")
@@ -132,6 +134,7 @@ function mainUI(column,rowHeight) {
           template: [{
             type: "image",
             props: {
+              contentMode:$contentMode.scaleAspectFit,            
               id: "interface",
             },
             layout: $layout.fill
@@ -155,7 +158,14 @@ function mainUI(column,rowHeight) {
           },
           didSelect(sender, indexPath, data) {
             interface = data.interface.src
-            title = data.title
+            //title = data.title
+            try{
+              let title = /<\/a>([\s\S]*?)"/g.exec(data.title)[1]
+            }
+            catch(err){
+              title = data.title
+            }
+            console.log(title)
             if($("menu").index == 1){
               showPhotos(title,1,563)
             }else{
@@ -258,6 +268,7 @@ function showPhotos(title,columns,rowHeight) {
         template: [{
           type: "image",
           props: {
+            contentMode:$contentMode.scaleAspectFit,           
             id: "detailImage"
           },
           layout: $layout.fill
@@ -269,7 +280,7 @@ function showPhotos(title,columns,rowHeight) {
         didReachBottom(sender) {
           if (detailPage > num + 1) {
             $device.taptic(0);
-            $ui.toast("🙈 已经到底啦")
+            $ui.toast("🙈 已经到底啦",0.5)
             sender.endFetchingMore();
           } else {
             sender.endFetchingMore();
@@ -306,20 +317,27 @@ function showPhotos(title,columns,rowHeight) {
       },
       events: {
         tapped(sender) {
+          $cache.clear()        
           $device.taptic(0)
           if (detailPage < num) {
             $ui.toast("❌ 请滑至底部再按下载")
 
-          } else if ($("download").title == "下载") {
+          } else {
+          var urlList = []
+          if ($("download").title == "下载") {
+            $delay(0.5, function() {
+})          
             sender.title = "正在下载...";
-            var urlList = $("detailView").data.map(function(i) {
-              return i.detailImage.src
+            urlList = $("detailView").data.map(function(i) {
+             
+                return i.detailImage.src
+              
             })
             /*$quicklook.open({
             list: urlList
           })*/
-            if (!$drive.exists(folderName)) {
-              $drive.mkdir(folderName)
+            if (!$drive.exists("秀美眉/"+folderName)) {
+              $drive.mkdir("秀美眉/"+folderName)
             }
             $("progress").value = 0;
             var count = 0
@@ -335,7 +353,7 @@ function showPhotos(title,columns,rowHeight) {
                               $device.taptic(1)
                     $("progress").value = 0
                   }
-                  var path = folderName + "/" + resp.response.suggestedFilename
+                  var path = "秀美眉/"+folderName + "/" + resp.response.suggestedFilename
                   $drive.write({
                     data: resp.data,
                     path: path
@@ -344,7 +362,8 @@ function showPhotos(title,columns,rowHeight) {
               })
             }
           }
-
+        $cache.clear()
+         }
         }
       }
     }, {
@@ -379,7 +398,8 @@ function showPhotos(title,columns,rowHeight) {
             $("favorite").bgcolor = $color("black")
 
           }
-
+          $delay(0.5, function() {
+})
         }
 
       }
