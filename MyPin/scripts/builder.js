@@ -10,7 +10,7 @@ function createClipboardView() {
     props: {
       id: "clipboard-list",
       reorder: true,
-      rowHeight: $app.env == $env.today ? 27 : 44,
+      rowHeight: $app.env == $env.today ? 29 : 44,
       separatorColor:
         $app.env == $env.today
           ? $rgba(100, 100, 100, 0.25)
@@ -24,7 +24,7 @@ function createClipboardView() {
               id: "label",
               textColor: $color("black"),
               align: $align.left,
-              font: $font(12)
+              font: $font(13)
             },
             layout: function(make, view) {
               make.right.top.bottom.inset(0);

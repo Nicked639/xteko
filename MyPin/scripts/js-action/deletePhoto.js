@@ -8,6 +8,7 @@ option.invoke("setSortDescriptors", [descriptor])
 var fetchResult = $objc("PHAsset").invoke("fetchAssetsWithOptions:", option)
 
 function render() {
+  $widget.height = 181
   $ui.render({
     views: [{
       type: "matrix",

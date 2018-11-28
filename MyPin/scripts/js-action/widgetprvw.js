@@ -77,7 +77,7 @@ function show(content) {
             events: {
               tapped(sender) {
                 $device.taptic(0);
-                $widget.height = 180;
+                $widget.height = 181;
                 $("wprvw").remove();
               }
             }

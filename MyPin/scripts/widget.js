@@ -1,3 +1,4 @@
+$widget.height = 181
 var dataManager = require("./data-manager");
 var builder = require("./builder");
 var helper = require("./helper");
@@ -33,16 +34,6 @@ var views = [
           make.height.equalTo(26);
           make.width.equalTo(view.super).multipliedBy(0.06);
         },function() {
-          var ptext = $("input").text;
-          if (ptext == "轻点输入..") {
-            $("input").focus();
-          } else {
-            var widgetPreview = require("./js-action/widgetprvw");
-            widgetPreview.show(ptext);
-            $("input").blur();
-          }
-        },
-        function() {
           var stext = $("input").text;
           if (stext == "轻点输入..") {
             $("input").focus();
@@ -53,7 +44,18 @@ var views = [
           } else if (stext) {
             helper.searchText(stext);
           }
+        },
+        function() {
+          var ptext = $("input").text;
+          if (ptext == "轻点输入..") {
+            $("input").focus();
+          } else {
+            var widgetPreview = require("./js-action/widgetprvw");
+            widgetPreview.show(ptext);
+            $("input").blur();
+          }
         }
+        
       ),
       createButton(
         "022", //分享剪贴板记录列表

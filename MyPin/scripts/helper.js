@@ -26,14 +26,37 @@ function runLongAction(action) {
 
   pattern = pattern.replace("%@", replacement);
   if (_hasPrefix(pattern, "delete:")) {
-    var deletePhoto = require("./js-action/deletePhoto")
-    deletePhoto.run()
-    return
+    var deletePhoto = require("./js-action/deletePhoto");
+    deletePhoto.run();
+    return;
+  }
+
+  if (_hasPrefix(pattern, "searchImage:")) {
+    var smms = require("./js-action/smms");
+    smms.run();
+    return;
+  }
+
+  if (_hasPrefix(pattern, "editPhoto:")) {
+    var editPhoto = require("./js-action/editPhoto2");
+    editPhoto.run();
+    return;
+  }
+
+  if (_hasPrefix(pattern, "pin:")) {
+    $app.openURL("jsbox://run?name=JavBus");
+    return;
+  }
+
+  if (_hasPrefix(pattern, "keyboard:")) {
+    var tool = require("./js-action/tool");
+    tool.run();
+    return;
   }
   
-  if (_hasPrefix(pattern, "searchImage:")) {
-      var smms = require("./js-action/smms");
-      smms.run();
+  if (_hasPrefix(pattern, "pushbullet:")) {
+      var airtable = require("./js-action/airtable");
+      airtable.run();
       return;
     }
 }
@@ -74,6 +97,12 @@ function runAction(action) {
   if (_hasPrefix(pattern, "pushbullet:")) {
     var pushbullet = require("./js-action/pushbullet");
     pushbullet.run();
+    return;
+  }
+
+  if (_hasPrefix(pattern, "keyboard:")) {
+    var keyboard = require("./js-action/keyboard");
+    keyboard.run();
     return;
   }
 

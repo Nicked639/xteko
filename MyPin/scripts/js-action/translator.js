@@ -79,7 +79,7 @@ function transUI() {
             events: {
               tapped(sender) {
                 $device.taptic(0);
-                $widget.height = 180;
+                $widget.height = 181;
                 $("mainbg").remove();
                 var dataManager = require("../data-manager");
                 dataManager.init();

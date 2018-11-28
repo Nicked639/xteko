@@ -36,32 +36,7 @@ function defaultActionItems() {
 }
 
 function getActionItems() {
-  return $cache.get("action-items") || [{
-      "name": $l10n("AT_GOOGLE"),
-      "pattern": "http://translate.google.cn/?hl=en#auto/zh-CN/%@",
-      "icon": "icon_179.png"
-    },
-    {
-      "name": $l10n("AO_URL"),
-      "pattern": "open-url://%@",
-      "icon": "icon_020.png"
-    },
-    {
-      "name": $l10n("AW_WIKI"),
-      "pattern": "https://zh.wikipedia.org/wiki/%@",
-      "icon": "icon_024.png"
-    },
-    {
-      "name": $l10n("AM_APPLE"),
-      "pattern": "http://maps.apple.com/?q=%@",
-      "icon": "icon_043.png"
-    },
-    {
-      "name": $l10n("AS_TAOBAO"),
-      "pattern": "taobao://s.taobao.com/?q=%@",
-      "icon": "icon_072.png"
-    }
-  ];
+  return $cache.get("action-items") || [{"pattern":"delete:","icon":"icon_027.png","noenc":false,"name":"删除"},{"pattern":"pin://gifsender?src=auto","icon":"icon_016.png","noenc":false,"name":"抓图"},{"pattern":"editPhoto:","icon":"icon_025.png","noenc":false,"name":"编辑图形"},{"pattern":"searchImage:","icon":"icon_014.png","noenc":false,"name":"搜图"},{"pattern":"taobao://s.taobao.com/?q=%@","icon":"icon_072.png","noenc":false,"name":"淘宝"},{"pattern":"pushbullet:","icon":"icon_190.png","noenc":false,"name":"Pushbullet"},{"pattern":"keyboard:","icon":"icon_052.png","noenc":false,"name":"工具"},{"name":"Mtime Movie","pattern":"jsbox://run?name=Mtime%20Movie","icon":"icon_036.png"},{"name":"SM.MS","pattern":"jsbox://run?name=SM.MS","icon":"icon_134.png"}]
 }
 
 function setActionItems(items) {
