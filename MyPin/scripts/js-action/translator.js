@@ -242,16 +242,15 @@ function transUI() {
                         "type": "public.plain-text",
                         "value": ttext
                       });
-                      var dataManager = require("../data-manager");
-                      var items = dataManager.getTextItems();
-                      if (items.indexOf(ttext) === -1) {
-                        items.unshift(ttext);
-                        dataManager.setTextItems(items);
-                        var builder = require("../builder");
-                        builder.reloadTextItems();
-                       
-                        $ui.toast("翻译结果已复制", 0.3);
-                      } else $ui.toast("已有记录", 0.3);
+                      $("mainbg").remove();
+                      $widget.height=181
+                                      var dataManager = require("../data-manager");
+                                      dataManager.init();
+                                      var path = $app.env == $env.today ? "../widget" : "../app";
+                                      var module = require(path);
+                                      module.init();
+                                      $("input").text = $clipboard.text
+                                      $ui.toast("翻译结果已复制",0.3)
                     }
                   }
                 }

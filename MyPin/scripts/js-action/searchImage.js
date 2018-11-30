@@ -41,6 +41,7 @@ function pickImage() {
 
 function searchImage(data) {
   $ui.loading(true)
+  $ui.toast("图片上传中",10)
   $http.upload({
     url: "https://sm.ms/api/upload",
     files: [{"data": data, "name": "smfile"}],
@@ -84,7 +85,7 @@ if (inputData) {
       switch(idx){
         case 0: 
           if(clipLink){
-            showEngines(clipLink)
+                    $app.openURL("https://images.google.com/searchbyimage?image_url="+$text.URLEncode(clipLink))
           } else{
             searchImage(clipData)
           }         

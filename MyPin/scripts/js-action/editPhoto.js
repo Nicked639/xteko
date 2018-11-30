@@ -9,7 +9,13 @@ function run(){
     }else if(idx == 2){
       $app.openURL("pico://last-photo")
     }
+    
   },
+  finished: function(cancelled) {
+  var module = require("../widget");
+              
+              module.init();
+    }
 })
 
 }

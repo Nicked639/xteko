@@ -1,4 +1,5 @@
-var tabEngines = [{
+var tabEngines = [
+  {
     name: "必应",
     pattern: "bing"
   },
@@ -16,7 +17,8 @@ var tabEngines = [{
   }
 ];
 
-var searchEngines = [{
+var searchEngines = [
+  {
     name: "M-W",
     pattern: "http://merriam-webster.com/dictionary/"
   },
@@ -40,7 +42,7 @@ var searchEngines = [{
     name: "有道词典",
     pattern: "http://m.youdao.com/dict?le=eng&q="
   }
-]
+];
 
 function show() {
   $ui.window.add({
@@ -50,245 +52,259 @@ function show() {
       id: "mainbg"
     },
     layout: $layout.fill,
-    views: [{
-      type: "view",
-      props: {
-        radius: 10,
-        bgcolor: $color("clear"),
-        borderWidth: 0.4,
-        borderColor: $rgba(100, 100, 100, 0.25)
-      },
-      layout: function(make, view) {
-        make.top.right.left.bottom.inset(4);
-      },
-      views: [{
-          type: "button",
-          props: {
-            id: "closebtn",
-            bgcolor: $color("clear"),
-            icon: $icon("225", $color("tint"), $size(18, 18))
-          },
-          layout: function(make, view) {
-            make.top.left.inset(6);
-          },
-          events: {
-            tapped(sender) {
-              $device.taptic(0);
-              $("mainbg").remove();
-            }
-          }
+    views: [
+      {
+        type: "view",
+        props: {
+          radius: 10,
+          bgcolor: $color("clear"),
+          borderWidth: 0.4,
+          borderColor: $rgba(100, 100, 100, 0.25)
         },
-        {
-          type: "input",
-          props: {
-            id: "wordsearch",
-            font: $font(14),
-            placeholder: "输入单词或词语查询…",
-            bgcolor: $rgba(200, 200, 200, 0.25),
-            borderWidth: 0.4,
-            borderColor: $rgba(100, 100, 100, 0.25)
-          },
-          layout: function(make, view) {
-            make.top.inset(5);
-            make.height.equalTo(24);
-            make.left.equalTo($("closebtn").right).offset(10);
-            make.width.equalTo(view.super.width).dividedBy(2);
-          },
-          events: {
-            returned: function(sender) {
-              $("wordsearch").blur();
-              translate(sender.text);
-            }
-          }
+        layout: function(make, view) {
+          make.top.right.left.bottom.inset(4);
         },
-        {
-          type: "button",
-          props: {
-            id: "copybtn",
-            icon: $icon("019", $color("tint"), $size(18, 18)),
-            bgcolor: $color("clear")
-          },
-          layout: function(make, view) {
-            make.right.top.inset(6);
-          },
-          events: {
-            tapped(sender) {
-              if ($("result").text != "") {
-                var dataManager = require("../data-manager");
-                dataManager.copied2Clip($("result").text);
-                $ui.toast("翻译结果已复制", 0.3);
-              } else return;
-            }
-          }
-        },
-        {
-          type: "button",
-          props: {
-            id: "kbbtn",
-            bgcolor: $color("clear"),
-            icon: $icon("010", $color("tint"), $size(18, 18))
-          },
-          layout: function(make, view) {
-            make.top.inset(6);
-            make.right.inset(38);
-          },
-          events: {
-            tapped(sender) {
-              if ($("wordsearch").editing == true) {
-                $("wordsearch").blur();
-              } else $("wordsearch").focus();
-            }
-          }
-        },
-        {
-          type: "label",
-          props: {
-            textColor: $color("tint"),
-            text: "英汉词典",
-            font: $font("bold", 15),
-            bgcolor: $color("clear")
-          },
-          layout: function(make, view) {
-            make.left.equalTo($("wordsearch").right).offset(10),
-              make.top.inset(7);
-          },
-          events: {
-            tapped(sender) {
-              if ($("wordsearch").editing == true) {
-                if ($("wordsearch").text === "") {
-                  return;
-                } else translate($("wordsearch").text);
-              } else {
-                $("wordsearch").text = "";
-                $("result").text = "";
-              }
-            }
-          }
-        },
-        {
-          type: "label",
-          props: {
-            bgcolor: $rgba(100, 100, 100, 0.25)
-          },
-          layout: function(make, view) {
-            make.left.right.inset(0),
-              make.top.equalTo($("closebtn").bottom).offset(5.6),
-              make.height.equalTo(0.4);
-          }
-        },
-        {
-          type: "view",
-          props: {
-            bgcolor: $rgba(200, 200, 200, 0.25)
-          },
-          layout: function(make, view) {
-            make.top.inset(34);
-            make.left.right.bottom.inset(0);
-          },
-          views: [{
-              type: "text",
-              props: {
-                radius: 10,
-                font: $font(12),
-                id: "result",
-                editable: false,
-                bgcolor: $color("clear")
-              },
-              layout: function(make, view) {
-                make.left.right.top.inset(4);
-                make.bottom.inset(34);
-              },
-              events: {
-                tapped(sender) {}
-              }
+        views: [
+          {
+            type: "button",
+            props: {
+              id: "closebtn",
+              bgcolor: $color("clear"),
+              icon: $icon("225", $color("tint"), $size(18, 18))
             },
-            {
-              type: "tab",
-              props: {
-                bgcolor: $color("clear"),
-                font: $font(14),
-                items: tabEngines.map(function(item) {
-                  return item.name;
-                })
-              },
-              layout: function(make, view) {
-                make.left.inset(6),
-                  make.top.equalTo($("result").bottom).offset(6);
-                make.height.equalTo(22),
-                  make.width.equalTo(view.super).multipliedBy(0.5);
-              },
-              events: {
-                changed: function(sender) {
-                  var engine = tabEngines[sender.index].pattern;
-                  $cache.set("engine", engine);
-                  $cache.remove("textSound");
-                  $("result").text = "";
+            layout: function(make, view) {
+              make.top.left.inset(6);
+            },
+            events: {
+              tapped(sender) {
+                $device.taptic(0);
+                $("mainbg").remove();
+              }
+            }
+          },
+          {
+            type: "input",
+            props: {
+              id: "wordsearch",
+              font: $font(14),
+              placeholder: "输入单词或词语查询…",
+              bgcolor: $rgba(200, 200, 200, 0.25),
+              borderWidth: 0.4,
+              borderColor: $rgba(100, 100, 100, 0.25)
+            },
+            layout: function(make, view) {
+              make.top.inset(5);
+              make.height.equalTo(24);
+              make.left.equalTo($("closebtn").right).offset(10);
+              make.width.equalTo(view.super.width).dividedBy(2);
+            },
+            events: {
+              returned: function(sender) {
+                $("wordsearch").blur();
+                translate(sender.text);
+              }
+            }
+          },
+          {
+            type: "button",
+            props: {
+              id: "copybtn",
+              icon: $icon("019", $color("tint"), $size(18, 18)),
+              bgcolor: $color("clear")
+            },
+            layout: function(make, view) {
+              make.right.top.inset(6);
+            },
+            events: {
+              tapped(sender) {
+                if ($("result").text != "") {
+                  $clipboard.set({
+                    "type": "public.plain-text",
+                    "value": $("result").text
+                  });
+                  $("mainbg").remove();
+                  $widget.height = 181;
+                  var dataManager = require("../data-manager");
+                  dataManager.init();
+                  var path = $app.env == $env.today ? "../widget" : "../app";
+                  var module = require(path);
+                  module.init();
+                  $("input").text = $clipboard.text;
+                  $ui.toast("翻译结果已复制", 0.3);
+                } else return;
+              }
+            }
+          },
+          {
+            type: "button",
+            props: {
+              id: "kbbtn",
+              bgcolor: $color("clear"),
+              icon: $icon("010", $color("tint"), $size(18, 18))
+            },
+            layout: function(make, view) {
+              make.top.inset(6);
+              make.right.inset(38);
+            },
+            events: {
+              tapped(sender) {
+                if ($("wordsearch").editing == true) {
+                  $("wordsearch").blur();
+                } else $("wordsearch").focus();
+              }
+            }
+          },
+          {
+            type: "label",
+            props: {
+              textColor: $color("tint"),
+              text: "英汉词典",
+              font: $font("bold", 15),
+              bgcolor: $color("clear")
+            },
+            layout: function(make, view) {
+              make.left.equalTo($("wordsearch").right).offset(10),
+                make.top.inset(7);
+            },
+            events: {
+              tapped(sender) {
+                if ($("wordsearch").editing == true) {
                   if ($("wordsearch").text === "") {
                     return;
-                  } else {
-                    translate($("wordsearch").text);
-                  }
+                  } else translate($("wordsearch").text);
+                } else {
+                  $("wordsearch").text = "";
+                  $("result").text = "";
                 }
               }
+            }
+          },
+          {
+            type: "label",
+            props: {
+              bgcolor: $rgba(100, 100, 100, 0.25)
             },
-            {
-              type: "button",
-              props: {
-                bgcolor: $color("clear"),
-                icon: $icon("042", $color("tint"), $size(18, 18))
-              },
-              layout: function(make, view) {
-                make.right.inset(6);
-                make.top.equalTo($("result").bottom).offset(6);
-              },
-              events: {
-                tapped(sender) {
-                  if ($("wordsearch").text != "") {
-                    searchMore($("wordsearch").text);
-                  } else return;
+            layout: function(make, view) {
+              make.left.right.inset(0),
+                make.top.equalTo($("closebtn").bottom).offset(5.6),
+                make.height.equalTo(0.4);
+            }
+          },
+          {
+            type: "view",
+            props: {
+              bgcolor: $rgba(200, 200, 200, 0.25)
+            },
+            layout: function(make, view) {
+              make.top.inset(34);
+              make.left.right.bottom.inset(0);
+            },
+            views: [
+              {
+                type: "text",
+                props: {
+                  radius: 10,
+                  font: $font(12),
+                  id: "result",
+                  editable: false,
+                  bgcolor: $color("clear")
+                },
+                layout: function(make, view) {
+                  make.left.right.top.inset(4);
+                  make.bottom.inset(34);
+                },
+                events: {
+                  tapped(sender) {}
                 }
-              }
-            },
-            {
-              type: "button",
-              props: {
-                id: "speechbtn",
-                hidden: false,
-                bgcolor: $color("clear"),
-                icon: $icon("012", $color("tint"), $size(18, 18))
               },
-              layout: function(make, view) {
-                make.right.inset(38);
-                make.top.equalTo($("result").bottom).offset(6);
-              },
-              events: {
-                tapped(sender) {
-                  $device.taptic(0);
-                  let sound = $cache.get("textSound");
-                  if (sound != undefined && sound.length == 2) {
-                    $audio.play({
-                      url: sound[0],
-                      events: {
-                        didPlayToEndTime: function() {
-                          $audio.play({ url: sound[1] });
-                        }
-                      }
-                    });
-                  } else {
-                    if ($("result").text === "") {
+              {
+                type: "tab",
+                props: {
+                  bgcolor: $color("clear"),
+                  font: $font(14),
+                  items: tabEngines.map(function(item) {
+                    return item.name;
+                  })
+                },
+                layout: function(make, view) {
+                  make.left.inset(6),
+                    make.top.equalTo($("result").bottom).offset(6);
+                  make.height.equalTo(22),
+                    make.width.equalTo(view.super).multipliedBy(0.5);
+                },
+                events: {
+                  changed: function(sender) {
+                    var engine = tabEngines[sender.index].pattern;
+                    $cache.set("engine", engine);
+                    $cache.remove("textSound");
+                    $("result").text = "";
+                    if ($("wordsearch").text === "") {
                       return;
                     } else {
-                      $ui.toast("系统TTS", 0.3);
-                      speechText($("wordsearch").text);
+                      translate($("wordsearch").text);
+                    }
+                  }
+                }
+              },
+              {
+                type: "button",
+                props: {
+                  bgcolor: $color("clear"),
+                  icon: $icon("042", $color("tint"), $size(18, 18))
+                },
+                layout: function(make, view) {
+                  make.right.inset(6);
+                  make.top.equalTo($("result").bottom).offset(6);
+                },
+                events: {
+                  tapped(sender) {
+                    if ($("wordsearch").text != "") {
+                      searchMore($("wordsearch").text);
+                    } else return;
+                  }
+                }
+              },
+              {
+                type: "button",
+                props: {
+                  id: "speechbtn",
+                  hidden: false,
+                  bgcolor: $color("clear"),
+                  icon: $icon("012", $color("tint"), $size(18, 18))
+                },
+                layout: function(make, view) {
+                  make.right.inset(38);
+                  make.top.equalTo($("result").bottom).offset(6);
+                },
+                events: {
+                  tapped(sender) {
+                    $device.taptic(0);
+                    let sound = $cache.get("textSound");
+                    if (sound != undefined && sound.length == 2) {
+                      $audio.play({
+                        url: sound[0],
+                        events: {
+                          didPlayToEndTime: function() {
+                            $audio.play({ url: sound[1] });
+                          }
+                        }
+                      });
+                    } else {
+                      if ($("result").text === "") {
+                        return;
+                      } else {
+                        $ui.toast("系统TTS", 0.3);
+                        speechText($("wordsearch").text);
+                      }
                     }
                   }
                 }
               }
-            }
-          ]
-        }
-      ]
-    }]
+            ]
+          }
+        ]
+      }
+    ]
   });
 }
 //TTS
@@ -333,7 +349,7 @@ function bingtrans(text) {
       console.info(data);
       if (!resp.data.hasOwnProperty("defs")) {
         if (resp.data.indexOf("An error occurs") >= 0) {
-          $ui.error("请检查输入内容",0.5);
+          $ui.error("请检查输入内容", 0.5);
         }
       } else if (data.defs == null) {
         $("result").text = "未查询到";
@@ -496,27 +512,29 @@ function whichLan(text) {
 
 function searchMore(text) {
   $ui.menu({
-    items: searchEngines.map(function(item) { return item.name }),
+    items: searchEngines.map(function(item) {
+      return item.name;
+    }),
     handler: function(title, idx) {
       $thread.main({
         delay: 0.4,
         handler: function() {
-          search(searchEngines[idx].pattern, text)
+          search(searchEngines[idx].pattern, text);
         }
-      })
+      });
     }
-  })
+  });
 }
 
 function search(pattern, text) {
-  $app.openURL(pattern + encodeURIComponent(text))
+  $app.openURL(pattern + encodeURIComponent(text));
 }
 
 function dic(text) {
   $cache.remove("engine");
   $cache.remove("textSound");
   show();
-  $("wordsearch").text = text
+  $("wordsearch").text = text;
   translate(text);
 }
 

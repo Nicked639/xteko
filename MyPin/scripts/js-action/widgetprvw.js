@@ -2,6 +2,17 @@ var openURL = {
   name: "链接",
   pattern: "link"
 };
+var leftView;
+
+function navLayout() {
+  return function(make, view) {
+    make.left.equalTo(leftView.right);
+    make.bottom.inset(4);
+    make.height.equalTo(20);
+    make.width.equalTo(view.super).multipliedBy(0.25);
+    leftView = view;
+  };
+}
 
 function show(content) {
   $widget.height = 400;
@@ -55,14 +66,17 @@ function show(content) {
         }
       },
       {
-        type: "web",
+        type: "view",
         props: {
-          id: "web",
-          url: detectContent(tabSite, content),
+          id: "mianv",
+          bgcolor: $rgba(200, 200, 200, 0.25),
           radius: 10,
           borderWidth: 0.4,
-          borderColor: $rgba(100, 100, 100, 0.25),
-          bounces: true
+          borderColor: $rgba(100, 100, 100, 0.25)
+        },
+        layout: function(make, view) {
+          make.left.right.bottom.inset(4);
+          make.top.equalTo($("tabwp").bottom).offset(4);
         },
         views: [
           {
@@ -77,9 +91,23 @@ function show(content) {
             events: {
               tapped(sender) {
                 $device.taptic(0);
-                $widget.height = 181;
+                $widget.height = 180;
                 $("wprvw").remove();
               }
+            }
+          },
+          {
+            type: "label",
+            props: {
+              id: "weburl",
+              bgcolor: $color("clear"),
+              font: $font("bold", 12),
+              textColor: $color("darkGray"),
+              align: $align.center
+            },
+            layout: function(make, view) {
+              make.centerX.equalTo(view.super), make.top.inset(6);
+              make.width.equalTo(view.super).multipliedBy(0.5);
             }
           },
           {
@@ -89,7 +117,7 @@ function show(content) {
               bgcolor: $color("clear")
             },
             layout: function(make) {
-              make.bottom.left.inset(4);
+              make.right.top.inset(4);
             },
             events: {
               tapped(sender) {
@@ -98,64 +126,92 @@ function show(content) {
             }
           },
           {
-            //网页后退
-            type: "button",
+            type: "web",
             props: {
-              title: "◄",
-              font: $font(25),
-              id: "goB",
-              titleColor: $color("tint"),
-              alpha: 0.5,
-              bgcolor: $color("clear")
+              id: "web",
+              url: detectContent(tabSite, content),
+              bounces: true
             },
-            layout: function(make) {
-              make.bottom.inset(-5);
-              make.left.inset(130);
+            layout: function(make, view) {
+              make.left.right.inset(0);
+              make.top.bottom.inset(28);
             },
             events: {
-              tapped(sender) {
-                $("web").goBack();
-                $("goF").alpha = 1;
+              didStart: function(sender, navigation) {
+                $("weburl").text = sender.url;
+                
+                            $("goF").alpha = $("web").canGoForward ? 1 : 0.5;
+                            $("goB").alpha = $("web").canGoBack ? 1 : 0.5;
+                          
+                        
               }
             }
           },
           {
-            //网页前进
             type: "button",
             props: {
-              title: "►",
-              id: "goF",
-              font: $font(25),
+              id: "goB",
+              bgcolor: $color("clear"),
+              title: "◄",
+              font: $font("Menlo", 28),
               titleColor: $color("tint"),
-              alpha: 0.5,
-              bgcolor: $color("clear")
+              alpha:0.3
             },
-            layout: function(make) {
-              make.bottom.inset(-5);
-              make.right.inset(130);
-              
+            layout: function(make, view) {
+              make.left.equalTo(0);
+              make.bottom.inset(4);
+              make.height.equalTo(20);
+              make.width.equalTo(view.super).multipliedBy(0.25);
+              leftView = view;
             },
+            events: {
+              tapped(sender) {
+                $("web").goBack();
+              }
+            }
+          },
+          {
+            type: "button",
+            props: {
+              id: "goF",
+              bgcolor: $color("clear"),
+              title: "►",
+              font: $font("Menlo", 28),
+              titleColor: $color("tint"),
+              alpha:0.3
+            },
+            layout: navLayout(),
             events: {
               tapped(sender) {
                 $("web").goForward();
               }
             }
-          }
-        ],
-        layout: function(make, view) {
-          make.left.right.bottom.inset(4);
-          make.top.equalTo($("tabwp").bottom).offset(4);
-        },
-        events: {
-          didStart: function(sender, navigation) {
-            $("goF").alpha = $("web").canGoForward ? 1 : 0.5;
-            $("goB").alpha = $("web").canGoBack ? 1 : 0.5;
-          }
-        }
+          },
+          webPreviewBTN("022", navLayout(), function(sender) {
+            $share.sheet($("web").url);
+          }),
+          webPreviewBTN("162", navLayout(), function(sender) {
+            $("web").reload();
+          })
+        ]
       }
     ],
     layout: $layout.fill
   });
+}
+
+function webPreviewBTN(icon, layout, handler) {
+  return {
+    type: "button",
+    props: {
+      icon: $icon(icon, $color("tint"), $size(18, 18)),
+      bgcolor: $color("clear")
+    },
+    layout: layout,
+    events: {
+      tapped: handler
+    }
+  };
 }
 
 function detectContent(tabSite, content) {
