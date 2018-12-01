@@ -115,7 +115,7 @@ async function apart(content) {
         ]
       },
       {
-        type: "button",
+        type: "button",//关闭
         props: {
           icon: $icon("225", $color("tint"), $size(18, 18)),
           bgcolor: $color("clear")
@@ -125,13 +125,7 @@ async function apart(content) {
         },
         events: {
           tapped: function(sender) {
-            $device.taptic(0);
-            $("apartbg").remove();
-            var dataManager = require("../data-manager");
-            dataManager.init();
-            var path = $app.env == $env.today ? "../widget" : "../app";
-            var module = require(path);
-            module.init();
+exit()
           }
         }
       },
@@ -160,25 +154,54 @@ async function apart(content) {
         events: {
           tapped: function(sender) {
             let pickedInOrder = $cache.get("pickedInOrder");
+            if(pickedInOrder){
+              
+            
                         let pio = pickedInOrder.join("");
-                        if (pickedInOrder.length > 0) {
+                       
+                       
+                          
                           $clipboard.set({ "type": "public.plain-text", "value": pio });
+                         
                           var dataManager = require("../data-manager");
-                          var items = dataManager.getTextItems();
-                          if (items.indexOf(pio) === -1) {
-                            items.unshift(pio);
-                            dataManager.setTextItems(items);
+                          mode = "clip"
+                          var items = dataManager.getTextItems(mode);
+                          if (pio) {
+                             $("apartbg").remove();
+//                            items.unshift(pio);
+//                            dataManager.setTextItems(items,mode);
+dataManager.init()
                             $cache.remove("pickedInOrder");
-                            var builder = require("../builder");
-                            builder.reloadTextItems();
-                            $ui.toast("选中部分已复制", 0.3);
-                          } else $ui.toast("未选择或已记录", 0.3);
-                        }
+                            
+                            var path = $app.env == $env.today ? "../widget" : "../app";
+                                        var module = require(path);
+                                        module.init(mode);
+                                        var builder = require("../builder");
+                                                                    builder.reloadTextItems(mode);
+                                                                        $("input").text = $clipboard.text?$clipboard.text:"轻点输入..";
+                                                                        $("input").textColor =$clipboard.text? $color("black"):$color("gray");
+
+                            $ui.toast("已复制", 0.3);
+                          } 
+                        
+          }else $ui.error("请选择",0.5)
           }
         }
       }
     ]
   });
+}
+
+function exit(){
+              $device.taptic(0);
+              $("apartbg").remove();
+              
+              mode = "clip"
+              var dataManager = require("../data-manager");
+              dataManager.init(mode);
+              var path = $app.env == $env.today ? "../widget" : "../app";
+              var module = require(path);
+              module.init(mode);
 }
 
 function selected(label, count) {

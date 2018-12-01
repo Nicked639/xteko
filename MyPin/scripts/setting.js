@@ -75,13 +75,14 @@ function clearClipboard() {
     if (selected.title.length > 0) {
       $device.taptic(2);
       $clipboard.clear();
-      dataManager.clearTextItems();
+      dataManager.clearTextItems(mode);
       var handler = mHandlers["clear"];
       if (handler) {
         handler();
       }
     }
   });
+  $("clipboard-list").data=[]
 }
 
 module.exports = {

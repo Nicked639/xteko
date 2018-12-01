@@ -15,7 +15,7 @@ function createClipboardView() {
         $app.env == $env.today
           ? $rgba(100, 100, 100, 0.25)
           : $color("separator"),
-      data: textItems,
+      //data: textItems,
       template: {
         views: [
           {
@@ -30,6 +30,26 @@ function createClipboardView() {
               make.right.top.bottom.inset(0);
               make.left.inset(15);
             }
+          },
+          {
+            type: "button",
+            props: {
+              id: "editBtn",
+              bgcolor: $color("clear")
+            },
+            layout: function(make, view) {
+              make.right.top.bottom.inset(0);
+              make.width.equalTo(60);
+            },
+            events: {
+              tapped: function(sender) {
+                $device.taptic(1);
+                var cell = sender.super.super;
+                var view = $("clipboard-list").runtimeValue();
+                var indexPath = view.invoke("indexPathForCell", cell).rawValue();
+                editor.clipEditor($("clipboard-list").data[indexPath.row].label.text)
+              },
+            }
           }
         ]
       },
@@ -37,41 +57,58 @@ function createClipboardView() {
         {
           title: "delete",
           handler: function(sender, indexPath) {
+            textItems =  dataManager.getTextItems(mode)
             if (textItems[indexPath.row] === $clipboard.text) {
-//              if ($("input")) {
-//                $("input").text = "";
-//              }
+              //              if ($("input")) {
+              //                $("input").text = "";
+              //              }
               $clipboard.clear();
-              $("input").text = "轻点输入.."
+              $("input").text = "轻点输入..";
               $("input").textColor = $color("gray");
             }
-
             helper.arrayRemove(textItems, indexPath.row);
-            saveTextItems();
-            reloadTextItems();
+            saveTextItems(mode);
+            reloadTextItems(mode);
           }
         },
-        {
-          title: $l10n("EDIT"),
-          handler: function(sender, indexPath) {
-            editor.clipEditor(textItems[indexPath.row]);
-            //            $input.text({
-            //              text: textItems[indexPath.row]
-            //            }).then(function(text) {
-            //              if (text.length > 0) {
-            //                textItems[indexPath.row] = text;
-            //                sender.data = textItems;
-            //                saveTextItems();
-            //              }
-            //            });
-          }
-        },
+//        {
+//          title: $l10n("EDIT"),
+//          props: {
+//            hidden:true
+//          },
+//          handler: function(sender, indexPath) {
+//            editor.clipEditor(textItems[indexPath.row]);
+//            
+//          }
+//        },
         {
           title: "分词",
           color: $color("tint"),
           handler: function(sender, indexPath) {
-            reloadTextItems();
+            reloadTextItems(mode);
             aparter.apart(textItems[indexPath.row]);
+          }
+        },
+        {
+          title: "上传",
+          color: $color("#ed9e31"),
+          handler: function(sender, indexPath) {
+            if(mode == "cloud"){
+              $ui.error("已在 iCloud 模式",0.5)
+              return
+            }
+//            textItems = dataManager.getTextItems(mode)
+//            reloadTextItems(mode);
+            let text = textItems[indexPath.row]
+            var items = dataManager.getTextItems("cloud");
+              var index = items.indexOf(text);
+              if (index != -1) {
+                helper.arrayRemove(items, index);
+              }
+              items.unshift(text);
+              dataManager.setTextItems(items,"cloud");
+                    $ui.toast("上传成功",0.3)
+            
           }
         }
       ]
@@ -79,28 +116,32 @@ function createClipboardView() {
     layout: listViewLayout(),
     events: {
       didSelect: function(sender, indexPath, object) {
-        $clipboard.text = $app.env == $env.today ? object.label.text : object;
+        $clipboard.text = object.label.text;
         $ui.toast($l10n("COPIED"), 0.3);
-         $("input").textColor = $color("black");
-        if ($app.env == $env.today) $("input").text = $clipboard.text;
-        $device.taptic(1);
+        if($app.env == $env.today){
+          $("input").text = $clipboard.text;
+          $device.taptic(1);
+          $("input").textColor = $color("black");
+        }
+        
       },
       reorderMoved: function(fromIndexPath, toIndexPath) {
+        textItems = dataManager.getTextItems(mode)
         helper.arrayMove(textItems, fromIndexPath.row, toIndexPath.row);
       },
       reorderFinished: function() {
-        saveTextItems();
+        saveTextItems(mode);
       }
     }
   };
 }
 
-function saveTextItems() {
-  dataManager.setTextItems(textItems);
+function saveTextItems(mode="clip") {
+  dataManager.setTextItems(textItems,mode);
 }
 
-function reloadTextItems() {
-  textItems = dataManager.getTextItems();
+function reloadTextItems(mode="clip") {
+  textItems = dataManager.getTextItems(mode);
 }
 
 function editAction(action, indexPath) {
@@ -227,7 +268,7 @@ function listViewLayout() {
   return function(make, view) {
     make.left.right.equalTo(0);
     make.top.inset($app.env == $env.today ? 33 : 44);
-    make.bottom.inset($app.env == $env.today ? 33 : 52);
+    make.bottom.inset($app.env == $env.today ? 30 : 52);
   };
 }
 

@@ -1,134 +1,156 @@
-$widget.height = 181
+$widget.height = 181;
 var dataManager = require("./data-manager");
 var builder = require("./builder");
 var helper = require("./helper");
 //var textItems = dataManager.getTextItems();
-var editor = require("./editor")
+var editor = require("./editor");
 var views = [
   createButton(
-      "024", //翻译
-      function(make, view) {
-        make.top.inset(3);
-        make.right.inset(64);
-        make.height.equalTo(26);
-        make.width.equalTo(view.super).multipliedBy(0.06);
-      },
-      function() {
-        var ptext = $("input").text=="轻点输入.."?"":$("input").text;
-          var translator = require("./js-action/translator");
-          translator.gtrans(ptext);
-          $("input").blur();
-      },
-      function() {
-            var ptext = $("input").text=="轻点输入.."?"":$("input").text;
-              var dic = require("./js-action/dictionary");
-              dic.dic(ptext);
-              $("input").blur();
-          }
-    ),
-    createButton(
-        "023", //预览或搜索input内容
-        function(make, view) {
-          make.top.inset(3);
-          make.right.inset(92);
-          make.height.equalTo(26);
-          make.width.equalTo(view.super).multipliedBy(0.06);
-        },function() {
-          var stext = $("input").text;
-          if (stext == "轻点输入..") {
-            $("input").focus();
-          } else if ($detector.link(stext) != "") {
-            $app.openURL($detector.link(stext)[0]);
-          } else if ($detector.phoneNumber(stext) != "") {
-            $app.openURL("tel:" + $detector.phoneNumber(stext));
-          } else if (stext) {
-            helper.searchText(stext);
-          }
-        },
-        function() {
-          var ptext = $("input").text;
-          if (ptext == "轻点输入..") {
-            $("input").focus();
-          } else {
-            var widgetPreview = require("./js-action/widgetprvw");
-            widgetPreview.show(ptext);
-            $("input").blur();
-          }
+    "091", //上传
+    "fav",
+    function(make, view) {
+      make.top.inset(3);
+      make.right.inset(92);
+      make.height.equalTo(26);
+      make.width.equalTo(view.super).multipliedBy(0.06);
+    },
+    function() {
+      $device.taptic(1);
+      if (mode == "cloud") {
+        $ui.error("已在 iCloud 模式", 0.5);
+        return;
+      }
+      let text = $clipboard.text;
+      if (text) {
+        var items = dataManager.getTextItems("cloud");
+        var index = items.indexOf(text);
+        if (index != -1) {
+          helper.arrayRemove(items, index);
         }
-        
-      ),
-      createButton(
-        "022", //分享剪贴板记录列表
-        function(make, view) {
-          make.top.inset(3);
-          make.right.inset(36);
-          make.height.equalTo(26);
-          make.width.equalTo(view.super).multipliedBy(0.06);
-        },
-        function() {
-          if ($clipboard.text) {
-            $share.sheet($clipboard.text);
-          } else $ui.toast("剪贴板为空");
-        },
-        function() {
-          if($("clipboard-list").data.length>0){
-            let content = []
-            $("clipboard-list").data.map(function(i){
-              content = content.concat(i.label.text)
-            })
-            $share.sheet(content.join("\n"));
-          } else $ui.toast("记录列表为空");
-        }
-      ),
-      createButton(
-        "027", //删除剪贴板内容
-        function(make, view) {
-          make.top.inset(3);
-          make.right.inset(8);
-          make.height.equalTo(26);
-          make.width.equalTo(view.super).multipliedBy(0.06);
-        },
-        function() {
-          $("input").text = "轻点输入..";
-          $("input").textColor = $color("gray")
+        items.unshift(text);
+        dataManager.setTextItems(items, "cloud");
+        $ui.toast("上传成功", 0.3);
+        $ui.toast("上传成功", 0.3);
+      } else $ui.error("剪贴板为空", 0.3);
+      //
+    },
+    function() {
+      $device.taptic(1);
+      if (mode == "clip") {
+        $("fav").icon = $icon("091", $color("#ed9e31"), $size(18, 18));
+        mode = "cloud";
+        dataManager.initData(mode);
+      } else {
+        $("fav").icon = $icon("091", $color("darkText"), $size(18, 18));
+        mode = "clip";
+        dataManager.initData(mode);
+      }
+    }
+  ),
+  createButton(
+    "023", //预览或搜索input内容
+    "search",
+    function(make, view) {
+      make.top.inset(3);
+      make.right.inset(64);
+      make.height.equalTo(26);
+      make.width.equalTo(view.super).multipliedBy(0.06);
+    },
+    function() {
+      var stext = $("input").text;
+      if (stext == "轻点输入..") {
+        $("input").focus();
+      } else if ($detector.link(stext) != "") {
+        $app.openURL($detector.link(stext)[0]);
+      } else if ($detector.phoneNumber(stext) != "") {
+        $app.openURL("tel:" + $detector.phoneNumber(stext));
+      } else if (stext) {
+        helper.searchText(stext);
+      }
+    },
+    function() {
+      $device.taptic(1)
+      var ptext = $("input").text;
+      if (ptext == "轻点输入..") {
+        $("input").focus();
+      } else {
+        var widgetPreview = require("./js-action/widgetprvw");
+        widgetPreview.show(ptext);
+        $("input").blur();
+      }
+    }
+  ),
+  createButton(
+    "022", //分享剪贴板记录列表
+    "share",
+    function(make, view) {
+      make.top.inset(3);
+      make.right.inset(36);
+      make.height.equalTo(26);
+      make.width.equalTo(view.super).multipliedBy(0.06);
+    },
+    function() {
+      if ($clipboard.text) {
+        $share.sheet($clipboard.text);
+      } else $ui.toast("剪贴板为空");
+    },
+    function() {
+      if ($("clipboard-list").data.length > 0) {
+        let content = [];
+        $("clipboard-list").data.map(function(i) {
+          content = content.concat(i.label.text);
+        });
+        $share.sheet(content.join("\n"));
+      } else $ui.toast("记录列表为空");
+    }
+  ),
+  createButton(
+    "027", //删除剪贴板内容
+    "del",
+    function(make, view) {
+      make.top.inset(3);
+      make.right.inset(8);
+      make.height.equalTo(26);
+      make.width.equalTo(view.super).multipliedBy(0.06);
+    },
+    function() {
+      $("input").text = "轻点输入..";
+      $("input").textColor = $color("gray");
+      $clipboard.clear();
+      $ui.toast("剪贴板已清空", 0.3);
+    },
+    function() {
+      $ui.menu(["确认清空记录列表"]).then(function(selected) {
+        if (selected.title.length > 0) {
+          //              var textItems = dataManager.getTextItems();
+          //              textItems = [];
+          $("clipboard-list").data = [];
           $clipboard.clear();
-          $ui.toast("剪贴板已清空", 0.3);
-        },
-        function() {
-          $ui.menu(["确认清空记录列表"]).then(function(selected) {
-            if (selected.title.length > 0) {
-//              var textItems = dataManager.getTextItems();
-//              textItems = [];
-              $("clipboard-list").data = [];
-              $clipboard.clear();
-              $("input").text = "轻点输入..";
-              $("input").textColor = $color("gray")
-              dataManager.clearTextItems();
-            }
-          });
+          $("input").text = "轻点输入..";
+          $("input").textColor = $color("gray");
+          dataManager.clearTextItems(mode);
         }
-      ),
+      });
+    }
+  ),
   createText(),
   createLine(),
   createClipboardView(),
   createActionView()
 ];
 
-function init() {
-  $ui.render({ views: views });
-   // $("input").text = $clipboard.text || "";
-$("clipboard-list").data = []
-var textItems = dataManager.getTextItems();
-  textItems.map(function(i){
-    let flag = i.indexOf("\n") >= 0
-    $("clipboard-list").data = $("clipboard-list").data.concat({
-      label:{
-        text: i,
-        textColor: flag? $color("#325793"):$color("black")
-      }
-    })
-  })
+function init(mode = "clip") {
+  $ui.render({
+    props: {
+      navBarHidden: 1,
+      id: "widget"
+    },
+    views: views
+  });
+  // $("input").text = $clipboard.text || "";
+  dataManager.initData(mode);
   initActionButtons();
+  if(mode=="cloud") $("fav").icon = $icon("091",$color("#ed9e31"),$size(18,18))
 }
 
 //function createButton(title, layout, handler) {
@@ -144,13 +166,14 @@ var textItems = dataManager.getTextItems();
 //    events: { tapped: handler }
 //  }
 //}
-function createButton(icon, layout, handler, handler2) {
+function createButton(icon, id, layout, handler, handler2) {
   return {
     type: "button",
     props: {
       icon: $icon(icon, $color("darkText"), $size(18, 18)),
       font: $font(14),
-      bgcolor: $color("clear")
+      bgcolor: $color("clear"),
+      id: id
     },
     layout: layout,
     events: {
@@ -160,54 +183,52 @@ function createButton(icon, layout, handler, handler2) {
   };
 }
 
-
-function createText(){
-  return{
-      type: "text",
-      props: {
-        id:"input",        
-        //placeholder:"轻点输入..",
-        font:$font(12),
-        textColor:$clipboard.text? $color("black"):$color("gray"),
-        borderWidth:0.4,
-        borderColor:$rgba(100,100,100,0.25),
-        bgcolor: $rgba(200, 200, 200, 0.25),   
-        text: $clipboard.text||"轻点输入..",
-        radius: 5,
-        scrollEnabled: false,
-        lines: 1,
-        insets: $insets(4, 1, 0, 0),
-        align:$align.natural,
-        //editable: false
-      },
-      layout: function(make, view) {
-        make.top.inset(5)
-        make.left.inset(9)
-        make.right.inset(120)
-        make.height.equalTo(23)
-      },
-      events: {
-        didBeginEditing: function(sender) {
-          editor.clipEditor($clipboard.text)
-        }
-      }
-    
-  }
-}
-
-function createLine(){
+function createText() {
   return {
-      type: "label",
-      props: {
-        bgcolor: $rgba(100, 100, 100, 0.25)
-      },
-      
-      layout: function(make, view) {
-        make.top.equalTo($("input").bottom).offset(5);
-        make.right.left.inset(0);
-        make.height.equalTo(0.4);
+    type: "text",
+    props: {
+      id: "input",
+      //placeholder:"轻点输入..",
+      font: $font(13),
+      textColor: $clipboard.text ? $color("black") : $color("gray"),
+      borderWidth: 0.4,
+      borderColor: $rgba(100, 100, 100, 0.25),
+      bgcolor: $rgba(200, 200, 200, 0.25),
+      text: $clipboard.text || "轻点输入..",
+      radius: 5,
+      scrollEnabled: false,
+      lines: 1,
+      insets: $insets(4, 1, 0, 0),
+      align: $align.natural
+      //editable: false
+    },
+    layout: function(make, view) {
+      make.top.inset(5);
+      make.left.inset(9);
+      make.right.inset(120);
+      make.height.equalTo(23);
+    },
+    events: {
+      didBeginEditing: function(sender) {
+        editor.clipEditor($clipboard.text);
       }
     }
+  };
+}
+
+function createLine() {
+  return {
+    type: "label",
+    props: {
+      bgcolor: $rgba(100, 100, 100, 0.25)
+    },
+
+    layout: function(make, view) {
+      make.top.equalTo($("input").bottom).offset(5);
+      make.right.left.inset(0);
+      make.height.equalTo(0.4);
+    }
+  };
 }
 
 function createClipboardView() {
@@ -221,8 +242,8 @@ function createActionView() {
       id: "action-view",
       bgcolor: $rgba(200, 200, 200, 0.25),
       radius: 8,
-      borderWidth:0.2,
-      borderColor:$rgba(100,100,100,0.25),
+      borderWidth: 0.2,
+      borderColor: $rgba(100, 100, 100, 0.25),
       alwaysBounceVertical: false,
       alwaysBounceHorizontal: true,
       showsHorizontalIndicator: false
@@ -231,15 +252,14 @@ function createActionView() {
       make.left.right.inset(8);
       make.bottom.inset(0);
       make.height.equalTo(28);
-    },
-    views: views
+    }
+    //views: views
   };
 
   return container;
 }
 
 function initActionButtons() {
-  
   var actionView = $("action-view");
   actionView.relayout();
 
@@ -249,7 +269,7 @@ function initActionButtons() {
   var multiplyRatio = 1.0 / Math.min(actions.length, 8);
   var contentWidth = 0;
 
-  for (var idx=0; idx<actions.length; ++idx) {
+  for (var idx = 0; idx < actions.length; ++idx) {
     var action = actions[idx];
     var button = {
       type: "button",
@@ -267,7 +287,8 @@ function initActionButtons() {
         make.top.equalTo(0);
         make.height.equalTo(itemHeight);
         make.width.equalTo(view.super).multipliedBy(multiplyRatio);
-        contentWidth = (actionView.frame.width - 12) * multiplyRatio * actions.length;
+        contentWidth =
+          (actionView.frame.width - 12) * multiplyRatio * actions.length;
         leftView = view;
       },
       events: {
@@ -275,12 +296,12 @@ function initActionButtons() {
           $device.taptic(1);
           helper.runAction(sender.info);
         },
-        longPressed: function(sender){
+        longPressed: function(sender) {
           $device.taptic(2);
-          helper.runLongAction(sender.sender.info)
+          helper.runLongAction(sender.sender.info);
         }
       }
-    }
+    };
     actionView.add(button);
   }
 
@@ -289,4 +310,4 @@ function initActionButtons() {
 
 module.exports = {
   init: init
-}
+};

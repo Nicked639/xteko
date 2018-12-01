@@ -1,13 +1,16 @@
 var builder = require("./builder");
 var dataManager = require("./data-manager");
-var layoutUtility = require("./layout-utility");
-var LIST_TYPE = { CLIPBOARD: 0, ACTION: 1 };
+var editor = require("./editor");
+//var layoutUtility = require("./layout-utility");
+var LIST_TYPE = { CLIPBOARD: 0, CLOUD:1,ACTION: 2 };
 var listType = LIST_TYPE.CLIPBOARD;
 
 var tabView = {
   type: "tab",
   props: {
-    items: [$l10n("CLIPBOARD"), $l10n("ACTION")]
+    id:"tab",
+    items: [$l10n("CLIPBOARD"),"iCloud",$l10n("ACTION")],
+    index: mode=="clip"?0:1
   },
   layout: function(make, view) {
     make.centerX.equalTo(view.super);
@@ -17,7 +20,10 @@ var tabView = {
   },
   events: {
     changed: function(sender) {
+      if(sender.index==0) mode = "clip"
+      else mode = "cloud"
       setListViewType(sender.index);
+      dataManager.initData(mode)
     }
   }
 };
@@ -28,19 +34,21 @@ var actionView = builder.createActionView();
 var createButton = {
   type: "button",
   props: {
-    title: $l10n("CREATE")
+    //title: $l10n("CREATE")
+    icon: $icon("104", $color("tint")),
+    bgcolor: $color("clear")
   },
   layout: function(make, view) {
-    make.left.right.inset(8);
-    make.bottom.inset(8 + layoutUtility.dynamicInsets().bottom);
-    make.height.equalTo(36);
+    make.size.equalTo($size(20, 20));
+    make.top.left.inset(12);
   },
   events: {
     tapped: function() {
-      if (listType == LIST_TYPE.CLIPBOARD) {
-        createNewTextItem();
-      } else {
+      if ($("tab").index==2) {
+        //createNewTextItem();
         createNewActionItem();
+      } else {
+        editor.clipEditor()
       }
     }
   }
@@ -49,7 +57,9 @@ var createButton = {
 var settingButton = {
   type: "button",
   props: {
-    src: "assets/setting.png"
+    //src: "assets/setting.png"
+    icon: $icon("002", $color("tint")),
+    bgcolor: $color("clear")
   },
   layout: function(make, view) {
     make.size.equalTo($size(20, 20));
@@ -60,32 +70,43 @@ var settingButton = {
       var setting = require("./setting");
       setting.show({
         "clear": function() {
-          $("clipboard-list").data = [];
-          builder.reloadTextItems();
+          if(mode == "clip")
+            $("clipboard-list").data = [];
+          else{
+            LocalData.fav=[]
+            dataManager.writeCloud()
+          }
+          builder.reloadTextItems(mode);
         }
       });
     }
   }
-}
+};
 
 function init() {
-
   $ui.render({
     props: { title: "Pin" },
     views: [tabView, clipboardView, actionView, createButton, settingButton]
-  })
+  });
+
+  dataManager.initData(mode);
 
   setListViewType(0);
 }
 
 function setListViewType(type) {
   listType = type;
-  
+
   var clipboardView = $("clipboard-list");
   var actionView = $("action-list");
-  
-  clipboardView.hidden = type != LIST_TYPE.CLIPBOARD;
-  actionView.hidden = type != LIST_TYPE.ACTION;
+  if(type == 2){
+    actionView.hidden = false
+    clipboardView.hidden = true
+  } else{
+    actionView.hidden = true
+        clipboardView.hidden = false
+  }
+    
 }
 
 function createNewTextItem() {
@@ -93,7 +114,7 @@ function createNewTextItem() {
     var items = dataManager.getTextItems();
     if (items.indexOf(text) === -1 && text.length > 0) {
       items.unshift(text);
-      $("clipboard-list").insert({"index": 0, "value": text});
+      $("clipboard-list").insert({ "index": 0, "value": text });
       dataManager.setTextItems(items);
       builder.reloadTextItems();
     }
@@ -116,4 +137,4 @@ function createNewActionItem() {
 
 module.exports = {
   init: init
-}
+};

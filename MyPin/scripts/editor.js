@@ -1,12 +1,13 @@
 function clipEditor(text) {
   // 文本框高度，可根据需要自行修改
-var  TextViewHeight = 180
+  var TextViewHeight = 161;
 
-  $ui.push({
+  $ui.render({
     props: {
       id: "clipView",
       title: "Clip Editor",
-      navBarHidden: $app.env == $env.today ? 1 : 0
+      navBarHidden: $app.env == $env.today ? 1 : 0,
+      bgcolor: $color("clear")
     },
     views: [
       {
@@ -14,9 +15,10 @@ var  TextViewHeight = 180
         props: {
           id: "clipContent",
           type: $kbType.default,
-          bgcolor: $rgba(100, 100, 100, 0.1),
-          font: $font(15),
+          bgcolor: $color("clear"),//$rgba(200, 200, 200, 0.25),
+          font: $font(13),
           radius: 10,
+          insets:$insets(4,0,0,0),
           accessoryView: {
             type: "view",
             props: {
@@ -25,6 +27,7 @@ var  TextViewHeight = 180
               borderWidth: 0.5,
               borderColor: $color("#cccccc")
             },
+            
             views: [
               {
                 type: "button",
@@ -103,36 +106,36 @@ var  TextViewHeight = 180
                   }
                 }
               },
-//              {
-//                type: "button",
-//                props: {
-//                  id: "ShareButton",
-//                  icon: $icon("022", $color("gray"), $size(20, 20)),
-//                  font: $font("bold", 25),
-//                  bgcolor: $color("clear"),
-//                  hidden: 0
-//                },
-//                layout: function(make, view) {
-//                  make.top.bottom.inset(0);
-//                  make.right.equalTo($("ImageButton").left).inset(10);
-//                },
-//                events: {
-//                  tapped: function(sender) {
-//                    if ($("clipContent").text.length > 0) {
-//                      let ShareText =
-//                        $("clipContent").selectedRange.length > 0
-//                          ? $("clipContent").text.substr(
-//                              $("clipContent").selectedRange.location,
-//                              $("clipContent").selectedRange.length
-//                            )
-//                          : $("clipContent").text;
-//                      $share.sheet(ShareText);
-//                    } else {
-//                      $ui.error("No Content!", 0.5);
-//                    }
-//                  }
-//                }
-//              },
+              //              {
+              //                type: "button",
+              //                props: {
+              //                  id: "ShareButton",
+              //                  icon: $icon("022", $color("gray"), $size(20, 20)),
+              //                  font: $font("bold", 25),
+              //                  bgcolor: $color("clear"),
+              //                  hidden: 0
+              //                },
+              //                layout: function(make, view) {
+              //                  make.top.bottom.inset(0);
+              //                  make.right.equalTo($("ImageButton").left).inset(10);
+              //                },
+              //                events: {
+              //                  tapped: function(sender) {
+              //                    if ($("clipContent").text.length > 0) {
+              //                      let ShareText =
+              //                        $("clipContent").selectedRange.length > 0
+              //                          ? $("clipContent").text.substr(
+              //                              $("clipContent").selectedRange.location,
+              //                              $("clipContent").selectedRange.length
+              //                            )
+              //                          : $("clipContent").text;
+              //                      $share.sheet(ShareText);
+              //                    } else {
+              //                      $ui.error("No Content!", 0.5);
+              //                    }
+              //                  }
+              //                }
+              //              },
               {
                 type: "button",
                 props: {
@@ -206,7 +209,7 @@ var  TextViewHeight = 180
                 },
                 events: {
                   tapped: function(sender) {
-                    saveClip($("clipContent").text);
+                    saveClip($("clipContent").text,mode);
                   }
                 }
               },
@@ -229,7 +232,16 @@ var  TextViewHeight = 180
                 events: {
                   tapped: function(sender) {
                     $("clipContent").blur();
-                    $ui.pop();
+                    $device.taptic(0);
+                    $("clipView").remove();
+                    var dataManager = require("./data-manager");
+                    dataManager.init(mode);
+                    var path = $app.env == $env.today ? "./widget" : "./app";
+                    var module = require(path);
+                    module.init(mode);
+                    iconColor(mode)
+                    $("input").text = $clipboard.text?$clipboard.text:"轻点输入..";
+                    $("input").textColor = $clipboard.text?$color("darkText"):$color("gray")
                   }
                 }
               }
@@ -237,8 +249,9 @@ var  TextViewHeight = 180
           }
         },
         layout: function(make) {
-          make.top.right.left.inset(10);
-          make.height.equalTo(TextViewHeight);
+          make.right.left.inset(10);
+          make.top.bottom.inset(5)
+          //make.height.equalTo(TextViewHeight);
         },
         events: {
           ready: function(sender) {
@@ -267,7 +280,7 @@ var  TextViewHeight = 180
     $("ImageButton").hidden = 0;
   }
 
-  $widget.height = TextViewHeight + 20
+  $widget.height = TextViewHeight + 20;
 }
 
 function showImage(imageData) {
@@ -323,30 +336,26 @@ function showImage(imageData) {
   });
 }
 
-function saveClip(text) {
+function iconColor(mode){
+  if(mode=="clip"){
+      $("fav").icon = $icon("091", $color("darkText"), $size(18, 18));
+    }else $("fav").icon = $icon("091", $color("#ed9e31"), $size(18, 18));
+}
+
+function saveClip(text,mode="clip") {
   var dataManager = require("./data-manager");
-  var items = dataManager.getTextItems();
   $clipboard.set({ "type": "public.plain-text", "value": text });
-  if (items.indexOf(text) === -1 && text.length > 0) {
-    items.unshift(text);
-    $("clipboard-list").data = [];
-    items.map(function(i) {
-      let flag = i.indexOf("\n") >= 0;
-      $("clipboard-list").data = $("clipboard-list").data.concat({
-        label: {
-          text: i,
-          textColor: flag ? $color("#325793") : $color("black")
-        }
-      });
-    });
-    dataManager.setTextItems(items);
-    var builder = require("./builder");
-    builder.reloadTextItems();
-  }
-  $("clipContent").blur();
-  $ui.pop();
-  $("input").text = text;
-  $("input").textColor = $color("black")
+  $device.taptic(0);
+  $("clipView").remove();
+  dataManager.init(mode);
+  var path = $app.env == $env.today ? "./widget" : "./app";
+  var module = require(path);
+  module.init(mode);
+  var builder = require("./builder");
+  builder.reloadTextItems(mode);
+  $("input").text = $clipboard.text?$clipboard.text:"轻点输入..";
+  $("input").textColor =$clipboard.text? $color("black"):$color("gray");
+  iconColor(mode)
 }
 module.exports = {
   clipEditor: clipEditor

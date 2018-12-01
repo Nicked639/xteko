@@ -101,7 +101,6 @@ function run() {
   } else {
     LocalData = { "images": [] };
   }
-  $file.mkdir("SMMS");
   load();
   if ($app.env == $env.app) selectPhoto();
   else {

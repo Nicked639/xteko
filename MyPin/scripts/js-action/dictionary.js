@@ -170,11 +170,13 @@ function show() {
               tapped(sender) {
                 if ($("wordsearch").editing == true) {
                   if ($("wordsearch").text === "") {
+                    $("wordsearch").focus()
                     return;
                   } else translate($("wordsearch").text);
                 } else {
                   $("wordsearch").text = "";
                   $("result").text = "";
+                  $("wordsearch").focus()
                 }
               }
             }
@@ -534,6 +536,9 @@ function dic(text) {
   $cache.remove("engine");
   $cache.remove("textSound");
   show();
+  if(!text){
+    $("wordsearch").focus()
+  }
   $("wordsearch").text = text;
   translate(text);
 }
