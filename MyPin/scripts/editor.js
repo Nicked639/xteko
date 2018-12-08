@@ -231,17 +231,22 @@ function clipEditor(text) {
                 },
                 events: {
                   tapped: function(sender) {
-                    $("clipContent").blur();
+                    $("clipContent").blur();                 
                     $device.taptic(0);
-                    $("clipView").remove();
                     var dataManager = require("./data-manager");
                     dataManager.init(mode);
-                    var path = $app.env == $env.today ? "./widget" : "./app";
+                    var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
+                    $("clipView").remove();
                     var module = require(path);
                     module.init(mode);
-                    iconColor(mode)
-                    $("input").text = $clipboard.text?$clipboard.text:"轻点输入..";
-                    $("input").textColor = $clipboard.text?$color("darkText"):$color("gray")
+                    if(path=="./widget")
+                    {
+                      iconColor(mode)
+                                          $("input").text = $clipboard.text?$clipboard.text:"轻点输入..";
+                                          $("input").textColor = $clipboard.text?$color("darkText"):$color("gray")
+                    }else $("tab").index = mode=="clip"?0:1
+                       
+
                   }
                 }
               }

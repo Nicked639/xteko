@@ -95,6 +95,21 @@ function initData(mode="clip"){
     })
 }
 
+function copied2Clip(text) {
+  $clipboard.set({ "type": "public.plain-text", "value": text });
+  if (($app.env == $env.today)) {
+    $("input").text = $clipboard.text;
+    var items = getTextItems();
+    if (items.indexOf(text) === -1 && text.length > 0) {
+      items.unshift(text);
+      $("clipboard-list").insert({ "index": 0, "value": text });
+      setTextItems(items);
+      var builder = require("./builder");
+      builder.reloadTextItems();
+    } else return;
+  } else return;
+}
+
   module.exports = {
     init: init,
     getTextItems: getTextItems,
@@ -107,4 +122,5 @@ function initData(mode="clip"){
     setSearchEngine: setSearchEngine,
     initData: initData,
     writeCloud: writeCloud,
+    copied2Clip:copied2Clip,
   }

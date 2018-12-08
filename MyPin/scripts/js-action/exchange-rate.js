@@ -129,7 +129,7 @@ function show() {
           props: {
             id: "select-btn",
             title: names[selectedIndex],
-            font: $font($app.env == $env.today ? 14 : 16)
+            font: $font($app.env == $env.app ? 16 : 14)
           },
           layout: function(make) {
             make.height.equalTo(25);
@@ -237,10 +237,10 @@ function show() {
                           $widget.height = 181;
                           $("exr").remove();
                           var dataManager = require("../data-manager");
-                          dataManager.init();
-                          var path = $app.env == $env.today ? "../widget" : "../app";
+                          dataManager.init(mode);
+                          var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
                           var module = require(path);
-                          module.init();
+                          module.init(mode);
                           $("input").text = $clipboard.text;
             }
           }

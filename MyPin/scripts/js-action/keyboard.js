@@ -89,10 +89,12 @@ function run() {
         },
         events: {
           didSelect: function(sender, indexPath, data) {
-            $keyboard.insert(data.label.text);
-            $clipboard.text = data.label.text;
-            $ui.toast("符号已复制", 0.3);
-            historyCache(data.label.text);
+            if ($app.env == $env.keyboard) $keyboard.insert(data.label.text);
+            else {
+              $clipboard.text = data.label.text;
+              $ui.toast("符号已复制", 0.3);
+              historyCache(data.label.text);
+            }
           }
         }
       },
@@ -127,12 +129,12 @@ function run() {
           tapped(sender) {
             $device.taptic(0);
             $widget.height = 181;
-            $("keyboard").remove();
+            $("keyboard").remove(mode);
             var dataManager = require("../data-manager");
-            dataManager.init();
-            var path = $app.env == $env.today ? "../widget" : "../app";
+            dataManager.init(mode);
+            var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
             var module = require(path);
-            module.init();
+            module.init(mode);
             $("input").text = $clipboard.text;
           }
         }

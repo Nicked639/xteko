@@ -454,7 +454,7 @@ function showHashes(title) {
     {
       type: "input",
       props: {
-        id: "input-plain-text",
+        id: "inputH",
         "text": $clipboard.text
       },
       layout: function(make) {
@@ -462,6 +462,7 @@ function showHashes(title) {
         make.height.equalTo(32);
       },
       events: {
+        didBeginEditing:handleTextChanged,
         changed: handleTextChanged
       }
     },
@@ -469,10 +470,10 @@ function showHashes(title) {
       type: "button",
       props: {
         id: "button-md5",
-        title: "MD5"
+        title: "MD5",
       },
       layout: function(make) {
-        var topView = $("input-plain-text");
+        var topView = $("inputH");
         make.left.right.equalTo(topView);
         make.height.equalTo(topView);
         make.top.equalTo(topView.bottom).offset(Constants.margins.regular);
@@ -485,7 +486,7 @@ function showHashes(title) {
       type: "button",
       props: {
         id: "button-sha1",
-        title: "SHA1"
+        title: "SHA1",
       },
       layout: function(make) {
         var topView = $("button-md5");
@@ -494,6 +495,7 @@ function showHashes(title) {
         make.top.equalTo(topView.bottom).offset(Constants.margins.regular);
       },
       events: {
+        
         tapped: handleButtonTapped
       }
     },
@@ -565,10 +567,10 @@ function run() {
                   $widget.height = 181;
                   $("tool").remove();
                   var dataManager = require("../data-manager");
-                  dataManager.init();
-                  var path = $app.env == $env.today ? "../widget" : "../app";
+                  dataManager.init(mode);
+                  var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
                   var module = require(path);
-                  module.init();
+                  module.init(mode);
                   $("input").text = $clipboard.text;
                 }
               }

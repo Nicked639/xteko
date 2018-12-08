@@ -173,7 +173,7 @@ exit()
 dataManager.init()
                             $cache.remove("pickedInOrder");
                             
-                            var path = $app.env == $env.today ? "../widget" : "../app";
+                            var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
                                         var module = require(path);
                                         module.init(mode);
                                         var builder = require("../builder");

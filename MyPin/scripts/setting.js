@@ -3,7 +3,8 @@ var mHandlers = {};
 
 var SETTINGS = {
   SEARCH_ENGINE: 0,
-  CLEAR_CLIPBOARD: 1,
+  DEFAULT_CLIPBOARD:1,
+  CLEAR_CLIPBOARD: 2,
 }
 
 function show(handlers) {
@@ -17,7 +18,7 @@ function show(handlers) {
           data: [
             {
               "title": " ",
-              "rows": [$l10n("SEARCH_ENGINE"), $l10n("CLEAR_CLIPBOARD")]
+              "rows": [$l10n("SEARCH_ENGINE"), $l10n("DEFAULT_CLIPBOARD"),$l10n("CLEAR_CLIPBOARD")]
             }
           ]
         },
@@ -27,6 +28,9 @@ function show(handlers) {
             switch (indexPath.row) {
             case SETTINGS.SEARCH_ENGINE:
               setEngine();
+              break;
+            case SETTINGS.DEFAULT_CLIPBOARD:
+              setMode();
               break;
             case SETTINGS.CLEAR_CLIPBOARD:
               clearClipboard();
@@ -85,6 +89,23 @@ function clearClipboard() {
   $("clipboard-list").data=[]
 }
 
+function setMode(){
+  $ui.menu({
+    items: ["本地", "iCloud"],
+    handler: function(title, idx) {
+      if(idx==0) {
+        $cache.set("mode","clip")
+        $("tab").index = 0
+      }else {
+        $cache.set("mode","cloud")
+        $("tab").index = 1
+      }
+    },
+    finished: function(cancelled) {
+  
+    }
+  })
+}
 module.exports = {
   show: show
 }

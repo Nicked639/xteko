@@ -10,6 +10,7 @@
 "CLEAR" = "清除";
 "CREATE_ACTION" = "创建动作";
 "SEARCH_ENGINE" = "搜索引擎";
+"DEFAULT_CLIPBOARD"="默认剪贴板";
 "CLEAR_CLIPBOARD" = "清除剪贴板项目";
 "LAUNCH" = "启动";
 "MAKE_ICON" = "制作图标";

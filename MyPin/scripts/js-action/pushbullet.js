@@ -19,7 +19,7 @@
 */
 function run(){
 // 请将 Access Token 填写到下方""中
-accesstoken = ;
+accesstoken = 
 // 请求超时设置
 timeout = 3
 // 从 safari 启动 send url

@@ -10,11 +10,9 @@ function createClipboardView() {
     props: {
       id: "clipboard-list",
       reorder: true,
-      rowHeight: $app.env == $env.today ? 29 : 44,
+      rowHeight: $app.env == $env.app?44:29,
       separatorColor:
-        $app.env == $env.today
-          ? $rgba(100, 100, 100, 0.25)
-          : $color("separator"),
+        $app.env == $env.app ? $color("seperator"): $rgba(100, 100, 100, 0.25),
       //data: textItems,
       template: {
         views: [
@@ -38,7 +36,7 @@ function createClipboardView() {
               bgcolor: $color("clear")
             },
             layout: function(make, view) {
-              make.right.top.bottom.inset(0);
+              make.left.top.bottom.inset(0);
               make.width.equalTo(60);
             },
             events: {
@@ -100,6 +98,7 @@ function createClipboardView() {
 //            textItems = dataManager.getTextItems(mode)
 //            reloadTextItems(mode);
             let text = textItems[indexPath.row]
+            alert(text)
             var items = dataManager.getTextItems("cloud");
               var index = items.indexOf(text);
               if (index != -1) {
@@ -110,12 +109,24 @@ function createClipboardView() {
                     $ui.toast("上传成功",0.3)
             
           }
-        }
+        },
+        {
+                  title: "分享",
+                  color: $color("#8ac75a"),
+                  handler: function(sender, indexPath) {
+                    reloadTextItems(mode);
+                    $share.sheet(textItems[indexPath.row]);
+                  }
+                },
       ]
     },
     layout: listViewLayout(),
     events: {
       didSelect: function(sender, indexPath, object) {
+        if($app.env == $env.keyboard){
+          $keyboard.insert(object.label.text)
+          return
+        }
         $clipboard.text = object.label.text;
         $ui.toast($l10n("COPIED"), 0.3);
         if($app.env == $env.today){
@@ -267,8 +278,8 @@ function mapActionItems() {
 function listViewLayout() {
   return function(make, view) {
     make.left.right.equalTo(0);
-    make.top.inset($app.env == $env.today ? 33 : 44);
-    make.bottom.inset($app.env == $env.today ? 30 : 52);
+    make.top.inset($app.env == $env.app ? 44 : 33);
+    make.bottom.inset($app.env == $env.app ? 52 : 30);
   };
 }
 

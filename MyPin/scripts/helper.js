@@ -18,6 +18,20 @@ function searchText(text) {
   runAction({ "pattern": pattern });
 }
 
+function runMoveAction(action){
+    var pattern = action.pattern;
+    var hasPlaceholder = pattern.indexOf("%@") != -1;
+    var clipText = $clipboard.text || "";
+    var replacement = action.noenc ? clipText : encodeURIComponent(clipText);
+  
+    pattern = pattern.replace("%@", replacement);
+    if (_hasPrefix(pattern, "keyboard:")) {
+        var quote = require("./js-action/quote");
+        quote.run();
+        return;
+      }
+}
+
 function runLongAction(action) {
   var pattern = action.pattern;
   var hasPlaceholder = pattern.indexOf("%@") != -1;
@@ -75,7 +89,8 @@ function runLongAction(action) {
         }
      if (_hasPrefix(pattern, "url_convert:")) {
             
-             $app.openURL("douban:///search?q="+$clipboard.text)
+             //$app.openURL("douban:///search?q="+$clipboard.text)
+$app.openURL("appleprintcenter:///")
              return;
            }
 }
@@ -145,6 +160,7 @@ if (_hasPrefix(pattern, "url_convert:")) {
       translator.gtrans(text);
       $("input").blur();
     }
+  
   
   if (_hasPrefix(pattern, "share-sheet://")) {
     var text = $clipboard.text;
@@ -343,6 +359,7 @@ module.exports = {
   searchText: searchText,
   runAction: runAction,
   runLongAction: runLongAction,
+  runMoveAction: runMoveAction,
   blinkView: blinkView,
   makeIcon: makeIcon
 };

@@ -85,10 +85,10 @@ function run() {
             $widget.height = 181;
             $("sm").remove();
             var dataManager = require("../data-manager");
-            dataManager.init();
-            var path = $app.env == $env.today ? "../widget" : "../app";
+            dataManager.init(mode);
+            var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
             var module = require(path);
-            module.init();
+            module.init(mode);
             $("input").text = $clipboard.text;
           }
         }

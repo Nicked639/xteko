@@ -10,6 +10,7 @@
 "CLEAR" = "Clear";
 "CREATE_ACTION" = "Create Action";
 "SEARCH_ENGINE" = "Search Engine";
+"DEFAULT_CLIPBOARD"="Default Clipboard";
 "CLEAR_CLIPBOARD" = "Clear Clipboard";
 "LAUNCH" = "Launch";
 "MAKE_ICON" = "Make Icon";

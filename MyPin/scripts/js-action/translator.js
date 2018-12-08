@@ -82,10 +82,10 @@ function transUI() {
                 $widget.height = 181;
                 $("mainbg").remove();
                 var dataManager = require("../data-manager");
-                dataManager.init();
-                var path = $app.env == $env.today ? "../widget" : "../app";
+                dataManager.init(mode);
+                var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
                 var module = require(path);
-                module.init();
+                module.init(mode);
                 $("input").text = $clipboard.text
               }
             }
@@ -246,7 +246,7 @@ function transUI() {
                       $widget.height=181
                                       var dataManager = require("../data-manager");
                                       dataManager.init();
-                                      var path = $app.env == $env.today ? "../widget" : "../app";
+                                      var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
                                       var module = require(path);
                                       module.init();
                                       $("input").text = $clipboard.text

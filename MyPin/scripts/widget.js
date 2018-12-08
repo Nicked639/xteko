@@ -1,4 +1,5 @@
 $widget.height = 181;
+$keyboard.barHidden = true
 var dataManager = require("./data-manager");
 var builder = require("./builder");
 var helper = require("./helper");
@@ -143,7 +144,8 @@ function init(mode = "clip") {
   $ui.render({
     props: {
       navBarHidden: 1,
-      id: "widget"
+      id: "widget",
+      bgcolor: $app.env==$env.today?$color("clear"):$color("white")
     },
     views: views
   });
@@ -298,7 +300,16 @@ function initActionButtons() {
         },
         longPressed: function(sender) {
           $device.taptic(2);
+          //alert($props(sender.sender))
           helper.runLongAction(sender.sender.info);
+        },
+        touchesEnded: function(sender, location) {
+          
+          if(location.y>30){
+            helper.runMoveAction(sender.info)
+            
+            return
+          }
         }
       }
     };
@@ -306,8 +317,10 @@ function initActionButtons() {
   }
 
   actionView.contentSize = $size(contentWidth, itemHeight);
+  actionView.bgcolor = $app.env == $env.today?$color("clear"):$color("white")
 }
 
 module.exports = {
   init: init
 };
+
