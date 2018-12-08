@@ -25,11 +25,18 @@ function runMoveAction(action){
     var replacement = action.noenc ? clipText : encodeURIComponent(clipText);
   
     pattern = pattern.replace("%@", replacement);
+    
     if (_hasPrefix(pattern, "keyboard:")) {
         var quote = require("./js-action/quote");
         quote.run();
         return;
       }
+      
+    if (_hasPrefix(pattern, "taobao:")) {
+            var weibo = require("./js-action/weibo");
+            weibo.run();
+            return;
+          }
 }
 
 function runLongAction(action) {

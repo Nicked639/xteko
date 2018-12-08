@@ -305,7 +305,7 @@ function initActionButtons() {
         },
         touchesEnded: function(sender, location) {
           
-          if(location.y>30){
+          if(location.y>150){
             helper.runMoveAction(sender.info)
             
             return
