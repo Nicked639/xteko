@@ -4,6 +4,14 @@ const hotSeachApi =
 const hotWeiboApi =
   "https://api.weibo.cn/2/guest/statuses_unread_hot_timeline?gsid=_2AkMsWcS5f8NhqwJRmPEdxGnjaIx-wwDEieKaBTViJRMxHRl-wT9jqhUHtRV6Bm0NBJtwNGf7sD9vWinqTxfteTn6j0PV&uid=1009882141998&wm=3333_2001&i=ddd48a6&b=0&from=1085193010&checktoken=745495b139d5d0943c12418acc7a08f8&c=iphone&networktype=4g&v_p=60&skin=default&s=ef3ddddd&v_f=1&did=10dc157a640f1c1bd53cbacbad02326f&lang=zh_CN&sflag=1&ua=iPhone9,2__weibo__8.5.1__iphone__os11.3&ft=0&aid=01AtRD1ZgBBPGE25lc8nv6Zf3kE2dc9EyFhUimttlBTNKYNmA.&cum=47EFCA86";
 
+let containerid = {
+  "热门":"102803",
+  "小时":"102803_ctg1_9999_-_ctg1_9999",
+  "昨日":"102803_ctg1_8899_-_ctg1_8899",
+  "前日":"102803_ctg1_8799_-_ctg1_8799",
+  "周榜":"102803_ctg1_8698"
+}
+
 const template = {
   views: [
     {
@@ -114,7 +122,10 @@ function weiboList(mode,temp) {
         }
       ]
     },
-    layout: $layout.fill,
+    layout: function(make, view) {
+          make.left.right.top.inset(0)
+          make.bottom.inset(40)
+        },
     events: {
       didSelect: function(sender, indexPath) {
         let app = $cache.get("app")||"weibo"
@@ -133,6 +144,7 @@ function weiboList(mode,temp) {
   };
 }
 
+weekInfo=""
 function show() {
   $ui.render({
     props: {
@@ -148,12 +160,12 @@ function show() {
         type: "tab",
         props: {
           id:"tab",
-          items: ["热搜", "趋势", "热门"],
+          items: ["热搜", "趋势", "热门","小时","昨日","前日","周榜"],
           bgcolor: $color("white"),
           radius:5
         },
         layout: function(make, view) {
-          make.bottom.inset(20);
+          make.bottom.inset(15);
           make.centerX.equalTo();
         },
         events: {
@@ -163,7 +175,16 @@ function show() {
             else if (sender.index == 1) {
               getHotSearch("trend");
             } else if (sender.index == 2) {
-              getFire();
+              getFire(containerid.热门);
+            }else if (sender.index == 3) {
+              getFire(containerid.小时);
+            }else if (sender.index == 4) {
+              getFire(containerid.昨日);
+            }else if (sender.index == 5) {
+              getFire(containerid.前日);
+            }else if (sender.index == 6) {
+              getFire(containerid.周榜);
+              week()
             }
           }
         }
@@ -172,7 +193,39 @@ function show() {
   });
 }
 
-function getFire() {
+function week(){
+    $http.request({
+      method: "POST",
+      url: hotWeiboApi,
+      header: {
+        "User-Agent": "Weibo/27683 (iPhone; iOS 11.3; Scale/3.00) "
+      },
+      form: {
+        refresh: "pulldown",
+        group_id: "102803",
+        extparam: "discover|new_feed",
+        fid: "102803",
+        lon: "116.233115",
+        uicode: "10000225",
+        containerid: "102803_ctg1_8699_-_ctg1_8699",
+        featurecode: "10000225",
+        refresh_sourceid: "10000365",
+        since_id: "4242760586282015",
+        need_jump_scheme: "1"
+      },
+      handler: function(resp) {
+        let data = resp.data;
+        if (data.errmsg) {
+          alert(data.errmsg);
+          return;
+        }
+        weekInfo = data.cards[1].desc_extr
+        $ui.toast(data.cards[1].desc_extr,0.8)
+        }
+     })
+}
+
+function getFire(containerid="102803") {
   $http.request({
     method: "POST",
     url: hotWeiboApi,
@@ -186,7 +239,7 @@ function getFire() {
       fid: "102803",
       lon: "116.233115",
       uicode: "10000225",
-      containerid: "102803",
+      containerid: containerid,
       featurecode: "10000225",
       refresh_sourceid: "10000365",
       since_id: "4242760586282015",
@@ -198,11 +251,17 @@ function getFire() {
         alert(data.errmsg);
         return;
       }
+//      $clipboard.text=JSON.stringify(data)
       $("hotList").hidden = true;
       $("trendList").hidden = true;
       $("fireList").hidden = false;
       $("fireList").data = [];
-      $ui.toast(data.remind_text_old, 1);
+      if($("tab").index==2)
+        $ui.toast(data.remind_text_old, 1);
+      else if($("tab").index==6)
+        $ui.toast(weekInfo,1)
+      else
+        $ui.clearToast()
       let hots = data.statuses;
       for(let i=0;i<hots.length;i++){
         $("fireList").data = $("fireList").data.concat({
@@ -283,7 +342,7 @@ function getHotSearch(mode = "hotSearch") {
           if (hotCards[i].icon) {
             if (hotCards[i].icon.indexOf("sheng") > 0) {
               icon.hidden = false;
-              icon.text = "升";
+              icon.text = "⤴︎";
               icon.bgcolor = $rgb(254, 75, 95);
             }
           }
