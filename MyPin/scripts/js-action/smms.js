@@ -365,24 +365,30 @@ function upload(pic) {
         writeCache();
         $clipboard.text = data.url;
         $ui.toast("图片链接已复制到剪贴板");
-        $ui.action({
-          title: "是否生成短链接",
+
+        $ui.alert({
+          title: "是否生成短链",
           message: "调用微博接口",
           actions: [
             {
               title: "确定",
+              disabled: false, // Optional
               handler: function() {
                 getShortUrl(data.url);
               }
+            },
+            {
+              title: "取消",
+              handler: function() {}
             }
           ]
         });
+
         load();
       }
     });
   }
 }
-
 function add() {
   $ui.push({
     props: {
@@ -446,6 +452,27 @@ function add() {
   });
 }
 
+function compressImage(image) {
+  //        alert($props(image[0]))
+  $input.text({
+    type: $kbType.number,
+    placeholder: "输入压缩到比例 0～100",
+    handler: function(num1) {
+      let width = (image.size.width * num1) / 100;
+      let height = (image.size.height * num1) / 100;
+      let resized = image.resized($size(width, height));
+      $input.text({
+        type: $kbType.number,
+        placeholder: "输入压缩后质量 0～100",
+        handler: function(num2) {
+          let jpg = resized.jpg(num1 / 100);
+          upload(jpg);
+        }
+      });
+    }
+  });
+}
+
 function selectPhoto() {
   $ui.menu({
     items: ["拍摄照片", "相册选取", "最后一张", "手动添加"],
@@ -454,22 +481,76 @@ function selectPhoto() {
         case 0:
           $photo.take({
             handler: function(resp) {
-              upload(resp.image.jpg(1.0));
+              $ui.alert({
+                title: "是否压缩",
+                message: "",
+                actions: [
+                  {
+                    title: "OK",
+                    disabled: false, // Optional
+                    handler: function() {
+                      compressImage(resp.image);
+                    }
+                  },
+                  {
+                    title: "Cancel",
+                    handler: function() {
+                      upload(resp.image.jpg(1.0));
+                    }
+                  }
+                ]
+              });
             }
           });
           break;
         case 1:
           $photo.pick({
             handler: function(resp) {
-              upload(resp.image.jpg(1.0));
+              $ui.alert({
+                title: "是否压缩",
+                message: "",
+                actions: [
+                  {
+                    title: "OK",
+                    disabled: false, // Optional
+                    handler: function() {
+                      compressImage(resp.image);
+                    }
+                  },
+                  {
+                    title: "Cancel",
+                    handler: function() {
+                      upload(resp.image.jpg(1.0));
+                    }
+                  }
+                ]
+              });
             }
           });
           break;
         case 2:
           $photo.fetch({
-            count: 3,
+            count: 1,
             handler: function(images) {
-              upload(images[0].jpg(1.0));
+              $ui.alert({
+                title: "是否压缩",
+                message: "",
+                actions: [
+                  {
+                    title: "OK",
+                    disabled: false, // Optional
+                    handler: function() {
+                      compressImage(images[0]);
+                    }
+                  },
+                  {
+                    title: "Cancel",
+                    handler: function() {
+                      upload(images[0].jpg(1.0));
+                    }
+                  }
+                ]
+              });
             }
           });
           break;
@@ -482,7 +563,6 @@ function selectPhoto() {
     }
   });
 }
-
 function getShortUrl(url) {
   let geturl =
     "https://api.weibo.com/2/short_url/shorten.json?source=1681459862&url_long=" +
