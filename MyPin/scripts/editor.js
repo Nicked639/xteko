@@ -1,367 +1,338 @@
-function clipEditor(text) {
-  // 文本框高度，可根据需要自行修改
-  var TextViewHeight = 161;
+let screenWidth = $device.info.screen.width;
+let offset = (screenWidth * 0.2 - 16) / 7;
+var canvas = require("./js-action/canvas");
+var rightView;
 
+function show(text) {
   $ui.render({
+    type: "blur",
     props: {
-      id: "clipView",
-      title: "Clip Editor",
-      navBarHidden: $app.env == $env.today ? 1 : 0,
-      bgcolor: $color("clear")
+      id: "mainbg",
+      style: 2
     },
     views: [
       {
-        type: "text",
+        type: "view",
         props: {
-          id: "clipContent",
-          type: $kbType.default,
-          bgcolor: $color("clear"),//$rgba(200, 200, 200, 0.25),
-          font: $font(13),
-          radius: 10,
-          insets:$insets(4,0,0,0),
-          accessoryView: {
-            type: "view",
+          radius: 10
+        },
+        layout: $layout.fill,
+        views: [
+          {
+            type: "text",
+            layout: $layout.fill,
             props: {
-              height: 40,
-              bgcolor: $color("#eeeeee"),
-              borderWidth: 0.5,
-              borderColor: $color("#cccccc")
-            },
-            
-            views: [
-              {
-                type: "button",
+              id: "textvw",
+              bgcolor: $color("clear"),
+              font: $font("Avenir", 13),
+              insets: $insets(9, 10, 2, 2),
+              accessoryView: {
+                type: "blur",
                 props: {
-                  id: "UndoButton",
-                  title: "⃔",
-                  radius: 6,
-                  font: $font(14),
-                  titleColor: $color("#333333"),
-                  bgcolor: $color("#ffffff"),
-                  borderWidth: 0.5,
-                  borderColor: $color("#cccccc")
+                  height: 35,
+                  style: 1,
+                  borderWidth: 0.4,
+                  borderColor: $rgba(200, 200, 200, 0.55)
                 },
-                layout: function(make, view) {
-                  make.top.inset(5);
-                  make.left.inset(8);
-                  make.width.equalTo(35);
-                  make.centerY.equalTo(view.super);
-                },
-                events: {
-                  tapped: function(sender) {
-                    $device.taptic(0);
-                    if (um.$canUndo()) {
-                      um.$undo();
-                    } else {
-                      $ui.error("Nothing to Undo!", 0.6);
-                    }
-                  }
-                }
-              },
-              {
-                type: "button",
-                props: {
-                  id: "RedoButton",
-                  title: "⃕",
-                  radius: 6,
-                  font: $font(14),
-                  titleColor: $color("#333333"),
-                  bgcolor: $color("#ffffff"),
-                  borderWidth: 0.5,
-                  borderColor: $color("#cccccc")
-                },
-                layout: function(make, view) {
-                  make.top.equalTo($("UndoButton").top);
-                  make.left.equalTo($("UndoButton").right).inset(5);
-                  make.width.equalTo($("UndoButton").width);
-                  make.centerY.equalTo(view.super);
-                },
-                events: {
-                  tapped: function(sender) {
-                    $device.taptic(0);
-                    if (um.$canRedo()) {
-                      um.$redo();
-                    } else {
-                      $ui.error("Nothing to Redo!", 0.6);
-                    }
-                  }
-                }
-              },
-              {
-                type: "button",
-                props: {
-                  title: "🌁",
-                  id: "ImageButton",
-                  font: $font("bold", 20),
-                  bgcolor: $color("clear"),
-                  hidden: 1
-                },
-                layout: function(make, view) {
-                  make.top.bottom.inset(0);
-                  make.centerX.equalTo(view.super).offset(22);
-                },
-                events: {
-                  tapped: function(sender) {
-                    showImage($clipboard.image);
-                  }
-                }
-              },
-              //              {
-              //                type: "button",
-              //                props: {
-              //                  id: "ShareButton",
-              //                  icon: $icon("022", $color("gray"), $size(20, 20)),
-              //                  font: $font("bold", 25),
-              //                  bgcolor: $color("clear"),
-              //                  hidden: 0
-              //                },
-              //                layout: function(make, view) {
-              //                  make.top.bottom.inset(0);
-              //                  make.right.equalTo($("ImageButton").left).inset(10);
-              //                },
-              //                events: {
-              //                  tapped: function(sender) {
-              //                    if ($("clipContent").text.length > 0) {
-              //                      let ShareText =
-              //                        $("clipContent").selectedRange.length > 0
-              //                          ? $("clipContent").text.substr(
-              //                              $("clipContent").selectedRange.location,
-              //                              $("clipContent").selectedRange.length
-              //                            )
-              //                          : $("clipContent").text;
-              //                      $share.sheet(ShareText);
-              //                    } else {
-              //                      $ui.error("No Content!", 0.5);
-              //                    }
-              //                  }
-              //                }
-              //              },
-              {
-                type: "button",
-                props: {
-                  id: "QRButton",
-                  icon: $icon("017", $color("gray"), $size(20, 20)),
-                  font: $font("bold", 25),
-                  bgcolor: $color("clear"),
-                  hidden: 0
-                },
-                layout: function(make, view) {
-                  make.top.bottom.inset(0);
-                  make.right.equalTo($("RedoButton").right).inset(-30);
-                },
-                events: {
-                  tapped: function(sender) {
-                    if ($("clipContent").text.length > 0) {
-                      let QRText =
-                        $("clipContent").selectedRange.length > 0
-                          ? $("clipContent").text.substr(
-                              $("clipContent").selectedRange.location,
-                              $("clipContent").selectedRange.length
-                            )
-                          : $("clipContent").text;
-                      let QRimage = $qrcode.encode(QRText);
-                      showImage(QRimage.png);
-                    } else {
-                      $ui.error("No Content!", 0.5);
-                    }
-                  }
-                }
-              },
-              {
-                type: "button",
-                props: {
-                  title: "🔗",
-                  id: "LinkButton",
-                  font: $font("bold", 13),
-                  bgcolor: $color("clear"),
-                  hidden: 1
-                },
-                layout: function(make, view) {
-                  make.top.bottom.inset(0);
-                  make.right.equalTo($("QRButton").right).inset(-35);
-                },
-                events: {
-                  tapped: async function(sender) {
-                    if (sender.info.length == 1) {
-                      $app.openURL(sender.info[0]);
-                    } else {
-                      let result = await $ui.menu({ items: sender.info });
-                      $app.openURL(result.title);
-                    }
-                  }
-                }
-              },
-              {
-                type: "button",
-                props: {
-                  id: "saveButton",
-                  title: "Save",
-                  font: $font("bold", 14),
-                  bgcolor: $color("tint"),
-                  borderWidth: 0.5,
-                  borderColor: $color("#cccccc")
-                },
-                layout: function(make, view) {
-                  make.top.equalTo($("UndoButton").top);
-                  make.right.inset(5);
-                  make.width.equalTo(60);
-                  make.centerY.equalTo(view.super);
-                },
-                events: {
-                  tapped: function(sender) {
-                    saveClip($("clipContent").text,mode);
-                  }
-                }
-              },
-              {
-                type: "button",
-                props: {
-                  id: "cancelButton",
-                  title: "Cancel",
-                  font: $font("bold", 14),
-                  bgcolor: $color("lightGray"),
-                  borderWidth: 0.5,
-                  borderColor: $color("#cccccc")
-                },
-                layout: function(make, view) {
-                  make.top.equalTo($("UndoButton").top);
-                  make.right.equalTo($("saveButton").left).inset(8);
-                  make.width.equalTo($("saveButton").width);
-                  make.centerY.equalTo(view.super);
-                },
-                events: {
-                  tapped: function(sender) {
-                    $("clipContent").blur();                 
-                    $device.taptic(0);
-                    var dataManager = require("./data-manager");
-                    dataManager.init(mode);
-                    var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
-                    $("clipView").remove();
-                    var module = require(path);
-                    module.init(mode);
-                    if(path=="./widget")
-                    {
-                      iconColor(mode)
-                                          $("input").text = $clipboard.text?$clipboard.text:"轻点输入..";
-                                          $("input").textColor = $clipboard.text?$color("darkText"):$color("gray")
-                    }else $("tab").index = mode=="clip"?0:1
-                       
+                views: [
+                  accessoryBTN(
+                    canvas.checkMark(5, 1.2),
+                    function(make, view) {
+                      make.height.equalTo(25);
+                      make.right.inset(8);
+                      make.centerY.equalTo(view.super);
+                      make.width.equalTo(view.super).multipliedBy(0.1);
+                      rightView = view;
+                    },
+                    function(sender) {
+                      $device.taptic(0);
+                      var content = contentCheck();
+                      saveClip(content,mode)
 
-                  }
-                }
+                    }
+                  ),
+                  accessoryBTN(
+                    canvas.cross(5, 1.2),
+                    btnGeneralLayout(),
+                    function(sender) {
+                      $device.taptic(0);
+                      $("mainbg").remove();
+                      var dataManager = require("./data-manager");
+                      dataManager.init(mode);
+                      var path =
+                        $app.env == $env.app ? "scripts/app" : "scripts/widget";
+                      var module = require(path);
+                      module.init(mode);
+                      if (path == "scripts/widget") {
+                        iconColor(mode);
+                        $("input").text = $clipboard.text
+                       
+                          ? $clipboard.text
+                          : "轻点输入..";
+                        $("input").textColor = $clipboard.text
+                          ? $color("darkText")
+                          : $color("gray");
+                      } else $("tab").index = mode == "clip" ? 0 : 1;
+                    }
+                  ),
+                  accessoryBTN(
+                    canvas.nav(6, 1.2),
+                    btnGeneralLayout(),
+                    function(sender) {
+                      for (var i = 0; i < 5; i++) {
+                        $device.taptic(0);
+                        $("textvw")
+                          .runtimeValue()
+                          .$deleteBackward();
+                      }
+                    },
+                    function(sender) {
+                      $device.taptic(0);
+                      $("textvw").text = "";
+                    }
+                  ),
+                  accessoryBTN(
+                    canvas.arrow(5, 1.2, -1),
+                    btnGeneralLayout(),
+                    function(sender) {
+                      $device.taptic(0);
+                      if (udrd.$canRedo()) udrd.$redo();
+                      else $ui.error($l10n("NO_REDO"), 0.6);
+                    }
+                  ),
+                  accessoryBTN(
+                    canvas.arrow(5, 1.2, 1),
+                    btnGeneralLayout(),
+                    function(sender) {
+                      $device.taptic(0);
+                      if (udrd.$canUndo()) udrd.$undo();
+                      else $ui.error($l10n("NO_UNDO"), 0.6);
+                    }
+                  ),
+                  accessoryBTN2(
+                    "022",
+                    function(sender) {
+                      $device.taptic(0);
+                      var content = contentCheck();
+                      if (content != "") $share.sheet(content);
+                      else $ui.error($l10n("NO_CONTENT"), 0.6);
+                    },
+                    function(sender) {
+                      $device.taptic(0);
+                      if ($clipboard.image) {
+                        $share.sheet($clipboard.image);
+                        $ui.toast($l10n("IMAGE_SAVED"), 0.6);
+                      } else $ui.error($l10n("CLIP_NO_IMAGE"), 0.6);
+                    }
+                  ),
+                  accessoryBTN2(
+                    "017",
+                    function(sender) {
+                      var content = contentCheck();
+                      if (content != "") {
+                        $device.taptic(0);
+                        var qr = $qrcode.encode(content);
+                        showImage(qr.png);
+                      } else $ui.error($l10n("NO_CONTENT"), 0.6);
+                    },
+                    function(sender) {
+                      $device.taptic(0);
+                      var content = contentCheck();
+                      if (content != "") {
+                        var qr = $qrcode.encode(content);
+                        $photo.save({
+                          data: qr.png,
+                          handler: function(success) {
+                            $ui.toast($l10n("QR_SAVED"), 0.5);
+                          }
+                        });
+                      } else $ui.error($l10n("NO_CONTENT"), 0.6);
+                    }
+                  ),
+                  accessoryBTN2(
+                    "023",
+                    function(sender) {
+                      $device.taptic(0);
+                      var content = contentCheck();
+                      var prvw = require("./js-action/widgetprvw");
+                      if (content != "") {
+                        $device.taptic(0);
+                        $("textvw").blur();
+                        prvw.show(content);
+                      } else $ui.error($l10n("NO_CONTENT"), 0.6);
+                    },
+                    function(sender) {
+                      $device.taptic(0);
+                      if ($clipboard.image) {
+                        showImage($clipboard.image);
+                      } else $ui.error($l10n("CLIP_NO_IMAGE"), 0.6);
+                    }
+                  )
+                ]
               }
-            ]
-          }
-        },
-        layout: function(make) {
-          make.right.left.inset(10);
-          make.top.bottom.inset(5)
-          //make.height.equalTo(TextViewHeight);
-        },
-        events: {
-          ready: function(sender) {
-            sender.focus();
-            if (text && text != "") {
-              sender.text = text;
             }
           }
-        }
+        ]
       }
     ]
   });
-  let um = $("clipContent")
+  var udrd = $("textvw")
     .runtimeValue()
     .$undoManager();
-
-  if (text) {
-    let links = $detector.link(text);
-    if (links.length > 0) {
-      $("LinkButton").hidden = 0;
-      $("LinkButton").info = links;
-    }
-  }
-
-  if ($clipboard.image) {
-    $("ImageButton").hidden = 0;
-  }
-
-  $widget.height = TextViewHeight + 20;
 }
 
-function showImage(imageData) {
-  let initLocation = new Array();
-  $ui.push({
+function contentCheck() {
+  var ctext;
+  if ($("textvw").text.length > 0) {
+    ctext =
+      $("textvw").selectedRange.length > 0
+        ? $("textvw").text.substr(
+            $("textvw").selectedRange.location,
+            $("textvw").selectedRange.length
+          )
+        : $("textvw").text;
+  } else {
+    ctext = "";
+  }
+  return ctext;
+}
+
+function showImage(image) {
+  if ($app.env == $env.today) {
+    $widget.height = 400;
+  }
+  $("textvw").blur();
+  $ui.window.add({
+    type: "blur",
     props: {
-      id: "QRImageView",
-      navBarHidden: $app.env == $env.today ? 1 : 0
+      style: 4,
+      id: "image"
     },
     views: [
       {
         type: "image",
         props: {
-          data: imageData
+          data: image
         },
         layout: function(make, view) {
           make.center.equalTo(view.super);
-          make.size.equalTo($size(200, 200));
+          make.size.equalTo($size(256, 256));
         }
       }
     ],
     events: {
-      touchesBegan: function(sender, location) {
-        initLocation = location;
-      },
-      touchesEnded: function(sender, location) {
-        if (
-          Math.abs(location.x - initLocation.x) > 2 ||
-          Math.abs(location.y - initLocation.y) > 2
-        ) {
-          $ui.pop();
-        }
+      tapped(sender) {
+        $("image").remove();
+        $widget.height = 180;
+        $delay(0.2, function() {
+          $("textvw").focus();
+        });
       },
       doubleTapped: function(sender) {
         $photo.save({
-          data: imageData,
+          data: image,
           handler: function(success) {
-            $ui.toast("QRCode Saved", 0.5);
+            $ui.toast($l10n("QR_IMG_SAVED"), 0.5);
           }
         });
       },
       longPressed: function(sender) {
         $share.sheet({
-          item: ["QRImage.png", imageData],
+          item: ["image.png", image],
           handler: function(success) {
             if (success) {
-              $ui.pop();
+              $("image").remove();
+              $delay(0.6, function() {
+                $("textvw").focus();
+              });
             }
           }
         });
       }
-    }
+    },
+    layout: $layout.fill
   });
 }
 
-function iconColor(mode){
-  if(mode=="clip"){
-      $("fav").icon = $icon("091", $color("darkText"), $size(18, 18));
-    }else $("fav").icon = $icon("091", $color("#ed9e31"), $size(18, 18));
+function accessoryBTN(canvas, layout, handler, handler2) {
+  return {
+    type: "button",
+    props: {
+      radius: 10,
+      bgcolor: $color("clear"),
+      borderWidth: 0.4,
+      borderColor: $rgba(100, 100, 100, 0.25)
+    },
+    layout: layout,
+    views: [canvas],
+    events: {
+      tapped: handler,
+      longPressed: handler2
+    }
+  };
 }
 
-function saveClip(text,mode="clip") {
+function accessoryBTN2(icon, handler, handler2) {
+  return {
+    type: "button",
+    props: {
+      radius: 10,
+      icon: $icon(icon, $color("tint"), $size(16, 16)),
+      bgcolor: $color("clear"),
+      borderWidth: 0.4,
+      borderColor: $rgba(100, 100, 100, 0.25)
+    },
+    layout: btnGeneralLayout(),
+    events: {
+      tapped: handler,
+      longPressed: handler2
+    }
+  };
+}
+
+function btnGeneralLayout() {
+  return function(make, view) {
+    make.height.equalTo(25);
+    make.centerY.equalTo(view.super);
+    make.width.equalTo(view.super).multipliedBy(0.1);
+    make.right.equalTo(rightView.left).offset(-offset);
+    rightView = view;
+  };
+}
+
+function iconColor(mode) {
+  if (mode == "clip") {
+    $("fav").icon = $icon("091", $color("darkText"), $size(18, 18));
+  } else $("fav").icon = $icon("091", $color("#ed9e31"), $size(18, 18));
+}
+
+function saveClip(text, mode = "clip") {
   var dataManager = require("./data-manager");
   $clipboard.set({ "type": "public.plain-text", "value": text });
   $device.taptic(0);
-  $("clipView").remove();
+  $("mainbg").remove();
   dataManager.init(mode);
-  var path = $app.env == $env.today ? "./widget" : "./app";
+  var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
   var module = require(path);
   module.init(mode);
   var builder = require("./builder");
   builder.reloadTextItems(mode);
-  $("input").text = $clipboard.text?$clipboard.text:"轻点输入..";
-  $("input").textColor =$clipboard.text? $color("black"):$color("gray");
-  iconColor(mode)
+  $("input").text = $clipboard.text ? $clipboard.text : "轻点输入..";
+  $("input").textColor = $clipboard.text ? $color("black") : $color("gray");
+  iconColor(mode);
 }
+
+function editor(text) {
+  $device.taptic(0);
+  show(text);
+  $("textvw").focus();
+  if (text !== undefined && text.length > 0) {
+    $("textvw").text = text;
+  } else if ($app.env == $env.app && $clipboard.text !== undefined) {
+    $("textvw").text = $clipboard.text;
+  }
+}
+
 module.exports = {
-  clipEditor: clipEditor
+  clipEditor: editor
 };
