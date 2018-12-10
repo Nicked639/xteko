@@ -1,3 +1,5 @@
+var tokenmode = 0;
+
 async function takeApart(content) {
   return await $text.tokenize({
     text: content
@@ -5,10 +7,13 @@ async function takeApart(content) {
 }
 
 async function apart(content) {
+  //  $cache.get("TokenizeMode") == "T_ELIMINATE" ? (tokenmode = 1) : (tokenmode = 0);
   //不加async会报错
   var picked = [];
-  var pickedInOrder = [];
+  var pickedIO = [];
   var results = await takeApart(content);
+  var pickedAll = results;
+  var arr = Array.from({ length: results.length }, (v, k) => k);
   $ui.render({
     type: "blur",
     props: {
@@ -25,8 +30,8 @@ async function apart(content) {
           radius: 10,
           bgcolor: $rgba(200, 200, 200, 0.25)
         },
-        layout: function(make, view) {
-          make.top.right.left.bottom.inset(4);
+        layout: function(make) {
+          make.edges.inset(4);
         },
         views: [
           {
@@ -45,7 +50,7 @@ async function apart(content) {
             props: {
               id: "matrix",
               spacing: 4,
-              scrollEnabled: true,
+              scrollEnabled: false,
               template: [
                 {
                   type: "label",
@@ -53,6 +58,7 @@ async function apart(content) {
                     id: "tile",
                     radius: 10,
                     font: $font(12),
+                    scrollEnabled: false,
                     textColor: $color("#333333"),
                     bgcolor: $color("#efefef"),
                     borderColor: $color("#dddddd"),
@@ -76,25 +82,34 @@ async function apart(content) {
             },
             events: {
               didSelect: function(sender, indexPath, data) {
-                for (let i = 0; i < results.length; i++) {
-                  console.info(i);
-                  cell = $("matrix").cell($indexPath(0, i));
-                  label = cell.get("tile");
-                  if (label.info) {
-                    picked.push(label.text);
+                let cell = sender.cell(indexPath);
+                let label = cell.get("tile");
+                if (tokenmode == 0) {
+                  var test = testRow(picked, indexPath.row);
+                  if (test >= 0) {
+                    picked.splice(test, 1);
+                    pickedIO.splice(test, 1);
+                    deselected(label);
+                  } else {
+                    picked.push(indexPath.row);
+                    pickedIO.push(label.text);
+                    selected(label);
                   }
-                }
-
-                let thisCell = sender.cell(indexPath);
-                let thisLabel = thisCell.get("tile");
-                if (thisLabel.info >= 0) {
-                  pickedInOrder.splice([thisLabel.info], 1);
-                  deselected(thisLabel);
+                  $cache.set("picked", pickedIO);
                 } else {
-                  selected(thisLabel, picked.length);
-                  pickedInOrder.push(thisLabel.text);
+                  var test = testRow(arr, indexPath.row);
+                  if (test >= 0) {
+                    arr.splice(test, 1);
+                    pickedAll.splice(test, 1);
+                    selected(label);
+                  } else {
+                    arr = sortArr(arr, indexPath.row);
+                    test = testRow(arr, indexPath.row);
+                    pickedAll.splice(test, 0, label.text);
+                    deselected(label);
+                  }
+                  $cache.set("picked", pickedAll);
                 }
-                $cache.set("pickedInOrder", pickedInOrder);
               },
               itemSize: function(sender, indexPath) {
                 var data = sender.object(indexPath);
@@ -115,7 +130,7 @@ async function apart(content) {
         ]
       },
       {
-        type: "button",//关闭
+        type: "button",
         props: {
           icon: $icon("225", $color("tint"), $size(18, 18)),
           bgcolor: $color("clear")
@@ -125,14 +140,23 @@ async function apart(content) {
         },
         events: {
           tapped: function(sender) {
-exit()
+            $device.taptic(0);
+            $("apartbg").remove();
+            $cache.remove("picked");
+            var dataManager = require("../data-manager");
+            dataManager.init(mode);
+            var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
+            var module = require(path);
+            module.init(mode);
+            $("input").text = $clipboard.text;
           }
         }
       },
       {
         type: "label",
         props: {
-          text: "分词",
+          id: "mode",
+          text: tokenmode == 1 ? $l10n("T_ELIMINATE") : $l10n("T_GENERAL"),
           font: $font("bold", 16),
           textColor: $color("tint"),
           bgcolor: $color("clear")
@@ -140,6 +164,25 @@ exit()
         layout: function(make, view) {
           make.centerX.equalTo(view.super);
           make.top.inset(9);
+        },
+        events: {
+          tapped(sender) {
+            $device.taptic(0);
+            picked = [];
+            pickedIO = [];
+            pickedAll = results;
+            $cache.remove("picked");
+            if (tokenmode == 0) {
+              //              $cache.set("TokenizeMode", "T_ELIMINATE");
+              $("mode").text = $l10n("T_ELIMINATE");
+              tokenmode = 1;
+            } else {
+              //              $cache.set("TokenizeMode", "T_GENERAL");
+              $("mode").text = $l10n("T_GENERAL");
+              tokenmode = 0;
+            }
+            $ui.toast($l10n("MODE_CHANGED"), 0.6);
+          }
         }
       },
       {
@@ -153,38 +196,23 @@ exit()
         },
         events: {
           tapped: function(sender) {
-            let pickedInOrder = $cache.get("pickedInOrder");
-            if(pickedInOrder){
-              
-            
-                        let pio = pickedInOrder.join("");
-                       
-                       
-                          
-                          $clipboard.set({ "type": "public.plain-text", "value": pio });
-                         
-                          var dataManager = require("../data-manager");
-                          mode = "clip"
-                          var items = dataManager.getTextItems(mode);
-                          if (pio) {
-                             $("apartbg").remove();
-//                            items.unshift(pio);
-//                            dataManager.setTextItems(items,mode);
-dataManager.init()
-                            $cache.remove("pickedInOrder");
-                            
-                            var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
-                                        var module = require(path);
-                                        module.init(mode);
-                                        var builder = require("../builder");
-                                                                    builder.reloadTextItems(mode);
-                                                                        $("input").text = $clipboard.text?$clipboard.text:"轻点输入..";
-                                                                        $("input").textColor =$clipboard.text? $color("black"):$color("gray");
-
-                            $ui.toast("已复制", 0.3);
-                          } 
-                        
-          }else $ui.error("请选择",0.5)
+            let pick = $cache.get("picked");
+            let pio = pick.join("");
+            if (pick.length > 0) {
+              $clipboard.set({ "type": "public.plain-text", "value": pio });
+              var dataManager = require("../data-manager");
+              var items = dataManager.getTextItems();
+              if (items.indexOf(pio) === -1) {
+                items.unshift(pio);
+                dataManager.setTextItems(items);
+                $cache.remove("picked");
+                var builder = require("../builder");
+                builder.reloadTextItems();
+                tokenmode == 0
+                  ? $ui.toast($l10n("SELECTEDCOPIED"), 0.3)
+                  : $ui.toast($l10n("SELECTEDELIMINATED"), 0.3);
+              } else $ui.toast($l10n("NOTHING_SELECTED_OR_RECORDED"), 0.3);
+            }
           }
         }
       }
@@ -192,24 +220,11 @@ dataManager.init()
   });
 }
 
-function exit(){
-              $device.taptic(0);
-              $("apartbg").remove();
-              
-              mode = "clip"
-              var dataManager = require("../data-manager");
-              dataManager.init(mode);
-              var path = $app.env == $env.today ? "../widget" : "../app";
-              var module = require(path);
-              module.init(mode);
-}
-
-function selected(label, count) {
+function selected(label) {
   label.textColor = $color("white");
   label.bgcolor = $color("lightGray");
   label.borderColor = $color("gray");
   label.borderWidth = 1;
-  label.info = count;
 }
 
 function deselected(label) {
@@ -217,7 +232,25 @@ function deselected(label) {
   label.bgcolor = $color("#efefef");
   label.borderColor = $color("#dddddd");
   label.borderWidth = 0.5;
-  label.info = undefined;
+}
+
+function testRow(pick, row) {
+  if (pick != "") {
+    var i = pick.indexOf(row);
+    if (i >= 0) {
+      return i;
+    }
+  }
+}
+
+function sortNumber(a, b) {
+  return a - b;
+}
+
+function sortArr(arr, row) {
+  arr.push(row);
+  arr.sort(sortNumber);
+  return arr;
 }
 
 module.exports = {
