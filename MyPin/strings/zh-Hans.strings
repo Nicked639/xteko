@@ -27,6 +27,15 @@
 "DONT_ENCODE_URL" = "不进行 URL 编码";
 "ENCODE_TIPS" = "在大多数时候我们需要对链接里面的参数进行 URL 编码，但有些应用在解析参数的时候不会进行解码，所以会出现错误，在这种情况下你可以打开这个选项。";
 
+"TEXTAPART" = "分词";
+"SELECTEDCOPIED" = "选中部分已复制";
+"NOTHING_SELECTED_OR_RECORDED" = "未选择或已复制";
+"TOPPING" = "置顶";
+"T_GENERAL" = "分词:常规";
+"T_ELIMINATE" = "分词:剔除模式";
+"SELECTEDELIMINATED" = "选中部分已剔除";
+"MODE_CHANGED" = "模式已改变";
+
 "ACTION_QUICK" = "快捷动作";
 "ACTION_SEARCH" = "搜索";
 "ACTION_COMPOSE" = "编写";
@@ -107,3 +116,13 @@
 "AS_AMAZON" = "亚马逊";
 
 "ASY_DELETE" = "照片删除";
+
+"NO_CHANGE" ="没有改动";
+"SAVED_TO_CLIP" ="已保存至剪贴板";
+"NO_REDO" ="重做不可用";
+"NO_UNDO" ="撤销不可用";
+"NO_CONTENT" ="无内容";
+"CLIP_NO_IMAGE" ="剪贴板没有图片";
+"QR_SAVED" ="二维码已保存至相册";
+"QR_IMG_SAVED"="图片或二维码已保存";
+"IMAGE_SAVED" = "图片已保存";

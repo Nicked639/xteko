@@ -5,6 +5,8 @@ var builder = require("./builder");
 var helper = require("./helper");
 //var textItems = dataManager.getTextItems();
 var editor = require("./editor");
+var fontType = $cache.get("fontType")||"Courier"
+var fontSize = $cache.get("fontSize")||13
 var views = [
   createButton(
     "091", //上传
@@ -191,7 +193,7 @@ function createText() {
     props: {
       id: "input",
       //placeholder:"轻点输入..",
-      font: $font(13),
+      font: $font(fontType,fontSize),
       textColor: $clipboard.text ? $color("black") : $color("gray"),
       borderWidth: 0.4,
       borderColor: $rgba(100, 100, 100, 0.25),

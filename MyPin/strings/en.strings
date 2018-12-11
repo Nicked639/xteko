@@ -27,6 +27,16 @@
 "DONT_ENCODE_URL" = "Don't encode URL";
 "ENCODE_TIPS" = "In most cases, we need to encode URL parameters, but some apps don't decode it correctly, in that case, you need to check this option.";
 
+"TEXTAPART" = "Tokenize";
+"SELECTEDCOPIED" ="Selected Copied";
+"NOTHING_SELECTED_OR_RECORDED" = "Nothing Selected OR Already Recorded";
+"TOPPING" = "Topping";
+"T_GENERAL" = "Tokenize:General";
+"T_ELIMINATE" = "Tokenize:Eliminate";
+"SELECTEDELIMINATED" = "Selected Eliminated";
+"MODE_CHANGED" = "Mode Changed";
+
+
 "ACTION_QUICK" = "Quick Actions";
 "ACTION_SEARCH" = "Search";
 "ACTION_COMPOSE" = "Compose";
@@ -107,3 +117,13 @@
 "AS_AMAZON" = "Amazon";
 
 "ASY_DELETE" = "Photo Delete";
+
+"NO_CHANGE" ="No Change!";
+"SAVED_TO_CLIP" ="Saved to Clipboard!"
+"NO_REDO" ="Nothing to Redo!";
+"NO_UNDO" ="Nothing to Undo!";
+"NO_CONTENT" ="No Content!";
+"CLIP_NO_IMAGE" ="No Image in Clipboard!";
+"QR_SAVED" ="QRCode Saved";
+"QR_IMG_SAVED"="QR/Image Saved";
+"IMAGE_SAVED" = "Image Saved";

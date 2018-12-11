@@ -7,7 +7,9 @@ function run(){
     }else if(idx == 1){
       $app.openURL("Annotate://")
     }else if(idx == 2){
-      $app.openURL("picsew://x-callback-url/scroll?in=recent&out=save&clean_status=yes&delete_source=yes&x-success=photos-redirect://")
+
+      $app.openURL(encodeURI("shortcuts://run-shortcut?name=Picsew"))
+      
     }
   }
 })

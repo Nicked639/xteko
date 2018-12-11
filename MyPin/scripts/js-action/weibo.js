@@ -167,6 +167,7 @@ function show() {
         layout: function(make, view) {
           make.bottom.inset(10);
           make.centerX.equalTo();
+          
         },
         events: {
           changed: function(sender) {
@@ -189,7 +190,49 @@ function show() {
             }
           }
         }
-      }
+      },
+      {
+                  type: "button",
+                  props: {
+                    id: "closebtn",
+                    bgcolor: $color("clear"),
+                    icon: $icon("225", $color("tint"), $size(20, 20))
+                  },
+                  layout: function(make, view) {
+                    make.bottom.inset(12);
+                    make.left.inset(10);
+                  },
+                  events: {
+                    tapped(sender) {
+                      $device.taptic(0);
+                      $widget.height = 181;
+                      $("weibo").remove();
+                      var dataManager = require("../data-manager");
+                      dataManager.init(mode);
+                      var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
+                      var module = require(path);
+                      module.init(mode);
+                      $("input").text = $clipboard.text
+                    }
+                  }
+                },{
+            type: "button",
+            props: {
+              id: "openbtn",
+              bgcolor: $color("clear"),
+              icon: $icon("071", $color("tint"), $size(20, 20))
+            },
+            layout: function(make, view) {
+              make.bottom.inset(12);
+              make.right.inset(10);
+            },
+            events: {
+              tapped(sender) {
+                $device.taptic(0);
+$app.openURL("jsbox://run?name=%E5%BE%AE%E5%8D%9A%E7%83%AD%E7%82%B9")
+              }
+            }
+          },
     ]
   });
 }

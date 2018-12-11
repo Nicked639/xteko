@@ -18,25 +18,32 @@ function searchText(text) {
   runAction({ "pattern": pattern });
 }
 
-function runMoveAction(action){
-    var pattern = action.pattern;
-    var hasPlaceholder = pattern.indexOf("%@") != -1;
-    var clipText = $clipboard.text || "";
-    var replacement = action.noenc ? clipText : encodeURIComponent(clipText);
+function runMoveAction(action) {
+  var pattern = action.pattern;
+  var hasPlaceholder = pattern.indexOf("%@") != -1;
+  var clipText = $clipboard.text || "";
+  var replacement = action.noenc ? clipText : encodeURIComponent(clipText);
+
+  pattern = pattern.replace("%@", replacement);
+
+  if (_hasPrefix(pattern, "keyboard:")) {
+    var quote = require("./js-action/quote");
+    quote.run();
+    return;
+  }
+
+  if (_hasPrefix(pattern, "taobao:")) {
+    var weibo = require("./js-action/weibo");
+    weibo.run();
+//$app.openURL("jsbox://run?name=%E5%BE%AE%E5%8D%9A%E7%83%AD%E7%82%B9")
+    return;
+  }
   
-    pattern = pattern.replace("%@", replacement);
-    
-    if (_hasPrefix(pattern, "keyboard:")) {
-        var quote = require("./js-action/quote");
-        quote.run();
-        return;
-      }
-      
-    if (_hasPrefix(pattern, "taobao:")) {
-            var weibo = require("./js-action/weibo");
-            weibo.run();
-            return;
-          }
+  if (_hasPrefix(pattern, "searchImage:")) {
+      var com = require("./js-action/compressImage");
+      com.run();
+      return;
+    }
 }
 
 function runLongAction(action) {
@@ -60,6 +67,7 @@ function runLongAction(action) {
 
   if (_hasPrefix(pattern, "editPhoto:")) {
     var editPhoto = require("./js-action/editPhoto2");
+    
     editPhoto.run();
     return;
   }
@@ -74,32 +82,30 @@ function runLongAction(action) {
     tool.run();
     return;
   }
-  
+
   if (_hasPrefix(pattern, "pushbullet:")) {
-      var airtable = require("./js-action/airtable");
-      airtable.run();
-      return;
-    }
-    
-    
-    if (_hasPrefix(pattern, "taobao:")) {
-        var picker = require("./js-action/exchange-rate");
-        picker.show();
-        return;
-      }
-      
-    if (_hasPrefix(pattern, "dic:")) {
-          var dic = require("./js-action/dictionary");
-          let text = $clipboard.text?$clipboard.text:""
-          dic.dic(text);
-          $("input").blur();
-        }
-     if (_hasPrefix(pattern, "url_convert:")) {
-            
-             //$app.openURL("douban:///search?q="+$clipboard.text)
-$app.openURL("appleprintcenter:///")
-             return;
-           }
+    var airtable = require("./js-action/airtable");
+    airtable.run();
+    return;
+  }
+
+  if (_hasPrefix(pattern, "taobao:")) {
+    var picker = require("./js-action/exchange-rate");
+    picker.show();
+    return;
+  }
+
+  if (_hasPrefix(pattern, "dic:")) {
+    var dic = require("./js-action/dictionary");
+    let text = $clipboard.text ? $clipboard.text : "";
+    dic.dic(text);
+    $("input").blur();
+  }
+  if (_hasPrefix(pattern, "url_convert:")) {
+    //$app.openURL("douban:///search?q="+$clipboard.text)
+    $app.openURL("appleprintcenter:///");
+    return;
+  }
 }
 
 function runAction(action) {
@@ -115,7 +121,7 @@ function runAction(action) {
     return;
   }
 
-if (_hasPrefix(pattern, "url_convert:")) {
+  if (_hasPrefix(pattern, "url_convert:")) {
     if ($app.env == $env.today) {
       var stext = $("input").text;
       if (stext == "") {
@@ -127,7 +133,6 @@ if (_hasPrefix(pattern, "url_convert:")) {
       urlConvert($clipboard.text);
     } else return;
   }
-
 
   if (_hasPrefix(pattern, "delete:")) {
     $photo.delete({
@@ -162,13 +167,12 @@ if (_hasPrefix(pattern, "url_convert:")) {
   }
 
   if (_hasPrefix(pattern, "dic:")) {
-      var translator = require("./js-action/translator");
-      let text = $clipboard.text?$clipboard.text:""
-      translator.gtrans(text);
-      $("input").blur();
-    }
-  
-  
+    var translator = require("./js-action/translator");
+    let text = $clipboard.text ? $clipboard.text : "";
+    translator.gtrans(text);
+    $("input").blur();
+  }
+
   if (_hasPrefix(pattern, "share-sheet://")) {
     var text = $clipboard.text;
     var image = $clipboard.image;
@@ -302,8 +306,7 @@ function urlConvert(content) {
         items: ["t.cn", "u.nu"],
         handler: function(title, idx) {
           idx == 0 ? tcn(url) : unu(url);
-        },
-        
+        }
       });
     }
   } else $ui.toast("网址输入有误");
@@ -321,19 +324,19 @@ function lengthen(link) {
 }
 
 function tcn(url) {
-  $ui.toast("生成中..",10)
+  $ui.toast("生成中..", 10);
   $http.get({
     url:
       "http://api.weibo.com/2/short_url/shorten.json?source=2849184197&url_long=" +
       $text.URLEncode(url),
     handler: function(resp) {
       var data = resp.data;
-      if ((data.urls[0].result == true)) {
+      if (data.urls[0].result == true) {
         var dataManager = require("./data-manager");
         dataManager.copied2Clip(data.urls[0].url_short);
         $ui.toast("短链接已复制");
         var module = require("../scripts/widget");
-        
+
         module.init();
       } else $ui.toast("短链接生成失败");
     }
@@ -341,7 +344,7 @@ function tcn(url) {
 }
 
 function unu(url) {
-    $ui.toast("生成中..",10)
+  $ui.toast("生成中..", 10);
   $http.get({
     url:
       "https://u.nu/api.php?action=shorturl&format=simple&url=" +
@@ -353,8 +356,8 @@ function unu(url) {
         dataManager.copied2Clip(data);
         $ui.toast("短链接已复制");
         var module = require("../scripts/widget");
-                
-                module.init();
+
+        module.init();
       } else $ui.toast("短链接生成失败");
     }
   });

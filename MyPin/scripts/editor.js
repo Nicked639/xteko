@@ -2,7 +2,8 @@ let screenWidth = $device.info.screen.width;
 let offset = (screenWidth * 0.2 - 16) / 7;
 var canvas = require("./js-action/canvas");
 var rightView;
-
+var fontType = $cache.get("fontType")||"Courier"
+var fontSize = $cache.get("fontSize")||"13"
 function show(text) {
   $ui.render({
     type: "blur",
@@ -24,7 +25,7 @@ function show(text) {
             props: {
               id: "textvw",
               bgcolor: $color("clear"),
-              font: $font("Avenir", 13),
+              font: $font(fontType, fontSize),
               insets: $insets(9, 10, 2, 2),
               accessoryView: {
                 type: "blur",
@@ -113,6 +114,7 @@ function show(text) {
                     "022",
                     function(sender) {
                       $device.taptic(0);
+                      
                       var content = contentCheck();
                       if (content != "") $share.sheet(content);
                       else $ui.error($l10n("NO_CONTENT"), 0.6);
@@ -121,7 +123,7 @@ function show(text) {
                       $device.taptic(0);
                       if ($clipboard.image) {
                         $share.sheet($clipboard.image);
-                        $ui.toast($l10n("IMAGE_SAVED"), 0.6);
+//                        $ui.toast($l10n("IMAGE_SAVED"), 0.6);
                       } else $ui.error($l10n("CLIP_NO_IMAGE"), 0.6);
                     }
                   ),
@@ -162,8 +164,10 @@ function show(text) {
                       } else $ui.error($l10n("NO_CONTENT"), 0.6);
                     },
                     function(sender) {
+                  
                       $device.taptic(0);
                       if ($clipboard.image) {
+                    
                         showImage($clipboard.image);
                       } else $ui.error($l10n("CLIP_NO_IMAGE"), 0.6);
                     }
@@ -197,11 +201,32 @@ function contentCheck() {
   return ctext;
 }
 
-function showImage(image) {
+function convertImage(image){
+  let width = image.image.size.width
+  let height = image.image.size.height
+  let fix = 1
+  alert(width)
+  if (width>height) {
+     fix = width/300
+     let resized = image.image.resized($size(300/fix,height/fix))
+     return resized
+  }
+  else {
+     fix = height/400
+     let resized = image.image.resized($size(width/fix,400/fix))
+     return resized
+  }
+  
+  
+}
+
+function showImage(image,ri) {
   if ($app.env == $env.today) {
     $widget.height = 400;
   }
   $("textvw").blur();
+  
+  
   $ui.window.add({
     type: "blur",
     props: {
@@ -216,14 +241,14 @@ function showImage(image) {
         },
         layout: function(make, view) {
           make.center.equalTo(view.super);
-          make.size.equalTo($size(256, 256));
+          make.size.equalTo($size(300,300));
         }
       }
     ],
     events: {
       tapped(sender) {
         $("image").remove();
-        $widget.height = 180;
+        $widget.height = 181;
         $delay(0.2, function() {
           $("textvw").focus();
         });

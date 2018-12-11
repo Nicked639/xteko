@@ -4,13 +4,15 @@ var textItems = dataManager.getTextItems();
 var actionItems = dataManager.getActionItems();
 var editor = require("./editor");
 var aparter = require("./js-action/apart-items");
+var fontType = $cache.get("fontType")||"Courier"
+var fontSize = $cache.get("fontSize")||"13"
 function createClipboardView() {
   return {
     type: "list",
     props: {
       id: "clipboard-list",
       reorder: true,
-      rowHeight: $app.env == $env.app?44:29,
+      rowHeight: $app.env == $env.app?44:30,
       separatorColor:
         $app.env == $env.app ? $color("seperator"): $rgba(100, 100, 100, 0.25),
       //data: textItems,
@@ -22,7 +24,7 @@ function createClipboardView() {
               id: "label",
               textColor: $color("black"),
               align: $align.left,
-              font: $font(13)
+              font: $font(fontType,fontSize)
             },
             layout: function(make, view) {
               make.right.top.bottom.inset(0);
@@ -98,7 +100,7 @@ function createClipboardView() {
 //            textItems = dataManager.getTextItems(mode)
 //            reloadTextItems(mode);
             let text = textItems[indexPath.row]
-            alert(text)
+//            alert(text)
             var items = dataManager.getTextItems("cloud");
               var index = items.indexOf(text);
               if (index != -1) {
