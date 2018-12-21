@@ -444,7 +444,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
       layout: function(make) {
         //      make.left.right.inset(120)
         make.centerX.equalTo()
-        make.bottom.inset(20)
+        make.bottom.inset(50)
         make.height.equalTo(22)
         //make.width.equalTo(40)
       },
