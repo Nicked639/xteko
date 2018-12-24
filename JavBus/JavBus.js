@@ -2781,13 +2781,13 @@ function getAvglePreview(keyword) {
         return
       }
       let video_num = resp.data.response.total_videos
+      let infos = resp.data.response.videos;
       //      $console.log(video_num)
-      if (video_num == 0) {
+      if (video_num == 0 || infos.length === 0) {
         $ui.error("☹️ 暂无视频资源！");
         $ui.loading(false);
         return
       }
-      let infos = resp.data.response.videos;
       let videoUrl = infos[0].preview_video_url
       $("detailView").add({
         type: "video",
