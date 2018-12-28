@@ -12,7 +12,7 @@
 
 ### 荐片
 
-- [IPX-225 樱空もも](jsbox://run?name=JavBus&code=IPX-225)
+- [IPX-225 樱空もも](jsbox://run?name=JavBus&code=IPX-225&link=https://www.javbus.com/IPX-225)
  
 - NNPJ-307 深田えいみ
 
