@@ -49,26 +49,6 @@ Timeout = 10;
 flag = 0; // 用于判断从通知中心启动的状态
 if (isInToday()) runWhere();
 
-if ($cache.get("samp") === undefined) {
-  $http.get({
-    url:
-      "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Readme.txt",
-    handler: function (resp) {
-      $ui.push({
-        views: [
-          {
-            type: "markdown",
-            props: {
-              content: resp.data
-            },
-            layout: $layout.fill
-          }
-        ]
-      });
-    }
-  });
-  $cache.set("samp", "1");
-}
 
 var colorData = [
   [$color("#fd354a"), $color("#da0a6f")],
@@ -3832,9 +3812,9 @@ function scriptVersionUpdate() {
       var msg = resp.data.msg;
       if (afterVersion > version) {
         $ui.toast("检测到脚本更新...");
-        //              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js&name=JavBus&icon=icon_087.png&types=1&author=Nicked&website=https://t.me/nicked";
-        //              $app.openURL(encodeURI(url));
-        //              $app.close()
+        // var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js&name=JavBus&icon=icon_087.png&types=1&author=Nicked&website=https://t.me/nicked";
+        // $app.openURL(encodeURI(url));
+        // $app.close()
 
         $http.download({
           url:
@@ -3842,7 +3822,7 @@ function scriptVersionUpdate() {
           handler: resp => {
             let box = resp.data;
             $addin.save({
-              name: "JavBus",
+              name: $addin.current.name,
               data: box,
               version: afterVersion,
               author: "Nicked",
@@ -3854,13 +3834,17 @@ function scriptVersionUpdate() {
                     $device.taptic(2);
                   });
                   $cache.clear();
+                  
                   $ui.alert({
                     title: "更新已完成",
                     actions: [
                       {
                         title: "OK",
                         handler: function () {
-                          $app.openExtension($addin.current.name);
+                          $cache.set("adultCheck", {
+                            adult: "true"
+                          });
+                          $addin.restart()
                         }
                       }
                     ]
@@ -4042,6 +4026,31 @@ function openJS(code, link) {
   getInitial();
 }
 
+function readMe(){
+  if ($cache.get("samp") === undefined) {
+    $http.get({
+      url:
+        "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Readme.txt",
+      handler: function (resp) {
+        $ui.push({
+          views: [
+            {
+              type: "markdown",
+              props: {
+                content: resp.data
+              },
+              layout: $layout.fill
+            }
+          ]
+        });
+      }
+    });
+    $cache.set("samp", "1");
+  }
+}
+
+
+
 function main(url) {
   page = 0;
   homepage = url;
@@ -4089,6 +4098,7 @@ function start() {
   } else {
     initial();
     main(url);
+    readMe()
   }
 }
 
