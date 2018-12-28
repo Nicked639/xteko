@@ -31,7 +31,7 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 5.97;
+version = 5.98;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
