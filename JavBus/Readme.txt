@@ -12,8 +12,8 @@
 
 ### 荐片
 
-- [IPX-225 樱空もも](jsbox://run?name=JavBus&code=IPX-225&link=https%3A%2F%2Fwww.javbus.com%2FIPX-225)
+- [IPX-225]() 樱空もも
  
-- [NNPJ-307 深田えいみ](jsbox://run?name=JavBus&code=NNPJ-307&link=https%3A%2F%2Fwww.javbus.com%2FNNPJ-307)
+- [NNPJ-307]() 深田えいみ
 
-- [ADN-184 希崎ジェシカ](jsbox://run?name=JavBus&code=ADN-184&link=https%3A%2F%2Fwww.javbus.com%2FADN-184)
+- [ADN-184]() 希崎ジェシカ
