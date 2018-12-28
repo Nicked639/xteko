@@ -31,8 +31,8 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 5.96;
-recommend = $cache.get("recommend")||0; // 用与检测推荐
+version = 5.97;
+recommend = $cache.get("recommend") || 0; // 用与检测推荐
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -4038,15 +4038,15 @@ function readMe(mode="update",afterRecom){
     $http.get({
       url:mode=="update"?updateUrl:recomUrl,
       handler: function (resp) {
-        let av = resp.data.match(/\[.*\]/g)
+        let av = resp.data.match(/`.*\`/g)
         let av0 = {
-          "code":av[0].replace(/\[/,"").replace(/\]/,"")
+          "code":av[0].replace(/`/,"").replace(/`/,"")
         }
         let av1 = {
-          "code":av[1].replace(/\[/,"").replace(/\]/,"")
+          "code":av[1].replace(/`/,"").replace(/`/,"")
         }
         let av2 = {
-          "code":av[2].replace(/\[/,"").replace(/\]/,"")
+          "code":av[2].replace(/`/,"").replace(/`/,"")
         }
         $ui.push({
           views: [
