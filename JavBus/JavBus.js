@@ -31,7 +31,8 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 5.95;
+version = 5.96;
+recommend = $cache.get("recommend")||0; // 用与检测推荐
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -3808,6 +3809,10 @@ function scriptVersionUpdate() {
       "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/updateInfo",
     handler: function (resp) {
       var afterVersion = resp.data.version;
+      var afterRecom = resp.data.recommend;
+      if(recommend < afterRecom){
+        readMe("recommend",afterRecom)
+      }
       var msg = resp.data.msg;
       if (afterVersion > version) {
         $ui.toast("检测到脚本更新...");
@@ -3953,6 +3958,9 @@ function initial() {
 
   scriptVersionUpdate();
   $("JavBus").add(searchView(180));
+  if ($cache.get("samp") === undefined) {
+    readMe("update")
+  }
 }
 
 //剪贴板检测
@@ -4022,13 +4030,14 @@ function openJS(code, link) {
   getInitial();
 }
 
-function readMe(){
-  if ($cache.get("samp") === undefined) {
+function readMe(mode="update",afterRecom){
+  let updateUrl = "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Readme.txt"
+  let recomUrl = "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Recommend.txt"
+  if(mode == "update") $cache.set("samp", "1");
+  else $cache.set("recommend", afterRecom)
     $http.get({
-      url:
-        "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Readme.txt",
+      url:mode=="update"?updateUrl:recomUrl,
       handler: function (resp) {
-        $cache.set("samp", "1");
         let av = resp.data.match(/\[.*\]/g)
         let av0 = {
           "code":av[0].replace(/\[/,"").replace(/\]/,"")
@@ -4109,7 +4118,6 @@ function readMe(){
       }
     });
 
-  }
 }
 
 
@@ -4155,9 +4163,7 @@ function main(url) {
 }
 
 function start() {
-  readMe()
-  let check = $cache.get("adultCheck");
-  if (!check) {
+  if ($cache.get("adultCheck")=== undefined) {
     checkAdult();
   } else {
     initial();
