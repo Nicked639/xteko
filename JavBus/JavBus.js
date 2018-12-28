@@ -32,7 +32,6 @@ https://t.me/nicked
 
 */
 version = 5.95;
-
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -3833,17 +3832,14 @@ function scriptVersionUpdate() {
                   $delay(0.2, function () {
                     $device.taptic(2);
                   });
-                  $cache.clear();
-                  
+
                   $ui.alert({
                     title: "更新已完成",
                     actions: [
                       {
                         title: "OK",
                         handler: function () {
-                          $cache.set("adultCheck", {
-                            adult: "true"
-                          });
+                          $cache.remove("samp");
                           $addin.restart()
                         }
                       }
@@ -4032,6 +4028,17 @@ function readMe(){
       url:
         "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Readme.txt",
       handler: function (resp) {
+        $cache.set("samp", "1");
+        let av = resp.data.match(/\[.*\]/g)
+        let av0 = {
+          "code":av[0].replace(/\[/,"").replace(/\]/,"")
+        }
+        let av1 = {
+          "code":av[1].replace(/\[/,"").replace(/\]/,"")
+        }
+        let av2 = {
+          "code":av[2].replace(/\[/,"").replace(/\]/,"")
+        }
         $ui.push({
           views: [
             {
@@ -4039,13 +4046,69 @@ function readMe(){
               props: {
                 content: resp.data
               },
-              layout: $layout.fill
+              layout: function(make,view){
+                make.left.right.top.inset(0)
+                make.bottom.inset(80)
+              }
+            },{
+              type:"button",
+              props:{
+                title:av0.code,
+                id:"av0"
+              },
+              layout: function(make,view){
+                make.bottom.inset(30)
+                make.width.equalTo(view.super).dividedBy(3).offset(-30)
+                make.height.equalTo(30)
+                make.left.inset(10)
+              },
+              events:{
+                tapped(sender){
+                  openJS(av0.code,"https://www.javbus.com/"+av0.code)
+                }
+              }
+            },{
+              type:"button",
+              props:{
+                title:av1.code,
+                id:"av1"
+              },
+              layout: function(make,view){
+                make.bottom.inset(30)
+                make.width.equalTo(view.super).dividedBy(3).offset(-30)
+                make.height.equalTo(30)
+                make.centerX.equalTo()
+  
+              },
+              events:{
+                tapped(sender){
+                  openJS(av1.code,"https://www.javbus.com/"+av1.code)
+                }
+              }
+            },{
+              type:"button",
+              props:{
+                title:av2.code,
+                id:"av2"
+              },
+              layout: function(make,view){
+                make.bottom.inset(30)
+                make.width.equalTo(view.super).dividedBy(3).offset(-30)
+                make.height.equalTo(30)
+                make.right.inset(10)
+              },
+              events:{
+                tapped(sender){
+                  openJS(av2.code,"https://www.javbus.com/"+av2.code)
+                }
+              }
             }
           ]
         });
+        
       }
     });
-    $cache.set("samp", "1");
+
   }
 }
 
@@ -4092,13 +4155,13 @@ function main(url) {
 }
 
 function start() {
+  readMe()
   let check = $cache.get("adultCheck");
   if (!check) {
     checkAdult();
   } else {
     initial();
     main(url);
-    readMe()
   }
 }
 
