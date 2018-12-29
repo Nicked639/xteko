@@ -2732,12 +2732,12 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
     header: cookies,
     handler: function (resp) {
       if (resp.data.indexOf("404 Page Not Found") > -1) {
-        $ui.toast("🙈 到底了");
+        $ui.toast("🙈 到底了",0.5);
         $ui.loading(false);
         return;
       } else if (resp.data.indexOf("沒有您要的結果") > -1) {
         if (mode == "search" && $("initialView").data.length > 0) {
-          $ui.toast("🙈 到底了");
+          $ui.toast("🙈 到底了",0.5);
           $ui.loading(false);
           return;
         } else {
@@ -3220,7 +3220,7 @@ function getActress(url) {
         return;
       }
       if (resp.data.indexOf("404 Page Not Found") > -1) {
-        $ui.toast("🙈 到底了");
+        $ui.toast("🙈 到底了",0.5);
         $ui.loading(false);
         return;
       }
@@ -3885,6 +3885,12 @@ function wechatPay() {
                 data: resp.data,
                 handler: function (success) {
                   if (success) {
+                    $push.schedule({
+                      title: "二维码已存入相册",
+                      body: "点击右侧「相册」选取",
+                      delay: 1,
+                      
+                    })
                     $app.openURL(payUrl);
                   }
                 }
