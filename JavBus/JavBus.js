@@ -149,7 +149,8 @@ mainTemplate = {
         startPoint: $point(0, 0),
         endPoint: $point(1, 1),
         radius: 8,
-        hidden: true
+        hidden: true,
+        alpha:0.5
       },
       layout: $layout.fill
     },
@@ -1998,7 +1999,21 @@ function actressView(actress, cover) {
                 make.left.right.bottom.inset(0);
                 make.height.equalTo(25);
               }
-            }
+            },
+            {
+                  type: "blur",
+                  props: {
+                    id: "actressGra",
+//                    colors: colorData[1],
+//                    locations: [0.0, 1.0],
+//                    startPoint: $point(0, 0),
+//                    endPoint: $point(1, 1),
+                    radius: 8,
+                    hidden: true,
+                    alpha:0.4
+                  },
+                  layout: $layout.fill
+                },
           ]
         },
         layout: function (make, view) {
@@ -3320,6 +3335,9 @@ function getActress(url) {
           },
           actressInfos: {
             text: code + " | " + date
+          },
+          actressGra:{
+            hidden: LocalArcList.indexOf(code)>-1?false:true
           }
         });
       });
