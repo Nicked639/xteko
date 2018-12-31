@@ -31,7 +31,7 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 5.98;
+version = 6.0;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv =[]
 ALL = false; // 全部与收录
@@ -239,7 +239,7 @@ recView = {
           $push.schedule({
                                 title: "直接发送「番号」给这位作者",
                                 body: "可通过影片详情页右侧的「分享影片」获得",
-                                delay: 1
+                                delay: 0.8
                               });
           $app.openURL("https://t.me/nicked");
         }
@@ -1646,7 +1646,9 @@ function detailView(code) {
                   $ui.toast("番号 " + sender.info + "已复制");
                 } else if (idx == 2) $share.sheet(favLink);
                 else if(idx ==3){
-                  $clipboard.text = JSON.stringify(shareRec)
+                  let av = JSON.stringify(shareRec)
+                  
+                  $app.openURL("shortcuts://run-shortcut?name=JavBus%20Rec&input="+encodeURI(av))
                 }
               }
             });
@@ -4237,7 +4239,7 @@ function wechatPay() {
                     $push.schedule({
                       title: "二维码已存入相册",
                       body: "点击右侧「相册」选取",
-                      delay: 1
+                      delay: 0.8
                     });
                     $app.openURL(payUrl);
                   }
