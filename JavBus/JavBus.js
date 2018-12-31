@@ -31,7 +31,7 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 6.0;
+version = 6.1;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv =[]
 ALL = false; // 全部与收录
@@ -173,7 +173,9 @@ mainTemplate = {
 };
 
 recView = {
-  
+  props: {
+    id:"recView"
+  },
   layout: function(make, view) {
                     make.left.right.bottom.inset(0);
                     make.top.equalTo($("menu").bottom);
@@ -736,6 +738,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
             if ($("searchView").super == $("JavBus")) {
               $("searchView").remove();
             }
+            
             if (sender.index == 0) {
               // 影片
               $("JavBus").add(searchView(180));
@@ -1646,6 +1649,7 @@ function detailView(code) {
                   $ui.toast("番号 " + sender.info + "已复制");
                 } else if (idx == 2) $share.sheet(favLink);
                 else if(idx ==3){
+                  $device.taptic(2)
                   let av = JSON.stringify(shareRec)
                   
                   $app.openURL("shortcuts://run-shortcut?name=JavBus%20Rec&input="+encodeURI(av))
@@ -2495,6 +2499,9 @@ $ui.render({
               if ($("searchView").super == $("JavBus")) {
                 $("searchView").remove();
               }
+            }
+            if($("recView")){
+              if($("recView").super == $("JavBus")) $("recView").remove()
             }
           } else {
             if ($("category").super == $("JavBus")) {
