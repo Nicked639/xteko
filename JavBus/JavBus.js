@@ -31,7 +31,7 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 6.1;
+version = 6.11;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv =[]
 ALL = false; // 全部与收录
@@ -839,7 +839,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
               } else if (sender.index == 3) {
                 // 系列tab
                 $("tab").index = 3;
-                var length = LocalDirectorList.length;
+                var length = LocalSeriesList.length;
                 $("input").placeholder = "已收藏 " + length + " 个系列";
                 if (length == 0) {
                   $("initialView").hidden = true;
@@ -847,6 +847,8 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   $("initialView").hidden = false;
                 }
                 LocalData.series.map(function(i) {
+                  if(i.shortCode.indexOf("uncensored")>-1) hp= hp + "uncensored/"
+                  i.shortCode=  i.shortCode.replace("/uncensored","")
                   $("initialView").data = $("initialView").data.concat({
                     link: hp + "series/" + i.shortCode,
                     name: {
@@ -877,6 +879,8 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   $("initialView").hidden = false;
                 }
                 LocalData.filmMaker.map(function(i) {
+                 if(i.shortCode.indexOf("uncensored")>-1) hp= hp + "uncensored/"
+                                   i.shortCode=  i.shortCode.replace("/uncensored","")
                   $("initialView").data = $("initialView").data.concat({
                     link: hp + "studio/" + i.shortCode,
                     name: {
@@ -3002,6 +3006,9 @@ function favDetailTapped(mode, Button) {
 function pushCat(sender, position = "") {
   $ui.push(catCover(sender.text));
   let shortCode = sender.info.split("/").pop();
+  if(sender.info.indexOf("uncensored")>-1){
+    shortCode = shortCode + "/uncensored"
+  }
   $("favDetail").info = {
     shortCode: shortCode,
     position: position,
