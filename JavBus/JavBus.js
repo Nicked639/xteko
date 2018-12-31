@@ -31,9 +31,10 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 6.11;
+version = 6.2;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
-RecAv =[]
+RecAv = []; //推荐影片
+RecAvCode = []; //推荐影片番号
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -67,7 +68,8 @@ var colorData = [
   [$color("#728199"), $color("#54617e")],
   [$color("#1f436a"), $color("#003268")]
 ];
-const newIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MTExMDRFOUM2MUE3MTFFOEFEMThGM0FCRkU2Qzc4MTgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MTExMDRFOUQ2MUE3MTFFOEFEMThGM0FCRkU2Qzc4MTgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDoxMTEwNEU5QTYxQTcxMUU4QUQxOEYzQUJGRTZDNzgxOCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDoxMTEwNEU5QjYxQTcxMUU4QUQxOEYzQUJGRTZDNzgxOCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pgu6WqYAAAtxSURBVHjazFoLdBTV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";
+const newIcon =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MTExMDRFOUM2MUE3MTFFOEFEMThGM0FCRkU2Qzc4MTgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MTExMDRFOUQ2MUE3MTFFOEFEMThGM0FCRkU2Qzc4MTgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDoxMTEwNEU5QTYxQTcxMUU4QUQxOEYzQUJGRTZDNzgxOCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDoxMTEwNEU5QjYxQTcxMUU4QUQxOEYzQUJGRTZDNzgxOCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pgu6WqYAAAtxSURBVHjazFoLdBTV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";
 
 const nickIcon =
   "data:image/jpeg;base64,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QTFGRjdDMUM0XzE1MTQ3MTcxNDg3MzAiLCJlbnRyeV9wb2ludCI6ImNyZWF0ZV9mbG93X2Z0ZSIsInBob3Rvc19hZGRlZCI6MCwidG90YWxfZWZmZWN0c190aW1lIjowLCJ0b29sc191c2VkIjp7InRpbHRfc2hpZnQiOjAsInJlc2l6ZSI6MiwiYWRqdXN0IjowLCJjdXJ2ZXMiOjAsIm1vdGlvbiI6MCwicGVyc3BlY3RpdmUiOjAsImNsb25lIjowLCJjcm9wIjowLCJlbmhhbmNlIjowLCJzZWxlY3Rpb24iOjAsImZyZWVfY3JvcCI6MCwiZmxpcF9yb3RhdGUiOjAsInNoYXBlX2Nyb3AiOjAsInN0cmV0Y2giOjB9LCJ3aWR0aCI6MTAwLCJzb3VyY2UiOiJzaGFyZV9hY3Rpb25fc2hlZXQiLCJvcmlnaW4iOiJnYWxsZXJ5IiwiaGVpZ2h0IjoxMDAsInN1YnNvdXJjZSI6ImRvbmVfYnV0dG9uIiwidG90YWxfZWRpdG9yX3RpbWUiOjYxLCJicnVzaGVzX3VzZWQiOjB9AAAAAGcAAAAZAAAAZwAAABkAAAALAAAABQAAAAsAAAAFQXBwbGUAaVBob25lIDVzIGJhY2sgY2FtZXJhIDQuMTJtbSBmLzIuMgAA/+ENymh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8APD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bXA6Q3JlYXRlRGF0ZT0iMjAxNC0wMS0xM1QxNzo1MjowMCIgeG1wOk1vZGlmeURhdGU9IjIwMTQtMDEtMTNUMTc6NTI6MDAiIHhtcDpDcmVhdG9yVG9vbD0iUGljc0FydCIgcGhvdG9zaG9wOkRhdGVDcmVhdGVkPSIyMDE0LTAxLTEzVDE3OjUyOjAwIj4gPGRjOmRlc2NyaXB0aW9uPiA8cmRmOkFsdD4gPHJkZjpsaSB4bWw6bGFuZz0ieC1kZWZhdWx0Ij57InRvdGFsX2VmZmVjdHNfYWN0aW9ucyI6MCwidG90YWxfZHJhd190aW1lIjowLCJsYXllcnNfdXNlZCI6MCwiZWZmZWN0c190cmllZCI6MCwidG90YWxfZHJhd19hY3Rpb25zIjowLCJ0b3RhbF9lZGl0b3JfYWN0aW9ucyI6eyJib3JkZXIiOjAsImZyYW1lIjowLCJtYXNrIjowLCJsZW5zZmxhcmUiOjAsImNsaXBhcnQiOjAsInRleHQiOjAsInNxdWFyZV9maXQiOjAsInNoYXBlX21hc2siOjAsImNhbGxvdXQiOjB9LCJlZmZlY3RzX2FwcGxpZWQiOjAsInVpZCI6IjM2REEyRDBCLTM1NTUtNDY3QS1BNjUwLTRCOUExRkY3QzFDNF8xNTE0NzE3MTQ4NzMwIiwiZW50cnlfcG9pbnQiOiJjcmVhdGVfZmxvd19mdGUiLCJwaG90b3NfYWRkZWQiOjAsInRvdGFsX2VmZmVjdHNfdGltZSI6MCwidG9vbHNfdXNlZCI6eyJ0aWx0X3NoaWZ0IjowLCJyZXNpemUiOjIsImFkanVzdCI6MCwiY3VydmVzIjowLCJtb3Rpb24iOjAsInBlcnNwZWN0aXZlIjowLCJjbG9uZSI6MCwiY3JvcCI6MCwiZW5oYW5jZSI6MCwic2VsZWN0aW9uIjowLCJmcmVlX2Nyb3AiOjAsImZsaXBfcm90YXRlIjowLCJzaGFwZV9jcm9wIjowLCJzdHJldGNoIjowfSwid2lkdGgiOjEwMCwic291cmNlIjoic2hhcmVfYWN0aW9uX3NoZWV0Iiwib3JpZ2luIjoiZ2FsbGVyeSIsImhlaWdodCI6MTAwLCJzdWJzb3VyY2UiOiJkb25lX2J1dHRvbiIsInRvdGFsX2VkaXRvcl90aW1lIjo2MSwiYnJ1c2hlc191c2VkIjowfTwvcmRmOmxpPiA8L3JkZjpBbHQ+IDwvZGM6ZGVzY3JpcHRpb24+IDxkYzpjcmVhdG9yPiA8cmRmOlNlcT4gPHJkZjpsaT5uaWNrdGltZWJyZWFrPC9yZGY6bGk+IDwvcmRmOlNlcT4gPC9kYzpjcmVhdG9yPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8P3hwYWNrZXQgZW5kPSJ3Ij8+AP/tADhQaG90b3Nob3AgMy4wADhCSU0EBAAAAAAAADhCSU0EJQAAAAAAENQdjNmPALIE6YAJmOz4Qn7/wAARCABkAGQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmq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";
@@ -159,6 +161,25 @@ mainTemplate = {
     {
       type: "label",
       props: {
+        text: "推荐",
+        id: "recLabel",
+        bgcolor: $color("#b20083"),
+        textColor: $color("white"),
+        align: $align.center,
+        font: $font("bold", 12),
+        radius: 4,
+        hidden: true,
+        alpha: 0.8
+      },
+      layout: function(make, view) {
+        make.top.right.inset(0);
+        make.height.equalTo(18);
+        make.width.equalTo(34);
+      }
+    },
+    {
+      type: "label",
+      props: {
         id: "name",
         bgcolor: $color("clear"),
         textColor: $color("white"),
@@ -174,12 +195,12 @@ mainTemplate = {
 
 recView = {
   props: {
-    id:"recView"
+    id: "recView"
   },
   layout: function(make, view) {
-                    make.left.right.bottom.inset(0);
-                    make.top.equalTo($("menu").bottom);
-                  },
+    make.left.right.bottom.inset(0);
+    make.top.equalTo($("menu").bottom);
+  },
   views: [
     {
       type: "text",
@@ -212,7 +233,7 @@ recView = {
       layout: function(make, view) {
         make.size.equalTo($size(50, 50));
         make.top.inset(120);
-        make.left.inset(162);
+        make.centerX.equalTo();
       }
     },
     {
@@ -220,15 +241,15 @@ recView = {
       props: {
         id: "contact",
         title: "我要投稿",
-        titleColor:$color("black"),
+        titleColor: $color("black"),
         font: $font(13),
         bgcolor: $color("#f3f3f3"),
-        borderWidth:1,
-                        borderColor:$color("#dde3e5"),
+        borderWidth: 1,
+        borderColor: $color("#dde3e5"),
         radius: 5
       },
       layout: function(make, view) {
-        make.top.inset(5)
+        make.top.inset(5);
         make.left.inset(5);
         make.height.equalTo(30);
         make.width
@@ -239,10 +260,10 @@ recView = {
       events: {
         tapped(sender) {
           $push.schedule({
-                                title: "直接发送「番号」给这位作者",
-                                body: "可通过影片详情页右侧的「分享影片」获得",
-                                delay: 0.8
-                              });
+            title: "直接发送「番号」给这位作者",
+            body: "可通过影片详情页右侧的「分享影片」获得",
+            delay: 0.8
+          });
           $app.openURL("https://t.me/nicked");
         }
       }
@@ -251,15 +272,15 @@ recView = {
       type: "button",
       props: {
         title: "我要赞赏",
-        titleColor:$color("black"),
-                font: $font(13),
-                bgcolor: $color("#f3f3f3"),
-                borderWidth:1,
-                                borderColor:$color("#dde3e5"),
+        titleColor: $color("black"),
+        font: $font(13),
+        bgcolor: $color("#f3f3f3"),
+        borderWidth: 1,
+        borderColor: $color("#dde3e5"),
         radius: 5
       },
       layout: function(make, view) {
-        make.top.inset(5)
+        make.top.inset(5);
         make.centerX.equalTo();
         make.height.equalTo(30);
         make.width
@@ -269,7 +290,7 @@ recView = {
       },
       events: {
         tapped(sender) {
-          wechatPay()
+          wechatPay();
         }
       }
     },
@@ -277,16 +298,16 @@ recView = {
       type: "button",
       props: {
         title: "JavLibrary",
-        titleColor:$color("black"),
-                font: $font(13),
-                bgcolor: $color("#f3f3f3"),
-              
-                borderWidth:1,
-                borderColor:$color("#dde3e5"),
+        titleColor: $color("black"),
+        font: $font(13),
+        bgcolor: $color("#f3f3f3"),
+
+        borderWidth: 1,
+        borderColor: $color("#dde3e5"),
         radius: 5
       },
       layout: function(make, view) {
-        make.top.inset(5)
+        make.top.inset(5);
         make.right.inset(5);
         make.height.equalTo(30);
         make.width
@@ -299,8 +320,8 @@ recView = {
           $safari.open({
             url: "http://www.javlibrary.com/cn/vl_bestrated.php"
           });
-//$("JavBus").add(webview)
-//$("recView").remove()
+          //$("JavBus").add(webview)
+          //$("recView").remove()
         }
       }
     },
@@ -339,6 +360,25 @@ recView = {
             }
           },
           {
+            type: "label",
+            props: {
+              text: "推荐",
+//              id: "SUB",
+              bgcolor: $color("#b20083"),
+              textColor: $color("white"),
+              align: $align.center,
+              font: $font("bold", 12),
+              radius: 4,
+              hidden: false,
+              alpha: 0.8
+            },
+            layout: function(make, view) {
+              make.top.right.inset(0);
+              make.height.equalTo(18);
+              make.width.equalTo(34);
+            }
+          },
+          {
             type: "blur",
             props: {
               id: "recBlur",
@@ -348,6 +388,7 @@ recView = {
             },
             layout: $layout.fill
           },
+
           {
             type: "gradient",
             props: {
@@ -365,22 +406,26 @@ recView = {
         ]
       },
       events: {
-        didSelect(sender,indexPath,data){
+        didSelect(sender, indexPath, data) {
           $ui.push(detailView(data.code));
-        
-                      getDetail(data.link);
-                       if (LocalArcList.indexOf(data.code) > -1) {
-                                        $("favorite").title = "已归档";
-                                        $("favorite").bgcolor = $color("#aaaaaa");
-                                      }
-                                    else if (LocalFavList.indexOf(data.code) > -1) {
-                                        $("favorite").title = "归档";
-                                        $("favorite").bgcolor = $color("#22bdcc");
-                                      } else {
-                                        $("favorite").title = "收藏";
-                                      }
-                                      }
-        
+
+          getDetail(data.link);
+          favData = {
+            code: data.code,
+            src: data.recCover.src,
+            info: data.recInfo.text,
+            shortCode: data.code
+          };
+          if (LocalArcList.indexOf(data.code) > -1) {
+            $("favorite").title = "已归档";
+            $("favorite").bgcolor = $color("#aaaaaa");
+          } else if (LocalFavList.indexOf(data.code) > -1) {
+            $("favorite").title = "归档";
+            $("favorite").bgcolor = $color("#22bdcc");
+          } else {
+            $("favorite").title = "收藏";
+          }
+        }
       },
       layout: function(make, view) {
         make.top.equalTo($("contact").bottom).offset(5);
@@ -392,70 +437,70 @@ recView = {
 };
 
 webview = {
-                type: "web",
-                props: {
-                  id: "web",
-                  url: "http://www.javlibrary.com/cn/vl_bestrated.php"
-                },
-                views: [
-                  {
-                    type: "button",
-                    props: {
-                      id: "goB",
-                      bgcolor: $color("clear"),
-                      title: "◄",
-                      font: $font("Menlo", 38),
-                      titleColor: $color("tint"),
-                      alpha: 1
-                    },
-                    layout: function(make, view) {
-                      make.left.equalTo(0);
-                      make.bottom.inset(25);
-                      make.height.equalTo(20);
-                      make.width.equalTo(view.super).multipliedBy(0.25);
-                      leftView = view;
-                    },
-                    events: {
-                      tapped(sender) {
-                        $("web").goBack();
-                      }
-                    }
-                  },
-                  {
-                    type: "button",
-                    props: {
-                      id: "goF",
-                      bgcolor: $color("clear"),
-                      title: "►",
-                      font: $font("Menlo", 38),
-                      titleColor: $color("tint"),
-                      alpha: 1
-                    },
-                    layout: navLayout(),
-                    events: {
-                      tapped(sender) {
-                        $("web").goForward();
-                      }
-                    }
-                  },
-                  webPreviewBTN("042", navLayout(), function(sender) {
-                    //                    $share.sheet($("web").url);
-                    $app.openURL($("web").url);
-                  }),
-                  webPreviewBTN("162", navLayout(), function(sender) {
-                    $("web").reload();
-                  })
-                ],
-                layout: function(make, view) {
-                  make.left.right.bottom.inset(0);
-                  make.top.equalTo($("menu").bottom);
-                },
-                events: {
-                  didFinish: function(sender, navigation) {
-                    getJavLib();
-                  }
-                }
-              };
+  type: "web",
+  props: {
+    id: "web",
+    url: "http://www.javlibrary.com/cn/vl_bestrated.php"
+  },
+  views: [
+    {
+      type: "button",
+      props: {
+        id: "goB",
+        bgcolor: $color("clear"),
+        title: "◄",
+        font: $font("Menlo", 38),
+        titleColor: $color("tint"),
+        alpha: 1
+      },
+      layout: function(make, view) {
+        make.left.equalTo(0);
+        make.bottom.inset(25);
+        make.height.equalTo(20);
+        make.width.equalTo(view.super).multipliedBy(0.25);
+        leftView = view;
+      },
+      events: {
+        tapped(sender) {
+          $("web").goBack();
+        }
+      }
+    },
+    {
+      type: "button",
+      props: {
+        id: "goF",
+        bgcolor: $color("clear"),
+        title: "►",
+        font: $font("Menlo", 38),
+        titleColor: $color("tint"),
+        alpha: 1
+      },
+      layout: navLayout(),
+      events: {
+        tapped(sender) {
+          $("web").goForward();
+        }
+      }
+    },
+    webPreviewBTN("042", navLayout(), function(sender) {
+      //                    $share.sheet($("web").url);
+      $app.openURL($("web").url);
+    }),
+    webPreviewBTN("162", navLayout(), function(sender) {
+      $("web").reload();
+    })
+  ],
+  layout: function(make, view) {
+    make.left.right.bottom.inset(0);
+    make.top.equalTo($("menu").bottom);
+  },
+  events: {
+    didFinish: function(sender, navigation) {
+      getJavLib();
+    }
+  }
+};
 
 function searchView(height, catname, cols = 3, spa = 1) {
   return {
@@ -497,7 +542,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
         layout: function(make, view) {
           make.size.equalTo($size(50, 50));
           make.top.inset(120);
-          make.left.inset(162);
+          make.centerX.equalTo();
         }
       },
       {
@@ -630,6 +675,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
               info: favInfo,
               shortCode: shortCode
             };
+
             if (isInToday()) $cache.set("cacheData", favData);
             // 演员tab
             if (
@@ -738,7 +784,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
             if ($("searchView").super == $("JavBus")) {
               $("searchView").remove();
             }
-            
+
             if (sender.index == 0) {
               // 影片
               $("JavBus").add(searchView(180));
@@ -826,7 +872,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                     gradient: {
                       hidden: false,
                       colors: colorData[randomColor(0, 11)],
-                      alpha:1
+                      alpha: 1
                     },
                     info: {
                       hidden: true
@@ -846,11 +892,13 @@ function searchView(height, catname, cols = 3, spa = 1) {
                 } else {
                   $("initialView").hidden = false;
                 }
+                
                 LocalData.series.map(function(i) {
-                  if(i.shortCode.indexOf("uncensored")>-1) hp= hp + "uncensored/"
-                  i.shortCode=  i.shortCode.replace("/uncensored","")
+                  if (i.shortCode.indexOf("uncensored") > -1)
+                    hp = hp + "uncensored/";
+                  shortCode = i.shortCode.replace("/uncensored", "");
                   $("initialView").data = $("initialView").data.concat({
-                    link: hp + "series/" + i.shortCode,
+                    link: hp + "series/" + shortCode,
                     name: {
                       text: i.name,
                       hidden: false
@@ -858,7 +906,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                     gradient: {
                       hidden: false,
                       colors: colorData[randomColor(0, 11)],
-                      alpha:1
+                      alpha: 1
                     },
                     info: {
                       hidden: true
@@ -879,10 +927,11 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   $("initialView").hidden = false;
                 }
                 LocalData.filmMaker.map(function(i) {
-                 if(i.shortCode.indexOf("uncensored")>-1) hp= hp + "uncensored/"
-                                   i.shortCode=  i.shortCode.replace("/uncensored","")
+                  if (i.shortCode.indexOf("uncensored") > -1)
+                    hp = hp + "uncensored/";
+                  i.shortCode = i.shortCode.replace("/uncensored", "");
                   $("initialView").data = $("initialView").data.concat({
-                    link: hp + "studio/" + i.shortCode,
+                    link: hp + "studio/" + shortCode,
                     name: {
                       text: i.name,
                       hidden: false
@@ -890,7 +939,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                     gradient: {
                       hidden: false,
                       colors: colorData[randomColor(0, 11)],
-                      alpha:1
+                      alpha: 1
                     },
                     info: {
                       hidden: true
@@ -920,7 +969,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                     gradient: {
                       hidden: false,
                       colors: colorData[randomColor(0, 11)],
-                      alpha:1
+                      alpha: 1
                     },
                     info: {
                       hidden: true
@@ -1544,8 +1593,8 @@ function detailView(code) {
         },
         events: {
           tapped(sender) {
-//            $app.tips("预览视频来自 Avgle，请将 Avgle.com 加入代理");
-            showTips("preview","预览视频来自 Avgle，请将 Avgle.com 加入代理")
+            //            $app.tips("预览视频来自 Avgle，请将 Avgle.com 加入代理");
+            showTips("preview", "预览视频来自 Avgle，请将 Avgle.com 加入代理");
             $ui.menu({
               items: ["样品图像", "八秒视频"],
               handler: function(title, idx) {
@@ -1636,14 +1685,13 @@ function detailView(code) {
         events: {
           tapped(sender) {
             //$clipboard.text = favCode
-            let items = ["打开 Safari", "复制番号", "分享链接","分享推荐"];
+            let items = ["打开 Safari", "复制番号", "分享链接", "分享推荐"];
             let shareRec = {
-              
-              code:sender.info,
-              info:sender.info+" | "+nowTime(),
+              code: sender.info,
+              info: sender.info + " | " + nowTime(),
               src: favSrc,
-              link:favLink
-            }
+              link: favLink
+            };
             $ui.menu({
               items: items,
               handler: function(title, idx) {
@@ -1652,11 +1700,14 @@ function detailView(code) {
                   $clipboard.text = sender.info;
                   $ui.toast("番号 " + sender.info + "已复制");
                 } else if (idx == 2) $share.sheet(favLink);
-                else if(idx ==3){
-                  $device.taptic(2)
-                  let av = JSON.stringify(shareRec)
-                  
-                  $app.openURL("shortcuts://run-shortcut?name=JavBus%20Rec&input="+encodeURI(av))
+                else if (idx == 3) {
+                  $device.taptic(2);
+                  let av = JSON.stringify(shareRec);
+
+                  $app.openURL(
+                    "shortcuts://run-shortcut?name=JavBus%20Rec&input=" +
+                      encodeURI(av)
+                  );
                 }
               }
             });
@@ -2305,6 +2356,25 @@ function actressView(actress, cover) {
                 make.height.equalTo(25);
               }
             },
+               {
+                  type: "label",
+                  props: {
+                    text: "推荐",
+                    id: "recLabel",
+                    bgcolor: $color("#b20083"),
+                    textColor: $color("white"),
+                    align: $align.center,
+                    font: $font("bold", 12),
+                    radius: 4,
+                    hidden: true,
+                    alpha: 0.8
+                  },
+                  layout: function(make, view) {
+                    make.top.right.inset(0);
+                    make.height.equalTo(18);
+                    make.width.equalTo(34);
+                  }
+                },
             {
               type: "blur",
               props: {
@@ -2504,8 +2574,8 @@ $ui.render({
                 $("searchView").remove();
               }
             }
-            if($("recView")){
-              if($("recView").super == $("JavBus")) $("recView").remove()
+            if ($("recView")) {
+              if ($("recView").super == $("JavBus")) $("recView").remove();
             }
           } else {
             if ($("category").super == $("JavBus")) {
@@ -2564,31 +2634,33 @@ $ui.render({
               getCat(catUrl);
               break;
             case 3: // 推荐
-              
               $("JavBus").add(recView);
-//$ui.render(recView)
-showTips("Rec","众口难调，欢迎投稿\n\n注:本界面封面时间为收藏时间而非上映时间")
+              //$ui.render(recView)
+              showTips(
+                "Rec",
+                "众口难调，欢迎投稿\n\n注:本界面封面时间为收藏时间而非上映时间"
+              );
               $("recMatrix").data = [];
-                  $cache.set("recommend",RecAv.length)
-                    $("newIcon").hidden = true
-                    RecAv.map(function(i) {
-                      $("recMatrix").data = $("recMatrix").data.concat({
-                        recCover: {
-                          src: i.src
-                        },
-                        recInfo: {
-                          text: i.info
-                        },
-                        recGra:{
-                          hidden: LocalFavList.indexOf(i.code)>-1?false:true
-                        },
-                        recBlur:{
-                          hidden: LocalArcList.indexOf(i.code)>-1?false:true
-                        },
-                        link: i.link,
-                        code:i.code
-                      });
-                    });
+              $cache.set("recommend", RecAv.length);
+              $("newIcon").hidden = true;
+              RecAv.map(function(i) {
+                $("recMatrix").data = $("recMatrix").data.concat({
+                  recCover: {
+                    src: i.src
+                  },
+                  recInfo: {
+                    text: i.info
+                  },
+                  recGra: {
+                    hidden: LocalFavList.indexOf(i.code) > -1 ? false : true
+                  },
+                  recBlur: {
+                    hidden: LocalArcList.indexOf(i.code) > -1 ? false : true
+                  },
+                  link: i.link,
+                  code: i.code
+                });
+              });
 
               break;
             case 4: // 收藏
@@ -2621,6 +2693,9 @@ showTips("Rec","众口难调，欢迎投稿\n\n注:本界面封面时间为收�
                   },
                   info: {
                     text: i.info
+                  },
+                  recLabel:{
+                    hidden: RecAvCode.indexOf(i.code)>-1?false:true
                   }
                 });
               });
@@ -2660,7 +2735,10 @@ showTips("Rec","众口难调，欢迎投稿\n\n注:本界面封面时间为收�
                   },
                   info: {
                     text: i.info
-                  }
+                  },
+                  recLabel:{
+                                      hidden: RecAvCode.indexOf(i.code)>-1?false:true
+                                      }
                 });
               });
               if ($("initialView").data.length == 1) {
@@ -2675,36 +2753,39 @@ showTips("Rec","众口难调，欢迎投稿\n\n注:本界面封面时间为收�
         }
       }
     },
-        {
-          type: "image",
-          props: {
-            id: "newIcon",
-            src: newIcon,
-//            radius: 25,
-            bgcolor:$color("clear"),
-            align: $align.center,
-            hidden: true
-          },
-          layout: function(make, view) {
-            make.size.equalTo($size(15,15));
-            make.top.inset(0);
-            make.left.inset(235);
-          }
-        },
+    {
+      type: "image",
+      props: {
+        id: "newIcon",
+        src: newIcon,
+        //            radius: 25,
+        bgcolor: $color("clear"),
+        align: $align.center,
+        hidden: true
+      },
+      layout: function(make, view) {
+        make.size.equalTo($size(15, 15));
+        make.top.inset(0);
+        make.left.inset(235);
+      }
+    }
   ]
 });
 
 function getRec() {
-//  $app.tips("众口难调，欢迎投稿\n\n注:本界面封面时间为收藏时间而非上映时间")
-  showTips("Rec","众口难调，欢迎投稿\n\n注:本界面封面时间为收藏时间而非上映时间")
+  //  $app.tips("众口难调，欢迎投稿\n\n注:本界面封面时间为收藏时间而非上映时间")
+  showTips(
+    "Rec",
+    "众口难调，欢迎投稿\n\n注:本界面封面时间为收藏时间而非上映时间"
+  );
   let recUrl =
     "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Rec";
   $http.get({
     url: recUrl,
     handler: function(resp) {
       $("recMatrix").data = [];
-    $cache.set("recommend",resp.data.length)
-      $("newIcon").hidden = true
+      $cache.set("recommend", resp.data.length);
+      $("newIcon").hidden = true;
       resp.data.map(function(i) {
         $("recMatrix").data = $("recMatrix").data.concat({
           recCover: {
@@ -2713,14 +2794,14 @@ function getRec() {
           recInfo: {
             text: i.info
           },
-          recGra:{
-            hidden: LocalFavList.indexOf(i.code)>-1?false:true
+          recGra: {
+            hidden: LocalFavList.indexOf(i.code) > -1 ? false : true
           },
-          recBlur:{
-            hidden: LocalArcList.indexOf(i.code)>-1?false:true
+          recBlur: {
+            hidden: LocalArcList.indexOf(i.code) > -1 ? false : true
           },
           link: i.link,
-          code:i.code
+          code: i.code
         });
       });
       $("loading").hidden = true;
@@ -2734,12 +2815,13 @@ function getNew() {
   $http.get({
     url: recUrl,
     handler: function(resp) {
-      
-      RecAv = resp.data
-      if(recommend<RecAv.length){
-        $("newIcon").hidden =  false
-        
+      RecAv = resp.data;
+      if (recommend < RecAv.length) {
+        $("newIcon").hidden = false;
       }
+      RecAv.map(function(i) {
+        RecAvCode = RecAvCode.concat(i.code);
+      });
       
     }
   });
@@ -2795,7 +2877,7 @@ function catCover(title) {
         layout: function(make, view) {
           make.size.equalTo($size(50, 50));
           make.top.inset(100);
-          make.left.inset(162);
+          make.centerX.equalTo();
         }
       },
       {
@@ -3006,8 +3088,8 @@ function favDetailTapped(mode, Button) {
 function pushCat(sender, position = "") {
   $ui.push(catCover(sender.text));
   let shortCode = sender.info.split("/").pop();
-  if(sender.info.indexOf("uncensored")>-1){
-    shortCode = shortCode + "/uncensored"
+  if (sender.info.indexOf("uncensored") > -1) {
+    shortCode = shortCode + "/uncensored";
   }
   $("favDetail").info = {
     shortCode: shortCode,
@@ -3167,7 +3249,10 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
           },
           SUB: {
             hidden: !sub
-          }
+          },
+          recLabel:{
+                              hidden: RecAvCode.indexOf(code)>-1?false:true
+                            }
         });
       });
       $("input").placeholder = "输入番号或演员进行搜索";
@@ -3459,6 +3544,8 @@ function getDetail(url) {
       );
       if (temp) {
         var filmTime = temp[1];
+        if ($("menu").index == 3)
+          favData.info = favData.code + " | " + filmTime;
       } else {
         var filmTime = "????-??-??";
       }
@@ -3688,7 +3775,10 @@ function getActress(url) {
           },
           actressGra: {
             hidden: LocalFavList.indexOf(code) > -1 ? false : true
-          }
+          },
+          recLabel:{
+                              hidden: RecAvCode.indexOf(code)>-1?false:true
+                            }
         });
       });
       // $ui.toast("",0.1)
@@ -3952,8 +4042,8 @@ function checkAdult() {
 }
 
 function getMagnet(code) {
-//  $app.tips("单击复制磁链，\n左滑分享磁链,\n若无磁链，尝试下拉刷新");
-  showTips("Meg","单击复制磁链，\n左滑分享磁链,\n若无磁链，尝试下拉刷新")
+  //  $app.tips("单击复制磁链，\n左滑分享磁链,\n若无磁链，尝试下拉刷新");
+  showTips("Meg", "单击复制磁链，\n左滑分享磁链,\n若无磁链，尝试下拉刷新");
   $ui.loading(true);
   $http.request({
     url: urls[$("mMenu").index].pattern + code + "&page=1",
@@ -4288,10 +4378,10 @@ function runWhere() {
   //  $app.close()
 }
 
-function showTips(name,str){
-  if($cache.get(name)==undefined){
-    alert(str)
-    $cache.set(name,1)
+function showTips(name, str) {
+  if ($cache.get(name) == undefined) {
+    alert(str);
+    $cache.set(name, 1);
   }
 }
 
@@ -4339,7 +4429,7 @@ function initial() {
   if ($cache.get("samp") === undefined) {
     readMe();
   }
-  getNew()
+  getNew();
 }
 
 //剪贴板检测
@@ -4409,23 +4499,22 @@ function openJS(code, link) {
   getInitial();
 }
 
-function nowTime(){
-  let t = new Date()
-  let y = t.getFullYear()
-  let m = t.getMonth()+1
-  let d = t.getDate()
-  return y+"-"+m+"-"+d
+function nowTime() {
+  let t = new Date();
+  let y = t.getFullYear();
+  let m = t.getMonth() + 1;
+  let d = t.getDate();
+  return y + "-" + m + "-" + d;
 }
 
 function readMe() {
   let updateUrl =
     "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Readme.txt";
 
-$cache.set("samp", "1");
+  $cache.set("samp", "1");
   $http.get({
     url: updateUrl,
     handler: function(resp) {
-      
       $ui.push({
         views: [
           {
@@ -4435,9 +4524,8 @@ $cache.set("samp", "1");
             },
             layout: function(make, view) {
               make.left.bottom.right.top.inset(0);
-              
             }
-          },
+          }
         ]
       });
     }
