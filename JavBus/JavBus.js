@@ -1532,6 +1532,7 @@ function detailView(code) {
           tapped(sender) {
             //$clipboard.text = favCode
             //$ui.action(favCode)
+            let favCode= code
             $ui.menu({
               items: ["磁链", "Avgle", "nyaa", "JavLibrary"],
               handler: function(title, idx) {
