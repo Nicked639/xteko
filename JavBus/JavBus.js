@@ -31,7 +31,7 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 6.31;
+version = 6.32;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -380,6 +380,11 @@ recView = {
         didSelect(sender, indexPath, data) {
           $ui.push(detailView(data.code));
 
+          favLink = data.link
+          favSrc = data.recCover.src
+          favCode = data.code
+          favInfo = data.recInfo.text
+          shortCode = favLink.split("/").pop();
           getDetail(data.link);
           favData = {
             code: data.code,
@@ -1810,12 +1815,14 @@ function detailView(code) {
         },
         events: {
           tapped(sender) {
+            
             let shareRec = {
               code: sender.info,
               info: sender.info + " | " + nowTime(),
               src: favData.src,
-              link: sender.url
+              link: favLink
             };
+            //alert(shareRec)
             $device.taptic(2);
             // $clipboard.text = JSON.stringify(shareRec);
 
@@ -1856,6 +1863,7 @@ function detailView(code) {
                           $ui.error("该影片已在推荐列表！");
                         }else{
                           $ui.error("错误代码："+result)
+                          $clipboard.text=result
                         }
                       }
                     })
