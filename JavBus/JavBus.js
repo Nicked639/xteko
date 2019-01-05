@@ -31,7 +31,7 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 6.3;
+version = 6.31;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1728,9 +1728,10 @@ function detailView(code) {
             let shareRec = {
               code: sender.info,
               info: sender.info + " | " + nowTime(),
-              src: favSrc,
-              link: favLink
+              src: favData.src,
+              link: sender.url
             };
+            
             $ui.menu({
               items: items,
               handler: function(title, idx) {
@@ -1812,8 +1813,8 @@ function detailView(code) {
             let shareRec = {
               code: sender.info,
               info: sender.info + " | " + nowTime(),
-              src: favSrc,
-              link: favLink
+              src: favData.src,
+              link: sender.url
             };
             $device.taptic(2);
             // $clipboard.text = JSON.stringify(shareRec);
@@ -1835,6 +1836,10 @@ function detailView(code) {
                   disabled: false, // Optional
                   handler: function() {
                     $ui.toast("影片上传中",10)
+                    if(RecAvCode.indexOf(sender.info)>-1){
+                      $ui.error("该影片已在推荐列表！");
+                      return
+                    }
                     let gurl = "https://script.google.com/macros/s/AKfycbxhEuyq7FZfex2drTkD0eVFkhot2hYHk5LfkiA3X3_qwhdMTNk/exec"
                     let payload = shareRec
                     $http.request({
@@ -3779,7 +3784,9 @@ function getDetail(url) {
       $("check").info = code;
       $("aboutFilm").hidden = isInToday();
       $("share").info = code;
+      $("share").url = url
       $("submission").info = code;
+      $("submission").url = url
       $("filmEstabName").text = filmEstabName;
       $("filmEstabName").hidden = isInToday();
       $("filmEstab").hidden = isInToday();
@@ -4343,7 +4350,7 @@ function iniCat(titles) {
                 locations: [0.0, 1.0],
                 startPoint: $point(0, 0),
                 endPoint: $point(1, 1),
-                radius: 8,
+                smoothRadius: 8,
                 hidden: false
               },
               layout: $layout.fill
@@ -4352,12 +4359,12 @@ function iniCat(titles) {
               type: "label",
               props: {
                 id: "mlabel",
-                radius: 8,
+                smoothRadius: 8,
                 bgcolor: $color("clear"),
                 alpha: 1,
                 textColor: $color("white"),
                 align: $align.center,
-                font: $font("font", 10),
+                font: $font(17),
                 autoFontSize: true
               },
               layout: $layout.fill
