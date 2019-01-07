@@ -1734,9 +1734,9 @@ function detailView(code) {
               code: sender.info,
               info: sender.info + " | " + nowTime(),
               src: favData.src,
-              link: sender.url
+              link: favLink
             };
-            
+//            alert(shareRec)
             $ui.menu({
               items: items,
               handler: function(title, idx) {
@@ -1815,7 +1815,10 @@ function detailView(code) {
         },
         events: {
           tapped(sender) {
-            
+            if(sender.title=="已推荐"){
+              $ui.error("该片已在推荐列表")
+              return
+            }
             let shareRec = {
               code: sender.info,
               info: sender.info + " | " + nowTime(),
@@ -2323,6 +2326,7 @@ const screenshotView = {
       events: {
         tapped: function(sender) {
           if ($("download").title == "批量下载") {
+            showTips("downPics","下载图片保存在 iCloud Drive Jsbox 内的「样品图像」中")
             $device.taptic(1);
             sender.title = "正在下载...";
             let folderName = "";
@@ -3794,6 +3798,9 @@ function getDetail(url) {
       $("share").info = code;
       $("share").url = url
       $("submission").info = code;
+      if(RecAvCode.indexOf(code)>-1){
+        $("submission").title= "已推荐"
+      }
       $("submission").url = url
       $("filmEstabName").text = filmEstabName;
       $("filmEstabName").hidden = isInToday();
