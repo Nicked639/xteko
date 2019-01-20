@@ -21,7 +21,7 @@
 
    */
 
-version = 1.5
+version = 1.6
 
 var scale = 600 / 337;
 const searchPreview = {
@@ -1133,9 +1133,13 @@ function getSearchVideoList() {
       };
       var items = match.map(function(i, idx) {
         var videoid = /videoid="(.*?)"/.exec(i)[1];
+        
         var time = /<span\sclass="duration">([\s\S]*?)<\/span>/.exec(i)[1];
-        var views = /\d*?.\sViews/.exec(i)[0];
+        
+//        var views = /\d*?.\sViews/.exec(i)[0];
+var views = /duration">[\s\S]*?<\/span>([\s\S]*?)<span/.exec(i)[1]
         var url = /<a\shref="(.*?)">/.exec(i)[1];
+
         var image = /data-src="(.*?)"/.exec(i)[1].replace("thumbs169", "thumbs169lll").replace("THUMBNUM", "20");
         var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
         try {
@@ -1196,7 +1200,8 @@ function getStarVideoList() {
       var items = match.map(function(i, idx) {
         var videoid = /videoid="(.*?)"/.exec(i)[1];
         var time = /<span\sclass="duration">([\s\S]*?)<\/span>/.exec(i)[1];
-        var views = /\d*?.\sViews/.exec(i)[0];
+//        var views = /\d*?.\sViews/.exec(i)[0];
+        var views = /duration">[\s\S]*?<\/span>([\s\S]*?)<span/.exec(i)[1]
         var url = /<a\shref="(.*?)">/.exec(i)[1];
         var image = /data-src="(.*?)"/.exec(i)[1].replace("thumbs169", "thumbs169lll").replace("THUMBNUM", "20");
         var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
@@ -1252,7 +1257,8 @@ function getChannelVideoList() {
       var items = match.map(function(i, idx) {
         var videoid = /videoid="(.*?)"/.exec(i)[1];
         var time = /<span\sclass="duration">([\s\S]*?)<\/span>/.exec(i)[1];
-        var views = /\d*?.\sViews/.exec(i)[0];
+//        var views = /\d*?.\sViews/.exec(i)[0];
+        var views = /duration">[\s\S]*?<\/span>([\s\S]*?)<span/.exec(i)[1]
         var url = /<a\shref="(.*?)">/.exec(i)[1];
         var image = /data-src="(.*?)"/.exec(i)[1].replace("thumbs169", "thumbs169lll").replace("THUMBNUM", "20");
         var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
