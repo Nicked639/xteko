@@ -21,7 +21,7 @@
 
    */
 
-version = 1.6
+version = 1.7
 
 var scale = 600 / 337;
 const searchPreview = {
@@ -1137,7 +1137,7 @@ function getSearchVideoList() {
         var time = /<span\sclass="duration">([\s\S]*?)<\/span>/.exec(i)[1];
         
 //        var views = /\d*?.\sViews/.exec(i)[0];
-var views = /duration">[\s\S]*?<\/span>([\s\S]*?)<span/.exec(i)[1]
+var views = /duration">[\s\S]*?\s(\d{1,3}\.?\d?[kM]?)\s/.exec(i)[1]
         var url = /<a\shref="(.*?)">/.exec(i)[1];
 
         var image = /data-src="(.*?)"/.exec(i)[1].replace("thumbs169", "thumbs169lll").replace("THUMBNUM", "20");
@@ -1201,7 +1201,7 @@ function getStarVideoList() {
         var videoid = /videoid="(.*?)"/.exec(i)[1];
         var time = /<span\sclass="duration">([\s\S]*?)<\/span>/.exec(i)[1];
 //        var views = /\d*?.\sViews/.exec(i)[0];
-        var views = /duration">[\s\S]*?<\/span>([\s\S]*?)<span/.exec(i)[1]
+        var views = /duration">[\s\S]*?\s(\d{1,3}\.?\d?[kM]?)\s/.exec(i)[1]
         var url = /<a\shref="(.*?)">/.exec(i)[1];
         var image = /data-src="(.*?)"/.exec(i)[1].replace("thumbs169", "thumbs169lll").replace("THUMBNUM", "20");
         var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
@@ -1258,7 +1258,7 @@ function getChannelVideoList() {
         var videoid = /videoid="(.*?)"/.exec(i)[1];
         var time = /<span\sclass="duration">([\s\S]*?)<\/span>/.exec(i)[1];
 //        var views = /\d*?.\sViews/.exec(i)[0];
-        var views = /duration">[\s\S]*?<\/span>([\s\S]*?)<span/.exec(i)[1]
+        var views = /duration">[\s\S]*?\s(\d{1,3}\.?\d?[kM]?)\s/.exec(i)[1]
         var url = /<a\shref="(.*?)">/.exec(i)[1];
         var image = /data-src="(.*?)"/.exec(i)[1].replace("thumbs169", "thumbs169lll").replace("THUMBNUM", "20");
         var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
@@ -1619,31 +1619,6 @@ function getLocalFavVideos() {
   }]
 }
 
-//function scriptVersionUpdate() {
-//  $http.get({
-//    url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/Xvideos/updateInfo",
-//    handler: function(resp) {
-//      var afterVersion = resp.data.version;
-//      var msg = resp.data.msg;
-//      if (afterVersion > version) {
-//        $ui.alert({
-//          title: "检测到新的版本！V" + afterVersion,
-//          message: "更新后请至扩展列表启动新版本。\n" + msg,
-//          actions: [{
-//            title: "更新",
-//            handler: function() {
-//              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Xvideos/Xvideos.js&name=Xvideos&icon=icon_135.png";
-//              $app.openURL(encodeURI(url));
-//              $app.close()
-//            }
-//          }, {
-//            title: "取消"
-//          }]
-//        })
-//      }
-//    }
-//  })
-//}
 
 //检测扩展更新
 function scriptVersionUpdate() {
