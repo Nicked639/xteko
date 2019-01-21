@@ -1619,31 +1619,82 @@ function getLocalFavVideos() {
   }]
 }
 
+//function scriptVersionUpdate() {
+//  $http.get({
+//    url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/Xvideos/updateInfo",
+//    handler: function(resp) {
+//      var afterVersion = resp.data.version;
+//      var msg = resp.data.msg;
+//      if (afterVersion > version) {
+//        $ui.alert({
+//          title: "检测到新的版本！V" + afterVersion,
+//          message: "更新后请至扩展列表启动新版本。\n" + msg,
+//          actions: [{
+//            title: "更新",
+//            handler: function() {
+//              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Xvideos/Xvideos.js&name=Xvideos&icon=icon_135.png";
+//              $app.openURL(encodeURI(url));
+//              $app.close()
+//            }
+//          }, {
+//            title: "取消"
+//          }]
+//        })
+//      }
+//    }
+//  })
+//}
+
+//检测扩展更新
 function scriptVersionUpdate() {
   $http.get({
-    url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/Xvideos/updateInfo",
+    url:
+      "https://raw.githubusercontent.com/nicktimebreak/xteko/master/Xvideos/updateInfo",
     handler: function(resp) {
       var afterVersion = resp.data.version;
       var msg = resp.data.msg;
       if (afterVersion > version) {
-        $ui.alert({
-          title: "检测到新的版本！V" + afterVersion,
-          message: "更新后请至扩展列表启动新版本。\n" + msg,
-          actions: [{
-            title: "更新",
-            handler: function() {
-              var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Xvideos/Xvideos.js&name=Xvideos&icon=icon_135.png";
-              $app.openURL(encodeURI(url));
-              $app.close()
-            }
-          }, {
-            title: "取消"
-          }]
-        })
+        $ui.toast("检测到脚本更新...");
+
+        $http.download({
+          url:
+            "https://raw.githubusercontent.com/nicktimebreak/xteko/master/Xvideos/Xvideos.js",
+          handler: resp => {
+            let box = resp.data;
+            $addin.save({
+              name: $addin.current.name,
+              data: box,
+              version: afterVersion,
+              author: "Nicked",
+              icon: "icon_087",
+              handler: success => {
+                if (success) {
+                  $device.taptic(2);
+                  $delay(0.2, function() {
+                    $device.taptic(2);
+                  });
+
+                  $ui.alert({
+                    title: "更新已完成",
+                    actions: [
+                      {
+                        title: "OK",
+                        handler: function() {
+                          $addin.restart();
+                        }
+                      }
+                    ]
+                  });
+                }
+              }
+            });
+          }
+        });
       }
     }
-  })
+  });
 }
+
 
 const checkAdultView = {
   type: "view",
