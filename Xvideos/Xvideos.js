@@ -1629,7 +1629,7 @@ function scriptVersionUpdate() {
       var afterVersion = resp.data.version;
       var msg = resp.data.msg;
       if (afterVersion > version) {
-        $ui.toast("检测到脚本更新...");
+        $ui.toast("发现更新，安装中...",10);
 
         $http.download({
           url:
