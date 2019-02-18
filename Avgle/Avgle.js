@@ -2106,6 +2106,7 @@ function wechatPay() {
         title: "确定",
         handler: function() {
           let payUrl = "weixin://scanqrcode";
+          $ui.toast("赞赏码下载中...")
           $http.download({
             url:
               "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/wechat.jpg",
