@@ -31,7 +31,7 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 6.32;
+version = 6.4;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -178,6 +178,31 @@ mainTemplate = {
         make.width.equalTo(34);
       }
     },
+          {
+            type: "blur",
+            props: {
+              id: "recBlur",
+              radius: 8,
+              hidden: true,
+              alpha: 0.4
+            },
+            layout: $layout.fill
+          },
+
+          {
+            type: "gradient",
+            props: {
+              id: "recGra",
+              colors: colorData[9],
+              locations: [0.0, 1.0],
+              startPoint: $point(0, 0),
+              endPoint: $point(1, 1),
+              radius: 8,
+              hidden: true,
+              alpha: 0.4
+            },
+            layout: $layout.fill
+          },
     {
       type: "label",
       props: {
@@ -766,6 +791,8 @@ function searchView(height, catname, cols = 3, spa = 1) {
                 $("favorite").bgcolor = $color("#f25959");
               }
             }
+            
+        
           }
         }
       },
@@ -1584,7 +1611,7 @@ function detailView(code) {
                           title: "安装",
                           handler: function() {
                             var url =
-                              "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/Avgle.js&name=Avgle&icon=icon_87.png&types=1&version=4.1&author=Nicked&website=https://t.me/nicked";
+                              "jsbox://import?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/Avgle.js&name=Avgle&icon=icon_87.png&types=1&version=4.1&author=Nicked&website=https://t.me/nicked";
                             $app.openURL(encodeURI(url));
                             $app.close();
                           }
@@ -1648,6 +1675,7 @@ function detailView(code) {
                   }
                 } else if (idx == 1) {
                   $device.taptic(1);
+//                  alert(sender.info)
                   getAvglePreview(sender.info);
                 }
               }
@@ -2130,6 +2158,7 @@ function magnetList(code) {
                 $device.taptic(0);
                 $ui.toast("💡 磁链已复制");
                 $app.openURL("wb1307639798://");
+$app.openURL("weixin://")
               },
               pulled(sender) {
                 if ($("javbusList").data.length == 0) {
@@ -2604,42 +2633,18 @@ function actressView(actress, cover) {
             $ui.push(detailView(favCode));
             getDetail(data.link);
 
-            if (
-              $("menu").index == 0 ||
-              $("menu").index == 1 ||
-              $("menu").index == 2
-            ) {
-              // 影片和女优
+            
+            
               if (LocalFavList.indexOf(shortCode) > -1) {
                 $("favorite").title = "取消收藏";
                 $("favorite").bgcolor = $color("#f25959");
               } else if (LocalArcList.indexOf(shortCode) > -1) {
                 $("favorite").title = "已归档";
                 $("favorite").bgcolor = $color("#aaaaaa");
-              }
-            } else if ($("menu").index == 4) {
-              // 收藏
-              if (LocalFavList.indexOf(shortCode) > -1) {
-                $("favorite").title = "归档";
-              } else if (LocalArcList.indexOf(shortCode) > -1) {
-                $("favorite").title = "已归档";
-                $("favorite").bgcolor = $color("#aaaaaa");
               } else {
                 $("favorite").title = "收藏";
-              }
-            } else if ($("menu").index == 5) {
-              //归档
-              if (LocalArcList.indexOf(shortCode) > -1) {
-                $("favorite").title = "删除";
-                $("favorite").bgcolor = $color("#f25959");
-              } else {
-                if (LocalFavList.indexOf(shortCode) > -1) {
-                  $("favorite").title = "归档";
-                } else {
-                  $("favorite").title = "收藏";
-                }
-              }
-            }
+             }
+            
           }
         }
       },
@@ -3136,28 +3141,38 @@ function catCover(title) {
             };
             $ui.push(detailView(favCode));
             getDetail(data.link);
-            if (
-              $("menu").index == 0 ||
-              $("menu").index == 1 ||
-              $("menu").index == 2
-            ) {
-              if (LocalFavList.indexOf(shortCode) > -1) {
-                $("favorite").title = "取消收藏";
-                $("favorite").bgcolor = $color("#f25959");
-              } else if (LocalArcList.indexOf(shortCode) > -1) {
-                $("favorite").title = "已归档";
-                $("favorite").bgcolor = $color("#aaaaaa");
-              }
-            } else if ($("menu").index == 4) {
-              if (LocalFavList.indexOf(shortCode) > -1) {
-                $("favorite").title = "归档";
-              } else {
-                $("favorite").title = "收藏";
-              }
-            } else {
-              $("favorite").title = "删除";
-              $("favorite").bgcolor = $color("#f25959");
-            }
+            if (LocalFavList.indexOf(shortCode) > -1) {
+                            $("favorite").title = "取消收藏";
+                            $("favorite").bgcolor = $color("#f25959");
+                          } else if (LocalArcList.indexOf(shortCode) > -1) {
+                            $("favorite").title = "已归档";
+                            $("favorite").bgcolor = $color("#aaaaaa");
+                          } else {
+                          $("favorite").title = "收藏";
+                         
+                        }
+//            if (
+//              $("menu").index == 0 ||
+//              $("menu").index == 1 ||
+//              $("menu").index == 2
+//            ) {
+//              if (LocalFavList.indexOf(shortCode) > -1) {
+//                $("favorite").title = "取消收藏";
+//                $("favorite").bgcolor = $color("#f25959");
+//              } else if (LocalArcList.indexOf(shortCode) > -1) {
+//                $("favorite").title = "已归档";
+//                $("favorite").bgcolor = $color("#aaaaaa");
+//              }
+//            } else if ($("menu").index == 4) {
+//              if (LocalFavList.indexOf(shortCode) > -1) {
+//                $("favorite").title = "归档";
+//              } else {
+//                $("favorite").title = "收藏";
+//              }
+//            } else {
+//              $("favorite").title = "删除";
+//              $("favorite").bgcolor = $color("#f25959");
+//            }
           }
         }
       },
@@ -3442,7 +3457,12 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
           },
           recLabel: {
             hidden: RecAvCode.indexOf(code) > -1 ? false : true
-          }
+          },recGra: {
+                            hidden: LocalFavList.indexOf(code) > -1 ? false : true
+                          },
+                          recBlur: {
+                            hidden: LocalArcList.indexOf(code) > -1 ? false : true
+                          },
         });
       });
       $("input").placeholder = "输入番号或演员进行搜索";
@@ -3595,7 +3615,8 @@ function getJavMag(link, flag = "0") {
   });
 }
 
-function getAvglePreview(keyword) {
+function getAvglePreview(keyword,poster) {
+  
   let url =
     "https://api.avgle.com/v1/search/" +
     encodeURI(keyword) +
@@ -3626,8 +3647,9 @@ function getAvglePreview(keyword) {
         type: "video",
         props: {
           id: "player",
-          src: videoUrl
-          //poster: poster,
+          src: videoUrl,
+          poster: poster,
+          loop:true
         },
         layout: function(make, view) {
           let width = $device.info.screen.width - 16;
@@ -3645,7 +3667,8 @@ function getAvglePreview(keyword) {
           bgcolor: $color("clear")
         },
         layout: function(make, view) {
-          make.top.equalTo($("filmName").bottom).offset(6);
+//          make.top.equalTo($("filmName").bottom).offset(6);
+          make.top.equalTo($("player").top).offset(3);
           make.right.inset(11);
           make.width.equalTo(20);
           make.height.equalTo(20);
@@ -3682,7 +3705,13 @@ function getAvglePreview(keyword) {
       });
       $delay(0.5, function() {
         $("player").play();
+//        $delay(12,()=>{
+//          $("player").pause();
+//                        $("player").stopLoading();
+//                        $("player").remove();
+//        })
       });
+    
     }
   });
 }
@@ -3849,6 +3878,7 @@ function getDetail(url) {
       //        $("loadingm").text = "☹️ JavBus 暂无磁链"
       //        $("loadingm").hidden = false
       //      } else $("loadingm").hidden = true;
+      getAvglePreview(favCode,filmCover)
     }
   });
 }
@@ -4527,6 +4557,7 @@ function wechatPay() {
         title: "确定",
         handler: function() {
           let payUrl = "weixin://scanqrcode";
+          $ui.toast("赞赏码下载中...",5)
           $http.download({
             url:
               "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/wechat.jpg",
