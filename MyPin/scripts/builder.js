@@ -6,6 +6,7 @@ var editor = require("./editor");
 var aparter = require("./js-action/apart-items");
 var fontType = $cache.get("fontType")||"Courier"
 var fontSize = $cache.get("fontSize")||"13"
+
 function createClipboardView() {
   return {
     type: "list",
@@ -134,7 +135,7 @@ function createClipboardView() {
         if($app.env == $env.today){
           $("input").text = $clipboard.text;
           $device.taptic(1);
-          $("input").textColor = $color("black");
+  $("input").textColor = $clipboard.text==undefined ?$color("gray"):($clipboard.text.indexOf("\n")>=0?$color("#325793"):$color("black"))
         }
         
       },

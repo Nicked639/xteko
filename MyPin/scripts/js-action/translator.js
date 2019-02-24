@@ -1,3 +1,4 @@
+
 var languageKv = {
   "de-DE": "de",
   "en-US": "en",
@@ -86,7 +87,8 @@ function transUI() {
                 var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
                 var module = require(path);
                 module.init(mode);
-                $("input").text = $clipboard.text
+                $("input").text = $clipboard.text||"轻点输入.."
+                $("input").textColor = $clipboard.text ==undefined ?$color("gray"):($clipboard.text.indexOf("\n")>=0?$color("#325793"):$color("black"))
               }
             }
           },
@@ -440,6 +442,7 @@ function transUI() {
       }
     ]
   });
+  
 }
 
 function gtrans(text) {

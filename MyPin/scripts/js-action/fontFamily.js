@@ -66,7 +66,7 @@ function renderData(text) {
 function show(){
   $ui.push({
     props: {
-      title: "Font Family"
+      title: "字体"
     },
     views: [{
       type:"text",

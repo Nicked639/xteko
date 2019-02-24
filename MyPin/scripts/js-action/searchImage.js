@@ -1,16 +1,16 @@
 const engines = [
   {
-    name: "谷歌搜索",
+      name: "Yandex",
+      pattern: "https://www.yandex.com/images/touch/search?text=&img_url="
+    },
+    {
+    name: "Google",
     pattern: "https://images.google.com/searchbyimage?image_url="
   },
-  {
-    name: "百度搜索",
-    pattern: "http://image.baidu.com/n/pc_search?queryImageUrl="
-  },
-  {
-    name: "搜狗搜索",
-    pattern: "http://pic.sogou.com/ris?flag=1&nr=true&query="
-  }
+//  {
+//    name: "搜狗搜索",
+//    pattern: "http://pic.sogou.com/ris?flag=1&nr=true&query="
+//  }
 ]
 
 function lastImage(){
@@ -46,12 +46,16 @@ function searchImage(data) {
     url: "https://sm.ms/api/upload",
     files: [{"data": data, "name": "smfile"}],
     handler: function(resp) {
-      $ui.loading(false)
+      $ui.clearToast()
+      if(!resp.data.data){
+              alert(resp.data.msg)
+              return
+            }
       var url = resp.data.data.url
       if (url) {
         $clipboard.text = url      
-        //showEngines(url)
-        $app.openURL("https://images.google.com/searchbyimage?image_url="+$text.URLEncode(url))
+        showEngines(url)
+//        $app.openURL("https://images.google.com/searchbyimage?image_url="+$text.URLEncode(url))
         $app.close()
       }
     }
@@ -63,7 +67,8 @@ function showEngines(url) {
     items: engines.map(function(item) { return item.name }),
     handler: function(title, idx) {
       var pattern = engines[idx].pattern
-      $app.openURL(pattern + $text.URLEncode(url))
+      if(idx==0)  $app.openURL(pattern + $text.URLEncode(url)+"&rpt=imageview&redircnt=")
+      else  $app.openURL(pattern + $text.URLEncode(url))
       $app.close()
     }
   })
@@ -85,7 +90,8 @@ if (inputData) {
       switch(idx){
         case 0: 
           if(clipLink){
-                    $app.openURL("https://images.google.com/searchbyimage?image_url="+$text.URLEncode(clipLink))
+//                    $app.openURL("https://images.google.com/searchbyimage?image_url="+$text.URLEncode(clipLink))
+            showEngines(clipLink)
           } else{
             searchImage(clipData)
           }         

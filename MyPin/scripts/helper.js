@@ -18,6 +18,21 @@ function searchText(text) {
   runAction({ "pattern": pattern });
 }
 
+function runMoveAction2(action){
+  var pattern = action.pattern;
+    var hasPlaceholder = pattern.indexOf("%@") != -1;
+    var clipText = $clipboard.text || "";
+    var replacement = action.noenc ? clipText : encodeURIComponent(clipText);
+  
+    pattern = pattern.replace("%@", replacement);
+  
+    if (_hasPrefix(pattern, "keyboard:")) {
+      var shit = require("./js-action/shit");
+      shit.run();
+      return;
+    }
+}
+
 function runMoveAction(action) {
   var pattern = action.pattern;
   var hasPlaceholder = pattern.indexOf("%@") != -1;
@@ -99,11 +114,11 @@ function runLongAction(action) {
     var dic = require("./js-action/dictionary");
     let text = $clipboard.text ? $clipboard.text : "";
     dic.dic(text);
-    $("input").blur();
+//    $("input").blur();
   }
   if (_hasPrefix(pattern, "url_convert:")) {
-    //$app.openURL("douban:///search?q="+$clipboard.text)
-    $app.openURL("appleprintcenter:///");
+    $app.openURL("douban:///search?q="+encodeURI($clipboard.text))
+//    $app.openURL("appleprintcenter:///");
     return;
   }
 }
@@ -370,6 +385,7 @@ module.exports = {
   runAction: runAction,
   runLongAction: runLongAction,
   runMoveAction: runMoveAction,
+  runMoveAction2: runMoveAction2,
   blinkView: blinkView,
   makeIcon: makeIcon
 };

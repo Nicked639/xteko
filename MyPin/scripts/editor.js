@@ -9,7 +9,7 @@ function show(text) {
     type: "blur",
     props: {
       id: "mainbg",
-      style: 2
+      style: 1
     },
     views: [
       {
@@ -70,9 +70,7 @@ function show(text) {
                        
                           ? $clipboard.text
                           : "轻点输入..";
-                        $("input").textColor = $clipboard.text
-                          ? $color("darkText")
-                          : $color("gray");
+                          $("input").textColor = $clipboard.text==undefined ?$color("gray"):($clipboard.text.indexOf("\n")>=0?$color("#325793"):$color("black"))
                       } else $("tab").index = mode == "clip" ? 0 : 1;
                     }
                   ),
@@ -331,6 +329,7 @@ function iconColor(mode) {
   } else $("fav").icon = $icon("091", $color("#ed9e31"), $size(18, 18));
 }
 
+
 function saveClip(text, mode = "clip") {
   var dataManager = require("./data-manager");
   $clipboard.set({ "type": "public.plain-text", "value": text });
@@ -343,7 +342,9 @@ function saveClip(text, mode = "clip") {
   var builder = require("./builder");
   builder.reloadTextItems(mode);
   $("input").text = $clipboard.text ? $clipboard.text : "轻点输入..";
-  $("input").textColor = $clipboard.text ? $color("black") : $color("gray");
+//  $("input").textColor = $clipboard.text ? inputColor() : $color("gray");
+  $("input").textColor = $clipboard.text==undefined ?$color("gray"):($clipboard.text.indexOf("\n")>=0?$color("#325793"):$color("black"))
+  
   iconColor(mode);
 }
 

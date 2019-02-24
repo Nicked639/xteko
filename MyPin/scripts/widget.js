@@ -1,5 +1,5 @@
 $widget.height = 181;
-$keyboard.barHidden = true
+$keyboard.barHidden = false
 var dataManager = require("./data-manager");
 var builder = require("./builder");
 var helper = require("./helper");
@@ -7,6 +7,7 @@ var helper = require("./helper");
 var editor = require("./editor");
 var fontType = $cache.get("fontType")||"Courier"
 var fontSize = $cache.get("fontSize")||13
+var actionNum = $cache.get("actionNum")||7
 var views = [
   createButton(
     "091", //上传
@@ -62,7 +63,9 @@ var views = [
     function() {
       var stext = $("input").text;
       if (stext == "轻点输入..") {
-        $("input").focus();
+        
+        editor.clipEditor()
+        
       } else if ($detector.link(stext) != "") {
         $app.openURL($detector.link(stext)[0]);
       } else if ($detector.phoneNumber(stext) != "") {
@@ -75,12 +78,28 @@ var views = [
       $device.taptic(1)
       var ptext = $("input").text;
       if (ptext == "轻点输入..") {
-        $("input").focus();
+        editor.clipEditor()
       } else {
         var widgetPreview = require("./js-action/widgetprvw");
         widgetPreview.show(ptext);
-        $("input").blur();
       }
+    },
+    function(sender,location){
+      $device.taptic(1)
+            var ptext = $("input").text;
+            if (ptext == "轻点输入..") {
+              $app.openURL("aisearch://command?q=")
+            } else{
+              if(location.y>150){
+                                let s = encodeURI($clipboard.text)
+                                $app.openURL("aisearch://command?q="+s)
+                                
+                                return
+                              }else if(location.y<-100){
+                                 
+                                 return
+                               }
+            }
     }
   ),
   createButton(
@@ -141,7 +160,6 @@ var views = [
   createClipboardView(),
   createActionView()
 ];
-
 function init(mode = "clip") {
   $ui.render({
     props: {
@@ -170,7 +188,7 @@ function init(mode = "clip") {
 //    events: { tapped: handler }
 //  }
 //}
-function createButton(icon, id, layout, handler, handler2) {
+function createButton(icon, id, layout, handler, handler2,handler3) {
   return {
     type: "button",
     props: {
@@ -182,28 +200,29 @@ function createButton(icon, id, layout, handler, handler2) {
     layout: layout,
     events: {
       tapped: handler,
-      longPressed: handler2
+      longPressed: handler2,
+      touchesEnded: handler3,
     }
   };
 }
 
 function createText() {
   return {
-    type: "text",
+    type: "label",
     props: {
-      id: "input",
+      id: "fa",
       //placeholder:"轻点输入..",
-      font: $font(fontType,fontSize),
-      textColor: $clipboard.text ? $color("black") : $color("gray"),
+//      font: $font(fontType,fontSize),
+//      textColor: $clipboard.text ? $color("black") : $color("gray"),
       borderWidth: 0.4,
       borderColor: $rgba(100, 100, 100, 0.25),
       bgcolor: $rgba(200, 200, 200, 0.25),
-      text: $clipboard.text || "轻点输入..",
+//      text: $clipboard.text || "轻点输入..",
       radius: 5,
       scrollEnabled: false,
-      lines: 1,
-      insets: $insets(4, 1, 0, 0),
-      align: $align.natural
+//      lines: 1,
+//      insets: $insets(4, 1, 0, 0),
+      
       //editable: false
     },
     layout: function(make, view) {
@@ -213,10 +232,31 @@ function createText() {
       make.height.equalTo(23);
     },
     events: {
-      didBeginEditing: function(sender) {
+      tapped: function(sender) {
         editor.clipEditor($clipboard.text);
+      },
+      
+    },
+    views: [
+      {
+        type: "label",
+        props: {
+          id: "input",
+          font: $font(fontType,fontSize),
+          textColor: $clipboard.text ==undefined ?$color("gray"):($clipboard.text.indexOf("\n")>=0?$color("#325793"):$color("black")),
+          text: $clipboard.text || "轻点输入..",
+          scrollEnabled: false,
+//          lines: 1,
+          
+        },
+        layout: function(make, view) {
+          make.left.inset(6)
+          make.top.inset(3)
+          make.right.inset(5)
+          make.bottom.inset(0)
+        },
       }
-    }
+    ]
   };
 }
 
@@ -270,7 +310,7 @@ function initActionButtons() {
   var actions = dataManager.getActionItems();
   var itemHeight = 28;
   var leftView;
-  var multiplyRatio = 1.0 / Math.min(actions.length, 8);
+  var multiplyRatio = 1.0 / Math.min(actions.length, actionNum);
   var contentWidth = 0;
 
   for (var idx = 0; idx < actions.length; ++idx) {
@@ -311,7 +351,10 @@ function initActionButtons() {
             helper.runMoveAction(sender.info)
             
             return
-          }
+          }else if(location.y<-100){
+             helper.runMoveAction2(sender.info)
+             return
+           }
         }
       }
     };
