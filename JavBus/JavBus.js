@@ -31,7 +31,8 @@ By Nicked
 https://t.me/nicked
 
 */
-version = 6.4;
+
+version = 6.5;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -2994,10 +2995,10 @@ function getRec(url) {
 
 function getNewRec(mode = "Author") {
   let recUrl =
-    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Rec";
+    "https://gitlab.com/nicktimebreak/javrev/raw/master/Rec";
   let recbotUrl =
-    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/RecBot";
-  let url = mode == "Author" ? recUrl : recbotUrl;
+    "https://gitlab.com/nicktimebreak/javrev/raw/master/RecBot";
+//  let url = mode == "Author" ? recUrl : recbotUrl;
   $http.get({
     url: recUrl,
     handler: function(resp) {
@@ -4658,10 +4659,10 @@ function initial() {
   if ($cache.get("samp") === undefined) {
     readMe();
   }
-  let recUrl =
-    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Rec";
-  let recbotUrl =
-    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/RecBot";
+//  let recUrl =
+//    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Rec";
+//  let recbotUrl =
+//    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/RecBot";
   getNewRec("Author");
   //  getNewRec(recbotUrl,RecBotAv);
 }
