@@ -1,4 +1,4 @@
-# JavBus V6.6
+# JavBus V6.7
 
 欢迎使用 JavBus
 
