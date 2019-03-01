@@ -32,11 +32,13 @@ https://t.me/nicked
 
 */
 
-version = 6.5;
+version = 6.6;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
 RecAvCode = []; //推荐影片番号
+RecAuthorCode = []; //作者推荐代码
+RecBotCode = []; //网友推荐代码
 ALL = false; // 全部与收录
 ALLC = false; // 详细类目下的
 Again = 0; // 用于二次搜索
@@ -360,8 +362,8 @@ recView = {
             type: "label",
             props: {
               text: "推荐",
-              //              id: "SUB",
-              bgcolor: $color("#b20083"),
+              id: "recLabel",
+              bgcolor: $color("#f68b1f"),
               textColor: $color("white"),
               align: $align.center,
               font: $font("bold", 12),
@@ -470,6 +472,9 @@ recView = {
                           recBlur: {
                             hidden: LocalArcList.indexOf(i.code) > -1 ? false : true
                           },
+                          recLabel:{
+                            bgcolor:$color("#f68b1f")
+                          },
                           link: i.link,
                           code: i.code
                         });
@@ -489,6 +494,9 @@ recView = {
                           recBlur: {
                             hidden: LocalArcList.indexOf(i.code) > -1 ? false : true
                           },
+                          recLabel:{
+                                                      bgcolor:$color("#b20083")
+                                                    },
                           link: i.link,
                           code: i.code
                         });
@@ -2881,7 +2889,8 @@ $ui.render({
                     text: i.info
                   },
                   recLabel: {
-                    hidden: RecAvCode.indexOf(i.code) > -1 ? false : true
+                    hidden: RecAvCode.indexOf(i.code) > -1 ? false : true,
+                    bgcolor:RecAuthorCode.indexOf(i.code)>-1? $color("#f68b1f"):$color("#b20083")
                   }
                 });
               });
@@ -2923,7 +2932,8 @@ $ui.render({
                     text: i.info
                   },
                   recLabel: {
-                    hidden: RecAvCode.indexOf(i.code) > -1 ? false : true
+                    hidden: RecAvCode.indexOf(i.code) > -1 ? false : true,
+                    bgcolor:RecAuthorCode.indexOf(i.code)>-1? $color("#f68b1f"):$color("#b20083")
                   }
                 });
               });
@@ -3008,6 +3018,7 @@ function getNewRec(mode = "Author") {
       }
       RecAv.map(function(i) {
         RecAvCode = RecAvCode.concat(i.code);
+        RecAuthorCode = RecAuthorCode.concat(i.code);
       });
     }
   });
@@ -3018,6 +3029,7 @@ function getNewRec(mode = "Author") {
 
       RecBotAv.map(function(i) {
         RecAvCode = RecAvCode.concat(i.code);
+        RecBotCode = RecBotCode.concat(i.code);
       });
     }
   });
@@ -3457,7 +3469,8 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
             hidden: !sub
           },
           recLabel: {
-            hidden: RecAvCode.indexOf(code) > -1 ? false : true
+            hidden: RecAvCode.indexOf(code) > -1 ? false : true,
+            bgcolor:RecAuthorCode.indexOf(code)>-1? $color("#f68b1f"):$color("#b20083")
           },recGra: {
                             hidden: LocalFavList.indexOf(code) > -1 ? false : true
                           },
@@ -3977,7 +3990,6 @@ function getActress(url) {
         $("actressInfo2").text =
           "胸围: " + xiong + "\n\n腰围: " + yao + "\n\n臀围: " + tun;
       }
-
       var reg = /<a class="movie-box"[\s\S]*?<\/span>/g;
       var match = resp.data.match(reg);
 
@@ -4006,7 +4018,8 @@ function getActress(url) {
             hidden: LocalFavList.indexOf(code) > -1 ? false : true
           },
           recLabel: {
-            hidden: RecAvCode.indexOf(code) > -1 ? false : true
+            hidden: RecAvCode.indexOf(code) > -1 ? false : true,
+            bgcolor:RecAuthorCode.indexOf(code)>-1? $color("#f68b1f"):$color("#b20083")
           }
         });
       });
