@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 6.6;
+version = 6.7;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1782,41 +1782,46 @@ function detailView(code) {
                   $clipboard.text = sender.info;
                   $ui.toast("番号 " + sender.info + "已复制");
                 } else if (idx == 2) $share.sheet(favLink);
-                else if (idx == 3) {            
-                  let gurl = "https://script.google.com/macros/s/AKfycbx5k3R93jIBh4Wn-5knXAEsOwrY54EsngijyUAQuaXGCUzVNjBu/exec"
-                  $input.text({
-                    type: $kbType.number,
-                    placeholder: "输入密码",
-                    handler: function(text) {
-                      let payload = {
-                        pw:text,
-                        av:shareRec
-                      }
-                      //alert(payload)
-                      $device.taptic(2); 
-                      $ui.toast("影片上传中",10);
-                      $http.request({
-                        method:"POST",
-                        url: gurl,
-                        body:payload,
-                        handler: function(resp){
-                          let result = resp.data
-                          if(result == "succeed"){
-                            $ui.toast("成功！",0.5)
-                          }else if(result == 'FE'){
-                            $ui.error("上传格式错误！")
-                          }else if(result == 'RE'){
-                            $ui.error("该影片已在推荐列表！");
-                          }else if(result == "NA"){
-                            $ui.error("密码错误！")
-                          }else{
-                            $ui.error("错误代码："+result)
-                            $clipboard.text = result
-                          }
+                else if (idx == 3) { 
+                  if(RecAuthorCode.indexOf(code)>-1){
+                    $ui.error('该影片已在推荐列表！')
+                    return
+                  } else{
+                    let gurl = "https://script.google.com/macros/s/AKfycbx5k3R93jIBh4Wn-5knXAEsOwrY54EsngijyUAQuaXGCUzVNjBu/exec"
+                    $input.text({
+                      type: $kbType.number,
+                      placeholder: "输入密码",
+                      handler: function(text) {
+                        let payload = {
+                          pw:text,
+                          av:shareRec,
+                          mode:"upload"
                         }
-                      })
-                    }
-                  })
+                        //alert(payload)
+                        $device.taptic(2); 
+                        $ui.toast("影片上传中",10);
+                        $http.request({
+                          method:"POST",
+                          url: gurl,
+                          body:payload,
+                          handler: function(resp){
+                            let result = resp.data
+                            if(result == "succeed"){
+                              $ui.toast("成功！",0.5)
+                            }else if(result == 'FE'){
+                              $ui.error("上传格式错误！")
+                            }else if(result == "NA"){
+                              $ui.error("密码错误！")
+                            }else{
+                              $ui.error("错误代码："+result)
+                              $clipboard.text = result
+                            }
+                          }
+                        })
+                      }
+                    })
+                  }          
+
   
                   // let av = JSON.stringify(shareRec);
                   // $app.openURL(
@@ -1826,6 +1831,48 @@ function detailView(code) {
                 }
               }
             });
+          },
+          longPressed:(sender)=>{
+            let code = sender.sender.info
+            if(RecAuthorCode.indexOf(code)==-1){
+              $ui.error("作者未推荐")
+              return
+            }else{
+              let gurl = "https://script.google.com/macros/s/AKfycbx5k3R93jIBh4Wn-5knXAEsOwrY54EsngijyUAQuaXGCUzVNjBu/exec"
+              $input.text({
+                type: $kbType.number,
+                placeholder: "输入密码",
+                handler: function(text) {
+                  let payload = {
+                    pw:text,
+                    av:code,
+                    mode:"del"
+                  }
+                  //alert(payload)
+                  $device.taptic(2); 
+                  $ui.toast("影片删除中",10);
+                  $http.request({
+                    method:"POST",
+                    url: gurl,
+                    body:payload,
+                    handler: function(resp){
+                      let result = resp.data
+                      if(result == "succeed"){
+                        $ui.toast("成功！",0.5)
+                      }else if(result == 'FE'){
+                        $ui.error("上传格式错误！")
+                      }else if(result == "NA"){
+                        $ui.error("密码错误！")
+                      }else{
+                        $ui.error("错误代码："+result)
+                        $clipboard.text = result
+                      }
+                    }
+                  })
+                }
+              })
+            }
+            
           }
         }
       },
@@ -1888,11 +1935,14 @@ function detailView(code) {
                       return
                     }
                     let gurl = "https://script.google.com/macros/s/AKfycbxhEuyq7FZfex2drTkD0eVFkhot2hYHk5LfkiA3X3_qwhdMTNk/exec"
-                    let payload = shareRec
+                    let payload = {
+                      av: shareRec,
+                      mode:"upload"
+                    }
                     $http.request({
                       method:"POST",
                       url: gurl,
-                      form:payload,
+                      body:payload,
                       handler: function(resp){
                         let result = resp.data
                         if(result == "succeed"){
@@ -1919,6 +1969,47 @@ function detailView(code) {
               ]
             })
 
+          },
+          longPressed:(sender)=>{
+             let code = sender.sender.info
+                if(RecBotCode.indexOf(code)==-1){
+                  $ui.error("网友未推荐")
+                  return
+                }else{
+                  let gurl = "https://script.google.com/macros/s/AKfycbxhEuyq7FZfex2drTkD0eVFkhot2hYHk5LfkiA3X3_qwhdMTNk/exec"
+                  $input.text({
+                    type: $kbType.number,
+                    placeholder: "输入密码",
+                    handler: function(text) {
+                      let payload = {
+                        pw:text,
+                        av:code,
+                        mode:"del"
+                      }
+                      //alert(payload)
+                      $device.taptic(2); 
+                      $ui.toast("影片删除中",10);
+                      $http.request({
+                        method:"POST",
+                        url: gurl,
+                        body:payload,
+                        handler: function(resp){
+                          let result = resp.data
+                          if(result == "succeed"){
+                            $ui.toast("成功！",0.5)
+                          }else if(result == 'FE'){
+                            $ui.error("上传格式错误！")
+                          }else if(result == "NA"){
+                            $ui.error("密码错误！")
+                          }else{
+                            $ui.error("错误代码："+result)
+                            $clipboard.text = result
+                          }
+                        }
+                      })
+                    }
+                  })
+                }
           }
         }
       },
