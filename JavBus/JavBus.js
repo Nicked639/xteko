@@ -32,7 +32,7 @@ https://t.me/nicked
 
 */
 
-version = 6.7;
+version = 7.0;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1575,7 +1575,7 @@ function detailView(code) {
             //$ui.action(favCode)
             let favCode= code
             $ui.menu({
-              items: ["磁链", "Avgle", "nyaa", "JavLibrary"],
+              items: ["磁链", "Avgle", "nyaa", "JaponX","JavLibrary"],
               handler: function(title, idx) {
                 if (idx == 0) {
                   if (JavMag == 0) {
@@ -1635,7 +1635,9 @@ function detailView(code) {
                   $app.openURL(
                     "https://sukebei.nyaa.si/?q=" + favCode + "&f=0&c=0_0"
                   );
-                } else if (idx == 3) {
+                } else if (idx ==3){
+                  $app.openURL("https://www.japonx.tv/portal/index/search.html?k="+favCode+"&x=0&y=0")
+                } else if (idx == 4) {
                   $app.openURL(
                     "http://www.javlibrary.com/cn/vl_searchbyid.php?keyword=" +
                       favCode
@@ -1672,7 +1674,7 @@ function detailView(code) {
             //            $app.tips("预览视频来自 Avgle，请将 Avgle.com 加入代理");
             showTips("preview", "预览视频来自 Avgle，请将 Avgle.com 加入代理");
             $ui.menu({
-              items: ["样品图像", "八秒视频"],
+              items: ["样品图像", "八秒视频","完整视频"],
               handler: function(title, idx) {
                 if (idx == 0) {
                   if (screenData == "no") {
@@ -1686,6 +1688,8 @@ function detailView(code) {
                   $device.taptic(1);
 //                  alert(sender.info)
                   getAvglePreview(sender.info);
+                } else if(idx == 2){
+                  JaponX(favCode,name,1)
                 }
               }
             });
@@ -3742,7 +3746,7 @@ function getAvglePreview(keyword,poster) {
       let video_num = resp.data.response.total_videos;
       //      $console.log(video_num)
       if (video_num == 0) {
-        $ui.error("☹️ 暂无视频资源！");
+        //$ui.error("☹️ 暂无视频资源！");
         $ui.loading(false);
         return;
       }
@@ -3839,7 +3843,8 @@ function getDetail(url) {
       if (match) {
         $("whoInFilm").hidden = false;
         match.map(function(i) {
-          var name = /<span>(.*?)<\/span>/.exec(i)[1];
+          name = /<span>(.*?)<\/span>/.exec(i)[1];
+          
           var nameLink = /href="([\s\S]*?)(")/.exec(i)[1];
           var nameImage = /<img src="([\s\S]*?)(")/.exec(i)[1];
           //$ui.action(nameImage)
@@ -3853,6 +3858,7 @@ function getDetail(url) {
             }
           });
         });
+        JaponX(favCode,name,0)
       } else {
         $("whoInFilm").hidden = true;
       }
@@ -4870,6 +4876,129 @@ function readMe() {
     }
   });
 }
+
+function JaponX(code,name,flag){
+  $http.get({
+    url:"https://www.japonx.tv/portal/index/search.html?k="+code+"&x=0&y=0",
+    handler:function(resp){
+      let data = resp.data
+      let regID = /portal\/index\/detail\/id\/(\d+).html/gm
+      let idArray = data.match(regID)
+      if(!idArray){
+        if(flag==1) $ui.error("未找到影片！")
+        return
+      }
+      let regYanyuan = /\/portal\/index\/search\/yanyuan_id\/\d+.html">.*<\/a>/gm
+      let yanyuanArray = data.match(regYanyuan)
+      let len = yanyuanArray.length
+      for(let i=0;i<len;i++){
+        if(yanyuanArray[i].indexOf(name)>0){
+          console.log(i)
+          let id = regID.exec(idArray[i])[1]
+          console.log(id)
+          if (flag==0) $ui.toast("可播放完整影片！")
+          geturl(id)
+          return
+        }
+      }
+      if(flag==1) $ui.error("未找到影片！")
+      return
+    }
+  })
+}
+
+
+function geturl(id) {
+  $ui.loading(true);
+  $http.get({
+    url: "https://www.japonx.tv/portal/index/ajax_get_js.html?id=" + id,
+    handler: function (resp) {
+      $ui.loading(false);
+      var arr = resp.data;
+      var fg1 = arr.split("p}('")[1]
+      var fg2 = fg1.split("}});")[0] + "}});";
+      var k = "|" + arr.match(/\,\'\|(\S*?).split/)[1];
+      var tk = k.split('|');
+      var ac = arr.match(/\}\)\;\'\,(\S*?)\,/)[1];
+      urljs(tk, ac, fg2)
+    }
+  });
+}
+
+function urljs(tk, ac, fg2) {
+  var aa = function (p, a, c, k, e, d) { e = function (c) { return (c < a ? '' : e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36)) }; if (!''.replace(/^/, String)) { while (c--) { d[e(c)] = k[c] || e(c) } k = [function (e) { return d[e] }]; e = function () { return '\\w+' }; c = 1 }; while (c--) { if (k[c]) { p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]) } } return p }(fg2, ac, ac, tk, 0, {});
+  var url = aa.match(/url:\\\'(\S*?)\\\'/)[1];
+  url = url.replace(/\'/g, "");
+  $clipboard.text =url
+  play(url)
+}
+
+function play(url) {
+  if ($("player")) {
+          $("player").pause();
+          $("player").stopLoading();
+          $("player").remove();
+        }
+   $("detailView").add({
+           type: "video",
+           props: {
+             id: "player",
+             src: url,
+             //poster: poster,
+             loop:true
+           },
+           layout: function(make, view) {
+             let width = $device.info.screen.width - 16;
+             let height = (width * 67) / 100;
+             make.centerX.equalTo();
+             make.top.equalTo($("filmName").bottom).offset(5);
+             make.size.equalTo($size(width, height));
+           }
+         });
+      $("detailView").add({
+              type: "button",
+              props: {
+                title: "X",
+                id: "X",
+                bgcolor: $color("clear")
+              },
+              layout: function(make, view) {
+      //          make.top.equalTo($("filmName").bottom).offset(6);
+                make.top.equalTo($("player").top).offset(3);
+                make.right.inset(11);
+                make.width.equalTo(20);
+                make.height.equalTo(20);
+              },
+              events: {
+                tapped(sender) {
+                  if ($("player")) {
+                    $("player").pause();
+                    $("player").stopLoading();
+                    $("player").remove();
+                  }
+                  $("X").hidden = true;
+                }
+              }
+            });
+            $delay(0.5, function() {
+                    $("player").play();
+                  });
+//  $ui.render({
+//    props: {
+//      title: "JavBus"
+//    },
+//    views: [{
+//      type: "web",
+//      props: {
+//        id: "japronx",
+//        url: url
+//      },
+//      layout: $layout.fill
+//    },
+//    ]
+//  });
+}
+
 
 function main(url) {
   page = 0;
