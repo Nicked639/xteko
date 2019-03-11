@@ -1784,7 +1784,7 @@ function detailView(code) {
                 if (idx == 0) $app.openURL(favLink);
                 else if (idx == 1) {
                   $clipboard.text = sender.info;
-                  $ui.toast("番号 " + sender.info + "已复制");
+                  $ui.toast("番号 " + sender.info + " 已复制");
                 } else if (idx == 2) $share.sheet(favLink);
                 else if (idx == 3) { 
                   if(RecAuthorCode.indexOf(code)>-1){
