@@ -1687,7 +1687,7 @@ function detailView(code) {
                 } else if (idx == 1) {
                   $device.taptic(1);
 //                  alert(sender.info)
-                  getAvglePreview(sender.info);
+                  getAvglePreview(sender.info,filmCover,1);
                 } else if(idx == 2){
                   JaponX(favCode,name,1)
                 }
@@ -1696,7 +1696,7 @@ function detailView(code) {
           },
           longPressed(sender) {
             $device.taptic(1);
-            getAvglePreview(sender.sender.info);
+            getAvglePreview(sender.sender.info,filmCover,1);
           }
         }
       },
@@ -3724,7 +3724,7 @@ function getJavMag(link, flag = "0") {
   });
 }
 
-function getAvglePreview(keyword,poster) {
+function getAvglePreview(keyword,poster,flag) {
   
   let url =
     "https://api.avgle.com/v1/search/" +
@@ -3746,7 +3746,7 @@ function getAvglePreview(keyword,poster) {
       let video_num = resp.data.response.total_videos;
       //      $console.log(video_num)
       if (video_num == 0) {
-        //$ui.error("☹️ 暂无视频资源！");
+        if(flag==1) $ui.error("☹️ 暂无视频资源！");
         $ui.loading(false);
         return;
       }
@@ -3863,7 +3863,7 @@ function getDetail(url) {
         $("whoInFilm").hidden = true;
       }
       // 影片详情
-      var filmCover = /<a class="bigImage" href="(.*?)"/.exec(resp.data)[1];
+      filmCover = /<a class="bigImage" href="(.*?)"/.exec(resp.data)[1];
       $("filmCover").src = filmCover;
       var filmName = /<a class="bigImage" href="(.*?)" title="(.*?)"/.exec(
         resp.data
@@ -4943,7 +4943,7 @@ function play(url) {
            props: {
              id: "player",
              src: url,
-             //poster: poster,
+             poster: filmCover,
              loop:true
            },
            layout: function(make, view) {
