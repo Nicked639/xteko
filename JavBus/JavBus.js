@@ -25,6 +25,10 @@
 
 8. 支持剪贴板与分享扩展检测
 
+9. 支持推荐分享私人珍藏经典好片
+
+10. 支持部分影视作品的无删减浏览
+
 
 By Nicked
 
@@ -32,7 +36,7 @@ https://t.me/nicked
 
 */
 
-version = 7.0;
+version = 7.1;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1770,7 +1774,7 @@ function detailView(code) {
         events: {
           tapped(sender) {
             //$clipboard.text = favCode
-            let items = ["打开 Safari", "复制番号", "分享链接", "作者推荐"];
+            let items = ["JSBox 分享", "复制番号", "分享链接", "作者推荐"];
             let shareRec = {
               code: sender.info,
               info: sender.info + " | " + nowTime(),
@@ -1781,7 +1785,9 @@ function detailView(code) {
             $ui.menu({
               items: items,
               handler: function(title, idx) {
-                if (idx == 0) $app.openURL(favLink);
+                if (idx == 0) {
+                  $share.sheet("jsbox://run?name=JavBus&code="+sender.info)
+                }
                 else if (idx == 1) {
                   $clipboard.text = sender.info;
                   $ui.toast("番号 " + sender.info + " 已复制");
@@ -2040,10 +2046,7 @@ function detailView(code) {
           tapped(sender) {
             //$clipboard.text = favCode
             $app.openURL(
-              "jsbox://run?name=JavBus&code=" +
-                $("share").info +
-                "&link=" +
-                favLink
+              "jsbox://run?name=JavBus&code=" + $("share").info 
             );
           }
         }
@@ -4838,8 +4841,9 @@ function jsDetect() {
   return false;
 }
 
-function openJS(code, link) {
+function openJS(code) {
   $ui.push(detailView(code));
+  let link = "https://www.javbus.com/"+code
   getDetail(link);
   getInitial();
 }
@@ -5013,7 +5017,7 @@ function main(url) {
   if ($context.query.code) {
     let code = $context.query.code;
     favCode = code;
-    openJS(code, $context.query.link);
+    openJS(code);
     if (LocalFavList.indexOf(code) > -1) {
       $("favorite").title = "取消收藏";
       $("favorite").bgcolor = $color("#f25959");
