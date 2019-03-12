@@ -36,7 +36,7 @@ https://t.me/nicked
 
 */
 
-version = 7.1;
+version = 7.2;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -58,7 +58,6 @@ JavMag = 0; // 磁链获取状态
 Timeout = 10;
 flag = 0; // 用于判断从通知中心启动的状态
 if (isInToday()) runWhere();
-
 var colorData = [
   [$color("#fd354a"), $color("#da0a6f")],
   [$color("#f97227"), $color("#f52156")],
@@ -1727,9 +1726,10 @@ function detailView(code) {
         events: {
           tapped(sender) {
             let data = {};
-            if ($context.query.code && flag == 1)
+            if ($context.query.code && isInToday())
               data = $cache.get("cacheData");
             else data = favData;
+        
             if ($("favorite").title == "收藏") {
               $("favorite").title = "取消收藏";
               $("favorite").bgcolor = $color("#f25959");
@@ -1786,7 +1786,15 @@ function detailView(code) {
               items: items,
               handler: function(title, idx) {
                 if (idx == 0) {
-                  $share.sheet("https://nicktimebreak.github.io/JSB2JB?code="+sender.info)
+                  
+                  let url = "https://nicktimebreak.github.io/JSB2JB?code="+sender.info
+                  $http.shorten({
+                    url: url,
+                    handler: function(url) {
+                      $share.sheet(url)
+                    }
+                  })
+                  
                 }
                 else if (idx == 1) {
                   $clipboard.text = sender.info;
@@ -3101,37 +3109,6 @@ function getRec(url) {
   });
 }
 
-function getNewRec(mode = "Author") {
-  let recUrl =
-    "https://gitlab.com/nicktimebreak/javrev/raw/master/Rec";
-  let recbotUrl =
-    "https://gitlab.com/nicktimebreak/javrev/raw/master/RecBot";
-//  let url = mode == "Author" ? recUrl : recbotUrl;
-  $http.get({
-    url: recUrl,
-    handler: function(resp) {
-      RecAv = resp.data;
-      if (recommend < RecAv.length) {
-        $("newIcon").hidden = false;
-      }
-      RecAv.map(function(i) {
-        RecAvCode = RecAvCode.concat(i.code);
-        RecAuthorCode = RecAuthorCode.concat(i.code);
-      });
-    }
-  });
-  $http.get({
-    url: recbotUrl,
-    handler: function(resp) {
-      RecBotAv = resp.data;
-
-      RecBotAv.map(function(i) {
-        RecAvCode = RecAvCode.concat(i.code);
-        RecBotCode = RecBotCode.concat(i.code);
-      });
-    }
-  });
-}
 
 function aboutMag() {
   $ui.push(magnetList(favCode));
@@ -3465,6 +3442,8 @@ function getJavLib() {
     }
   });
 }
+
+
 
 function getInitial(mode = "home", keyword = "", caturl = "") {
   page++;
@@ -4841,11 +4820,66 @@ function jsDetect() {
   return false;
 }
 
+function getNewRec(mode = "Author") {
+  let recUrl =
+    "https://gitlab.com/nicktimebreak/javrev/raw/master/Rec";
+  let recbotUrl =
+    "https://gitlab.com/nicktimebreak/javrev/raw/master/RecBot";
+//  let url = mode == "Author" ? recUrl : recbotUrl;
+  $http.get({
+    url: recUrl,
+    handler: function(resp) {
+      RecAv = resp.data;
+      if (recommend < RecAv.length) {
+        $("newIcon").hidden = false;
+      }
+      RecAv.map(function(i) {
+        RecAvCode = RecAvCode.concat(i.code);
+        RecAuthorCode = RecAuthorCode.concat(i.code);
+      });
+      $cache.set("RecAvCode",RecAvCode)
+    }
+  });
+  $http.get({
+    url: recbotUrl,
+    handler: function(resp) {
+      RecBotAv = resp.data;
+
+      RecBotAv.map(function(i) {
+        RecAvCode = RecAvCode.concat(i.code);
+        RecBotCode = RecBotCode.concat(i.code);
+      });
+      $cache.set("RecAvCode",RecAvCode)
+    }
+  });
+}
+
+
 function openJS(code) {
+  getOpenData(code)
   $ui.push(detailView(code));
   let link = "https://www.javbus.com/"+code
   getDetail(link);
   getInitial();
+}
+
+function getOpenData(code){
+  let url = encodeURI("https://www.javbus.com/search/" + code + "/");
+  $http.request({
+    url:url,
+    handler: function(resp){
+      let data =resp.data
+      var image = /photo-frame">[\s\S]*?<img src="([\s\S]*?)(")/.exec(data)[1];
+              
+              var date = /\/\s<date>(.*?)<\/date><\/span>/.exec(data)[1];
+       favData = {
+                         code: code,
+                         info:code+" | "+date,
+                         src:image,
+                         shortCode: code
+                       };
+    }
+  })
 }
 
 function nowTime() {
@@ -4905,7 +4939,7 @@ function JaponX(code,name,flag){
           return
         }
       }
-      if(flag==1) $ui.error("未找到影片！")
+      if(flag==1) $ui.error("未找到影片 ！")
       return
     }
   })
@@ -5017,6 +5051,11 @@ function main(url) {
   if ($context.query.code) {
     let code = $context.query.code;
     favCode = code;
+    
+//    $delay(1,function(){
+//      openJS(code)
+//    })
+    RecAvCode = $cache.get("RecAvCode")
     openJS(code);
     if (LocalFavList.indexOf(code) > -1) {
       $("favorite").title = "取消收藏";
