@@ -1774,7 +1774,7 @@ function detailView(code) {
         events: {
           tapped(sender) {
             //$clipboard.text = favCode
-            let items = ["JSBox 分享", "复制番号", "分享链接", "作者推荐"];
+            let items = ["分享 JSBox 链接", "复制番号", "分享原链", "作者推荐"];
             let shareRec = {
               code: sender.info,
               info: sender.info + " | " + nowTime(),
@@ -1786,7 +1786,7 @@ function detailView(code) {
               items: items,
               handler: function(title, idx) {
                 if (idx == 0) {
-                  $share.sheet("jsbox://run?name=JavBus&code="+sender.info)
+                  $share.sheet("https://nicktimebreak.github.io/JSB2JB?code="+sender.info)
                 }
                 else if (idx == 1) {
                   $clipboard.text = sender.info;
