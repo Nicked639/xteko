@@ -36,7 +36,7 @@ https://t.me/nicked
 
 */
 
-version = 7.2;
+version = 7.3;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -3790,7 +3790,13 @@ function getAvglePreview(keyword,poster,flag) {
         },
         events: {
           tapped(sender) {
-            $share.sheet([videoUrl]);
+            $ui.menu({
+              items:["nplayer打开","分享链接"],
+              handler:function(title,idx){
+                if(idx==0) $app.openURL("nplayer-"+videoUrl)
+                else if(idx==1) $share.sheet([videoUrl]);
+              }
+            })
           }
         }
       });
@@ -5017,6 +5023,31 @@ function play(url) {
                 }
               }
             });
+            $("detailView").add({
+                    type: "button",
+                    props: {
+                      title: "↗",
+                      id: "shareVideo",
+                      bgcolor: $color("clear")
+                    },
+                    layout: function(make, view) {
+                      make.top.equalTo($("player").bottom).offset(-20);
+                      make.right.inset(11);
+                      make.width.equalTo(20);
+                      make.height.equalTo(20);
+                    },
+                    events: {
+                      tapped(sender) {
+                        $ui.menu({
+                          items:["nplayer打开","分享链接"],
+                          handler:function(title,idx){
+                            if(idx==0) $app.openURL("nplayer-"+url)
+                            else if(idx==1) $share.sheet([url]);
+                          }
+                        })
+                      }
+                    }
+                  });
             $delay(0.5, function() {
                     $("player").play();
                   });
