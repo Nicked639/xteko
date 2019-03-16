@@ -251,6 +251,7 @@ function transUI() {
                 events: {
                   tapped(sender) {
                     var ttext = $("transinput").text;
+                    $device.taptic(0)
                     if (ttext == "") {
                       return;
                     } else {
@@ -268,6 +269,27 @@ function transUI() {
                                       $("input").text = $clipboard.text
                                       $ui.toast("翻译结果已复制",0.3)
                     }
+                  },
+                  longPressed(sender){
+                    $device.taptic(0)
+                    var ttext = $("Pinyin").text;
+                                        if (ttext == "") {
+                                          return;
+                                        } else {
+                                          $clipboard.set({
+                                            "type": "public.plain-text",
+                                            "value": ttext
+                                          });
+                                          $("mainbg").remove();
+                                          $widget.height=181
+                                                          var dataManager = require("../data-manager");
+                                                          dataManager.init(mode);
+                                                          var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
+                                                          var module = require(path);
+                                                          module.init(mode);
+                                                          $("input").text = $clipboard.text
+                                                          $ui.toast("翻译结果已复制",0.3)
+                                        }
                   }
                 }
               },
