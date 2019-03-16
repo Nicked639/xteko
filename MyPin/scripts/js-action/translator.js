@@ -166,7 +166,7 @@ function transUI() {
                     type: "text",
                     props: {
                       id: "originput",
-                      font: $font(12),
+                      font: $font(14),
                       bgcolor: $color("clear")
                     },
                     layout: function(make, view) {
@@ -202,11 +202,25 @@ function transUI() {
                     props: {
                       id: "transinput",
                       editable: false,
-                      font: $font(12),
+                      font: $font(14),
                       bgcolor: $color("clear")
                     },
                     layout: function(make, view) {
                       make.left.right.top.inset(0);
+                      make.bottom.inset(5);
+                    }
+                  },{
+                    type: "text",
+                    props: {
+                      id: "Pinyin",
+                      editable: false,
+                      font: $font(12),
+                      bgcolor: $color("clear"),
+                      textColor:$color("gray")
+                    },
+                    layout: function(make, view) {
+                      make.left.right.inset(0);
+                      make.top.inset(135)
                       make.bottom.inset(5);
                     }
                   }
@@ -474,31 +488,63 @@ function cnTest() {
 function translate() {
   $ui.loading("Translating...");
   $http.request({
-    method: "POST",
-    url: "http://translate.google.cn/translate_a/single",
+    method: "GET",
+    url: `https://translate.google.cn/translate_a/single?client=it&dt=t&dt=rmt&dt=bd&dt=rms&dt=qca&dt=ss&dt=md&dt=ld&dt=ex&otf=2&dj=1&q=${$text.URLEncode($("originput").text)}&hl=zh-CN&ie=UTF-8&oe=UTF-8&sl=${origLg}&tl=${transLg}`,
     header: {
-      "User-Agent": "iOSTranslate",
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: {
-      "dt": "t",
-      "q": $("originput").text,
-      "tl": transLg,
-      "ie": "UTF-8",
-      "sl": origLg,
-      "client": "ia",
-      "dj": "1"
-    },
+                "User-Agent": "GoogleTranslate/5.27.59117 (iPhone; iOS 12.2; en; iPhone10,3)"
+            },
+//    url: "http://translate.google.cn/translate_a/single",
+//    header: {
+//      "User-Agent": "iOSTranslate",
+//      "Content-Type": "application/x-www-form-urlencoded"
+//    },
+//    body: {
+//      "dt": "t",
+//      "q": $("originput").text,
+//      "tl": transLg,
+//      "ie": "UTF-8",
+//      "sl": origLg,
+//      "client": "ia",
+//      "dj": "1"
+//    },
     handler: function(resp) {
       $ui.loading(false);
-      var data = resp.data.sentences;
+//      var data = resp.data.sentences;
       var orig = "";
       var trans = "";
-      data.forEach(e => {
-        orig = orig.concat(e.orig + "\n");
-        trans = trans.concat(e.trans + "\n");
-      });
-      var src = resp.data.src || data.src;
+      var SPinyin = "";
+      var TPinyin = ""
+//      data.forEach(e => {
+//        orig = orig.concat(e.orig + "\n");
+//        //trans = trans.concat(e.trans + "\n");
+//        
+//      });
+       let results = resp.data
+       if (results.sentences) {
+              let sentences = results.sentences
+              let sentencesText = ""
+              let translitText = ""
+              let src_translitText = ""
+              for (let i in sentences) {
+                  orig = orig+sentences[i].orig +"\n"
+                  if (sentences[i].src_translit) {
+                      src_translitText = src_translitText + sentences[i].src_translit + "\n"
+                      SPinyin = src_translitText
+                  }
+                  if (sentences[i].translit) {
+                      translitText = translitText + sentences[i].translit + "\n"
+                      TPinyin = translitText
+                  }
+                  if (sentences[i].trans) {
+                      sentencesText = sentencesText + sentences[i].trans
+                      trans = sentencesText
+                  }
+              }
+          }
+      if(SPinyin) $("Pinyin").text = SPinyin
+      else $("Pinyin").text = TPinyin
+//      $clipboard.text=JSON.stringify(data)
+      var src = results.src || results.sentences.src;
       if (src == "en" || src == "es" || src == "fr" || src == "pt") {
         if (origLg == "auto") {
           $("origbtn").title = $l10n(getKeyByValue(src));
