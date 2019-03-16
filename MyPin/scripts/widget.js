@@ -87,16 +87,17 @@ var views = [
     function(sender,location){
       $device.taptic(1)
             var ptext = $("input").text;
+            let s = encodeURI($clipboard.text)
             if (ptext == "轻点输入..") {
               $app.openURL("aisearch://command?q=")
             } else{
               if(location.y>150){
-                                let s = encodeURI($clipboard.text)
+                                
                                 $app.openURL("aisearch://command?q="+s)
                                 
                                 return
-                              }else if(location.y<-100){
-                                 
+                              }else if(location.y<-60){
+           $app.openURL("https://www.startpage.com/do/search?query="+s)                      
                                  return
                                }
             }
