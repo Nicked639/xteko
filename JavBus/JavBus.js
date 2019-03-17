@@ -36,7 +36,7 @@ https://t.me/nicked
 
 */
 
-version = 7.3;
+version = 7.31;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
