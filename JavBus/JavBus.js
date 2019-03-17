@@ -299,7 +299,7 @@ recView = {
     {
       type: "button",
       props: {
-        title: "JavLibrary",
+        title: "联系作者",
         titleColor: $color("black"),
         font: $font(13),
         bgcolor: $color("#f3f3f3"),
@@ -319,11 +319,12 @@ recView = {
       },
       events: {
         tapped(sender) {
-          $safari.open({
-            url: "http://www.javlibrary.com/cn/vl_bestrated.php"
-          });
+//          $safari.open({
+//            url: "http://www.javlibrary.com/cn/vl_bestrated.php"
+//          });
           //$("JavBus").add(webview)
           //$("recView").remove()
+          $app.openURL("https://t.me/nicked")
         }
       }
     },
@@ -432,6 +433,12 @@ recView = {
           } else {
             $("favorite").title = "收藏";
           }
+        },
+        pulled: function(sender) {
+//                $ui.toast("打开 Javlibrary") 
+                  $safari.open({
+                    url: "http://www.javlibrary.com/cn/vl_bestrated.php"
+                  });
         }
       },
       layout: function(make, view) {
@@ -716,10 +723,12 @@ function searchView(height, catname, cols = 3, spa = 1) {
           pulled(sender) {
             $("initialView").endRefreshing();
             $ui.menu({
-              items: ["微信赞赏"],
+              items: ["微信赞赏","联系作者"],
               handler: function(title, idx) {
                 if (idx == 0) {
                   wechatPay();
+                }else if(idx==1){
+                 $app.openURL("https://t.me/nicked")
                 }
               }
             });
