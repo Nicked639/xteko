@@ -379,7 +379,7 @@
          $("contentView").remove();
          contentExist = false;
          $ui.menu({
-           items: ["领门店红包", "微信", "使用提示"],
+           items: ["领门店红包", "微信赞赏","联系作者","使用提示"],
            handler: function(title, idx) {
              switch (idx) {
                case 0:
@@ -389,6 +389,9 @@
                  wechatPay()
                  break;
                case 2:
+                 $app.openURL("https://t.me/nicked")
+                 break;
+               case 3:
                  tutorial();
                  break;
              }
