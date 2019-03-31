@@ -1,46 +1,48 @@
-let location = $context.safari.items.location.href
-let url =
-  "https://2tool.top/kuaizhao.php?k="+encodeURI(location);
-var idArray = []
+let link = "";
+if ($context.safari) {
+  let location = $context.safari.items.location.href;
+  link = "https://2tool.top/kuaizhao.php?k=" + encodeURI(location);
+}
+var url = link ? link : $clipboard.link;
+if (!url) {
+  $ui.error("请输入有效网址");
+  return;
+}
+var idArray = [];
 var items = [];
 $http.get({
-  url:url,
-  handler:function(resp){
-    console.log(resp.data)
-    let reg = /doLoadKz\('(.*?)',"(.*?)",\d\);/g
-    let result = resp.data.match(reg)
-    console.log(result)
-    result.map(getId)
-    console.log(idArray)
-    
+  url: url,
+  handler: function(resp) {
+    console.log(resp.data);
+    let reg = /doLoadKz\('(.*?)',"(.*?)",\d\);/g;
+    let result = resp.data.match(reg);
+    console.log(result);
+    result.map(getId);
+    console.log(idArray);
+
     let id = [
       {
-        id:
-          idArray[0]+"&num=1",
+        id: idArray[0] + "&num=1",
         name: "百度"
       },
       {
-        id:
-          idArray[1]+"&num=2",
+        id: idArray[1] + "&num=2",
         name: "搜狗"
       },
       {
-        id:
-          idArray[2]+"&num=3",
+        id: idArray[2] + "&num=3",
         name: "360"
       },
       {
-        id:
-          idArray[3]+"&num=4",
+        id: idArray[3] + "&num=4",
         name: "Bing"
       },
       {
-        id:
-          idArray[4]+"&num=5",
+        id: idArray[4] + "&num=5",
         name: "Google"
       }
     ];
-    
+
     id.map(doLoadKz);
     $delay(1.5, () => {
       $ui.clearToast();
@@ -54,12 +56,12 @@ $http.get({
       });
     });
   }
-})
+});
 
-function getId(preId){
-  let idReg = /doLoadKz\('(.*?)',/g
-  let id = idReg.exec(preId)[1]
-  idArray.push(id)
+function getId(preId) {
+  let idReg = /doLoadKz\('(.*?)',/g;
+  let id = idReg.exec(preId)[1];
+  idArray.push(id);
 }
 
 async function doLoadKz(obj) {
@@ -80,4 +82,3 @@ async function doLoadKz(obj) {
   //  console.log(items)
   //  $app.openURL(encodeURI(result))
 }
-
