@@ -28,9 +28,9 @@ $ui.menu({
   handler: async function(title, idx) {
     if (idx == 0) {
       //      $safari.inject(fireBugLite);
-      let url = $context.safari.items.location.href;
-      let resp = await $http.get(url);
-      $clipboard.text = resp.data;
+      //let url = $context.safari.items.location.href;
+      //let resp = await $http.get(url);
+      $clipboard.text = items.source//resp.data;
       $ui.toast("网页源码已复制");
       //alert(resp.data)
       let textastic =
