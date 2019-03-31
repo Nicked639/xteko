@@ -1,13 +1,15 @@
 let link = "";
 if ($context.safari) {
-  let location = $context.safari.items.location.href;
-  link = "https://2tool.top/kuaizhao.php?k=" + encodeURI(location);
+  link = $context.safari.items.location.href;
+  
 }
 var url = link ? link : $clipboard.link;
+
 if (!url) {
   $ui.error("请输入有效网址");
   return;
 }
+url = "https://2tool.top/kuaizhao.php?k=" + encodeURI(url);
 var idArray = [];
 var items = [];
 $http.get({
