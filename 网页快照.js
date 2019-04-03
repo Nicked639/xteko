@@ -3,13 +3,13 @@ if ($context.safari) {
   link = $context.safari.items.location.href;
   
 }
-var url = link ? link : $clipboard.link;
+var surl = link ? link : $clipboard.link;
 
-if (!url) {
+if (!surl) {
   $ui.error("请输入有效网址");
   return;
 }
-url = "https://2tool.top/kuaizhao.php?k=" + encodeURI(url);
+let url = "https://2tool.top/kuaizhao.php?k=" + encodeURI(surl);
 var idArray = [];
 var items = [];
 $http.get({
@@ -48,6 +48,10 @@ $http.get({
     id.map(doLoadKz);
     $delay(1.5, () => {
       $ui.clearToast();
+      items.push({
+        name:"Archive",
+        link:"https://web.archive.org/web/*/"+surl
+      })
       $ui.menu({
         items: items.map(function(item) {
           return item.name;
