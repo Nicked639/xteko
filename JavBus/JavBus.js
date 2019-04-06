@@ -1511,7 +1511,8 @@ function detailView(code) {
                   },
                   layout: function(make, view) {
                     make.left.right.top.inset(3);
-                    make.height.equalTo(80);
+//                    make.height.equalTo(80);
+make.bottom.inset(15)
                   }
                 },
                 {
@@ -1701,6 +1702,7 @@ function detailView(code) {
 //                  alert(sender.info)
                   getAvglePreview(sender.info,filmCover,1);
                 } else if(idx == 2){
+                  $device.taptic(1)
                   JaponX(favCode,name,1)
                 }
               }
@@ -4949,7 +4951,12 @@ function JaponX(code,name,flag){
           console.log(i)
           let id = regID.exec(idArray[i])[1]
           console.log(id)
-          if (flag==0) $ui.toast("可播放完整影片！")
+          if (flag==0) {
+            $ui.toast("可预览完整影片！",0.8)
+            $("check").bgcolor=$color("tint")
+            $("check").titleColor=$color("white")
+            return
+          }
           geturl(id)
           return
         }
