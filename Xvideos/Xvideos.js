@@ -21,7 +21,7 @@
 
    */
 
-version = 1.7
+version = 1.8
 
 var scale = 600 / 337;
 const searchPreview = {
@@ -45,7 +45,7 @@ const searchPreview = {
         type: "text",
         props: {
           id: "title",
-          font: $font("blod", 16),
+          font: $font("bold", 16),
           insets: $insets(0, 0, 5, 0),
           userInteractionEnabled: false
         },
@@ -617,11 +617,11 @@ const localVideoListView = {
     pulled(sender) {
           $("localFavVideoList").endRefreshing()
           $ui.menu({
-            items: ["微信打赏"],
+            items: ["微信赞赏"],
             handler: function(title, idx) {
               if (idx == 0) {
                 wechatPay()
-              }
+              } 
             }
           })
         },
@@ -1137,11 +1137,20 @@ function getSearchVideoList() {
         var time = /<span\sclass="duration">([\s\S]*?)<\/span>/.exec(i)[1];
         
 //        var views = /\d*?.\sViews/.exec(i)[0];
-var views = /duration">[\s\S]*?\s(\d{1,3}\.?\d?[kM]?)\s/.exec(i)[1]
+//var views = /duration">[\s\S]*?\s(\d{1,3}\.?\d?[kM]?)\s/.exec(i)[1]
+
+var views = ""
+console.log(i)
+if(i.match( /<\/span>\s(\d{1,3}\.?\d?[kM]?)\s<span class="sprfluous">Views/g)) views = /<\/span>\s(\d{1,3}\.?\d?[kM]?)\s<span class="sprfluous">Views/.exec(i)[1]
+
         var url = /<a\shref="(.*?)">/.exec(i)[1];
 
         var image = /data-src="(.*?)"/.exec(i)[1].replace("thumbs169", "thumbs169lll").replace("THUMBNUM", "20");
-        var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
+        var title = /<p><a href=".*?title="(.*?)"/.exec(i)[1]
+        var test= i.match(/title="(.+)">\1/)
+        console.log(test)
+//        var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
+        
         try {
           var tag = /<span\sclass="video-hd-mark">(.*?)<\/span>/.exec(i)[1]
         } catch (error) {
@@ -1156,7 +1165,7 @@ var views = /duration">[\s\S]*?\s(\d{1,3}\.?\d?[kM]?)\s/.exec(i)[1]
           videoTitle: {
             text: title
           },
-          videoInfo: {
+          videoInfo: { 
             info: [{ "id": videoid, "title": title, "url": url, "cover": image, "tag": tag, "views": views, "time": time }, { "section": 0, "row": idx + num }],
             title: "  " + time + " - " + views + "  ",
             bgcolor: LocalFavVideos.indexOf(videoid) > -1 ? $color("#6ba292") : $color("#7d7d7d")
@@ -1201,10 +1210,12 @@ function getStarVideoList() {
         var videoid = /videoid="(.*?)"/.exec(i)[1];
         var time = /<span\sclass="duration">([\s\S]*?)<\/span>/.exec(i)[1];
 //        var views = /\d*?.\sViews/.exec(i)[0];
-        var views = /duration">[\s\S]*?\s(\d{1,3}\.?\d?[kM]?)\s/.exec(i)[1]
+var views = /class="sprfluous"> - <\/span>\s(\d{1,3}\.?\d?[kM]?)\s<span/.exec(i)[1]
+//        var views = /duration">[\s\S]*?\s(\d{1,3}\.?\d?[kM]?)\s/.exec(i)[1]
         var url = /<a\shref="(.*?)">/.exec(i)[1];
         var image = /data-src="(.*?)"/.exec(i)[1].replace("thumbs169", "thumbs169lll").replace("THUMBNUM", "20");
-        var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
+//        var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
+var title = /<p><a href=".*?title="(.*?)"/.exec(i)[1]
         try {
           var tag = /<span\sclass="video-hd-mark">(.*?)<\/span>/.exec(i)[1]
         } catch (error) {
@@ -1261,7 +1272,8 @@ function getChannelVideoList() {
         var views = /duration">[\s\S]*?\s(\d{1,3}\.?\d?[kM]?)\s/.exec(i)[1]
         var url = /<a\shref="(.*?)">/.exec(i)[1];
         var image = /data-src="(.*?)"/.exec(i)[1].replace("thumbs169", "thumbs169lll").replace("THUMBNUM", "20");
-        var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
+//        var title = escapeStr(/title="(.*?)"/.exec(i)[1]);
+var title = /<p><a href=".*?title="(.*?)"/.exec(i)[1]
         try {
           var tag = /<span\sclass="video-hd-mark">(.*?)<\/span>/.exec(i)[1]
         } catch (error) {
