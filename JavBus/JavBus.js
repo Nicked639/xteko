@@ -36,7 +36,7 @@ https://t.me/nicked
 
 */
 
-version = 7.31;
+version = 7.4;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -2989,6 +2989,27 @@ $ui.render({
               $("input").text = "";
               if (length == 0) {
                 $("initialView").hidden = true;
+                $ui.alert({
+                  title: "收藏夹为空，如果做过收藏请看下面 ⬇️",
+                  message: "iCloud Drive 下的 JSBox 里面有个 JavBusBackup 文件，检查是否因为网络原因没下载（名字右边有个云朵点一下），其他名字后面带数字的可以删除\n\n是否打开 iCloud Drive？",
+                  actions: [
+                    {
+                      title: "打开",
+                      disabled: false, // Optional
+                      handler: function() {
+                        $app.openURL("shareddocuments://")
+                        
+                      }
+                    },
+                    {
+                      title: "取消",
+                      handler: function() {
+                            return
+                      }
+                    }
+                  ]
+                })
+                
               } else {
                 $("initialView").hidden = false;
               }
