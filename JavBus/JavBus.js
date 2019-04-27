@@ -36,7 +36,7 @@ https://t.me/nicked
 
 */
 
-version = 7.4;
+version = 7.5;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1615,15 +1615,16 @@ make.bottom.inset(15)
                   var js = jsDetect()["js"];
                   var num = jsDetect()["num"];
                   if (js) {
-                    var version = $addin.list[num].version;
-                    if (version > 3) {
-                      $addin.run({
-                        name: js,
-                        query: {
-                          code: favCode
-                        }
-                      });
-                    }
+//                    var version = $addin.list[num].version;
+//                    if (version > 3) {
+//                      $addin.run({
+//                        name: js,
+//                        query: {
+//                          code: favCode
+//                        }
+//                      });
+//                    }
+         $app.openURL("jsbox://run?name=Avgle&code="+favCode)
                   } else {
                     $ui.alert({
                       title: "请更新至最新版本 Avgle",
