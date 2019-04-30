@@ -36,7 +36,7 @@ https://t.me/nicked
 
 */
 
-version = 7.5;
+version = 7.6;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -3017,8 +3017,9 @@ $ui.render({
               //        if ($("tab").index == 0) {
 
               $("input").placeholder = "已收藏 " + length + " 部影片";
+              let tempFav = []
               LocalData.favorite.map(function(i) {
-                $("initialView").data = $("initialView").data.concat({
+                tempFav = tempFav.concat({
                   code: i.code,
                   link: homepage + i.shortCode,
                   initialCover: {
@@ -3033,7 +3034,7 @@ $ui.render({
                   }
                 });
               });
-
+              $("initialView").data = tempFav
               if ($("initialView").data.length == 1) {
                 $("bgInfo").hidden = true;
                 $("bgImage").hidden = true;
@@ -3060,8 +3061,9 @@ $ui.render({
               }
               $("initialView").data = [];
               $("initialView").contentOffset = $point(0, 0);
+              let tempArc = []
               LocalData.archive.map(function(i) {
-                $("initialView").data = $("initialView").data.concat({
+                tempArc = tempArc.concat({
                   code: i.code,
                   link: homepage + i.shortCode,
                   initialCover: {
@@ -3076,6 +3078,7 @@ $ui.render({
                   }
                 });
               });
+              $("initialView").data = tempArc
               if ($("initialView").data.length == 1) {
                 $("bgInfo").hidden = true;
                 $("bgImage").hidden = true;
