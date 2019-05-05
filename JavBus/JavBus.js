@@ -36,7 +36,7 @@ https://t.me/nicked
 
 */
 
-version = 7.6;
+version = 7.7;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -468,8 +468,9 @@ recView = {
         changed(sender) {
           $("recMatrix").data = [];
           if(sender.index ==0){
+            let tempRecAv = [];
             RecAv.map(function(i) {
-                        $("recMatrix").data = $("recMatrix").data.concat({
+                        tempRecAv = tempRecAv.concat({
                           recCover: {
                             src: i.src
                           },
@@ -489,9 +490,11 @@ recView = {
                           code: i.code
                         });
                       });
+                      $("recMatrix").data= tempRecAv 
           }else if(sender.index ==1){
+            let tempRecBotAv = []
             RecBotAv.map(function(i) {
-                        $("recMatrix").data = $("recMatrix").data.concat({
+                        tempRecBotAv = tempRecBotAv.concat({
                           recCover: {
                             src: i.src
                           },
@@ -511,6 +514,7 @@ recView = {
                           code: i.code
                         });
                       });
+                      $("recMatrix").data = tempRecBotAv
           }
           
         }
@@ -1588,7 +1592,7 @@ make.bottom.inset(15)
             //$ui.action(favCode)
             let favCode= code
             $ui.menu({
-              items: ["磁链", "Avgle", "nyaa", "JaponX","JavLibrary"],
+              items: ["磁链", "Avgle", "nyaa", "JaponX","JavLibrary","Netflav"],
               handler: function(title, idx) {
                 if (idx == 0) {
                   if (JavMag == 0) {
@@ -1654,6 +1658,11 @@ make.bottom.inset(15)
                 } else if (idx == 4) {
                   $app.openURL(
                     "http://www.javlibrary.com/cn/vl_searchbyid.php?keyword=" +
+                      favCode
+                  );
+                } else if (idx == 5){
+                  $app.openURL(
+                    "https://netflav.com/search?type=title&keyword=" +
                       favCode
                   );
                 }
