@@ -36,7 +36,7 @@ https://t.me/nicked
 
 */
 
-version = 7.7;
+version = 7.71;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -3613,6 +3613,12 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
                                 favCode = code
                                 favInfo = code + " | " + date
                                 shortCode = favLink.split("/").pop();
+                                favData = {
+                                            code: code,
+                                            src: favSrc,
+                                            info: favInfo,
+                                            shortCode:code
+                                          };
                                 if (LocalFavList.indexOf(code) > -1) {
                                       $("favorite").title = "取消收藏";
                                       $("favorite").bgcolor = $color("#f25959");
