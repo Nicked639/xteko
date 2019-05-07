@@ -4927,12 +4927,6 @@ function getNewRec(mode = "Author") {
 
 
 function openJS(code) {
-  code = code.toUpperCase()
-  if(code.indexOf('-')<0){
-    code = code.replace(/([a-zA-Z]+)/,`$1-`)
-  }
-  
-
   getOpenData(code)
   favLink = "https://www.javbus.com/"+code
   $ui.push(detailView(code));
@@ -4942,7 +4936,6 @@ function openJS(code) {
 
 function getOpenData(code){
   let url = encodeURI("https://www.javbus.com/search/" + code + "/");
-  favCode = code;
   $http.request({
     url:url,
     handler: function(resp){
@@ -5156,12 +5149,13 @@ function main(url) {
     keyword: ""
   };
   if ($context.query.code) {
-    let code = $context.query.code;
+    //let code = $context.query.code;
+    let code = clipboardDetect($context.query.code).keyword;
+    code = code.toUpperCase()
+    if(code.indexOf('-')<0){
+      code = code.replace(/([a-zA-Z]+)/,`$1-`)
+    }
     favCode = code;
-    
-//    $delay(1,function(){
-//      openJS(code)
-//    })
     RecAvCode = $cache.get("RecAvCode")
     openJS(code);
     if (LocalFavList.indexOf(code) > -1) {
