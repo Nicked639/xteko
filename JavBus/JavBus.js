@@ -4927,10 +4927,20 @@ function getNewRec(mode = "Author") {
 
 
 function openJS(code) {
+  code = code.toUpperCase()
+  if(code.indexOf('-')<0){
+    let reg1 = /[a-zA-Z]{3,5}/g
+    let reg2 = /\d{3,4}/g;
+    let codeA = reg1.exec(code)[0]
+    let codeN = reg2.exec(code)[0]
+    code = codeA+"-"+codeN
+  }
+  
+
   getOpenData(code)
-  $ui.push(detailView(code));
   let link = "https://www.javbus.com/"+code
   getDetail(link);
+  $ui.push(detailView(code));
   getInitial();
 }
 
@@ -4940,15 +4950,14 @@ function getOpenData(code){
     url:url,
     handler: function(resp){
       let data =resp.data
-      var image = /photo-frame">[\s\S]*?<img src="([\s\S]*?)(")/.exec(data)[1];
-              
-              var date = /\/\s<date>(.*?)<\/date><\/span>/.exec(data)[1];
-       favData = {
-                         code: code,
-                         info:code+" | "+date,
-                         src:image,
-                         shortCode: code
-                       };
+      var image = /photo-frame">[\s\S]*?<img src="([\s\S]*?)(")/.exec(data)[1];   
+      var date = /\/\s<date>(.*?)<\/date><\/span>/.exec(data)[1];
+      favData = {
+        code: code,
+        info:code+" | "+date,
+        src:image,
+        shortCode: code
+      };
     }
   })
 }
