@@ -36,7 +36,7 @@ https://t.me/nicked
 
 */
 
-version = 7.71;
+version = 7.8;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -3607,25 +3607,25 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
         $("bgInfo").hidden = true;
         $("bgImage").hidden = true;
         $ui.push(detailView(code));
-                      getDetail(link);
-                      favLink = link
-                                favSrc = image
-                                favCode = code
-                                favInfo = code + " | " + date
-                                shortCode = favLink.split("/").pop();
-                                favData = {
-                                            code: code,
-                                            src: favSrc,
-                                            info: favInfo,
-                                            shortCode:code
-                                          };
-                                if (LocalFavList.indexOf(code) > -1) {
-                                      $("favorite").title = "取消收藏";
-                                      $("favorite").bgcolor = $color("#f25959");
-                                    } else if (LocalArcList.indexOf(code) > -1) {
-                                      $("favorite").title = "已归档";
-                                      $("favorite").bgcolor = $color("#aaaaaa");
-                                    }
+        getDetail(link);
+        favLink = link
+        favSrc = image
+        favCode = code
+        favInfo = code + " | " + date
+        shortCode = favLink.split("/").pop();
+        favData = {
+          code: code,
+          src: favSrc,
+          info: favInfo,
+          shortCode:code
+        };
+        if (LocalFavList.indexOf(code) > -1) {
+          $("favorite").title = "取消收藏";
+          $("favorite").bgcolor = $color("#f25959");
+        } else if (LocalArcList.indexOf(code) > -1) {
+          $("favorite").title = "已归档";
+          $("favorite").bgcolor = $color("#aaaaaa");
+        }
       } else {
         $("bgInfo").hidden = false;
         $("bgImage").hidden = false;
@@ -4929,23 +4929,20 @@ function getNewRec(mode = "Author") {
 function openJS(code) {
   code = code.toUpperCase()
   if(code.indexOf('-')<0){
-    let reg1 = /[a-zA-Z]{3,5}/g
-    let reg2 = /\d{3,4}/g;
-    let codeA = reg1.exec(code)[0]
-    let codeN = reg2.exec(code)[0]
-    code = codeA+"-"+codeN
+    code = code.replace(/([a-zA-Z]+)/,`$1-`)
   }
   
 
   getOpenData(code)
-  let link = "https://www.javbus.com/"+code
-  getDetail(link);
+  favLink = "https://www.javbus.com/"+code
   $ui.push(detailView(code));
+  getDetail(favLink);
   getInitial();
 }
 
 function getOpenData(code){
   let url = encodeURI("https://www.javbus.com/search/" + code + "/");
+  favCode = code;
   $http.request({
     url:url,
     handler: function(resp){
