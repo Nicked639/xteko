@@ -4,10 +4,15 @@
 
 你口袋中的 AV 辞典
 
-加强版的 HList
+声明:
+
+1. 脚本含成人内容，未满十八岁禁止运行
+
+2. 脚本所有内容来自 https://www.javbus.com 与脚本作者无任何关系
+
+3. 脚本制作纯属技术交流，无任何商业利益或传播淫秽目的
 
 特色：
-
 
 1. 支持无码片源检索
 
@@ -21,13 +26,12 @@
 
 6. 支持图像与视频预览
 
-7. 支持磁链搜索优化显示
+7. 支持磁链搜索与影片分享
 
 8. 支持剪贴板与分享扩展检测
 
 9. 支持推荐分享私人珍藏经典好片
 
-10. 支持部分影视作品的无删减浏览
 
 
 By Nicked
@@ -36,7 +40,7 @@ https://t.me/nicked
 
 */
 
-version = 7.8;
+version = 7.9;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -78,10 +82,6 @@ var colorData = [
 const newIcon =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MTExMDRFOUM2MUE3MTFFOEFEMThGM0FCRkU2Qzc4MTgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MTExMDRFOUQ2MUE3MTFFOEFEMThGM0FCRkU2Qzc4MTgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDoxMTEwNEU5QTYxQTcxMUU4QUQxOEYzQUJGRTZDNzgxOCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDoxMTEwNEU5QjYxQTcxMUU4QUQxOEYzQUJGRTZDNzgxOCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pgu6WqYAAAtxSURBVHjazFoLdBTV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";
 
-const nickIcon =
-  "";
-
-//$cache.clear()
 
 mainTemplate = {
   props: {
@@ -238,94 +238,71 @@ recView = {
       type: "text",
       props: {
         id: "bgInfo",
-        text: "Originated in Power Flow\n\n\n\nhttps://t.me/nicked",
+        text: "脚本所有内容来自 https://www.javbus.com 与脚本作者无任何关系\n\n\nhttps://t.me/nicked",
         editable: false,
         textColor: $color("#CCCCCC"),
-        font: $font(10),
+        font: $font(12),
         align: $align.center,
         hidden: false
       },
 
       layout: function(make, view) {
-        make.top.inset(40);
+        make.top.inset(35);
         make.height.equalTo(100);
         make.width.equalTo($device.info.screen.width);
       }
     },
     {
-      type: "image",
+      type: "input",
       props: {
-        id: "bgImage",
-        src: nickIcon,
-        radius: 25,
-        alpha: 0.8,
-        align: $align.center,
-        hidden: false
-      },
-      layout: function(make, view) {
-        make.size.equalTo($size(50, 50));
-        make.top.inset(120);
-        make.centerX.equalTo();
-      }
-    },
-
-    {
-      type: "button",
-      props: {
-        title: "我要赞赏",
-        id:"pay",
-        titleColor: $color("black"),
+        id: "inputRec",
+        placeholder: "已经有 0 部影片推荐",
         font: $font(13),
+        //      clearsOnBeginEditing: true,
         bgcolor: $color("#f3f3f3"),
-        borderWidth: 1,
-        borderColor: $color("#dde3e5"),
-        radius: 5
-      },
-      layout: function(make, view) {
-        make.left.top.inset(5);
-//        make.centerX.equalTo();
-        make.height.equalTo(30);
-        make.width
-          .equalTo(view.super)
-          .dividedBy(2)
-          .offset(-8);
+        radius: 8,
+        stickyHeader: false
       },
       events: {
-        tapped(sender) {
-          wechatPay();
+        didBeginEditing: function(sender) {
+          $("inputRec")
+            .runtimeValue()
+            .invoke("selectAll");
+          //console.log(RecBotCode.length)
+        },
+        returned: function(sender) {
+          let index = 0
+          Again = 0;
+          homepage = "https://www.javbus.com/";
+          homeSearchPage = homepage + "search/";
+          $("recView").remove();
+          $("JavBus").add(searchView(180));
+          $("tabC").index = index;
+          $("input").text = sender.text;
+          sender.blur();
+          $("initialView").data = [];
+          $ui.loading(true);
+          $("loading").text = "Loading...";
+          keyword = sender.text;
+          if (sender.text) {
+            mode = "search";
+            keyword = sender.text.replace(/\s+/g, "");
+            $("input").text = keyword;
+            page = 0;
+            getInitial(mode, keyword);
+          } else {
+            mode = "home";
+            page = 0;
+            getInitial(mode);
+          }
+          $("initialView").contentOffset = $point(0, 0);
+          $("initialView").hidden = false;
+          $("menu").index = 0;
         }
-      }
-    },
-    {
-      type: "button",
-      props: {
-        title: "联系作者",
-        titleColor: $color("black"),
-        font: $font(13),
-        bgcolor: $color("#f3f3f3"),
-
-        borderWidth: 1,
-        borderColor: $color("#dde3e5"),
-        radius: 5
       },
       layout: function(make, view) {
-        make.right.top.inset(5);
-        
+        make.left.right.top.inset(5);
         make.height.equalTo(30);
-        make.width
-          .equalTo(view.super)
-          .dividedBy(2)
-          .offset(-8);
-      },
-      events: {
-        tapped(sender) {
-//          $safari.open({
-//            url: "http://www.javlibrary.com/cn/vl_bestrated.php"
-//          });
-          //$("JavBus").add(webview)
-          //$("recView").remove()
-          $app.openURL("https://t.me/nicked")
-        }
       }
     },
     {
@@ -442,7 +419,8 @@ recView = {
         }
       },
       layout: function(make, view) {
-        make.top.equalTo($("pay").bottom).offset(5);
+        make.top.equalTo($("inputRec").bottom).offset(5);
+        //make.top.inset(5)
         make.left.right.inset(5);
         make.bottom.inset(0);
       }
@@ -602,10 +580,10 @@ function searchView(height, catname, cols = 3, spa = 1) {
         type: "text",
         props: {
           id: "bgInfo",
-          text: "Originated in Power Flow\n\n\n\nhttps://t.me/nicked",
+          text: "脚本所有内容来自 https://www.javbus.com 与脚本作者无任何关系\n\n\nhttps://t.me/nicked",
           editable: false,
           textColor: $color("#CCCCCC"),
-          font: $font(10),
+          font: $font(12),
           align: $align.center,
           hidden: false
         },
@@ -614,22 +592,6 @@ function searchView(height, catname, cols = 3, spa = 1) {
           make.top.inset(35);
           make.height.equalTo(100);
           make.width.equalTo($device.info.screen.width);
-        }
-      },
-      {
-        type: "image",
-        props: {
-          id: "bgImage",
-          src: nickIcon,
-          radius: 25,
-          alpha: 0.8,
-          align: $align.center,
-          hidden: false
-        },
-        layout: function(make, view) {
-          make.size.equalTo($size(50, 50));
-          make.top.inset(120);
-          make.centerX.equalTo();
         }
       },
       {
@@ -674,7 +636,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
               homepage = "https://www.javbus.org/";
               Oumei = 1;
             } else if (index == 0) homepage = "https://www.javbus.com/";
-            else hompage = "https://www.javbus.com/uncensored/";
+            else homepage = "https://www.javbus.com/uncensored/";
             homeSearchPage = homepage + "search/";
             if ($("searchView").super == $("JavBus")) {
               $("searchView").remove();
@@ -727,11 +689,14 @@ function searchView(height, catname, cols = 3, spa = 1) {
           pulled(sender) {
             $("initialView").endRefreshing();
             $ui.menu({
-              items: ["微信赞赏","联系作者"],
+              items: ["作者声明","微信赞赏","联系作者"],
               handler: function(title, idx) {
-                if (idx == 0) {
+                if(idx == 0){
+                  tutorial()
+                }
+                else if (idx == 1) {
                   wechatPay();
-                }else if(idx==1){
+                }else if(idx==2){
                  $app.openURL("https://t.me/nicked")
                 }
               }
@@ -1073,10 +1038,10 @@ function searchView(height, catname, cols = 3, spa = 1) {
               }
               if ($("initialView").data.length > 0) {
                 $("bgInfo").hidden = true;
-                $("bgImage").hidden = true;
+//                $("bgImage").hidden = true;
               } else {
                 $("bgInfo").hidden = false;
-                $("bgImage").hidden = false;
+//                $("bgImage").hidden = false;
               }
             }
           }
@@ -2448,7 +2413,7 @@ const screenshotView = {
             props: {
               id: "screenshotCover",
               contentMode: $contentMode.scaleAspectFit
-              // src: nickIcon
+              
             },
             layout: $layout.fill
           }
@@ -2910,7 +2875,7 @@ $ui.render({
               $("tabAll").hidden = false;
               $("loading").text = "Loading...";
               $("bgInfo").hidden = false;
-              $("bgImage").hidden = false;
+//              $("bgImage").hidden = false;
               $("tab").hidden = true;
               $("tabC").hidden = false;
               $("tabC").index = 0;
@@ -2930,7 +2895,7 @@ $ui.render({
               $("tabAll").hidden = true;
               $("loading").text = "Loading...";
               $("bgInfo").hidden = false;
-              $("bgImage").hidden = false;
+//              $("bgImage").hidden = false;
               $("tab").hidden = true;
               $("tabC").hidden = false;
               $("tabC").index = 0;
@@ -2955,6 +2920,7 @@ $ui.render({
               getCat(catUrl);
               break;
             case 3: // 推荐
+              
               $("JavBus").add(recView);
               //$ui.render(recView)
               showTips(
@@ -2964,6 +2930,8 @@ $ui.render({
               $("recMatrix").data = [];
               $cache.set("recommend", RecAv.length);
               $("newIcon").hidden = true;
+              totalRec =  RecAv.length+RecBotAv.length
+              $("inputRec").placeholder = "总推荐 " +totalRec+ " 作者推荐 "+RecAv.length+" 网友推荐 "+RecBotAv.length
               RecAv.map(function(i) {
                 $("recMatrix").data = $("recMatrix").data.concat({
                   recCover: {
@@ -3046,10 +3014,10 @@ $ui.render({
               $("initialView").data = tempFav
               if ($("initialView").data.length == 1) {
                 $("bgInfo").hidden = true;
-                $("bgImage").hidden = true;
+//                $("bgImage").hidden = true;
               } else {
                 $("bgInfo").hidden = false;
-                $("bgImage").hidden = false;
+//                $("bgImage").hidden = false;
               }
               break;
             case 5: //归档
@@ -3090,10 +3058,10 @@ $ui.render({
               $("initialView").data = tempArc
               if ($("initialView").data.length == 1) {
                 $("bgInfo").hidden = true;
-                $("bgImage").hidden = true;
+//                $("bgImage").hidden = true;
               } else {
                 $("bgInfo").hidden = false;
-                $("bgImage").hidden = false;
+//                $("bgImage").hidden = false;
               }
               break;
           }
@@ -3178,10 +3146,10 @@ function catCover(title) {
         type: "text",
         props: {
           id: "bgInfo",
-          text: "Originated in Power Flow\n\nhttps://t.me/nicked",
+          text: "脚本所有内容来自 https://www.javbus.com 与脚本作者无任何关系\n\nhttps://t.me/nicked",
           editable: false,
           textColor: $color("#CCCCCC"),
-          font: $font(10),
+          font: $font(12),
           align: $align.center,
           hidden: false
         },
@@ -3190,22 +3158,6 @@ function catCover(title) {
           make.top.inset(40);
           make.height.equalTo(100);
           make.width.equalTo($device.info.screen.width);
-        }
-      },
-      {
-        type: "image",
-        props: {
-          id: "bgImage",
-          src: nickIcon,
-          radius: 25,
-          alpha: 0.8,
-          align: $align.center,
-          hidden: false
-        },
-        layout: function(make, view) {
-          make.size.equalTo($size(50, 50));
-          make.top.inset(100);
-          make.centerX.equalTo();
         }
       },
       {
@@ -3605,7 +3557,7 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
       $(loadingID).text = "";
       if ($(matrixID).data.length == 1) {
         $("bgInfo").hidden = true;
-        $("bgImage").hidden = true;
+//        $("bgImage").hidden = true;
         $ui.push(detailView(code));
         getDetail(link);
         favLink = link
@@ -3628,7 +3580,7 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
         }
       } else {
         $("bgInfo").hidden = false;
-        $("bgImage").hidden = false;
+//        $("bgImage").hidden = false;
       }
       //	  $("initialView").endRefreshing()
     }
@@ -3793,7 +3745,7 @@ function getAvglePreview(keyword,poster,flag) {
       let video_num = resp.data.response.total_videos;
       //      $console.log(video_num)
       if (video_num == 0) {
-        if(flag==1) $ui.error("☹️ 暂无视频资源！");
+        if(flag==1) $ui.error("☹️ 暂无八秒预览！");
         $ui.loading(false);
         return;
       }
@@ -4372,7 +4324,7 @@ function checkAdult() {
         type: "text",
         props: {
           text:
-            "本脚本运行内容包含成人视频、图片，可能会引起你的不适，请谨慎运行。\n未满十八岁，禁止运行。\n\n脚本运行需代理，请将 Https://javbus.com 加入代理。",
+            "本脚本运行内容可能包含成人视频、图片，可能会引起你的不适，未满十八岁，禁止运行。\n\n脚本所有内容来自 https://www.javbus.com 与脚本作者无任何关系。\n脚本制作纯属技术交流，无任何商业利益或传播淫秽目的。",
           textColor: $color("white"),
           font: $font("bold", 14),
           bgcolor: $color("clear"),
@@ -4993,7 +4945,7 @@ function JaponX(code,name,flag){
       let regID = /portal\/index\/detail\/id\/(\d+).html/gm
       let idArray = data.match(regID)
       if(!idArray){
-        if(flag==1) $ui.error("未找到影片！")
+        if(flag==1) $ui.error("未找到完整影片！")
         return
       }
       let regYanyuan = /\/portal\/index\/search\/yanyuan_id\/\d+.html">.*<\/a>/gm
@@ -5005,7 +4957,7 @@ function JaponX(code,name,flag){
           let id = regID.exec(idArray[i])[1]
           console.log(id)
           if (flag==0) {
-            $ui.toast("可预览完整影片！",0.8)
+//            $ui.toast("可预览完整影片！",0.8)
             $("check").bgcolor=$color("tint")
             $("check").titleColor=$color("white")
             return
@@ -5014,7 +4966,7 @@ function JaponX(code,name,flag){
           return
         }
       }
-      if(flag==1) $ui.error("未找到影片 ！")
+      if(flag==1) $ui.error("未找到完整影片 ！")
       return
     }
   })
@@ -5136,6 +5088,37 @@ function play(url) {
 //  });
 }
 
+function tutorial() {
+  var text = "声明\n\n1. 脚本含成人内容，未满十八岁禁止运行；\n2. 脚本所有内容来自 https://www.javbus.com 与脚本作者无任何关系；\n3. 脚本制作纯属技术交流，无任何商业利益或传播淫秽目的。"
+
+  // Views
+  var hintView = $objc("BaseHintView").invoke("alloc").invoke("initWithText", text)
+  var textView = hintView.invoke("subviews").invoke("objectAtIndex", 1).invoke("subviews").invoke("objectAtIndex", 1)
+
+  // Attribute for text
+  var string = $objc("NSMutableAttributedString").invoke("alloc").invoke("initWithString", text)
+  string.invoke("addAttribute:value:range:", "NSFont", $font("bold", 26), $range(0, 2))
+  string.invoke("setAlignment:range:", $align.center, $range(0, 2))
+
+  string.invoke("addAttribute:value:range:", "NSFont", textView.invoke("font"), $range(2, string.invoke("length") - 2))
+  string.invoke("addAttribute:value:range:", "NSColor", $color("tint"), $range(text.indexOf("任何关系"), 2))
+  string.invoke("addAttribute:value:range:", "NSColor", $color("red"), $range(text.indexOf("禁止运行"), 2))
+  //string.invoke("addAttribute:value:range:", "NSColor", $color("tint"), $range(text.indexOf("无任何"), 2))
+
+  // Paragraph Style
+  var para = $objc("NSMutableParagraphStyle").invoke("alloc.init")
+  para.invoke("setParagraphSpacing", 10)
+  para.invoke("setAlignment", $align.left)
+
+  string.invoke("addAttribute:value:range:", "NSParagraphStyle", para, $range(2, string.invoke("length") - 2))
+
+  // Setup
+  textView.invoke("setAttributedText", string)
+
+  // Show View
+  hintView.invoke("show")
+
+}
 
 function main(url) {
   page = 0;
