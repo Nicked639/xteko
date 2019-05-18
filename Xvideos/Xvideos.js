@@ -5,13 +5,13 @@
 
     以短视频为主，涵盖各种类型包括重口味、小清新、自拍...
 
-    脚本特点：
+    声明:
 
-    1.无广告困扰，想看就看；
+    1. 脚本含成人内容，未满十八岁禁止运行
 
-    2.支持收藏，方便巩固温习;
+    2. 脚本所有内容来自 https://www.xvideos.com 与脚本作者无任何关系
 
-    3.支持下载，分高低两种画质。
+    3. 脚本制作纯属技术交流，无任何商业利益或传播淫秽目的
 
     注：源码来自 wind. 经 Nicked 修改。
 
@@ -21,7 +21,7 @@
 
    */
 
-version = 1.8
+version = 1.9
 
 var scale = 600 / 337;
 const searchPreview = {
@@ -617,11 +617,15 @@ const localVideoListView = {
     pulled(sender) {
           $("localFavVideoList").endRefreshing()
           $ui.menu({
-            items: ["微信赞赏"],
+            items: ["微信赞赏","作者声明","使用提示"],
             handler: function(title, idx) {
               if (idx == 0) {
                 wechatPay()
-              } 
+              }else if(idx ==1){
+                tutorial()
+              }else if(idx==2){
+                alert("Tips: \n轻按时间戳收藏视频，长按时间戳下载视频");
+              }
             }
           })
         },
@@ -1859,6 +1863,39 @@ function wechatPay() {
     ]
   })
 }
+
+function tutorial() {
+  var text = "声明\n\n1. 脚本含成人内容，未满十八岁禁止运行；\n2. 脚本所有内容来自 https://www.xvideos.com 与脚本作者无任何关系；\n3. 脚本制作纯属技术交流，无任何商业利益或传播淫秽目的。"
+
+  // Views
+  var hintView = $objc("BaseHintView").invoke("alloc").invoke("initWithText", text)
+  var textView = hintView.invoke("subviews").invoke("objectAtIndex", 1).invoke("subviews").invoke("objectAtIndex", 1)
+
+  // Attribute for text
+  var string = $objc("NSMutableAttributedString").invoke("alloc").invoke("initWithString", text)
+  string.invoke("addAttribute:value:range:", "NSFont", $font("bold", 26), $range(0, 2))
+  string.invoke("setAlignment:range:", $align.center, $range(0, 2))
+
+  string.invoke("addAttribute:value:range:", "NSFont", textView.invoke("font"), $range(2, string.invoke("length") - 2))
+  string.invoke("addAttribute:value:range:", "NSColor", $color("tint"), $range(text.indexOf("任何关系"), 2))
+  string.invoke("addAttribute:value:range:", "NSColor", $color("red"), $range(text.indexOf("禁止运行"), 2))
+  //string.invoke("addAttribute:value:range:", "NSColor", $color("tint"), $range(text.indexOf("无任何"), 2))
+
+  // Paragraph Style
+  var para = $objc("NSMutableParagraphStyle").invoke("alloc.init")
+  para.invoke("setParagraphSpacing", 10)
+  para.invoke("setAlignment", $align.left)
+
+  string.invoke("addAttribute:value:range:", "NSParagraphStyle", para, $range(2, string.invoke("length") - 2))
+
+  // Setup
+  textView.invoke("setAttributedText", string)
+
+  // Show View
+  hintView.invoke("show")
+
+}
+
 
 function main() {
   if ($cache.get("ADULT")) {
