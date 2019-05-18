@@ -1,6 +1,6 @@
 {
-  "version": 1.7,
-  "msg": "更新说明：\n1.支持向 Avgle 传递番号参数，请使用 3.1 及以上版本的 Avgle\n2.首页支持女优分类",
+  "version": 1.8,
+  "msg": "更新说明：\n1.细节优化",
   "wfVersion":1.3,
   "wfMsg": "更新说明：修复剪贴板为空时的效果",
   "workflow": "https://workflow.is/workflows/41ad696da8f04baea635ec222806b621"
