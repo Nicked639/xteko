@@ -40,7 +40,7 @@ https://t.me/nicked
 
 */
 
-version = 7.9;
+version = 7.91;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -238,7 +238,7 @@ recView = {
       type: "text",
       props: {
         id: "bgInfo",
-        text: "脚本所有内容来自 https://www.javbus.com 与脚本作者无任何关系\n\n\nhttps://t.me/nicked",
+        text: "\n\n\n脚本所有内容来自\n\nhttps://www.javbus.com ",
         editable: false,
         textColor: $color("#CCCCCC"),
         font: $font(12),
@@ -580,7 +580,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
         type: "text",
         props: {
           id: "bgInfo",
-          text: "脚本所有内容来自 https://www.javbus.com 与脚本作者无任何关系\n\n\nhttps://t.me/nicked",
+          text: "\n\n\n脚本所有内容来自\n\nhttps://www.javbus.com ",
           editable: false,
           textColor: $color("#CCCCCC"),
           font: $font(12),
@@ -721,6 +721,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
             favSrc = data.initialCover.src;
             favInfo = data.info.text;
             favLink = data.link;
+
             shortCode = favLink.split("/").pop();
             favCode = shortCode;
             favData = {
@@ -754,6 +755,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                 text: data.name.text,
                 info: data.link
               };
+//              alert(data.link)
               if ($("tab").index == 2) pushCat(sender, "director");
               else if ($("tab").index == 3) pushCat(sender, "series");
               else if ($("tab").index == 4) pushCat(sender, "filmMaker");
@@ -950,11 +952,16 @@ function searchView(height, catname, cols = 3, spa = 1) {
                 }
 
                 LocalData.series.map(function(i) {
-                  if (i.shortCode.indexOf("uncensored") > -1)
-                    hp = hp + "uncensored/";
-                  shortCode = i.shortCode.replace("/uncensored", "");
+                  if (i.shortCode.indexOf("uncensored") > -1){
+                    var s = "https://www.javbus.com/" + "uncensored/";
+                                      shortCode = i.shortCode.replace("/uncensored", "");
+                  }else{
+                    shortCode=i.shortCode
+                    var s = "https://www.javbus.com/"
+                  }
+                    
                   $("initialView").data = $("initialView").data.concat({
-                    link: hp + "series/" + shortCode,
+                    link: s + "series/" + shortCode,
                     name: {
                       text: i.name,
                       hidden: false
@@ -983,11 +990,15 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   $("initialView").hidden = false;
                 }
                 LocalData.filmMaker.map(function(i) {
-                  if (i.shortCode.indexOf("uncensored") > -1)
-                    hp = hp + "uncensored/";
-                  i.shortCode = i.shortCode.replace("/uncensored", "");
+                  if (i.shortCode.indexOf("uncensored") > -1){
+                    var s = "https://www.javbus.com/" + "uncensored/";
+                                      shortCode = i.shortCode.replace("/uncensored", "");
+                  }else{
+                    shortCode=i.shortCode
+                    var s = "https://www.javbus.com/"
+                  }
                   $("initialView").data = $("initialView").data.concat({
-                    link: hp + "studio/" + shortCode,
+                    link: s + "studio/" + shortCode,
                     name: {
                       text: i.name,
                       hidden: false
@@ -1557,7 +1568,7 @@ make.bottom.inset(15)
             //$ui.action(favCode)
             let favCode= code
             $ui.menu({
-              items: ["磁链", "Avgle", "nyaa", "JaponX","JavLibrary","Netflav"],
+              items: ["磁链", "Avgle", "JAV.GURU", "JaponX","JavLibrary","Netflav"],
               handler: function(title, idx) {
                 if (idx == 0) {
                   if (JavMag == 0) {
@@ -1616,7 +1627,7 @@ make.bottom.inset(15)
                   }
                 } else if (idx == 2) {
                   $app.openURL(
-                    "https://sukebei.nyaa.si/?q=" + favCode + "&f=0&c=0_0"
+                    "https://jav.guru/zh/?s=" + favCode 
                   );
                 } else if (idx ==3){
                   $app.openURL("https://www.japonx.tv/portal/index/search.html?k="+favCode+"&x=0&y=0")
@@ -3146,7 +3157,7 @@ function catCover(title) {
         type: "text",
         props: {
           id: "bgInfo",
-          text: "脚本所有内容来自 https://www.javbus.com 与脚本作者无任何关系\n\nhttps://t.me/nicked",
+          text: "\n\n\n脚本所有内容来自\n\nhttps://www.javbus.com ",
           editable: false,
           textColor: $color("#CCCCCC"),
           font: $font(12),
@@ -3335,6 +3346,7 @@ function favDetailTapped(mode, Button) {
       LocalDirectorList.push(data.shortCode);
       LocalData.director.push(data);
     } else if (Button.position == "series") {
+      
       LocalSeriesList.push(data.shortCode);
       LocalData.series.push(data);
     } else if (Button.position == "filmMaker") {
@@ -3378,9 +3390,11 @@ function favDetailTapped(mode, Button) {
 function pushCat(sender, position = "") {
   $ui.push(catCover(sender.text));
   let shortCode = sender.info.split("/").pop();
+  
   if (sender.info.indexOf("uncensored") > -1) {
     shortCode = shortCode + "/uncensored";
   }
+//  alert(shortCode)
   $("favDetail").info = {
     shortCode: shortCode,
     position: position,
