@@ -4957,7 +4957,7 @@ function JaponX(code,name,flag){
     url:"https://www.japonx.tv/portal/index/search.html?k="+code+"&x=0&y=0",
     handler:function(resp){
       let data = resp.data
-      $clipboard.text = data
+      
       let regID = /portal\/index\/detail\/id\/(\d+).html/gm
       let idArray = data.match(regID)
       let lenId = idArray.length
