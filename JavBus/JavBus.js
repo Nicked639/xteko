@@ -40,7 +40,7 @@ https://t.me/nicked
 
 */
 
-version = 7.91;
+version = 7.92;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -4952,24 +4952,31 @@ function readMe() {
 }
 
 function JaponX(code,name,flag){
+  console.log(code+" "+name)
   $http.get({
     url:"https://www.japonx.tv/portal/index/search.html?k="+code+"&x=0&y=0",
     handler:function(resp){
       let data = resp.data
+      $clipboard.text = data
       let regID = /portal\/index\/detail\/id\/(\d+).html/gm
       let idArray = data.match(regID)
+      let lenId = idArray.length
+      console.log("idArray: "+idArray)
       if(!idArray){
         if(flag==1) $ui.error("未找到完整影片！")
         return
       }
       let regYanyuan = /\/portal\/index\/search\/yanyuan_id\/\d+.html">.*<\/a>/gm
       let yanyuanArray = data.match(regYanyuan)
+      console.log(yanyuanArray)
       let len = yanyuanArray.length
-      for(let i=0;i<len;i++){
+      let pop = len - lenId
+      yanyuanArray.splice(0,pop)
+      for(let i=0;i<lenId;i++){
         if(yanyuanArray[i].indexOf(name)>0){
-          console.log(i)
+          console.log("actressNum: "+i)
           let id = regID.exec(idArray[i])[1]
-          console.log(id)
+          console.log("movieId: "+id)
           if (flag==0) {
 //            $ui.toast("可预览完整影片！",0.8)
             $("check").bgcolor=$color("tint")
