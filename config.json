@@ -1,0 +1,23 @@
+{
+  "widget" : {
+    "height" : 181,
+    "tintColor" : "",
+    "iconColor" : ""
+  },
+  "info" : {
+    "url" : "",
+    "author" : "",
+    "website" : "",
+    "types" : 15,
+    "name" : "",
+    "version" : "1.0.0"
+  },
+  "settings" : {
+    "minOSVer" : "10.0.0",
+    "minSDKVer" : "1.0.0",
+    "rotateDisabled" : false,
+    "autoKeyboardEnabled" : false,
+    "keyboardToolbarEnabled" : false,
+    "idleTimerDisabled" : false
+  }
+}
