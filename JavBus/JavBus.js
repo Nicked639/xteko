@@ -40,7 +40,7 @@ https://t.me/nicked
 
 */
 
-version = 7.92;
+version = 7.94;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1073,7 +1073,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
           make.right.inset(10);
           make.top.inset(8.5);
           make.height.equalTo(22);
-          make.width.equalTo(100);
+          make.width.equalTo(130);
         },
         events: {
           changed(sender) {
