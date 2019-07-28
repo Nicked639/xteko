@@ -1,4 +1,3 @@
-
 let category = [{
   title: "高清",
   addr: "https://www.192td.com/gq/",
@@ -7,93 +6,128 @@ let category = [{
   title: "国产",
   addr: "https://www.192td.com/gc/",
   next: "https://www.192td.com/gc/index_"
-},{
-  title: "秀人",
-  addr: "https://www.192td.com/gq/xiuren/",
-  next: "https://www.192td.com/gq/xiuren/index_"
 }, {
-  title: "美媛",
-  addr: "https://www.192td.com/gq/mygirl/",
-  next: "https://www.192td.com/gq/mygirl/index_"
+  title: "美图",
+  addr: "https://www.192td.com/new/",
+  next: "https://www.192td.com/listinfo-1-"
 }, {
-  title: "花の颜",
-  addr: "https://www.192td.com/gq/huayan/",
-  next: "https://www.192td.com/gq/huayan/index_"
-}, {
-  title: "小鱼",
-  addr: "https://www.192td.com/gq/meinv/",
-  next: "https://www.192td.com/gq/meinv/index_"
-}, {
+  title: "会展",
+  addr: "https://www.192td.com/hz/",
+  next: "https://www.192td.com/hz/index_"
+},  {
+    title: "综艺",
+    addr: "https://www.192td.com/zy/",
+    next: "https://www.192td.com/zy/index_"
+  }, {
   title: "收藏",
 }, ]
-function mainUI(column,rowHeight) {
+
+function mainUI(column, rowHeight) {
   $ui.render({
     props: {
       title: "套图吧",
-      id:"main"
+      id: "main"
     },
-    views: [{
-        type: "menu",
-        props: {
-          id: "menu",
-          items: category.map(i => i.title)
+    views: [
+      createButton("高清", "b1", "l1",
+        function(make, view) {
+          make.top.inset(3);
+          make.left.inset(5);
+          make.height.equalTo(26);
+          make.width.equalTo(view.super).multipliedBy(0.12);
         },
-        layout: function(make, view) {
-          make.top.left.right.inset(0)
-          make.height.equalTo(30)
-        },
-        events: {
-          changed(sender) {
-            $("main").remove()
-            if (sender.index !== 6) {
-              mainUI(2,280)
-              $("menu").index = sender.index;
-              $("preView").hidden = false
-              page = 0;
-              $("preView").data = [];
-              getPostData()
-            } else {
-              mainUI(4,140)
-              $("menu").index = 6
-              if (LocalList.length == 0) {
-                $ui.toast("暂无收藏内容，请收藏")
-                $("preView").hidden = true
-              } else {
-                $("preView").data = []
-                LocalData.fav.map(function(i) {
-                  $("preView").data = $("preView").data.concat({
-                    title: i.title,
-                    detail: i.url,
-                    interface: {
-                      src: i.src
-                    }
-                  })
-                })
-              }
-
-            }
-
-            $("preView").contentOffset = $point(0, 0)
-
-          }
+        function() {
+          changeButton(1)
         }
-      },
+      ), createButton("国产", "b2", "l2",
+        function(make, view) {
+          make.top.inset(3);
+          make.left.equalTo($("b1").right).offset(19);
+          make.height.equalTo(26);
+          make.width.equalTo(view.super).multipliedBy(0.12);
+        },
+        function() {
+          changeButton(2)
+        }
+      ), createButton("美图", "b3", "l3",
+        function(make, view) {
+          make.top.inset(3);
+          make.left.equalTo($("b2").right).offset(19);
+          make.height.equalTo(26);
+          make.width.equalTo(view.super).multipliedBy(0.12);
+        },
+        function() {
+           changeButton(3)
+        }
+      ), createButton("会展", "b4", "l4",
+        function(make, view) {
+          make.top.inset(3);
+          make.left.equalTo($("b3").right).offset(19);
+          make.height.equalTo(26);
+          make.width.equalTo(view.super).multipliedBy(0.12);
+        },
+        function() {
+          changeButton(4)
+        }
+      ),createButton("综艺", "b5", "l5",
+        function(make, view) {
+          make.top.inset(3);
+          make.left.equalTo($("b4").right).offset(19);
+          make.height.equalTo(26);
+          make.width.equalTo(view.super).multipliedBy(0.12);
+        },
+        function() {
+           changeButton(5)
+        }
+      ), createButton("收藏", "b6", "l6",
+        function(make, view) {
+          make.top.inset(3);
+          make.left.equalTo($("b5").right).offset(19);
+          make.height.equalTo(26);
+          make.width.equalTo(view.super).multipliedBy(0.12);
+        },
+        function() {
+           underline(6)
+           if (LocalList.length == 0) {
+                           $ui.toast("暂无收藏内容，请收藏")
+                           $("preView").hidden = true
+                         } else {
+                           $("preView").data = []
+                           LocalData.fav.map(function(i) {
+                             $("preView").data = $("preView").data.concat({
+                               title: i.title,
+                               detail: i.url,
+                               interface: {
+                                 src: i.src
+                               }
+                             })
+                           })
+                         }
+           
+                       
+           
+                       $("preView").contentOffset = $point(0, 0)       
+         }
+      ),
       {
         type: "input",
         props: {
           type: $kbType.search,
           darkKeyboard: true,
-          id:"search",
-          placeholder:"请搜索..."
+          id: "search",
+          placeholder: "请搜索...",
+          font: $font(14),
+          radius: 5
         },
         layout: function(make, view) {
-          make.left.right.inset(0)
+          make.left.right.inset(5)
           make.top.inset(30)
-          make.height.equalTo(30)
+          make.height.equalTo(27)
         },
-        events:{
-          returned:function(sender){
+        events: {
+          returned: function(sender) {
             showSearch(sender.text)
+            $("search").blur()
           }
         }
       },
@@ -109,42 +143,42 @@ function mainUI(column,rowHeight) {
           template: [{
             type: "image",
             props: {
-              contentMode:$contentMode.scaleAspectFit,            
+              contentMode: $contentMode.scaleAspectFit,
               id: "interface",
             },
             layout: $layout.fill
           }],
         },
         layout: function(make, view) {
-          make.left.right.bottom.inset(0)
+          make.left.right.bottom.inset(5)
           make.top.inset(60)
-         // make.top.equalTo($("menu").bottom)
+          // make.top.equalTo($("menu").bottom)
         },
         events: {
           didReachBottom(sender) {
             sender.endFetchingMore();
-            if ($("menu").index !== 6){
-              
-            getPostData()
-            $delay(0.5, function() {
+            if ($("menu").index !== 6) {
+
               getPostData()
-            })
+              $delay(0.5, function() {
+                getPostData()
+              })
             }
           },
           didSelect(sender, indexPath, data) {
-            $ui.toast("加载中...",5)
+            $ui.toast("加载中...", 5)
             interface = data.interface.src
             title = data.title
             console.log(data.detail)
-            if($("menu").index == 6){//收藏栏
-              showPhotos(title,1,563)
+            if ($("l6").hidden == false) { //收藏栏
+              showPhotos(title, 1, 563)
               $("favorite").title = "取消收藏"
-              $("favorite").bgcolor= $color("#4f86f2")
+              $("favorite").bgcolor = $color("#4f86f2")
               $("detailView").data = [];
               getDetailPost(data.detail)
               return
-            }else{
-              showPhotos(title,2,280)
+            } else {
+              showPhotos(title, 2, 280)
             }
             $http.request({
               method: "GET",
@@ -157,9 +191,9 @@ function mainUI(column,rowHeight) {
                 $("detailView").data = [];
                 if (LocalList.indexOf(interface) > -1) {
                   $("favorite").title = "取消收藏"
-                  $("favorite").bgcolor= $color("#4f86f2")
+                  $("favorite").bgcolor = $color("#4f86f2")
                 }
-                getDetailPost(url) 
+                getDetailPost(url)
               }
             });
 
@@ -168,53 +202,10 @@ function mainUI(column,rowHeight) {
       }
     ]
   })
+
 }
 
-function getPostData(mode) {
-  page++
-  if( mode == "firstRun"){
-    url = category[0].addr
-  } else{
-    if (page == 1) {
-    url = category[$("menu").index].addr
-  } else {
-    url = category[$("menu").index].next + page + ".html"
-
-  }
-  }
-  $http.request({
-    url: url,
-    handler: function(resp) {
-      if(!resp){
-        $ui.alert("❌ 请检查网络")
-      }
-      var reg = /<li>[\s\S]*?<\/li>/g;
-      var match = resp.data.match(reg);
-      var removed = match.slice(8,)
-      //console.log(removed)
-      var postData = []
-      removed.map(function(i) {
-        var image = /(lazysrc=\")([\s\S]*?)(\")/.exec(i)[2];
-        var detail = /(href=")([\s\S]*?)(")/.exec(i)[2];
-        if(detail.indexOf("192td")<0){
-          detail = "https://www.192td.com"+detail
-        }
-        var title = /alt="(.*?)"/.exec(i)[1];
-        $("preView").data = $("preView").data.concat({
-          title: title,
-          detail: detail,
-          interface: {
-            src: image
-          }
-        });
-
-      })
-
-    }
-  })
-}
-
-function showPhotos(title,columns,rowHeight) {
+function showPhotos(title, columns, rowHeight) {
   $ui.push({
     props: {
       title: title,
@@ -230,7 +221,7 @@ function showPhotos(title,columns,rowHeight) {
         template: [{
           type: "image",
           props: {
-            contentMode:$contentMode.scaleAspectFit,           
+            contentMode: $contentMode.scaleAspectFit,
             id: "detailImage"
           },
           layout: $layout.fill
@@ -271,7 +262,7 @@ function showPhotos(title,columns,rowHeight) {
         radius: 0,
         title: "下载",
         alpha: 0.9,
-        hidden:true
+        hidden: true
       },
       layout: function(make, view) {
         make.left.bottom.inset(0)
@@ -280,114 +271,73 @@ function showPhotos(title,columns,rowHeight) {
       },
       events: {
         tapped(sender) {
-          $cache.clear()        
+          $cache.clear()
           $device.taptic(0)
           if (detailPage < num) {
             $ui.toast("❌ 请滑至底部再按下载")
 
           } else {
-          var urlList = []
-          if ($("download").title == "下载") {
-            $delay(0.5, function() {
-})          
-            sender.title = "正在下载...";
-            urlList = $("detailView").data.map(function(i) {
-             
-                return i.detailImage.src
-              
-            })
+            var urlList = []
+            if ($("download").title == "下载") {
+              $delay(0.5, function() {})
+              sender.title = "正在下载...";
+              urlList = $("detailView").data.map(function(i) {
 
-            if (!$drive.exists("套图吧/"+folderName)) {
-              $drive.mkdir("套图吧/"+folderName)
-            }
-            $("progress").value = 0;
-            var count = 0
-            for (var i = 0; i < urlList.length; i++) {
-              $http.download({
-                url: urlList[i],
-                handler: function(resp) {
-                  count++;
-                  sender.title = "正在下载第 " + count + " 幅图";
-                  $("progress").value = count * 1.0 / urlList.length
-                  if (count == urlList.length) {
-                    sender.title = "完成, iCloud Drive 查看"
-                              $device.taptic(1)
-                    $("progress").value = 0
-                  }
-                  var path = "套图吧/"+folderName + "/" + resp.response.suggestedFilename
-                  $drive.write({
-                    data: resp.data,
-                    path: path
-                  })
-                }
+                return i.detailImage.src
+
               })
+
+              if (!$drive.exists("套图吧/" + folderName)) {
+                $drive.mkdir("套图吧/" + folderName)
+              }
+              $("progress").value = 0;
+              var count = 0
+              for (var i = 0; i < urlList.length; i++) {
+                $http.download({
+                  url: urlList[i],
+                  handler: function(resp) {
+                    count++;
+                    sender.title = "正在下载第 " + count + " 幅图";
+                    $("progress").value = count * 1.0 / urlList.length
+                    if (count == urlList.length) {
+                      sender.title = "完成, iCloud Drive 查看"
+                      $device.taptic(1)
+                      $("progress").value = 0
+                    }
+                    var path = "套图吧/" + folderName + "/" + resp.response.suggestedFilename
+                    $drive.write({
+                      data: resp.data,
+                      path: path
+                    })
+                  }
+                })
+              }
             }
+            $cache.clear()
           }
-        $cache.clear()
-         }
         }
       }
     }, {
-      type:"button",
-      props: {
-              id: "share",
-              bgcolor:$color("black"),
-              radius: 0,
-              title: "下载",
-              alpha: 0.9,
-              hidden:false
-            },
-       layout: function(make, view) {
-         let w = $device.info.screen.width/3
-         
-               make.bottom.inset(0)
-               make.left.inset(0)
-               make.width.equalTo(view.super).dividedBy(2)
-               make.height.equalTo(50)
-             },
-             events: {
-               tapped(sender){
-                 $device.taptic(0)
-                           var data = {
-                             "src": interface,
-                             "url": detailUrl,
-                             "title": title
-                           }
-                           if ($("favorite").title == "收藏") {
-                             favoriteButtonTapped("add", data)
-                             $("favorite").title = "取消收藏"
-                             $("favorite").bgcolor = $color("#4f86f2")
-                           } else {
-                             favoriteButtonTapped("del", data)
-                             $("favorite").title = "收藏"
-                             $("favorite").bgcolor = $color("black")
-                 
-                           }
-$app.openURL("pythonista://Tools/taotu8?action=run&args="+encodeURI(sender.info))
-
-               },
-               longPressed: function(sender){
-                 $device.taptic(1);
-                 $app.openURL(sender.sender.info);
-               }
-             }
-    },{
       type: "button",
       props: {
-        id: "favorite",
-        bgcolor:$color("black"),
+        id: "share",
+        bgcolor: $color("black"),
         radius: 0,
-        title: "收藏",
-        alpha: 0.9
+        title: "下载",
+        alpha: 0.9,
+        hidden: false
       },
       layout: function(make, view) {
-        make.right.bottom.inset(0)
+        let w = $device.info.screen.width / 3
+
+        make.bottom.inset(0)
+        make.left.inset(0)
         make.width.equalTo(view.super).dividedBy(2)
         make.height.equalTo(50)
       },
       events: {
         tapped(sender) {
-         $device.taptic(0)
+          $device.taptic(0)
           var data = {
             "src": interface,
             "url": detailUrl,
@@ -403,8 +353,47 @@ $app.openURL("pythonista://Tools/taotu8?action=run&args="+encodeURI(sender.info)
             $("favorite").bgcolor = $color("black")
 
           }
-          $delay(0.5, function() {
-})
+          $app.openURL("pythonista://Tools/taotu8?action=run&args=" + encodeURI(sender.info))
+
+        },
+        longPressed: function(sender) {
+          $device.taptic(1);
+          $app.openURL(sender.sender.info);
+        }
+      }
+    }, {
+      type: "button",
+      props: {
+        id: "favorite",
+        bgcolor: $color("black"),
+        radius: 0,
+        title: "收藏",
+        alpha: 0.9
+      },
+      layout: function(make, view) {
+        make.right.bottom.inset(0)
+        make.width.equalTo(view.super).dividedBy(2)
+        make.height.equalTo(50)
+      },
+      events: {
+        tapped(sender) {
+          $device.taptic(0)
+          var data = {
+            "src": interface,
+            "url": detailUrl,
+            "title": title
+          }
+          if ($("favorite").title == "收藏") {
+            favoriteButtonTapped("add", data)
+            $("favorite").title = "取消收藏"
+            $("favorite").bgcolor = $color("#4f86f2")
+          } else {
+            favoriteButtonTapped("del", data)
+            $("favorite").title = "收藏"
+            $("favorite").bgcolor = $color("black")
+
+          }
+          $delay(0.5, function() {})
         }
 
       }
@@ -427,11 +416,92 @@ $app.openURL("pythonista://Tools/taotu8?action=run&args="+encodeURI(sender.info)
   })
 }
 
+function createButton(text, id1, id2, layout, handler, handler2) {
+  return {
+    type: "button",
+    props: {
+      title: text,
+      titleColor: $color("black"),
+      font: $font("bold", 17),
+      radius: 5,
+      bgcolor: $color("clear"),
+      id: id1,
+      borderWidth: 0,
+      borderColor: $color("tint"),
+
+    },
+    views: [{
+      type: "label",
+      props: {
+        id: id2,
+        hidden: true,
+        text: "下划1",
+        align: $align.center,
+        borderWidth: 20,
+        borderColor: $color("tint")
+      },
+      layout: function(make, view) {
+        make.centerX.equalTo()
+        make.bottom.inset(0)
+        make.height.equalTo(2)
+      }
+    }],
+    layout: layout,
+    events: {
+      tapped: handler,
+      longPressed: handler2,
+    }
+  };
+}
+
+function getPostData(mode) {
+  page++
+  if (mode == "firstRun") {
+    url = category[0].addr  } else {
+    if (page == 1) {
+      url = category[parseInt(mode)].addr
+    } else {
+      url = category[parseInt(mode)].next + page + ".html"
+
+    }
+  }
+  $http.request({
+    url: url,
+    handler: function(resp) {
+      if (!resp) {
+        $ui.alert("❌ 请检查网络")
+      }
+      var reg = /<li>[\s\S]*?<\/li>/g;
+      var match = resp.data.match(reg);
+      var removed = match.slice(8, )
+      //console.log(removed)
+      //      var postData = []
+      removed.map(function(i) {
+        var image = /(lazysrc=\")([\s\S]*?)(\")/.exec(i)[2];
+        var detail = /(href=")([\s\S]*?)(")/.exec(i)[2];
+        if (detail.indexOf("192td") < 0) {
+          detail = "https://www.192td.com" + detail
+        }
+        var title = /alt="(.*?)"/.exec(i)[1];
+        $("preView").data = $("preView").data.concat({
+          title: title,
+          detail: detail,
+          interface: {
+            src: image
+          }
+        });
+
+      })
+
+    }
+  })
+}
+
 function getDetailPost(url) {
   $http.request({
     url: url,
     handler: function(resp) {
-      if(!resp){
+      if (!resp) {
         $ui.alert("❌ 请检查网络")
       }
       var reg = /lazysrc=[\s\S]*?  onerror/g;
@@ -442,8 +512,8 @@ function getDetailPost(url) {
       // }
       var imgList = [];
       match.map(function(i) {
-         imgList.push(/lazysrc=(\r\n)?([\s\S]*?) /g.exec(i)[2])
-       })
+        imgList.push(/lazysrc=(\r\n)?([\s\S]*?) /g.exec(i)[2])
+      })
       //console.log(imgList)
       $ui.clearToast();
       $("detailView").data = $("detailView").data.concat(imgList.map(function(i) {
@@ -484,7 +554,6 @@ function favoriteButtonTapped(mode, data) {
   writeCache()
 }
 
-
 function writeCache() {
   $file.write({
     data: $data({ string: JSON.stringify(LocalData) }),
@@ -492,37 +561,41 @@ function writeCache() {
   })
 }
 
-function showSearch(text){
-  $ui.toast("搜索中",5);
+function showSearch(text) {
+  $ui.toast("搜索中...", 5);
   $http.post({
     url: "https://www.192td.com/e/search/",
     header: {
-      "Content-Type":"application/x-www-form-urlencoded",
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: {
-      "keyboard":text,
-      "tempid":"1",
-      "show":"title,keyboard",
+      "keyboard": text,
+      "tempid": "1",
+      "show": "title,keyboard",
     },
     handler: function(resp) {
-      $("menu").remove()
-      mainUI(2,280)
+      //      $("menu").remove()
+      //      mainUI(2,280)
       $("search").text = text
-      $("preView").hidden = false
-      page = 0;
-      $("preView").data = [];
       let data = resp
       var reg = /<li>[\s\S]*?<\/li>/g;
       var match = resp.data.match(reg);
-      var removed = match.slice(8,)
+      if (!match) {
+        alert("未找到结果")
+        return
+      }
+      var removed = match.slice(8, )
       console.log(removed)
-      var postData = []
-      $ui.toast("",0.1);
+      //      var postData = []
+      $ui.toast("", 0.1);
+      $("preView").hidden = false
+      $("preView").data = [];
+      $("preView").contentOffset = $point(0, 0)
       removed.map(function(i) {
         var image = /(img src=\")([\s\S]*?)(\")/.exec(i)[2];
         var detail = /(href=")([\s\S]*?)(")/.exec(i)[2];
-        if(detail.indexOf("192td")<0){
-          detail = "https://www.192td.com"+detail
+        if (detail.indexOf("192td") < 0) {
+          detail = "https://www.192td.com" + detail
         }
         var title = /<span>(.*?)<\/span>/.exec(i)[1];
         $("preView").data = $("preView").data.concat({
@@ -532,15 +605,34 @@ function showSearch(text){
             src: image
           }
         });
-  
+
       })
     }
   });
 }
 
+function underline(num) {
+  $("l1").hidden = true
+  $("l2").hidden = true
+  $("l3").hidden = true
+  $("l4").hidden = true
+  $("l5").hidden = true
+  $("l6").hidden = true  
+  $("l"+num).hidden = false
+}
+
+function changeButton(num){
+    underline(num)
+    $("preView").hidden = false
+    page = 0;
+    $("preView").data = [];
+    getPostData(num-1)
+    $("preView").contentOffset = $point(0, 0)       
+}
 function main() {
   page = 0
   getPostData("firstRun")
+  $("l1").hidden = false
   if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
     LocalList = LocalData.fav.map(i => i.src)
@@ -550,7 +642,8 @@ function main() {
   };
 }
 
-
 LocalDataPath = "taotu8.json"
+mainUI(2, 280)
 main()
-mainUI(2,280)
+
+
