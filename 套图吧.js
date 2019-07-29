@@ -1,23 +1,33 @@
+var HOME= "https://www.192td.com"
+var CNUM=0
+var LocalDataPath = "taotu8.json"
+var LocalList = []
+var page = 0
+var LocalData = []
+var interface = ""
+var title = ""
+var detailUrl = ""
+var folderName=  ""
 let category = [{
   title: "高清",
-  addr: "https://www.192td.com/gq/",
-  next: "https://www.192td.com/gq/index_"
+  addr: "/gq/",
+  next: "/gq/index_"
 }, {
   title: "国产",
-  addr: "https://www.192td.com/gc/",
-  next: "https://www.192td.com/gc/index_"
+  addr: "/gc/",
+  next: "gc/index_"
 }, {
   title: "美图",
-  addr: "https://www.192td.com/new/",
-  next: "https://www.192td.com/listinfo-1-"
+  addr: "/new/",
+  next: "/listinfo-1-"
 }, {
   title: "会展",
-  addr: "https://www.192td.com/hz/",
-  next: "https://www.192td.com/hz/index_"
+  addr: "/hz/",
+  next: "/hz/index_"
 },  {
     title: "综艺",
-    addr: "https://www.192td.com/zy/",
-    next: "https://www.192td.com/zy/index_"
+    addr: "/zy/",
+    next: "/zy/index_"
   }, {
   title: "收藏",
 }, ]
@@ -157,11 +167,11 @@ function mainUI(column, rowHeight) {
         events: {
           didReachBottom(sender) {
             sender.endFetchingMore();
-            if ($("menu").index !== 6) {
+            if ($("l6").hidden!== false) {
 
-              getPostData()
+              getPostData(CNUM)
               $delay(0.5, function() {
-                getPostData()
+                getPostData(CNUM)
               })
             }
           },
@@ -186,7 +196,8 @@ function mainUI(column, rowHeight) {
               handler: function(resp) {
                 //console.log(resp.data)
                 var url = /uaredirect\("(.*)"/g.exec(resp.data)[1]
-                $("share").info = url
+//                $("share").info = url
+                $("favorite").info = url
                 detailUrl = url
                 $("detailView").data = [];
                 if (LocalList.indexOf(interface) > -1) {
@@ -194,9 +205,13 @@ function mainUI(column, rowHeight) {
                   $("favorite").bgcolor = $color("#4f86f2")
                 }
                 getDetailPost(url)
+                getBaidu(url)
               }
             });
 
+          },
+          didLongPress(sender,indexPath,data){
+            alert(data.title)
           }
         }
       }
@@ -230,20 +245,7 @@ function showPhotos(title, columns, rowHeight) {
       },
       layout: $layout.fill,
       events: {
-        // didReachBottom(sender) {
-        //   if (detailPage > num + 1) {
-        //     $device.taptic(0);
-        //     $ui.toast("🙈 已经到底啦",0.5)
-        //     sender.endFetchingMore();
-        //   } else {
-        //     sender.endFetchingMore();
-        //     getDetailPost(detailUrl)
-        //     $delay(1, function() {
-        //       getDetailPost(detailUrl)
-        //     })
-        //   }
-
-        // },
+        
         didSelect(sender, indexPath, data) {
 
           var v = $("detailView").cell(indexPath).views[0].views[0]
@@ -273,10 +275,9 @@ function showPhotos(title, columns, rowHeight) {
         tapped(sender) {
           $cache.clear()
           $device.taptic(0)
-          if (detailPage < num) {
-            $ui.toast("❌ 请滑至底部再按下载")
+         
 
-          } else {
+          
             var urlList = []
             if ($("download").title == "下载") {
               $delay(0.5, function() {})
@@ -314,7 +315,7 @@ function showPhotos(title, columns, rowHeight) {
               }
             }
             $cache.clear()
-          }
+          
         }
       }
     }, {
@@ -328,7 +329,7 @@ function showPhotos(title, columns, rowHeight) {
         hidden: false
       },
       layout: function(make, view) {
-        let w = $device.info.screen.width / 3
+//        let w = $device.info.screen.width / 3
 
         make.bottom.inset(0)
         make.left.inset(0)
@@ -353,12 +354,13 @@ function showPhotos(title, columns, rowHeight) {
             $("favorite").bgcolor = $color("black")
 
           }
-          $app.openURL("pythonista://Tools/taotu8?action=run&args=" + encodeURI(sender.info))
+          $app.openURL("pythonista://Tools/taotu8?action=run&args=" + encodeURI($("favorite").info))
 
         },
         longPressed: function(sender) {
           $device.taptic(1);
-          $app.openURL(sender.sender.info);
+          $clipboard.text = sender.sender.code;
+          $app.openURL(sender.sender.info)
         }
       }
     }, {
@@ -394,6 +396,10 @@ function showPhotos(title, columns, rowHeight) {
 
           }
           $delay(0.5, function() {})
+        },
+        longPressed: function(sender) {
+          $device.taptic(1);
+          $app.openURL(sender.sender.info)
         }
 
       }
@@ -457,7 +463,7 @@ function createButton(text, id1, id2, layout, handler, handler2) {
 function getPostData(mode) {
   page++
   if (mode == "firstRun") {
-    url = category[0].addr  } else {
+    var url = category[0].addr  } else {
     if (page == 1) {
       url = category[parseInt(mode)].addr
     } else {
@@ -465,6 +471,7 @@ function getPostData(mode) {
 
     }
   }
+  url = HOME + url
   $http.request({
     url: url,
     handler: function(resp) {
@@ -477,10 +484,10 @@ function getPostData(mode) {
       //console.log(removed)
       //      var postData = []
       removed.map(function(i) {
-        var image = /(lazysrc=\")([\s\S]*?)(\")/.exec(i)[2];
+        var image = /(lazysrc=")([\s\S]*?)(")/.exec(i)[2];
         var detail = /(href=")([\s\S]*?)(")/.exec(i)[2];
-        if (detail.indexOf("192td") < 0) {
-          detail = "https://www.192td.com" + detail
+        if (detail.indexOf(HOME) < 0) {
+          detail = HOME+ detail
         }
         var title = /alt="(.*?)"/.exec(i)[1];
         $("preView").data = $("preView").data.concat({
@@ -507,9 +514,7 @@ function getDetailPost(url) {
       var reg = /lazysrc=[\s\S]*?  onerror/g;
       var match = resp.data.match(reg);
       //console.log(match)
-      // if(detailPage == 1){
-      //   folderName = /<title>([\s\S]*?) \-/g.exec(resp.data)[1]
-      // }
+//      console.log(resp.data)
       var imgList = [];
       match.map(function(i) {
         imgList.push(/lazysrc=(\r\n)?([\s\S]*?) /g.exec(i)[2])
@@ -531,7 +536,7 @@ function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
     LocalData.fav.unshift(data)
     LocalList.unshift(data.src)
-    if ($("menu").index == 6) {
+    if ($("l6").hiiden == false) {
 
       $("preView").data = $("preView").data.concat({
         title: data.title,
@@ -543,10 +548,10 @@ function favoriteButtonTapped(mode, data) {
 
     }
   } else if (mode == "del") {
-    idx = LocalList.indexOf(data.src)
+    var idx = LocalList.indexOf(data.src)
     LocalList.splice(idx, 1)
     LocalData.fav.splice(idx, 1)
-    if ($("menu").index == 6) {
+    if ($("l6").hidden == false) {
       $("preView").delete(idx)
 
     }
@@ -564,7 +569,7 @@ function writeCache() {
 function showSearch(text) {
   $ui.toast("搜索中...", 5);
   $http.post({
-    url: "https://www.192td.com/e/search/",
+    url: HOME+"/e/search/",
     header: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
@@ -577,7 +582,7 @@ function showSearch(text) {
       //      $("menu").remove()
       //      mainUI(2,280)
       $("search").text = text
-      let data = resp
+//      let data = resp
       var reg = /<li>[\s\S]*?<\/li>/g;
       var match = resp.data.match(reg);
       if (!match) {
@@ -592,10 +597,10 @@ function showSearch(text) {
       $("preView").data = [];
       $("preView").contentOffset = $point(0, 0)
       removed.map(function(i) {
-        var image = /(img src=\")([\s\S]*?)(\")/.exec(i)[2];
+        var image = /(img src=")([\s\S]*?)(")/.exec(i)[2];
         var detail = /(href=")([\s\S]*?)(")/.exec(i)[2];
-        if (detail.indexOf("192td") < 0) {
-          detail = "https://www.192td.com" + detail
+        if (detail.indexOf(HOME) < 0) {
+          detail = HOME + detail
         }
         var title = /<span>(.*?)<\/span>/.exec(i)[1];
         $("preView").data = $("preView").data.concat({
@@ -622,13 +627,36 @@ function underline(num) {
 }
 
 function changeButton(num){
+    CNUM = num-1
     underline(num)
     $("preView").hidden = false
     page = 0;
     $("preView").data = [];
-    getPostData(num-1)
+    getPostData(CNUM)
     $("preView").contentOffset = $point(0, 0)       
 }
+
+function getBaidu(url){
+  $http.get({
+    url:url,
+    handler:function(resp){
+      var data = resp.data
+      var shortU = /http:\/\/17.*?"/g.exec(data)[0].slice(0,-1)
+      var code = /提取码: (.*)\)/g.exec(data)[1]
+      $("share").code = code
+      $http.get({
+        url:shortU,
+        handler:function(resp){
+          var data= resp.data
+          var panU = /https:\/\/pan.*?"/g.exec(data)[0].slice(0,-1)
+          $("share").info = panU
+          $ui.toast("百度盘链接已获取",0.4)
+        }
+      })
+    }
+  })
+}
+
 function main() {
   page = 0
   getPostData("firstRun")
@@ -642,7 +670,6 @@ function main() {
   };
 }
 
-LocalDataPath = "taotu8.json"
 mainUI(2, 280)
 main()
 
