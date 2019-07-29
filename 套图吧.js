@@ -445,6 +445,7 @@ function mainUI(column, rowHeight) {
         },
         function() {
           changeButton(1);
+          
         },
         function() {
                   subChannel(1);
@@ -462,6 +463,7 @@ function mainUI(column, rowHeight) {
         },
         function() {
           changeButton(2);
+          
         },
         function() {
                   subChannel(2);
@@ -479,6 +481,7 @@ function mainUI(column, rowHeight) {
         },
         function() {
           changeButton(3);
+       
         },
         function() {
                   subChannel(3);
@@ -496,6 +499,7 @@ function mainUI(column, rowHeight) {
         },
         function() {
           changeButton(4);
+          
         },
         function() {
                   subChannel(4);
@@ -512,6 +516,7 @@ function mainUI(column, rowHeight) {
           make.width.equalTo(view.super).multipliedBy(0.12);
         },
         function() {
+          
           $("preView").data = [];
           underline(5);
           if (LocalList.length == 0) {
@@ -566,6 +571,7 @@ function mainUI(column, rowHeight) {
             {
               type: "image",
               props: {
+                radius:5,
                 contentMode: $contentMode.scaleAspectFit,
                 id: "interface"
               },
@@ -890,6 +896,8 @@ function getPostData(CNUN, subNum) {
     else url = category[CNUM].sub[subNum].addr + "index_" + page + ".html";
   }
   url = HOME + url;
+//  console.log(subNum)
+//  alert(url)
   $http.request({
     url: url,
     handler: function(resp) {
@@ -1049,12 +1057,13 @@ function listGone(){
                     $("listView").alpha = 0;
                   }
                 });
-                subNum = -1;
+                
               }
 }
 
 function changeButton(num) {
   $ui.toast("加载中...",5)
+  listGone()
   subNum = -1;
   underline(num);
   page = 0;
