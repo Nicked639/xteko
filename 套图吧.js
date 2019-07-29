@@ -772,11 +772,7 @@ function showPhotos(title, columns, rowHeight) {
               favoriteButtonTapped("add", data);
               $("favorite").title = "取消收藏";
               $("favorite").bgcolor = $color("#4f86f2");
-            } else {
-              favoriteButtonTapped("del", data);
-              $("favorite").title = "收藏";
-              $("favorite").bgcolor = $color("black");
-            }
+            } 
             $app.openURL(
               "pythonista://Tools/taotu8?action=run&args=" +
                 encodeURI($("favorite").info)
@@ -1062,6 +1058,7 @@ function listGone(){
 }
 
 function changeButton(num) {
+  $("search").text = ""
   $ui.toast("加载中...",5)
   listGone()
   subNum = -1;
@@ -1073,6 +1070,7 @@ function changeButton(num) {
 }
 
 function subChannel(num) {
+  $("search").text = ""
  listGone()
   subNum = num;
   underline(num)
