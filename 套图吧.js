@@ -9,6 +9,7 @@ var title = "";
 var detailUrl = "";
 var folderName = "";
 var subNum = -1;
+var IMGList = []
 let category = [
   {
     title: "高清",
@@ -400,11 +401,12 @@ function listView(wn) {
       }
     ],
     layout: function(make, view) {
+      var h = wn==0?25:(wn==1?33:40)
       var hn = category[wn].sub.length;
       make.top.inset(30);
       make.left.inset(5 + 60 * wn);
       make.width.equalTo(120);
-      make.height.equalTo(hn * 35);
+      make.height.equalTo(hn * h);
     }
   };
 }
@@ -516,7 +518,8 @@ function mainUI(column, rowHeight) {
           make.width.equalTo(view.super).multipliedBy(0.12);
         },
         function() {
-          
+          $("main").remove()
+          mainUI(4,135)
           $("preView").data = [];
           underline(5);
           if (LocalList.length == 0) {
@@ -772,11 +775,16 @@ function showPhotos(title, columns, rowHeight) {
               favoriteButtonTapped("add", data);
               $("favorite").title = "取消收藏";
               $("favorite").bgcolor = $color("#4f86f2");
-            } 
+            }
+            
+//            $app.openURL(
+//              "pythonista://Tools/taotu8?action=run&args=" +
+//                encodeURI($("favorite").info)
+//            );
             $app.openURL(
-              "pythonista://Tools/taotu8?action=run&args=" +
-                encodeURI($("favorite").info)
-            );
+                          "pythonista://Tools/taotu8_jsbox2?action=run&argv=" +
+                            encodeURI(folderName)+"&argv="+encodeURI(IMGList)
+                        );
           },
           longPressed: function(sender) {
             $device.taptic(1);
@@ -935,15 +943,15 @@ function getDetailPost(url) {
       var reg = /lazysrc=[\s\S]*?  onerror/g;
       var match = resp.data.match(reg);
 //      console.log(match)
-      //      console.log(resp.data)
-      var imgList = [];
+//      console.log(url)
+      IMGList = [];
       match.map(function(i) {
-        imgList.push(/lazysrc=(\r\n)?([\s\S]*?) /g.exec(i)[2].replace(/\r\n|\n/g,""))
+        IMGList.push(/lazysrc=(\r\n)?([\s\S]*?) /g.exec(i)[2].replace(/\r\n|\n/g,""))
       });
-      console.log(imgList)
+      console.log(IMGList)
       $ui.clearToast();
       $("detailView").data = $("detailView").data.concat(
-        imgList.map(function(i) {
+        IMGList.map(function(i) {
           return {
             detailImage: {
               src: i
@@ -1037,18 +1045,23 @@ function showSearch(text) {
 }
 
 function underline(num) {
+  if(CNUM ==5){
+    $("main").remove()
+    mainUI(2,270)
+  }
   $("l0").hidden = true;
-  $("l1").hidden = true;
-  $("l2").hidden = true;
-  $("l3").hidden = true;
-  $("l4").hidden = true;
-  $("l5").hidden = true;
-  $("l" + num).hidden = false;
+    $("l1").hidden = true;
+    $("l2").hidden = true;
+    $("l3").hidden = true;
+    $("l4").hidden = true;
+    $("l5").hidden = true;
+    $("l" + num).hidden = false;
   CNUM = num;
+  
 }
 
 function listGone(){
-  if (subNum >= 0) {
+  if (subNum >= 0&& CNUM!=5) {
                 $ui.animate({
                   duration: 0.5,
                   animation: function() {
@@ -1072,6 +1085,7 @@ function changeButton(num) {
 }
 
 function subChannel(num) {
+  changeButton(num)
   $("search").text = ""
  listGone()
   subNum = num;
