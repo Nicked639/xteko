@@ -381,7 +381,7 @@ function listView(wn) {
               }
             ]
           },
-          rowHeight: wn==0?25:35
+          rowHeight: wn==0?25:(wn==1?33:40)
         },
         layout: $layout.fill,
         events: {
@@ -959,14 +959,16 @@ function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
     LocalData.fav.unshift(data);
     LocalList.unshift(data.src);
-    if ($("l5").hiiden == false) {
-      $("preView").data = $("preView").data.concat({
+    if ($("l5").hidden == false) {
+      var temp = $("preView").data
+      temp.unshift({
         title: data.title,
         detail: data.url,
         interface: {
           src: data.src
         }
       });
+      $("preView").data = temp
     }
   } else if (mode == "del") {
     var idx = LocalList.indexOf(data.src);
