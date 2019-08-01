@@ -1,3 +1,4 @@
+var method = "4"
 var HOME = "https://www.192td.com";
 var CNUM = 0;
 var LocalDataPath = "taotu8.json";
@@ -558,6 +559,7 @@ function mainUI(column, rowHeight) {
           returned: function(sender) {
             showSearch(sender.text);
             $("search").blur();
+            listGone()
           }
         }
       },
@@ -782,7 +784,7 @@ function showPhotos(title, columns, rowHeight) {
 //                encodeURI($("favorite").info)
 //            );
             $app.openURL(
-                          "pythonista://Tools/taotu8_jsbox2?action=run&argv=" +
+                          "pythonista://Tools/taotu8_jsbox"+method+"?action=run&argv=" +
                             encodeURI(folderName)+"&argv="+encodeURI(IMGList)
                         );
           },
@@ -948,7 +950,7 @@ function getDetailPost(url) {
       match.map(function(i) {
         IMGList.push(/lazysrc=(\r\n)?([\s\S]*?) /g.exec(i)[2].replace(/\r\n|\n/g,""))
       });
-      console.log(IMGList)
+//      console.log(IMGList)
       $ui.clearToast();
       $("detailView").data = $("detailView").data.concat(
         IMGList.map(function(i) {
@@ -1113,7 +1115,10 @@ function getBaidu(url) {
     handler: function(resp) {
       var data = resp.data;
       var shortU = /http:\/\/17.*?"/g.exec(data)[0].slice(0, -1);
-      var code = /[(提取码)(密码)][:：]\s?(.*)[)）]/g.exec(data)[1];
+//      console.log(data)
+      var code = /码[:：]\s?(\w{4})/g.exec(data)[1];
+      console.log(code)
+      $clipboard.text = code
       $("share").code = code;
 //      alert(shortU)
       $http.get({
