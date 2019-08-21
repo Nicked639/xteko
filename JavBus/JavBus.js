@@ -40,7 +40,7 @@ https://t.me/nicked
 
 */
 
-version = 7.94;
+version = 7.95;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -81,7 +81,6 @@ var colorData = [
 ];
 const newIcon =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MTExMDRFOUM2MUE3MTFFOEFEMThGM0FCRkU2Qzc4MTgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MTExMDRFOUQ2MUE3MTFFOEFEMThGM0FCRkU2Qzc4MTgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDoxMTEwNEU5QTYxQTcxMUU4QUQxOEYzQUJGRTZDNzgxOCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDoxMTEwNEU5QjYxQTcxMUU4QUQxOEYzQUJGRTZDNzgxOCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pgu6WqYAAAtxSURBVHjazFoLdBTV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";
-
 
 mainTemplate = {
   props: {
@@ -184,31 +183,31 @@ mainTemplate = {
         make.width.equalTo(34);
       }
     },
-          {
-            type: "blur",
-            props: {
-              id: "recBlur",
-              radius: 8,
-              hidden: true,
-              alpha: 0.4
-            },
-            layout: $layout.fill
-          },
+    {
+      type: "blur",
+      props: {
+        id: "recBlur",
+        radius: 8,
+        hidden: true,
+        alpha: 0.4
+      },
+      layout: $layout.fill
+    },
 
-          {
-            type: "gradient",
-            props: {
-              id: "recGra",
-              colors: colorData[9],
-              locations: [0.0, 1.0],
-              startPoint: $point(0, 0),
-              endPoint: $point(1, 1),
-              radius: 8,
-              hidden: true,
-              alpha: 0.4
-            },
-            layout: $layout.fill
-          },
+    {
+      type: "gradient",
+      props: {
+        id: "recGra",
+        colors: colorData[9],
+        locations: [0.0, 1.0],
+        startPoint: $point(0, 0),
+        endPoint: $point(1, 1),
+        radius: 8,
+        hidden: true,
+        alpha: 0.4
+      },
+      layout: $layout.fill
+    },
     {
       type: "label",
       props: {
@@ -271,7 +270,7 @@ recView = {
           //console.log(RecBotCode.length)
         },
         returned: function(sender) {
-          let index = 0
+          let index = 0;
           Again = 0;
           homepage = "https://www.javbus.com/";
           homeSearchPage = homepage + "search/";
@@ -389,10 +388,10 @@ recView = {
         didSelect(sender, indexPath, data) {
           $ui.push(detailView(data.code));
 
-          favLink = data.link
-          favSrc = data.recCover.src
-          favCode = data.code
-          favInfo = data.recInfo.text
+          favLink = data.link;
+          favSrc = data.recCover.src;
+          favCode = data.code;
+          favInfo = data.recInfo.text;
           shortCode = favLink.split("/").pop();
           getDetail(data.link);
           favData = {
@@ -412,10 +411,10 @@ recView = {
           }
         },
         pulled: function(sender) {
-//                $ui.toast("打开 Javlibrary") 
-                  $safari.open({
-                    url: "http://www.javlibrary.com/cn/vl_bestrated.php"
-                  });
+          //                $ui.toast("打开 Javlibrary")
+          $safari.open({
+            url: "http://www.javlibrary.com/cn/vl_bestrated.php"
+          });
         }
       },
       layout: function(make, view) {
@@ -445,56 +444,55 @@ recView = {
       events: {
         changed(sender) {
           $("recMatrix").data = [];
-          if(sender.index ==0){
+          if (sender.index == 0) {
             let tempRecAv = [];
             RecAv.map(function(i) {
-                        tempRecAv = tempRecAv.concat({
-                          recCover: {
-                            src: i.src
-                          },
-                          recInfo: {
-                            text: i.info
-                          },
-                          recGra: {
-                            hidden: LocalFavList.indexOf(i.code) > -1 ? false : true
-                          },
-                          recBlur: {
-                            hidden: LocalArcList.indexOf(i.code) > -1 ? false : true
-                          },
-                          recLabel:{
-                            bgcolor:$color("#f68b1f")
-                          },
-                          link: i.link,
-                          code: i.code
-                        });
-                      });
-                      $("recMatrix").data= tempRecAv 
-          }else if(sender.index ==1){
-            let tempRecBotAv = []
+              tempRecAv = tempRecAv.concat({
+                recCover: {
+                  src: i.src
+                },
+                recInfo: {
+                  text: i.info
+                },
+                recGra: {
+                  hidden: LocalFavList.indexOf(i.code) > -1 ? false : true
+                },
+                recBlur: {
+                  hidden: LocalArcList.indexOf(i.code) > -1 ? false : true
+                },
+                recLabel: {
+                  bgcolor: $color("#f68b1f")
+                },
+                link: i.link,
+                code: i.code
+              });
+            });
+            $("recMatrix").data = tempRecAv;
+          } else if (sender.index == 1) {
+            let tempRecBotAv = [];
             RecBotAv.map(function(i) {
-                        tempRecBotAv = tempRecBotAv.concat({
-                          recCover: {
-                            src: i.src
-                          },
-                          recInfo: {
-                            text: i.info
-                          },
-                          recGra: {
-                            hidden: LocalFavList.indexOf(i.code) > -1 ? false : true
-                          },
-                          recBlur: {
-                            hidden: LocalArcList.indexOf(i.code) > -1 ? false : true
-                          },
-                          recLabel:{
-                                                      bgcolor:$color("#b20083")
-                                                    },
-                          link: i.link,
-                          code: i.code
-                        });
-                      });
-                      $("recMatrix").data = tempRecBotAv
+              tempRecBotAv = tempRecBotAv.concat({
+                recCover: {
+                  src: i.src
+                },
+                recInfo: {
+                  text: i.info
+                },
+                recGra: {
+                  hidden: LocalFavList.indexOf(i.code) > -1 ? false : true
+                },
+                recBlur: {
+                  hidden: LocalArcList.indexOf(i.code) > -1 ? false : true
+                },
+                recLabel: {
+                  bgcolor: $color("#b20083")
+                },
+                link: i.link,
+                code: i.code
+              });
+            });
+            $("recMatrix").data = tempRecBotAv;
           }
-          
         }
       }
     }
@@ -630,6 +628,11 @@ function searchView(height, catname, cols = 3, spa = 1) {
               .invoke("selectAll");
           },
           returned: function(sender) {
+            if ($("menu").index == 5) {
+              searchAr(sender.text);
+              sender.blur()
+              return;
+            }
             Again = 0;
             let index = $("tabC").index;
             if (index == 2) {
@@ -689,15 +692,14 @@ function searchView(height, catname, cols = 3, spa = 1) {
           pulled(sender) {
             $("initialView").endRefreshing();
             $ui.menu({
-              items: ["作者声明","微信赞赏","联系作者"],
+              items: ["作者声明", "微信赞赏", "联系作者"],
               handler: function(title, idx) {
-                if(idx == 0){
-                  tutorial()
-                }
-                else if (idx == 1) {
+                if (idx == 0) {
+                  tutorial();
+                } else if (idx == 1) {
                   wechatPay();
-                }else if(idx==2){
-                 $app.openURL("https://t.me/nicked")
+                } else if (idx == 2) {
+                  $app.openURL("https://t.me/nicked");
                 }
               }
             });
@@ -755,7 +757,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                 text: data.name.text,
                 info: data.link
               };
-//              alert(data.link)
+              //              alert(data.link)
               if ($("tab").index == 2) pushCat(sender, "director");
               else if ($("tab").index == 3) pushCat(sender, "series");
               else if ($("tab").index == 4) pushCat(sender, "filmMaker");
@@ -783,8 +785,6 @@ function searchView(height, catname, cols = 3, spa = 1) {
                 $("favorite").bgcolor = $color("#f25959");
               }
             }
-            
-        
           }
         }
       },
@@ -952,14 +952,14 @@ function searchView(height, catname, cols = 3, spa = 1) {
                 }
 
                 LocalData.series.map(function(i) {
-                  if (i.shortCode.indexOf("uncensored") > -1){
+                  if (i.shortCode.indexOf("uncensored") > -1) {
                     var s = "https://www.javbus.com/" + "uncensored/";
-                                      shortCode = i.shortCode.replace("/uncensored", "");
-                  }else{
-                    shortCode=i.shortCode
-                    var s = "https://www.javbus.com/"
+                    shortCode = i.shortCode.replace("/uncensored", "");
+                  } else {
+                    shortCode = i.shortCode;
+                    var s = "https://www.javbus.com/";
                   }
-                    
+
                   $("initialView").data = $("initialView").data.concat({
                     link: s + "series/" + shortCode,
                     name: {
@@ -990,12 +990,12 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   $("initialView").hidden = false;
                 }
                 LocalData.filmMaker.map(function(i) {
-                  if (i.shortCode.indexOf("uncensored") > -1){
+                  if (i.shortCode.indexOf("uncensored") > -1) {
                     var s = "https://www.javbus.com/" + "uncensored/";
-                                      shortCode = i.shortCode.replace("/uncensored", "");
-                  }else{
-                    shortCode=i.shortCode
-                    var s = "https://www.javbus.com/"
+                    shortCode = i.shortCode.replace("/uncensored", "");
+                  } else {
+                    shortCode = i.shortCode;
+                    var s = "https://www.javbus.com/";
                   }
                   $("initialView").data = $("initialView").data.concat({
                     link: s + "studio/" + shortCode,
@@ -1049,10 +1049,10 @@ function searchView(height, catname, cols = 3, spa = 1) {
               }
               if ($("initialView").data.length > 0) {
                 $("bgInfo").hidden = true;
-//                $("bgImage").hidden = true;
+                //                $("bgImage").hidden = true;
               } else {
                 $("bgInfo").hidden = false;
-//                $("bgImage").hidden = false;
+                //                $("bgImage").hidden = false;
               }
             }
           }
@@ -1491,8 +1491,8 @@ function detailView(code) {
                   },
                   layout: function(make, view) {
                     make.left.right.top.inset(3);
-//                    make.height.equalTo(80);
-make.bottom.inset(15)
+                    //                    make.height.equalTo(80);
+                    make.bottom.inset(15);
                   }
                 },
                 {
@@ -1566,9 +1566,16 @@ make.bottom.inset(15)
           tapped(sender) {
             //$clipboard.text = favCode
             //$ui.action(favCode)
-            let favCode= code
+            let favCode = code;
             $ui.menu({
-              items: ["磁链", "Avgle", "JAV.GURU", "JaponX","JavLibrary","Netflav"],
+              items: [
+                "磁链",
+                "Avgle",
+                "JAV.GURU",
+                "JaponX",
+                "JavLibrary",
+                "Netflav"
+              ],
               handler: function(title, idx) {
                 if (idx == 0) {
                   if (JavMag == 0) {
@@ -1595,16 +1602,16 @@ make.bottom.inset(15)
                   var js = jsDetect()["js"];
                   var num = jsDetect()["num"];
                   if (js) {
-//                    var version = $addin.list[num].version;
-//                    if (version > 3) {
-//                      $addin.run({
-//                        name: js,
-//                        query: {
-//                          code: favCode
-//                        }
-//                      });
-//                    }
-         $app.openURL("jsbox://run?name=Avgle&code="+favCode)
+                    //                    var version = $addin.list[num].version;
+                    //                    if (version > 3) {
+                    //                      $addin.run({
+                    //                        name: js,
+                    //                        query: {
+                    //                          code: favCode
+                    //                        }
+                    //                      });
+                    //                    }
+                    $app.openURL("jsbox://run?name=Avgle&code=" + favCode);
                   } else {
                     $ui.alert({
                       title: "请更新至最新版本 Avgle",
@@ -1626,20 +1633,21 @@ make.bottom.inset(15)
                     });
                   }
                 } else if (idx == 2) {
+                  $app.openURL("https://jav.guru/zh/?s=" + favCode);
+                } else if (idx == 3) {
                   $app.openURL(
-                    "https://jav.guru/zh/?s=" + favCode 
+                    "https://www.japonx.tv/portal/index/search.html?k=" +
+                      favCode +
+                      "&x=0&y=0"
                   );
-                } else if (idx ==3){
-                  $app.openURL("https://www.japonx.tv/portal/index/search.html?k="+favCode+"&x=0&y=0")
                 } else if (idx == 4) {
                   $app.openURL(
                     "http://www.javlibrary.com/cn/vl_searchbyid.php?keyword=" +
                       favCode
                   );
-                } else if (idx == 5){
+                } else if (idx == 5) {
                   $app.openURL(
-                    "https://netflav.com/search?type=title&keyword=" +
-                      favCode
+                    "https://netflav.com/search?type=title&keyword=" + favCode
                   );
                 }
               }
@@ -1673,7 +1681,7 @@ make.bottom.inset(15)
             //            $app.tips("预览视频来自 Avgle，请将 Avgle.com 加入代理");
             showTips("preview", "预览视频来自 Avgle，请将 Avgle.com 加入代理");
             $ui.menu({
-              items: ["样品图像", "八秒视频","完整视频"],
+              items: ["样品图像", "八秒视频", "完整视频"],
               handler: function(title, idx) {
                 if (idx == 0) {
                   if (screenData == "no") {
@@ -1685,18 +1693,18 @@ make.bottom.inset(15)
                   }
                 } else if (idx == 1) {
                   $device.taptic(1);
-//                  alert(sender.info)
-                  getAvglePreview(sender.info,filmCover,1);
-                } else if(idx == 2){
-                  $device.taptic(1)
-                  JaponX(favCode,name,1)
+                  //                  alert(sender.info)
+                  getAvglePreview(sender.info, filmCover, 1);
+                } else if (idx == 2) {
+                  $device.taptic(1);
+                  JaponX(favCode, name, 1);
                 }
               }
             });
           },
           longPressed(sender) {
             $device.taptic(1);
-            getAvglePreview(sender.sender.info,filmCover,1);
+            getAvglePreview(sender.sender.info, filmCover, 1);
           }
         }
       },
@@ -1726,7 +1734,7 @@ make.bottom.inset(15)
             if ($context.query.code && isInToday())
               data = $cache.get("cacheData");
             else data = favData;
-        
+
             if ($("favorite").title == "收藏") {
               $("favorite").title = "取消收藏";
               $("favorite").bgcolor = $color("#f25959");
@@ -1778,66 +1786,65 @@ make.bottom.inset(15)
               src: favData.src,
               link: favLink
             };
-//            alert(shareRec)
+            //            alert(shareRec)
             $ui.menu({
               items: items,
               handler: function(title, idx) {
                 if (idx == 0) {
-                  
-                  let url = "https://nicktimebreak.github.io/JSB2JB?code="+sender.info
+                  let url =
+                    "https://nicktimebreak.github.io/JSB2JB?code=" +
+                    sender.info;
                   $http.shorten({
                     url: url,
                     handler: function(url) {
-                      $share.sheet(url)
+                      $share.sheet(url);
                     }
-                  })
-                  
-                }
-                else if (idx == 1) {
+                  });
+                } else if (idx == 1) {
                   $clipboard.text = sender.info;
                   $ui.toast("番号 " + sender.info + " 已复制");
                 } else if (idx == 2) $share.sheet(favLink);
-                else if (idx == 3) { 
-                  if(RecAuthorCode.indexOf(code)>-1){
-                    $ui.error('该影片已在推荐列表！')
-                    return
-                  } else{
-                    let gurl = "https://script.google.com/macros/s/AKfycbx5k3R93jIBh4Wn-5knXAEsOwrY54EsngijyUAQuaXGCUzVNjBu/exec"
+                else if (idx == 3) {
+                  if (RecAuthorCode.indexOf(code) > -1) {
+                    $ui.error("该影片已在推荐列表！");
+                    return;
+                  } else {
+                    let gurl =
+                      "https://script.google.com/macros/s/AKfycbx5k3R93jIBh4Wn-5knXAEsOwrY54EsngijyUAQuaXGCUzVNjBu/exec";
                     $input.text({
                       type: $kbType.number,
                       placeholder: "输入密码",
                       handler: function(text) {
                         let payload = {
-                          pw:text,
-                          av:shareRec,
-                          mode:"upload"
-                        }
+                          pw: text,
+                          av: shareRec,
+                          mode: "upload"
+                        };
                         //alert(payload)
-                        $device.taptic(2); 
-                        $ui.toast("影片上传中",10);
+                        $device.taptic(2);
+                        $ui.toast("影片上传中", 10);
                         $http.request({
-                          method:"POST",
+                          method: "POST",
                           url: gurl,
-                          body:payload,
-                          handler: function(resp){
-                            let result = resp.data
-                            if(result == "succeed"){
-                              $ui.toast("成功！",0.5)
-                            }else if(result == 'FE'){
-                              $ui.error("上传格式错误！")
-                            }else if(result == "NA"){
-                              $ui.error("密码错误！")
-                            }else{
-                              $ui.error("错误代码："+result)
-                              $clipboard.text = result
+                          body: payload,
+                          handler: function(resp) {
+                            let result = resp.data;
+                            if (result == "succeed") {
+                              $ui.toast("成功！", 0.5);
+                            } else if (result == "FE") {
+                              $ui.error("上传格式错误！");
+                            } else if (result == "NA") {
+                              $ui.error("密码错误！");
+                            } else {
+                              $ui.error("错误代码：" + result);
+                              $clipboard.text = result;
                             }
                           }
-                        })
+                        });
                       }
-                    })
-                  }          
+                    });
+                  }
 
-  
                   // let av = JSON.stringify(shareRec);
                   // $app.openURL(
                   //   "shortcuts://run-shortcut?name=JavBus%20Rec&input=" +
@@ -1847,47 +1854,47 @@ make.bottom.inset(15)
               }
             });
           },
-          longPressed:(sender)=>{
-            let code = sender.sender.info
-            if(RecAuthorCode.indexOf(code)==-1){
-              $ui.error("作者未推荐")
-              return
-            }else{
-              let gurl = "https://script.google.com/macros/s/AKfycbx5k3R93jIBh4Wn-5knXAEsOwrY54EsngijyUAQuaXGCUzVNjBu/exec"
+          longPressed: sender => {
+            let code = sender.sender.info;
+            if (RecAuthorCode.indexOf(code) == -1) {
+              $ui.error("作者未推荐");
+              return;
+            } else {
+              let gurl =
+                "https://script.google.com/macros/s/AKfycbx5k3R93jIBh4Wn-5knXAEsOwrY54EsngijyUAQuaXGCUzVNjBu/exec";
               $input.text({
                 type: $kbType.number,
                 placeholder: "输入密码",
                 handler: function(text) {
                   let payload = {
-                    pw:text,
-                    av:code,
-                    mode:"del"
-                  }
+                    pw: text,
+                    av: code,
+                    mode: "del"
+                  };
                   //alert(payload)
-                  $device.taptic(2); 
-                  $ui.toast("影片删除中",10);
+                  $device.taptic(2);
+                  $ui.toast("影片删除中", 10);
                   $http.request({
-                    method:"POST",
+                    method: "POST",
                     url: gurl,
-                    body:payload,
-                    handler: function(resp){
-                      let result = resp.data
-                      if(result == "succeed"){
-                        $ui.toast("成功！",0.5)
-                      }else if(result == 'FE'){
-                        $ui.error("上传格式错误！")
-                      }else if(result == "NA"){
-                        $ui.error("密码错误！")
-                      }else{
-                        $ui.error("错误代码："+result)
-                        $clipboard.text = result
+                    body: payload,
+                    handler: function(resp) {
+                      let result = resp.data;
+                      if (result == "succeed") {
+                        $ui.toast("成功！", 0.5);
+                      } else if (result == "FE") {
+                        $ui.error("上传格式错误！");
+                      } else if (result == "NA") {
+                        $ui.error("密码错误！");
+                      } else {
+                        $ui.error("错误代码：" + result);
+                        $clipboard.text = result;
                       }
                     }
-                  })
+                  });
                 }
-              })
+              });
             }
-            
           }
         }
       },
@@ -1914,9 +1921,9 @@ make.bottom.inset(15)
         },
         events: {
           tapped(sender) {
-            if(sender.title=="已推荐"){
-              $ui.error("该片已在推荐列表")
-              return
+            if (sender.title == "已推荐") {
+              $ui.error("该片已在推荐列表");
+              return;
             }
             let shareRec = {
               code: sender.info,
@@ -1944,87 +1951,85 @@ make.bottom.inset(15)
                   title: "OK",
                   disabled: false, // Optional
                   handler: function() {
-                    $ui.toast("影片上传中",10)
-                    if(RecAvCode.indexOf(sender.info)>-1){
+                    $ui.toast("影片上传中", 10);
+                    if (RecAvCode.indexOf(sender.info) > -1) {
                       $ui.error("该影片已在推荐列表！");
-                      return
+                      return;
                     }
-                    let gurl = "https://script.google.com/macros/s/AKfycbxhEuyq7FZfex2drTkD0eVFkhot2hYHk5LfkiA3X3_qwhdMTNk/exec"
+                    let gurl =
+                      "https://script.google.com/macros/s/AKfycbxhEuyq7FZfex2drTkD0eVFkhot2hYHk5LfkiA3X3_qwhdMTNk/exec";
                     let payload = {
                       av: shareRec,
-                      mode:"upload"
-                    }
+                      mode: "upload"
+                    };
                     $http.request({
-                      method:"POST",
+                      method: "POST",
                       url: gurl,
-                      body:payload,
-                      handler: function(resp){
-                        let result = resp.data
-                        if(result == "succeed"){
-                          $ui.toast("成功！",0.5)
-                        }else if(result == 'FE'){
-                          $ui.error("上传格式错误！")
-                        }else if(result == 'RE'){
+                      body: payload,
+                      handler: function(resp) {
+                        let result = resp.data;
+                        if (result == "succeed") {
+                          $ui.toast("成功！", 0.5);
+                        } else if (result == "FE") {
+                          $ui.error("上传格式错误！");
+                        } else if (result == "RE") {
                           $ui.error("该影片已在推荐列表！");
-                        }else{
-                          $ui.error("错误代码："+result)
-                          $clipboard.text=result
+                        } else {
+                          $ui.error("错误代码：" + result);
+                          $clipboard.text = result;
                         }
                       }
-                    })
-                    
+                    });
                   }
                 },
                 {
                   title: "Cancel",
-                  handler: function() {
-            
-                  }
+                  handler: function() {}
                 }
               ]
-            })
-
+            });
           },
-          longPressed:(sender)=>{
-             let code = sender.sender.info
-                if(RecBotCode.indexOf(code)==-1){
-                  $ui.error("网友未推荐")
-                  return
-                }else{
-                  let gurl = "https://script.google.com/macros/s/AKfycbxhEuyq7FZfex2drTkD0eVFkhot2hYHk5LfkiA3X3_qwhdMTNk/exec"
-                  $input.text({
-                    type: $kbType.number,
-                    placeholder: "输入密码",
-                    handler: function(text) {
-                      let payload = {
-                        pw:text,
-                        av:code,
-                        mode:"del"
+          longPressed: sender => {
+            let code = sender.sender.info;
+            if (RecBotCode.indexOf(code) == -1) {
+              $ui.error("网友未推荐");
+              return;
+            } else {
+              let gurl =
+                "https://script.google.com/macros/s/AKfycbxhEuyq7FZfex2drTkD0eVFkhot2hYHk5LfkiA3X3_qwhdMTNk/exec";
+              $input.text({
+                type: $kbType.number,
+                placeholder: "输入密码",
+                handler: function(text) {
+                  let payload = {
+                    pw: text,
+                    av: code,
+                    mode: "del"
+                  };
+                  //alert(payload)
+                  $device.taptic(2);
+                  $ui.toast("影片删除中", 10);
+                  $http.request({
+                    method: "POST",
+                    url: gurl,
+                    body: payload,
+                    handler: function(resp) {
+                      let result = resp.data;
+                      if (result == "succeed") {
+                        $ui.toast("成功！", 0.5);
+                      } else if (result == "FE") {
+                        $ui.error("上传格式错误！");
+                      } else if (result == "NA") {
+                        $ui.error("密码错误！");
+                      } else {
+                        $ui.error("错误代码：" + result);
+                        $clipboard.text = result;
                       }
-                      //alert(payload)
-                      $device.taptic(2); 
-                      $ui.toast("影片删除中",10);
-                      $http.request({
-                        method:"POST",
-                        url: gurl,
-                        body:payload,
-                        handler: function(resp){
-                          let result = resp.data
-                          if(result == "succeed"){
-                            $ui.toast("成功！",0.5)
-                          }else if(result == 'FE'){
-                            $ui.error("上传格式错误！")
-                          }else if(result == "NA"){
-                            $ui.error("密码错误！")
-                          }else{
-                            $ui.error("错误代码："+result)
-                            $clipboard.text = result
-                          }
-                        }
-                      })
                     }
-                  })
+                  });
                 }
+              });
+            }
           }
         }
       },
@@ -2050,9 +2055,7 @@ make.bottom.inset(15)
         events: {
           tapped(sender) {
             //$clipboard.text = favCode
-            $app.openURL(
-              "jsbox://run?name=JavBus&code=" + $("share").info 
-            );
+            $app.openURL("jsbox://run?name=JavBus&code=" + $("share").info);
           }
         }
       },
@@ -2270,7 +2273,7 @@ function magnetList(code) {
                 $device.taptic(0);
                 $ui.toast("💡 磁链已复制");
                 $app.openURL("wb1307639798://");
-$app.openURL("weixin://")
+                $app.openURL("weixin://");
               },
               pulled(sender) {
                 if ($("javbusList").data.length == 0) {
@@ -2424,7 +2427,6 @@ const screenshotView = {
             props: {
               id: "screenshotCover",
               contentMode: $contentMode.scaleAspectFit
-              
             },
             layout: $layout.fill
           }
@@ -2466,44 +2468,58 @@ const screenshotView = {
       },
       events: {
         tapped: function(sender) {
-          if ($("download").title == "批量下载") {
-            showTips("downPics","下载图片保存在 iCloud Drive Jsbox 内的「样品图像」中")
-            $device.taptic(1);
-            sender.title = "正在下载...";
-            let folderName = "";
-            if ($("filmActress").data.length == 1)
-              folderName = $("filmActress").data[0].actressName.text;
-            else folderName = favCode;
-            if (!$drive.exists("样品图像/" + folderName)) {
-              $drive.mkdir("样品图像/" + folderName);
-            }
-            $("progress").value = 0;
-            var count = 0;
-            for (var i = 0; i < screenData.length; i++) {
-              $http.download({
-                url: screenData[i].link,
-                handler: function(resp) {
-                  count++;
-                  sender.title = "下载第 " + count + " 幅图";
-                  $("progress").value = (count * 1.0) / screenData.length;
-                  if (count == screenData.length) {
-                    sender.title = "完成！";
-                    $device.taptic(1);
-                    $("progress").value = 0;
-                  }
-                  var path =
-                    "样品图像/" +
-                    folderName +
-                    "/" +
-                    resp.response.suggestedFilename;
-                  $drive.write({
-                    data: resp.data,
-                    path: path
-                  });
-                }
-              });
-            }
-          }
+          if ($("filmActress").data.length == 1)
+            var folderName = $("filmActress").data[0].actressName.text;
+          else folderName = favCode;
+          var IMGList = screenData.map(i => {
+            return i.link;
+          });
+          console.log(folderName + "\n" + IMGList);
+          $app.openURL(
+            "pythonista://Tools/sample_jsbox?action=run&argv=" +
+              encodeURI(folderName) +
+              "&argv=" +
+              encodeURI(IMGList)
+          );
+          //          if ($("download").title == "批量下载") {
+          //            showTips("downPics","下载图片保存在 iCloud Drive Jsbox 内的「样品图像」中")
+          //            $device.taptic(1);
+          //            sender.title = "正在下载...";
+          //            let folderName = "";
+          //            if ($("filmActress").data.length == 1)
+          //              folderName = $("filmActress").data[0].actressName.text;
+          //            else folderName = favCode;
+          //            if (!$drive.exists("样品图像/" + folderName)) {
+          //              $drive.mkdir("样品图像/" + folderName);
+          //            }
+          //            $("progress").value = 0;
+          //            var count = 0;
+          //            console.log(screenData)
+          //            for (var i = 0; i < screenData.length; i++) {
+          //              $http.download({
+          //                url: screenData[i].link,
+          //                handler: function(resp) {
+          //                  count++;
+          //                  sender.title = "下载第 " + count + " 幅图";
+          //                  $("progress").value = (count * 1.0) / screenData.length;
+          //                  if (count == screenData.length) {
+          //                    sender.title = "完成！";
+          //                    $device.taptic(1);
+          //                    $("progress").value = 0;
+          //                  }
+          //                  var path =
+          //                    "样品图像/" +
+          //                    folderName +
+          //                    "/" +
+          //                    resp.response.suggestedFilename;
+          //                  $drive.write({
+          //                    data: resp.data,
+          //                    path: path
+          //                  });
+          //                }
+          //              });
+          //            }
+          //          }
         }
       }
     },
@@ -2745,18 +2761,15 @@ function actressView(actress, cover) {
             $ui.push(detailView(favCode));
             getDetail(data.link);
 
-            
-            
-              if (LocalFavList.indexOf(shortCode) > -1) {
-                $("favorite").title = "取消收藏";
-                $("favorite").bgcolor = $color("#f25959");
-              } else if (LocalArcList.indexOf(shortCode) > -1) {
-                $("favorite").title = "已归档";
-                $("favorite").bgcolor = $color("#aaaaaa");
-              } else {
-                $("favorite").title = "收藏";
-             }
-            
+            if (LocalFavList.indexOf(shortCode) > -1) {
+              $("favorite").title = "取消收藏";
+              $("favorite").bgcolor = $color("#f25959");
+            } else if (LocalArcList.indexOf(shortCode) > -1) {
+              $("favorite").title = "已归档";
+              $("favorite").bgcolor = $color("#aaaaaa");
+            } else {
+              $("favorite").title = "收藏";
+            }
           }
         }
       },
@@ -2841,15 +2854,15 @@ $ui.render({
   props: {
     title: "JavBus",
     id: "JavBus",
-    navBarHidden: isInToday(),
-//    navButtons: [
-//                {
-//                    icon: "058",
-//                    handler: function () {
-//                        wechatPay()
-//                    }
-//                }, 
-//            ]
+    navBarHidden: isInToday()
+    //    navButtons: [
+    //                {
+    //                    icon: "058",
+    //                    handler: function () {
+    //                        wechatPay()
+    //                    }
+    //                },
+    //            ]
   },
   views: [
     {
@@ -2886,7 +2899,7 @@ $ui.render({
               $("tabAll").hidden = false;
               $("loading").text = "Loading...";
               $("bgInfo").hidden = false;
-//              $("bgImage").hidden = false;
+              //              $("bgImage").hidden = false;
               $("tab").hidden = true;
               $("tabC").hidden = false;
               $("tabC").index = 0;
@@ -2906,7 +2919,7 @@ $ui.render({
               $("tabAll").hidden = true;
               $("loading").text = "Loading...";
               $("bgInfo").hidden = false;
-//              $("bgImage").hidden = false;
+              //              $("bgImage").hidden = false;
               $("tab").hidden = true;
               $("tabC").hidden = false;
               $("tabC").index = 0;
@@ -2931,7 +2944,6 @@ $ui.render({
               getCat(catUrl);
               break;
             case 3: // 推荐
-              
               $("JavBus").add(recView);
               //$ui.render(recView)
               showTips(
@@ -2941,8 +2953,14 @@ $ui.render({
               $("recMatrix").data = [];
               $cache.set("recommend", RecAv.length);
               $("newIcon").hidden = true;
-              totalRec =  RecAv.length+RecBotAv.length
-              $("inputRec").placeholder = "总推荐 " +totalRec+ " 作者推荐 "+RecAv.length+" 网友推荐 "+RecBotAv.length
+              totalRec = RecAv.length + RecBotAv.length;
+              $("inputRec").placeholder =
+                "总推荐 " +
+                totalRec +
+                " 作者推荐 " +
+                RecAv.length +
+                " 网友推荐 " +
+                RecBotAv.length;
               RecAv.map(function(i) {
                 $("recMatrix").data = $("recMatrix").data.concat({
                   recCover: {
@@ -2980,32 +2998,31 @@ $ui.render({
                 $("initialView").hidden = true;
                 $ui.alert({
                   title: "收藏夹为空，如果做过收藏请看下面 ⬇️",
-                  message: "iCloud Drive 下的 JSBox 里面有个 JavBusBackup 文件，检查是否因为网络原因没下载（名字右边有个云朵点一下），其他名字后面带数字的可以删除\n\n是否打开 iCloud Drive？",
+                  message:
+                    "iCloud Drive 下的 JSBox 里面有个 JavBusBackup 文件，检查是否因为网络原因没下载（名字右边有个云朵点一下），其他名字后面带数字的可以删除\n\n是否打开 iCloud Drive？",
                   actions: [
                     {
                       title: "打开",
                       disabled: false, // Optional
                       handler: function() {
-                        $app.openURL("shareddocuments://")
-                        
+                        $app.openURL("shareddocuments://");
                       }
                     },
                     {
                       title: "取消",
                       handler: function() {
-                            return
+                        return;
                       }
                     }
                   ]
-                })
-                
+                });
               } else {
                 $("initialView").hidden = false;
               }
               //        if ($("tab").index == 0) {
 
               $("input").placeholder = "已收藏 " + length + " 部影片";
-              let tempFav = []
+              let tempFav = [];
               LocalData.favorite.map(function(i) {
                 tempFav = tempFav.concat({
                   code: i.code,
@@ -3018,17 +3035,20 @@ $ui.render({
                   },
                   recLabel: {
                     hidden: RecAvCode.indexOf(i.code) > -1 ? false : true,
-                    bgcolor:RecAuthorCode.indexOf(i.code)>-1? $color("#f68b1f"):$color("#b20083")
+                    bgcolor:
+                      RecAuthorCode.indexOf(i.code) > -1
+                        ? $color("#f68b1f")
+                        : $color("#b20083")
                   }
                 });
               });
-              $("initialView").data = tempFav
+              $("initialView").data = tempFav;
               if ($("initialView").data.length == 1) {
                 $("bgInfo").hidden = true;
-//                $("bgImage").hidden = true;
+                //                $("bgImage").hidden = true;
               } else {
                 $("bgInfo").hidden = false;
-//                $("bgImage").hidden = false;
+                //                $("bgImage").hidden = false;
               }
               break;
             case 5: //归档
@@ -3049,7 +3069,7 @@ $ui.render({
               }
               $("initialView").data = [];
               $("initialView").contentOffset = $point(0, 0);
-              let tempArc = []
+              let tempArc = [];
               LocalData.archive.map(function(i) {
                 tempArc = tempArc.concat({
                   code: i.code,
@@ -3062,17 +3082,20 @@ $ui.render({
                   },
                   recLabel: {
                     hidden: RecAvCode.indexOf(i.code) > -1 ? false : true,
-                    bgcolor:RecAuthorCode.indexOf(i.code)>-1? $color("#f68b1f"):$color("#b20083")
+                    bgcolor:
+                      RecAuthorCode.indexOf(i.code) > -1
+                        ? $color("#f68b1f")
+                        : $color("#b20083")
                   }
                 });
               });
-              $("initialView").data = tempArc
+              $("initialView").data = tempArc;
               if ($("initialView").data.length == 1) {
                 $("bgInfo").hidden = true;
-//                $("bgImage").hidden = true;
+                //                $("bgImage").hidden = true;
               } else {
                 $("bgInfo").hidden = false;
-//                $("bgImage").hidden = false;
+                //                $("bgImage").hidden = false;
               }
               break;
           }
@@ -3132,7 +3155,6 @@ function getRec(url) {
     }
   });
 }
-
 
 function aboutMag() {
   $ui.push(magnetList(favCode));
@@ -3238,37 +3260,36 @@ function catCover(title) {
             $ui.push(detailView(favCode));
             getDetail(data.link);
             if (LocalFavList.indexOf(shortCode) > -1) {
-                            $("favorite").title = "取消收藏";
-                            $("favorite").bgcolor = $color("#f25959");
-                          } else if (LocalArcList.indexOf(shortCode) > -1) {
-                            $("favorite").title = "已归档";
-                            $("favorite").bgcolor = $color("#aaaaaa");
-                          } else {
-                          $("favorite").title = "收藏";
-                         
-                        }
-//            if (
-//              $("menu").index == 0 ||
-//              $("menu").index == 1 ||
-//              $("menu").index == 2
-//            ) {
-//              if (LocalFavList.indexOf(shortCode) > -1) {
-//                $("favorite").title = "取消收藏";
-//                $("favorite").bgcolor = $color("#f25959");
-//              } else if (LocalArcList.indexOf(shortCode) > -1) {
-//                $("favorite").title = "已归档";
-//                $("favorite").bgcolor = $color("#aaaaaa");
-//              }
-//            } else if ($("menu").index == 4) {
-//              if (LocalFavList.indexOf(shortCode) > -1) {
-//                $("favorite").title = "归档";
-//              } else {
-//                $("favorite").title = "收藏";
-//              }
-//            } else {
-//              $("favorite").title = "删除";
-//              $("favorite").bgcolor = $color("#f25959");
-//            }
+              $("favorite").title = "取消收藏";
+              $("favorite").bgcolor = $color("#f25959");
+            } else if (LocalArcList.indexOf(shortCode) > -1) {
+              $("favorite").title = "已归档";
+              $("favorite").bgcolor = $color("#aaaaaa");
+            } else {
+              $("favorite").title = "收藏";
+            }
+            //            if (
+            //              $("menu").index == 0 ||
+            //              $("menu").index == 1 ||
+            //              $("menu").index == 2
+            //            ) {
+            //              if (LocalFavList.indexOf(shortCode) > -1) {
+            //                $("favorite").title = "取消收藏";
+            //                $("favorite").bgcolor = $color("#f25959");
+            //              } else if (LocalArcList.indexOf(shortCode) > -1) {
+            //                $("favorite").title = "已归档";
+            //                $("favorite").bgcolor = $color("#aaaaaa");
+            //              }
+            //            } else if ($("menu").index == 4) {
+            //              if (LocalFavList.indexOf(shortCode) > -1) {
+            //                $("favorite").title = "归档";
+            //              } else {
+            //                $("favorite").title = "收藏";
+            //              }
+            //            } else {
+            //              $("favorite").title = "删除";
+            //              $("favorite").bgcolor = $color("#f25959");
+            //            }
           }
         }
       },
@@ -3346,7 +3367,6 @@ function favDetailTapped(mode, Button) {
       LocalDirectorList.push(data.shortCode);
       LocalData.director.push(data);
     } else if (Button.position == "series") {
-      
       LocalSeriesList.push(data.shortCode);
       LocalData.series.push(data);
     } else if (Button.position == "filmMaker") {
@@ -3390,11 +3410,11 @@ function favDetailTapped(mode, Button) {
 function pushCat(sender, position = "") {
   $ui.push(catCover(sender.text));
   let shortCode = sender.info.split("/").pop();
-  
+
   if (sender.info.indexOf("uncensored") > -1) {
     shortCode = shortCode + "/uncensored";
   }
-//  alert(shortCode)
+  //  alert(shortCode)
   $("favDetail").info = {
     shortCode: shortCode,
     position: position,
@@ -3453,8 +3473,6 @@ function getJavLib() {
     }
   });
 }
-
-
 
 function getInitial(mode = "home", keyword = "", caturl = "") {
   page++;
@@ -3533,11 +3551,11 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
       //      $console.log(match)
       var data = [];
       match.map(function(i) {
-         link = /href="([\s\S]*?)(")/.exec(i)[1];
-         image = /<img src="([\s\S]*?)(")/.exec(i)[1];
+        link = /href="([\s\S]*?)(")/.exec(i)[1];
+        image = /<img src="([\s\S]*?)(")/.exec(i)[1];
         var title = /title="(.*?)(">)/.exec(i)[1];
-         code = /<date>(.*?)<\/date>/.exec(i)[1];
-         date = /\/\s<date>(.*?)<\/date><\/span>/.exec(i)[1];
+        code = /<date>(.*?)<\/date>/.exec(i)[1];
+        date = /\/\s<date>(.*?)<\/date><\/span>/.exec(i)[1];
         let hd = i.includes("高清");
         let sub = i.includes("字幕");
         $(matrixID).data = $(matrixID).data.concat({
@@ -3558,32 +3576,36 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
           },
           recLabel: {
             hidden: RecAvCode.indexOf(code) > -1 ? false : true,
-            bgcolor:RecAuthorCode.indexOf(code)>-1? $color("#f68b1f"):$color("#b20083")
-          },recGra: {
-                            hidden: LocalFavList.indexOf(code) > -1 ? false : true
-                          },
-                          recBlur: {
-                            hidden: LocalArcList.indexOf(code) > -1 ? false : true
-                          },
+            bgcolor:
+              RecAuthorCode.indexOf(code) > -1
+                ? $color("#f68b1f")
+                : $color("#b20083")
+          },
+          recGra: {
+            hidden: LocalFavList.indexOf(code) > -1 ? false : true
+          },
+          recBlur: {
+            hidden: LocalArcList.indexOf(code) > -1 ? false : true
+          }
         });
       });
       $("input").placeholder = "输入番号或演员进行搜索";
       $(loadingID).text = "";
       if ($(matrixID).data.length == 1) {
         $("bgInfo").hidden = true;
-//        $("bgImage").hidden = true;
+        //        $("bgImage").hidden = true;
         $ui.push(detailView(code));
         getDetail(link);
-        favLink = link
-        favSrc = image
-        favCode = code
-        favInfo = code + " | " + date
+        favLink = link;
+        favSrc = image;
+        favCode = code;
+        favInfo = code + " | " + date;
         shortCode = favLink.split("/").pop();
         favData = {
           code: code,
           src: favSrc,
           info: favInfo,
-          shortCode:code
+          shortCode: code
         };
         if (LocalFavList.indexOf(code) > -1) {
           $("favorite").title = "取消收藏";
@@ -3594,7 +3616,7 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
         }
       } else {
         $("bgInfo").hidden = false;
-//        $("bgImage").hidden = false;
+        //        $("bgImage").hidden = false;
       }
       //	  $("initialView").endRefreshing()
     }
@@ -3737,8 +3759,7 @@ function getJavMag(link, flag = "0") {
   });
 }
 
-function getAvglePreview(keyword,poster,flag) {
-  
+function getAvglePreview(keyword, poster, flag) {
   let url =
     "https://api.avgle.com/v1/search/" +
     encodeURI(keyword) +
@@ -3759,7 +3780,7 @@ function getAvglePreview(keyword,poster,flag) {
       let video_num = resp.data.response.total_videos;
       //      $console.log(video_num)
       if (video_num == 0) {
-        if(flag==1) $ui.error("☹️ 暂无八秒预览！");
+        if (flag == 1) $ui.error("☹️ 暂无八秒预览！");
         $ui.loading(false);
         return;
       }
@@ -3771,7 +3792,7 @@ function getAvglePreview(keyword,poster,flag) {
           id: "player",
           src: videoUrl,
           poster: poster,
-          loop:true
+          loop: true
         },
         layout: function(make, view) {
           let width = $device.info.screen.width - 16;
@@ -3789,7 +3810,7 @@ function getAvglePreview(keyword,poster,flag) {
           bgcolor: $color("clear")
         },
         layout: function(make, view) {
-//          make.top.equalTo($("filmName").bottom).offset(6);
+          //          make.top.equalTo($("filmName").bottom).offset(6);
           make.top.equalTo($("player").top).offset(3);
           make.right.inset(11);
           make.width.equalTo(20);
@@ -3822,24 +3843,23 @@ function getAvglePreview(keyword,poster,flag) {
         events: {
           tapped(sender) {
             $ui.menu({
-              items:["nplayer打开","分享链接"],
-              handler:function(title,idx){
-                if(idx==0) $app.openURL("nplayer-"+videoUrl)
-                else if(idx==1) $share.sheet([videoUrl]);
+              items: ["nplayer打开", "分享链接"],
+              handler: function(title, idx) {
+                if (idx == 0) $app.openURL("nplayer-" + videoUrl);
+                else if (idx == 1) $share.sheet([videoUrl]);
               }
-            })
+            });
           }
         }
       });
       $delay(0.5, function() {
         $("player").play();
-//        $delay(12,()=>{
-//          $("player").pause();
-//                        $("player").stopLoading();
-//                        $("player").remove();
-//        })
+        //        $delay(12,()=>{
+        //          $("player").pause();
+        //                        $("player").stopLoading();
+        //                        $("player").remove();
+        //        })
       });
-    
     }
   });
 }
@@ -3863,7 +3883,7 @@ function getDetail(url) {
         $("whoInFilm").hidden = false;
         match.map(function(i) {
           name = /<span>(.*?)<\/span>/.exec(i)[1];
-          
+
           var nameLink = /href="([\s\S]*?)(")/.exec(i)[1];
           var nameImage = /<img src="([\s\S]*?)(")/.exec(i)[1];
           //$ui.action(nameImage)
@@ -3877,7 +3897,7 @@ function getDetail(url) {
             }
           });
         });
-        JaponX(favCode,name,0)
+        //        JaponX(favCode,name,0)
       } else {
         $("whoInFilm").hidden = true;
       }
@@ -3947,7 +3967,7 @@ function getDetail(url) {
         var directorName = "未知";
       }
       $("filmInfo").text = filmTime + "  " + "(时长 " + filmLast + ")";
-      
+
       $("filmInfo").hidden = isInToday();
       var code = /<span class="header">識別碼:[\s\S]*?">([\s\S]*?)<\/span>/.exec(
         resp.data
@@ -3955,12 +3975,12 @@ function getDetail(url) {
       $("check").info = code;
       $("aboutFilm").hidden = isInToday();
       $("share").info = code;
-      $("share").url = url
+      $("share").url = url;
       $("submission").info = code;
-      if(RecAvCode.indexOf(code)>-1){
-        $("submission").title= "已推荐"
+      if (RecAvCode.indexOf(code) > -1) {
+        $("submission").title = "已推荐";
       }
-      $("submission").url = url
+      $("submission").url = url;
       $("filmEstabName").text = filmEstabName;
       $("filmEstabName").hidden = isInToday();
       $("filmEstab").hidden = isInToday();
@@ -4008,7 +4028,7 @@ function getDetail(url) {
       //        $("loadingm").text = "☹️ JavBus 暂无磁链"
       //        $("loadingm").hidden = false
       //      } else $("loadingm").hidden = true;
-      getAvglePreview(favCode,filmCover)
+      getAvglePreview(favCode, filmCover);
     }
   });
 }
@@ -4135,7 +4155,10 @@ function getActress(url) {
           },
           recLabel: {
             hidden: RecAvCode.indexOf(code) > -1 ? false : true,
-            bgcolor:RecAuthorCode.indexOf(code)>-1? $color("#f68b1f"):$color("#b20083")
+            bgcolor:
+              RecAuthorCode.indexOf(code) > -1
+                ? $color("#f68b1f")
+                : $color("#b20083")
           }
         });
       });
@@ -4687,7 +4710,7 @@ function wechatPay() {
         title: "确定",
         handler: function() {
           let payUrl = "weixin://scanqrcode";
-          $ui.toast("赞赏码下载中...",5)
+          $ui.toast("赞赏码下载中...", 5);
           $http.download({
             url:
               "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/wechat.jpg",
@@ -4788,10 +4811,10 @@ function initial() {
   if ($cache.get("samp") === undefined) {
     readMe();
   }
-//  let recUrl =
-//    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Rec";
-//  let recbotUrl =
-//    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/RecBot";
+  //  let recUrl =
+  //    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Rec";
+  //  let recbotUrl =
+  //    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/RecBot";
   getNewRec("Author");
   //  getNewRec(recbotUrl,RecBotAv);
 }
@@ -4858,11 +4881,9 @@ function jsDetect() {
 }
 
 function getNewRec(mode = "Author") {
-  let recUrl =
-    "https://gitlab.com/nicktimebreak/javrev/raw/master/Rec";
-  let recbotUrl =
-    "https://gitlab.com/nicktimebreak/javrev/raw/master/RecBot";
-//  let url = mode == "Author" ? recUrl : recbotUrl;
+  let recUrl = "https://gitlab.com/nicktimebreak/javrev/raw/master/Rec";
+  let recbotUrl = "https://gitlab.com/nicktimebreak/javrev/raw/master/RecBot";
+  //  let url = mode == "Author" ? recUrl : recbotUrl;
   $http.get({
     url: recUrl,
     handler: function(resp) {
@@ -4874,7 +4895,7 @@ function getNewRec(mode = "Author") {
         RecAvCode = RecAvCode.concat(i.code);
         RecAuthorCode = RecAuthorCode.concat(i.code);
       });
-      $cache.set("RecAvCode",RecAvCode)
+      $cache.set("RecAvCode", RecAvCode);
     }
   });
   $http.get({
@@ -4886,36 +4907,35 @@ function getNewRec(mode = "Author") {
         RecAvCode = RecAvCode.concat(i.code);
         RecBotCode = RecBotCode.concat(i.code);
       });
-      $cache.set("RecAvCode",RecAvCode)
+      $cache.set("RecAvCode", RecAvCode);
     }
   });
 }
 
-
 function openJS(code) {
-  getOpenData(code)
-  favLink = "https://www.javbus.com/"+code
+  getOpenData(code);
+  favLink = "https://www.javbus.com/" + code;
   $ui.push(detailView(code));
   getDetail(favLink);
   getInitial();
 }
 
-function getOpenData(code){
+function getOpenData(code) {
   let url = encodeURI("https://www.javbus.com/search/" + code + "/");
   $http.request({
-    url:url,
-    handler: function(resp){
-      let data =resp.data
-      var image = /photo-frame">[\s\S]*?<img src="([\s\S]*?)(")/.exec(data)[1];   
+    url: url,
+    handler: function(resp) {
+      let data = resp.data;
+      var image = /photo-frame">[\s\S]*?<img src="([\s\S]*?)(")/.exec(data)[1];
       var date = /\/\s<date>(.*?)<\/date><\/span>/.exec(data)[1];
       favData = {
         code: code,
-        info:code+" | "+date,
-        src:image,
+        info: code + " | " + date,
+        src: image,
         shortCode: code
       };
     }
-  })
+  });
 }
 
 function nowTime() {
@@ -4951,194 +4971,280 @@ function readMe() {
   });
 }
 
-function JaponX(code,name,flag){
-  console.log(code+" "+name)
+function JaponX(code, name, flag) {
+  console.log(code + " " + name);
   $http.get({
-    url:"https://www.japonx.tv/portal/index/search.html?k="+code+"&x=0&y=0",
-    handler:function(resp){
-      let data = resp.data
-      
-      let regID = /portal\/index\/detail\/id\/(\d+).html/gm
-      let idArray = data.match(regID)
-      let lenId = idArray.length
-      console.log("idArray: "+idArray)
-      if(!idArray){
-        if(flag==1) $ui.error("未找到完整影片！")
-        return
+    url:
+      "https://www.japonx.tv/portal/index/search.html?k=" + code + "&x=0&y=0",
+    handler: function(resp) {
+      let data = resp.data;
+
+      let regID = /portal\/index\/detail\/id\/(\d+).html/gm;
+      let idArray = data.match(regID);
+      let lenId = idArray.length;
+      console.log("idArray: " + idArray);
+      if (!idArray) {
+        if (flag == 1) $ui.error("未找到完整影片！");
+        return;
       }
-      let regYanyuan = /\/portal\/index\/search\/yanyuan_id\/\d+.html">.*<\/a>/gm
-      let yanyuanArray = data.match(regYanyuan)
-      console.log(yanyuanArray)
-      let len = yanyuanArray.length
-      let pop = len - lenId
-      yanyuanArray.splice(0,pop)
-      for(let i=0;i<lenId;i++){
-        if(yanyuanArray[i].indexOf(name)>0){
-          console.log("actressNum: "+i)
-          let id = regID.exec(idArray[i])[1]
-          console.log("movieId: "+id)
-          if (flag==0) {
-//            $ui.toast("可预览完整影片！",0.8)
-            $("check").bgcolor=$color("tint")
-            $("check").titleColor=$color("white")
-            return
+      let regYanyuan = /\/portal\/index\/search\/yanyuan_id\/\d+.html">.*<\/a>/gm;
+      let yanyuanArray = data.match(regYanyuan);
+      console.log(yanyuanArray);
+      let len = yanyuanArray.length;
+      let pop = len - lenId;
+      yanyuanArray.splice(0, pop);
+      for (let i = 0; i < lenId; i++) {
+        if (yanyuanArray[i].indexOf(name) > 0) {
+          console.log("actressNum: " + i);
+          let id = regID.exec(idArray[i])[1];
+          console.log("movieId: " + id);
+          if (flag == 0) {
+            //            $ui.toast("可预览完整影片！",0.8)
+            $("check").bgcolor = $color("tint");
+            $("check").titleColor = $color("white");
+            return;
           }
-          geturl(id)
-          return
+          geturl(id);
+          return;
         }
       }
-      if(flag==1) $ui.error("未找到完整影片 ！")
-      return
+      if (flag == 1) $ui.error("未找到完整影片 ！");
+      return;
     }
-  })
+  });
 }
-
 
 function geturl(id) {
   $ui.loading(true);
   $http.get({
     url: "https://www.japonx.tv/portal/index/ajax_get_js.html?id=" + id,
-    handler: function (resp) {
+    handler: function(resp) {
       $ui.loading(false);
       var arr = resp.data;
-      var fg1 = arr.split("p}('")[1]
+      var fg1 = arr.split("p}('")[1];
       var fg2 = fg1.split("}});")[0] + "}});";
       var k = "|" + arr.match(/\,\'\|(\S*?).split/)[1];
-      var tk = k.split('|');
+      var tk = k.split("|");
       var ac = arr.match(/\}\)\;\'\,(\S*?)\,/)[1];
-      urljs(tk, ac, fg2)
+      urljs(tk, ac, fg2);
     }
   });
 }
 
 function urljs(tk, ac, fg2) {
-  var aa = function (p, a, c, k, e, d) { e = function (c) { return (c < a ? '' : e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36)) }; if (!''.replace(/^/, String)) { while (c--) { d[e(c)] = k[c] || e(c) } k = [function (e) { return d[e] }]; e = function () { return '\\w+' }; c = 1 }; while (c--) { if (k[c]) { p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]) } } return p }(fg2, ac, ac, tk, 0, {});
+  var aa = (function(p, a, c, k, e, d) {
+    e = function(c) {
+      return (
+        (c < a ? "" : e(parseInt(c / a))) +
+        ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36))
+      );
+    };
+    if (!"".replace(/^/, String)) {
+      while (c--) {
+        d[e(c)] = k[c] || e(c);
+      }
+      k = [
+        function(e) {
+          return d[e];
+        }
+      ];
+      e = function() {
+        return "\\w+";
+      };
+      c = 1;
+    }
+    while (c--) {
+      if (k[c]) {
+        p = p.replace(new RegExp("\\b" + e(c) + "\\b", "g"), k[c]);
+      }
+    }
+    return p;
+  })(fg2, ac, ac, tk, 0, {});
   var url = aa.match(/url:\\\'(\S*?)\\\'/)[1];
   url = url.replace(/\'/g, "");
-  play(url)
+  play(url);
 }
 
 function play(url) {
   if ($("player")) {
+    $("player").pause();
+    $("player").stopLoading();
+    $("player").remove();
+  }
+  $("detailView").add({
+    type: "video",
+    props: {
+      id: "player",
+      src: url,
+      poster: filmCover,
+      loop: true
+    },
+    layout: function(make, view) {
+      let width = $device.info.screen.width - 16;
+      let height = (width * 67) / 100;
+      make.centerX.equalTo();
+      make.top.equalTo($("filmName").bottom).offset(5);
+      make.size.equalTo($size(width, height));
+    }
+  });
+  $("detailView").add({
+    type: "button",
+    props: {
+      title: "X",
+      id: "X",
+      bgcolor: $color("clear")
+    },
+    layout: function(make, view) {
+      //          make.top.equalTo($("filmName").bottom).offset(6);
+      make.top.equalTo($("player").top).offset(3);
+      make.right.inset(11);
+      make.width.equalTo(20);
+      make.height.equalTo(20);
+    },
+    events: {
+      tapped(sender) {
+        if ($("player")) {
           $("player").pause();
           $("player").stopLoading();
           $("player").remove();
         }
-   $("detailView").add({
-           type: "video",
-           props: {
-             id: "player",
-             src: url,
-             poster: filmCover,
-             loop:true
-           },
-           layout: function(make, view) {
-             let width = $device.info.screen.width - 16;
-             let height = (width * 67) / 100;
-             make.centerX.equalTo();
-             make.top.equalTo($("filmName").bottom).offset(5);
-             make.size.equalTo($size(width, height));
-           }
-         });
-      $("detailView").add({
-              type: "button",
-              props: {
-                title: "X",
-                id: "X",
-                bgcolor: $color("clear")
-              },
-              layout: function(make, view) {
-      //          make.top.equalTo($("filmName").bottom).offset(6);
-                make.top.equalTo($("player").top).offset(3);
-                make.right.inset(11);
-                make.width.equalTo(20);
-                make.height.equalTo(20);
-              },
-              events: {
-                tapped(sender) {
-                  if ($("player")) {
-                    $("player").pause();
-                    $("player").stopLoading();
-                    $("player").remove();
-                  }
-                  $("X").hidden = true;
-                }
-              }
-            });
-            $("detailView").add({
-                    type: "button",
-                    props: {
-                      title: "↗",
-                      id: "shareVideo",
-                      bgcolor: $color("clear")
-                    },
-                    layout: function(make, view) {
-                      make.top.equalTo($("player").bottom).offset(-20);
-                      make.right.inset(11);
-                      make.width.equalTo(20);
-                      make.height.equalTo(20);
-                    },
-                    events: {
-                      tapped(sender) {
-                        $ui.menu({
-                          items:["nplayer打开","分享链接"],
-                          handler:function(title,idx){
-                            if(idx==0) $app.openURL("nplayer-"+url)
-                            else if(idx==1) $share.sheet([url]);
-                          }
-                        })
-                      }
-                    }
-                  });
-            $delay(0.5, function() {
-                    $("player").play();
-                  });
-//  $ui.render({
-//    props: {
-//      title: "JavBus"
-//    },
-//    views: [{
-//      type: "web",
-//      props: {
-//        id: "japronx",
-//        url: url
-//      },
-//      layout: $layout.fill
-//    },
-//    ]
-//  });
+        $("X").hidden = true;
+      }
+    }
+  });
+  $("detailView").add({
+    type: "button",
+    props: {
+      title: "↗",
+      id: "shareVideo",
+      bgcolor: $color("clear")
+    },
+    layout: function(make, view) {
+      make.top.equalTo($("player").bottom).offset(-20);
+      make.right.inset(11);
+      make.width.equalTo(20);
+      make.height.equalTo(20);
+    },
+    events: {
+      tapped(sender) {
+        $ui.menu({
+          items: ["nplayer打开", "分享链接"],
+          handler: function(title, idx) {
+            if (idx == 0) $app.openURL("nplayer-" + url);
+            else if (idx == 1) $share.sheet([url]);
+          }
+        });
+      }
+    }
+  });
+  $delay(0.5, function() {
+    $("player").play();
+  });
+  //  $ui.render({
+  //    props: {
+  //      title: "JavBus"
+  //    },
+  //    views: [{
+  //      type: "web",
+  //      props: {
+  //        id: "japronx",
+  //        url: url
+  //      },
+  //      layout: $layout.fill
+  //    },
+  //    ]
+  //  });
+}
+
+function searchAr(text) {
+  let tempArc = [];
+  LocalData.archive.map(function(i) {
+    if (i.code.indexOf(text.toUpperCase()) > -1) {
+      tempArc = tempArc.concat({
+        code: i.code,
+        link: homepage + i.shortCode,
+        initialCover: {
+          src: i.src
+        },
+        info: {
+          text: i.info
+        },
+        recLabel: {
+          hidden: RecAvCode.indexOf(i.code) > -1 ? false : true,
+          bgcolor:
+            RecAuthorCode.indexOf(i.code) > -1
+              ? $color("#f68b1f")
+              : $color("#b20083")
+        }
+      });
+    }
+  });
+  $("initialView").data = tempArc;
 }
 
 function tutorial() {
-  var text = "声明\n\n1. 脚本含成人内容，未满十八岁禁止运行；\n2. 脚本所有内容来自 https://www.javbus.com 与脚本作者无任何关系；\n3. 脚本制作纯属技术交流，无任何商业利益或传播淫秽目的。"
+  var text =
+    "声明\n\n1. 脚本含成人内容，未满十八岁禁止运行；\n2. 脚本所有内容来自 https://www.javbus.com 与脚本作者无任何关系；\n3. 脚本制作纯属技术交流，无任何商业利益或传播淫秽目的。";
 
   // Views
-  var hintView = $objc("BaseHintView").invoke("alloc").invoke("initWithText", text)
-  var textView = hintView.invoke("subviews").invoke("objectAtIndex", 1).invoke("subviews").invoke("objectAtIndex", 1)
+  var hintView = $objc("BaseHintView")
+    .invoke("alloc")
+    .invoke("initWithText", text);
+  var textView = hintView
+    .invoke("subviews")
+    .invoke("objectAtIndex", 1)
+    .invoke("subviews")
+    .invoke("objectAtIndex", 1);
 
   // Attribute for text
-  var string = $objc("NSMutableAttributedString").invoke("alloc").invoke("initWithString", text)
-  string.invoke("addAttribute:value:range:", "NSFont", $font("bold", 26), $range(0, 2))
-  string.invoke("setAlignment:range:", $align.center, $range(0, 2))
+  var string = $objc("NSMutableAttributedString")
+    .invoke("alloc")
+    .invoke("initWithString", text);
+  string.invoke(
+    "addAttribute:value:range:",
+    "NSFont",
+    $font("bold", 26),
+    $range(0, 2)
+  );
+  string.invoke("setAlignment:range:", $align.center, $range(0, 2));
 
-  string.invoke("addAttribute:value:range:", "NSFont", textView.invoke("font"), $range(2, string.invoke("length") - 2))
-  string.invoke("addAttribute:value:range:", "NSColor", $color("tint"), $range(text.indexOf("任何关系"), 2))
-  string.invoke("addAttribute:value:range:", "NSColor", $color("red"), $range(text.indexOf("禁止运行"), 2))
+  string.invoke(
+    "addAttribute:value:range:",
+    "NSFont",
+    textView.invoke("font"),
+    $range(2, string.invoke("length") - 2)
+  );
+  string.invoke(
+    "addAttribute:value:range:",
+    "NSColor",
+    $color("tint"),
+    $range(text.indexOf("任何关系"), 2)
+  );
+  string.invoke(
+    "addAttribute:value:range:",
+    "NSColor",
+    $color("red"),
+    $range(text.indexOf("禁止运行"), 2)
+  );
   //string.invoke("addAttribute:value:range:", "NSColor", $color("tint"), $range(text.indexOf("无任何"), 2))
 
   // Paragraph Style
-  var para = $objc("NSMutableParagraphStyle").invoke("alloc.init")
-  para.invoke("setParagraphSpacing", 10)
-  para.invoke("setAlignment", $align.left)
+  var para = $objc("NSMutableParagraphStyle").invoke("alloc.init");
+  para.invoke("setParagraphSpacing", 10);
+  para.invoke("setAlignment", $align.left);
 
-  string.invoke("addAttribute:value:range:", "NSParagraphStyle", para, $range(2, string.invoke("length") - 2))
+  string.invoke(
+    "addAttribute:value:range:",
+    "NSParagraphStyle",
+    para,
+    $range(2, string.invoke("length") - 2)
+  );
 
   // Setup
-  textView.invoke("setAttributedText", string)
+  textView.invoke("setAttributedText", string);
 
   // Show View
-  hintView.invoke("show")
-
+  hintView.invoke("show");
 }
 
 function main(url) {
@@ -5155,17 +5261,17 @@ function main(url) {
   if ($context.query.code) {
     //let code = $context.query.code;
     let code = clipboardDetect($context.query.code).keyword;
-    if(!code){
-      alert("💔 搜索无果,车牌无效",2)
+    if (!code) {
+      alert("💔 搜索无果,车牌无效", 2);
       getInitial();
-      return
+      return;
     }
-    code = code.toUpperCase()
-    if(code.indexOf('-')<0){
-      code = code.replace(/([a-zA-Z]+)/,`$1-`)
+    code = code.toUpperCase();
+    if (code.indexOf("-") < 0) {
+      code = code.replace(/([a-zA-Z]+)/, `$1-`);
     }
     favCode = code;
-    RecAvCode = $cache.get("RecAvCode")
+    RecAvCode = $cache.get("RecAvCode");
     openJS(code);
     if (LocalFavList.indexOf(code) > -1) {
       $("favorite").title = "取消收藏";
@@ -5201,7 +5307,7 @@ function start() {
   }
 }
 
-LocalDataPath = "drive://JavBusBackup.json";
+LocalDataPath = "JavBusBackup.json";
 url = "https://www.javbus.com/";
 
 //let LAContext = $objc("LAContext").invoke("alloc.init");
