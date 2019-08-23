@@ -40,7 +40,7 @@ https://t.me/nicked
 
 */
 
-version = 7.95;
+version = 7.96;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -2084,26 +2084,26 @@ function detailView(code) {
 const urls = [
   /*{
     name: "磁力猫",
-    pattern: "http://www.cilimao.me/api/search?size=10&sortDirections=desc&page=0&word="
+    pattern: "https://bt.biedian.me/api/search?source=%E7%A3%81%E5%8A%9B%E7%8E%8B&keyword=meyd-248&page=1&sort=time&a=1566535262486&b=9e46e189be0a95d862379467a19322e7"
   }, */
+  {
+    name: "磁力王",
+    pattern:
+      "https://bt.biedian.me/api/search?source=%E7%A3%81%E5%8A%9B%E7%8E%8B&keyword="
+  },
   {
     name: "种子搜",
     pattern:
-      "http://bt.xiandan.in/api/search?source=%E7%A7%8D%E5%AD%90%E6%90%9C&keyword="
+      "http://bt.biedian.me/api/search?source=%E7%A7%8D%E5%AD%90%E6%90%9C&keyword="
   },
   {
-    name: "屌丝搜",
+    name: "BT4G",
     pattern:
-      "http://bt.xiandan.in/api/search?source=E5%B1%8C%E4%B8%9D%E6%90%9C&keyword="
+      "https://bt.biedian.me/api/search?source=BT4G&keyword="
   },
   {
-    name: "磁力吧",
-    pattern:
-      "http://bt.xiandan.in/api/search?source=%E7%A3%81%E5%8A%9B%E5%90%A7&keyword="
-  },
-  {
-    name: "cililiana",
-    pattern: "http://bt.xiandan.in/api/search?source=cililiana&keyword="
+    name: "Nyaa",
+    pattern: "https://bt.biedian.me/api/search?source=Sukebei%20Nyaa&keyword="
   }
 ];
 
@@ -4427,10 +4427,11 @@ function getMagnet(code) {
   showTips("Meg", "单击复制磁链，\n左滑分享磁链,\n若无磁链，尝试下拉刷新");
   $ui.loading(true);
   $http.request({
-    url: urls[$("mMenu").index].pattern + code + "&page=1",
+    url: urls[$("mMenu").index].pattern + code+"&page=1&sort=time&a=1566535262486&b=9e46e189be0a95d862379467a19322e7" ,
     handler: function(resp) {
-      var data = resp.data.results;
-      if (!data) {
+      var data = resp.data;
+      $console.log(resp.data)
+      if (!data.success) {
         $("mlist").data = [
           {
             mFileName: {
@@ -4446,16 +4447,17 @@ function getMagnet(code) {
           }
         ];
       } else {
-        data.map(function(i) {
+        data.data.results.map(function(i) {
           $("mlist").data = $("mlist").data.concat({
             mFileName: {
-              text: i.name
+              text: i.name,
+              textColor:i.name.indexOf("中文")>-1?$color("red"):$color("black")
             },
             mFileSize: {
               text: i.formatSize
             },
             mTime: {
-              text: i.count
+              text: i.date
             },
             info: i.magnet
           });
