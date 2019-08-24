@@ -2999,7 +2999,7 @@ $ui.render({
                 $ui.alert({
                   title: "收藏夹为空，如果做过收藏请看下面 ⬇️",
                   message:
-                    "iCloud Drive 下的 JSBox 里面有个 JavBusBackup 文件，检查是否因为网络原因没下载（名字右边有个云朵点一下），其他名字后面带数字的可以删除\n\n是否打开 iCloud Drive？",
+                    "鉴于 iCloud 网络问题经常使备份文件丢失，7.95 版本开始备份改为本地存储，可访问脚本内的文件管理查看，亦可将原 iCloud 里的 JavbusBackup.json 移动至脚本的文件管理接续前期的收藏数据(请在脚本边际页面点击右下角的设置按钮，再点击文件管理。￼)",
                   actions: [
                     {
                       title: "打开",
