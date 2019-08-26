@@ -1621,7 +1621,7 @@ function detailView(code) {
                           title: "安装",
                           handler: function() {
                             var url =
-                              "jsbox://import?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/Avgle/Avgle.js&name=Avgle&icon=icon_87.png&types=1&version=4.1&author=Nicked&website=https://t.me/nicked";
+                              "jsbox://import?url=https://raw.githubusercontent.com/Nicked639/xteko/master/Avgle/Avgle.js&name=Avgle&icon=icon_87.png&types=1&version=4.1&author=Nicked&website=https://t.me/nicked";
                             $app.openURL(encodeURI(url));
                             $app.close();
                           }
@@ -4648,19 +4648,16 @@ function iniCat(titles) {
 function scriptVersionUpdate() {
   $http.get({
     url:
-      "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/updateInfo",
+      "https://raw.githubusercontent.com/Nicked639/xteko/master/JavBus/updateInfo",
     handler: function(resp) {
       var afterVersion = resp.data.version;
       var msg = resp.data.msg;
       if (afterVersion > version) {
         $ui.toast("检测到脚本更新...");
-        // var url = "jsbox://install?url=https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js&name=JavBus&icon=icon_087.png&types=1&author=Nicked&website=https://t.me/nicked";
-        // $app.openURL(encodeURI(url));
-        // $app.close()
 
         $http.download({
           url:
-            "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/JavBus.js",
+            "https://raw.githubusercontent.com/Nicked639/xteko/master/JavBus/JavBus.js",
           handler: resp => {
             let box = resp.data;
             $addin.save({
@@ -4715,7 +4712,7 @@ function wechatPay() {
           $ui.toast("赞赏码下载中...", 5);
           $http.download({
             url:
-              "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/wechat.jpg",
+              "https://raw.githubusercontent.com/Nicked639/xteko/master/JavBus/wechat.jpg",
             progress: function(bytesWritten, totalBytes) {
               var percentage = (bytesWritten * 1.0) / totalBytes;
             },
@@ -4813,10 +4810,6 @@ function initial() {
   if ($cache.get("samp") === undefined) {
     readMe();
   }
-  //  let recUrl =
-  //    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Rec";
-  //  let recbotUrl =
-  //    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/RecBot";
   getNewRec("Author");
   //  getNewRec(recbotUrl,RecBotAv);
 }
@@ -4883,8 +4876,8 @@ function jsDetect() {
 }
 
 function getNewRec(mode = "Author") {
-  let recUrl = "https://gitlab.com/nicktimebreak/javrev/raw/master/Rec";
-  let recbotUrl = "https://gitlab.com/nicktimebreak/javrev/raw/master/RecBot";
+  let recUrl = "https://gitlab.com/Nicked639/javrev/raw/master/Rec";
+  let recbotUrl = "https://gitlab.com/Nicke6d39/javrev/raw/master/RecBot";
   //  let url = mode == "Author" ? recUrl : recbotUrl;
   $http.get({
     url: recUrl,
@@ -4950,7 +4943,7 @@ function nowTime() {
 
 function readMe() {
   let updateUrl =
-    "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/Readme.txt";
+    "https://raw.githubusercontent.com/Nicked639/xteko/master/JavBus/Readme.txt";
 
   $cache.set("samp", "1");
   $http.get({
