@@ -40,7 +40,7 @@ https://t.me/nicked
 
 */
 
-version = 7.96;
+version = 7.97;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1792,7 +1792,7 @@ function detailView(code) {
               handler: function(title, idx) {
                 if (idx == 0) {
                   let url =
-                    "https://nicktimebreak.github.io/JSB2JB?code=" +
+                    "https://shadowNicked.github.io/?code=" +
                     sender.info;
                   $http.shorten({
                     url: url,
