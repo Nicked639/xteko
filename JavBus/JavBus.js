@@ -40,7 +40,7 @@ https://t.me/nicked
 
 */
 
-version = 7.97;
+version = 7.98;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -4877,7 +4877,7 @@ function jsDetect() {
 
 function getNewRec(mode = "Author") {
   let recUrl = "https://gitlab.com/Nicked639/javrev/raw/master/Rec";
-  let recbotUrl = "https://gitlab.com/Nicke6d39/javrev/raw/master/RecBot";
+  let recbotUrl = "https://gitlab.com/Nicked639/javrev/raw/master/RecBot";
   //  let url = mode == "Author" ? recUrl : recbotUrl;
   $http.get({
     url: recUrl,
