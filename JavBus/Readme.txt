@@ -1,4 +1,4 @@
-# JavBus V7.97
+# JavBus V7.98
 
 ### 声明
 
@@ -10,7 +10,7 @@
 
 ### 本次更新
 
-- 试试 Telegram 上的 @JBGuidebot 吧，给他发番号
+- 再试试 Telegram 上的 @JBGuidebot 吧，给他发番号
 
 ### 最近更新
 
