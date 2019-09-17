@@ -1,4 +1,5 @@
-var method = "4"
+var host = "www.taotu8.net";
+var method = "";
 var HOME = "https://www.192td.com";
 var CNUM = 0;
 var LocalDataPath = "taotu8.json";
@@ -10,339 +11,341 @@ var title = "";
 var detailUrl = "";
 var folderName = "";
 var subNum = -1;
-var IMGList = []
+var IMGList = [];
 let category = [
   {
     title: "高清",
     addr: "/gq/",
     sub: [
-   {
-     "title": "秀人网",
-     "addr": "/gq/xiuren/"
-   },
-   {
-     "title": "美媛馆",
-     "addr": "/gq/mygirl/"
-   },
-   {
-     "title": "魅妍社",
-     "addr": "/gq/mistar/"
-   },
-   {
-     "title": "尤果网",
-     "addr": "/gq/ugirls/"
-   },
-   {
-     "title": "波萝社",
-     "addr": "/gq/bololi/"
-   },
-   {
-     "title": "模范学院",
-     "addr": "/gq/mfstar/"
-   },
-   {
-     "title": "嗲囡囡",
-     "addr": "/gq/feilin/"
-   },
-   {
-     "title": "爱蜜社",
-     "addr": "/gq/imiss/"
-   },
-   {
-     "title": "优星馆",
-     "addr": "/gq/uxing/"
-   },
-   {
-     "title": "影私荟",
-     "addr": "/gq/wings/"
-   },
-   {
-     "title": "蜜桃社",
-     "addr": "/gq/miitao/"
-   },
-   {
-     "title": "顽味生活",
-     "addr": "/gq/taste/"
-   },
-   {
-     "title": "尤物馆",
-     "addr": "/gq/youwu/"
-   },
-   {
-     "title": "花の颜",
-     "addr": "/gq/huayan/"
-   },
-   {
-     "title": "Kimoe",
-     "addr": "/gq/kimoe/"
-   },
-   {
-     "title": "星乐园",
-     "addr": "/gq/leyuan/"
-   },
-   {
-     "title": "糖果画报",
-     "addr": "/gq/candy/"
-   },
-   {
-     "title": "推女神",
-     "addr": "/gq/tgod/"
-   },
-   {
-     "title": "御女郎",
-     "addr": "/gq/dkgirl/"
-   },
-   {
-     "title": "尤蜜荟",
-     "addr": "/gq/youmi/"
-   },
-   {
-     "title": "克拉女神",
-     "addr": "/gq/kl/"
-   },
-   {
-     "title": "车展",
-     "addr": "/gq/car/"
-   },
-   {
-     "title": "ChinaJoy",
-     "addr": "/gq/chinajoy/"
-   },
-   {
-     "title": "CosPlay动漫",
-     "addr": "/gq/dm/"
-   },
-   {
-     "title": "会展",
-     "addr": "/gq/huizhan/"
-   },
-   {
-     "title": "性感美女",
-     "addr": "/gq/meinv/"
-   }
- ]
+      {
+        title: "秀人网",
+        addr: "/gq/xiuren/"
+      },
+      {
+        title: "美媛馆",
+        addr: "/gq/mygirl/"
+      },
+      {
+        title: "魅妍社",
+        addr: "/gq/mistar/"
+      },
+      {
+        title: "尤果网",
+        addr: "/gq/ugirls/"
+      },
+      {
+        title: "波萝社",
+        addr: "/gq/bololi/"
+      },
+      {
+        title: "模范学院",
+        addr: "/gq/mfstar/"
+      },
+      {
+        title: "嗲囡囡",
+        addr: "/gq/feilin/"
+      },
+      {
+        title: "爱蜜社",
+        addr: "/gq/imiss/"
+      },
+      {
+        title: "优星馆",
+        addr: "/gq/uxing/"
+      },
+      {
+        title: "影私荟",
+        addr: "/gq/wings/"
+      },
+      {
+        title: "蜜桃社",
+        addr: "/gq/miitao/"
+      },
+      {
+        title: "顽味生活",
+        addr: "/gq/taste/"
+      },
+      {
+        title: "尤物馆",
+        addr: "/gq/youwu/"
+      },
+      {
+        title: "花の颜",
+        addr: "/gq/huayan/"
+      },
+      {
+        title: "Kimoe",
+        addr: "/gq/kimoe/"
+      },
+      {
+        title: "星乐园",
+        addr: "/gq/leyuan/"
+      },
+      {
+        title: "糖果画报",
+        addr: "/gq/candy/"
+      },
+      {
+        title: "推女神",
+        addr: "/gq/tgod/"
+      },
+      {
+        title: "御女郎",
+        addr: "/gq/dkgirl/"
+      },
+      {
+        title: "尤蜜荟",
+        addr: "/gq/youmi/"
+      },
+      {
+        title: "克拉女神",
+        addr: "/gq/kl/"
+      },
+      {
+        title: "车展",
+        addr: "/gq/car/"
+      },
+      {
+        title: "ChinaJoy",
+        addr: "/gq/chinajoy/"
+      },
+      {
+        title: "CosPlay动漫",
+        addr: "/gq/dm/"
+      },
+      {
+        title: "会展",
+        addr: "/gq/huizhan/"
+      },
+      {
+        title: "性感美女",
+        addr: "/gq/meinv/"
+      }
+    ]
   },
   {
     title: "国产",
     addr: "/gc/",
-    sub:[
-  {
-    "title": "Beautyleg",
-    "addr": "/gc/bl/"
-  },
-  {
-    "title": "Beautyleg Free download",
-    "addr": "/gc/blfd/"
-  },
-  {
-    "title": "森萝财团",
-    "addr": "/gc/slct/"
-  },
-  {
-    "title": "头条女神",
-    "addr": "/gc/toutiao/"
-  },
-  {
-    "title": "LegBaby",
-    "addr": "/gc/lb/"
-  },
-  {
-    "title": "IShow",
-    "addr": "/gc/ishow/"
-  },
-  {
-    "title": "Rosi",
-    "addr": "/gc/rosimm/"
-  },
-  {
-    "title": "假面女皇",
-    "addr": "/gc/mq/"
-  },
-  {
-    "title": "丽柜",
-    "addr": "/gc/ligui/"
-  },
-  {
-    "title": "PANS写真",
-    "addr": "/gc/pans/"
-  },
-  {
-    "title": "口罩系列",
-    "addr": "/gc/rosi/"
-  },
-  {
-    "title": "第四印象",
-    "addr": "/gc/disi/"
-  },
-  {
-    "title": "Beautyleg番外篇",
-    "addr": "/gc/blfw/"
-  },
-  {
-    "title": "动感小站",
-    "addr": "/gc/dg/"
-  },
-  {
-    "title": "如壹美眉",
-    "addr": "/gc/ru1mm/"
-  },
-  {
-    "title": "异思趣向",
-    "addr": "/gc/iess/"
-  },
-  {
-    "title": "AISS",
-    "addr": "/gc/aiss/"
-  },
-  {
-    "title": "V女郎",
-    "addr": "/gc/vgirl/"
-  },
-  {
-    "title": "10情趣",
-    "addr": "/gc/10qq/"
-  },
-  {
-    "title": "其他图系",
-    "addr": "/gc/qt/"
-  }
-]
+    sub: [
+      {
+        title: "Beautyleg",
+        addr: "/gc/bl/"
+      },
+      {
+        title: "Beautyleg Free download",
+        addr: "/gc/blfd/"
+      },
+      {
+        title: "森萝财团",
+        addr: "/gc/slct/"
+      },
+      {
+        title: "头条女神",
+        addr: "/gc/toutiao/"
+      },
+      {
+        title: "LegBaby",
+        addr: "/gc/lb/"
+      },
+      {
+        title: "IShow",
+        addr: "/gc/ishow/"
+      },
+      {
+        title: "Rosi",
+        addr: "/gc/rosimm/"
+      },
+      {
+        title: "假面女皇",
+        addr: "/gc/mq/"
+      },
+      {
+        title: "丽柜",
+        addr: "/gc/ligui/"
+      },
+      {
+        title: "PANS写真",
+        addr: "/gc/pans/"
+      },
+      {
+        title: "口罩系列",
+        addr: "/gc/rosi/"
+      },
+      {
+        title: "第四印象",
+        addr: "/gc/disi/"
+      },
+      {
+        title: "Beautyleg番外篇",
+        addr: "/gc/blfw/"
+      },
+      {
+        title: "动感小站",
+        addr: "/gc/dg/"
+      },
+      {
+        title: "如壹美眉",
+        addr: "/gc/ru1mm/"
+      },
+      {
+        title: "异思趣向",
+        addr: "/gc/iess/"
+      },
+      {
+        title: "AISS",
+        addr: "/gc/aiss/"
+      },
+      {
+        title: "V女郎",
+        addr: "/gc/vgirl/"
+      },
+      {
+        title: "10情趣",
+        addr: "/gc/10qq/"
+      },
+      {
+        title: "其他图系",
+        addr: "/gc/qt/"
+      }
+    ]
   },
   {
     title: "美图",
     addr: "/new/",
-    sub:[
-  {
-    "title": "性感美女",
-    "addr": "/meitu/xingganmeinv/"
-  },
-  {
-    "title": "丝袜美腿",
-    "addr": "/meitu/siwameitui/"
-  },
-  {
-    "title": "唯美写真",
-    "addr": "/meitu/weimeixiezhen/"
-  },
-  {
-    "title": "网络美女",
-    "addr": "/meitu/wangluomeinv/"
-  },
-  {
-    "title": "高清美女",
-    "addr": "/meitu/gaoqingmeinv/"
-  },
-  {
-    "title": "模特美女",
-    "addr": "/meitu/motemeinv/"
-  },
-  {
-    "title": "体育美女",
-    "addr": "/meitu/tiyumeinv/"
-  },
-  {
-    "title": "动漫美女",
-    "addr": "/meitu/dongmanmeinv/"
-  },
-  {
-    "title": "爱尤物APP",
-    "addr": "/new/ugirlapp/"
-  }
-]
+    sub: [
+      {
+        title: "性感美女",
+        addr: "/meitu/xingganmeinv/"
+      },
+      {
+        title: "丝袜美腿",
+        addr: "/meitu/siwameitui/"
+      },
+      {
+        title: "唯美写真",
+        addr: "/meitu/weimeixiezhen/"
+      },
+      {
+        title: "网络美女",
+        addr: "/meitu/wangluomeinv/"
+      },
+      {
+        title: "高清美女",
+        addr: "/meitu/gaoqingmeinv/"
+      },
+      {
+        title: "模特美女",
+        addr: "/meitu/motemeinv/"
+      },
+      {
+        title: "体育美女",
+        addr: "/meitu/tiyumeinv/"
+      },
+      {
+        title: "动漫美女",
+        addr: "/meitu/dongmanmeinv/"
+      },
+      {
+        title: "爱尤物APP",
+        addr: "/new/ugirlapp/"
+      }
+    ]
   },
   {
     title: "会展",
     addr: "/hz/",
-    sub:[
-  {
-    "title": "动感会展",
-    "addr": "/hz/dg/"
-  },
-  {
-    "title": "Beautyleg",
-    "addr": "/hz/beautyleg/"
-  },
-  {
-    "title": "车展",
-    "addr": "/hz/cz/"
-  },
-  {
-    "title": "动漫展",
-    "addr": "/hz/dm/"
-  },
-  {
-    "title": "内衣展",
-    "addr": "/hz/bra/"
-  },
-  {
-    "title": "数码展",
-    "addr": "/hz/tech/"
-  },{
-    "title":"街拍",
-    "addr":"/jiepai/"
-  },{
-    "title":"VR",
-    "addr":/vr/
-  },
-  {
-    "title": "其他",
-    "addr": "/hz/qt/"
-  }
-]
+    sub: [
+      {
+        title: "动感会展",
+        addr: "/hz/dg/"
+      },
+      {
+        title: "Beautyleg",
+        addr: "/hz/beautyleg/"
+      },
+      {
+        title: "车展",
+        addr: "/hz/cz/"
+      },
+      {
+        title: "动漫展",
+        addr: "/hz/dm/"
+      },
+      {
+        title: "内衣展",
+        addr: "/hz/bra/"
+      },
+      {
+        title: "数码展",
+        addr: "/hz/tech/"
+      },
+      {
+        title: "街拍",
+        addr: "/jiepai/"
+      },
+      {
+        title: "VR",
+        addr: /vr/
+      },
+      {
+        title: "其他",
+        addr: "/hz/qt/"
+      }
+    ]
   },
   {
     title: "综艺",
     addr: "/zy/",
-    sub:[
-  {
-    "title": "Beautyleg",
-    "addr": "/zy/bl/"
-  },
-  {
-    "title": "RoSi视频写真",
-    "addr": "/zy/rosi/"
-  },
-  {
-    "title": "动感小站",
-    "addr": "/zy/dg/"
-  },
-  {
-    "title": "动感热舞",
-    "addr": "/zy/dgrw/"
-  },
-  {
-    "title": "秀人网视频",
-    "addr": "/zy/xiuren/"
-  },
-  {
-    "title": "美女写真",
-    "addr": "/zy/xz/"
-  },
-  {
-    "title": "活动代言",
-    "addr": "/zy/dy/"
-  },
-  {
-    "title": "韩国综艺",
-    "addr": "/zy/hgzy/"
-  },
-  {
-    "title": "辣妹热舞",
-    "addr": "/zy/lmrw/"
-  },
-  {
-    "title": "其他综艺",
-    "addr": "/zy/qtzy/"
-  },
-  {
-    "title": "Rq-Star",
-    "addr": "/zy/rqstar/"
-  },
-  {
-    "title": "尤果网",
-    "addr": "/zy/ugirls/"
-  }
-]
+    sub: [
+      {
+        title: "Beautyleg",
+        addr: "/zy/bl/"
+      },
+      {
+        title: "RoSi视频写真",
+        addr: "/zy/rosi/"
+      },
+      {
+        title: "动感小站",
+        addr: "/zy/dg/"
+      },
+      {
+        title: "动感热舞",
+        addr: "/zy/dgrw/"
+      },
+      {
+        title: "秀人网视频",
+        addr: "/zy/xiuren/"
+      },
+      {
+        title: "美女写真",
+        addr: "/zy/xz/"
+      },
+      {
+        title: "活动代言",
+        addr: "/zy/dy/"
+      },
+      {
+        title: "韩国综艺",
+        addr: "/zy/hgzy/"
+      },
+      {
+        title: "辣妹热舞",
+        addr: "/zy/lmrw/"
+      },
+      {
+        title: "其他综艺",
+        addr: "/zy/qtzy/"
+      },
+      {
+        title: "Rq-Star",
+        addr: "/zy/rqstar/"
+      },
+      {
+        title: "尤果网",
+        addr: "/zy/ugirls/"
+      }
+    ]
   },
   {
     title: "收藏"
@@ -383,13 +386,13 @@ function listView(wn) {
               }
             ]
           },
-          rowHeight: wn==0?25:(wn==1?33:40)
+          rowHeight: wn == 0 ? 25 : wn == 1 ? 33 : 40
         },
         layout: $layout.fill,
         events: {
           didSelect(sender, indexPath, data) {
-            $ui.toast(data.name.text+"加载中...",5)
-            listGone()
+            $ui.toast(data.name.text + "加载中...", 5);
+            listGone();
             $("preView").data = [];
             page = 0;
             subNum = indexPath.row;
@@ -402,7 +405,7 @@ function listView(wn) {
       }
     ],
     layout: function(make, view) {
-      var h = wn==0?25:(wn==1?33:40)
+      var h = wn == 0 ? 25 : wn == 1 ? 33 : 40;
       var hn = category[wn].sub.length;
       make.top.inset(30);
       make.left.inset(5 + 60 * wn);
@@ -448,11 +451,10 @@ function mainUI(column, rowHeight) {
         },
         function() {
           changeButton(1);
-          
         },
         function() {
-                  subChannel(1);
-                }
+          subChannel(1);
+        }
       ),
       createButton(
         "美图",
@@ -466,11 +468,10 @@ function mainUI(column, rowHeight) {
         },
         function() {
           changeButton(2);
-          
         },
         function() {
-                  subChannel(2);
-                }
+          subChannel(2);
+        }
       ),
       createButton(
         "会展",
@@ -484,11 +485,10 @@ function mainUI(column, rowHeight) {
         },
         function() {
           changeButton(3);
-       
         },
         function() {
-                  subChannel(3);
-                }
+          subChannel(3);
+        }
       ),
       createButton(
         "综艺",
@@ -502,11 +502,10 @@ function mainUI(column, rowHeight) {
         },
         function() {
           changeButton(4);
-          
         },
         function() {
-                  subChannel(4);
-                }
+          subChannel(4);
+        }
       ),
       createButton(
         "收藏",
@@ -519,8 +518,8 @@ function mainUI(column, rowHeight) {
           make.width.equalTo(view.super).multipliedBy(0.12);
         },
         function() {
-          $("main").remove()
-          mainUI(4,135)
+          $("main").remove();
+          mainUI(4, 135);
           $("preView").data = [];
           underline(5);
           if (LocalList.length == 0) {
@@ -559,7 +558,7 @@ function mainUI(column, rowHeight) {
           returned: function(sender) {
             showSearch(sender.text);
             $("search").blur();
-            listGone()
+            listGone();
           }
         }
       },
@@ -576,7 +575,7 @@ function mainUI(column, rowHeight) {
             {
               type: "image",
               props: {
-                radius:5,
+                radius: 5,
                 contentMode: $contentMode.scaleAspectFit,
                 id: "interface"
               },
@@ -591,7 +590,7 @@ function mainUI(column, rowHeight) {
         },
         events: {
           willBeginDragging(sender) {
-            listGone()
+            listGone();
           },
           didReachBottom(sender) {
             sender.endFetchingMore();
@@ -607,7 +606,7 @@ function mainUI(column, rowHeight) {
             $ui.toast("加载中...", 5);
             interface = data.interface.src;
             title = data.title;
-            folderName = title
+            folderName = title;
             console.log(data.detail);
             if ($("l5").hidden == false) {
               //收藏栏
@@ -652,7 +651,8 @@ function mainUI(column, rowHeight) {
 function showPhotos(title, columns, rowHeight) {
   $ui.push({
     props: {
-      title: title
+      title: title,
+      
     },
     views: [
       {
@@ -778,19 +778,29 @@ function showPhotos(title, columns, rowHeight) {
               $("favorite").title = "取消收藏";
               $("favorite").bgcolor = $color("#4f86f2");
             }
-            
-//            $app.openURL(
-//              "pythonista://Tools/taotu8?action=run&args=" +
-//                encodeURI($("favorite").info)
-//            );
+
+            //            $app.openURL(
+            //              "pythonista://Tools/taotu8?action=run&args=" +
+            //                encodeURI($("favorite").info)
+            //            );
             $app.openURL(
-                          "pythonista://Tools/taotu8_jsbox"+method+"?action=run&argv=" +
-                            encodeURI(folderName)+"&argv="+encodeURI(IMGList)
-                        );
+              "pythonista://Tools/taotu8_jsbox" +
+                method +
+                "?action=run&argv=" +
+                encodeURI(folderName) +
+                "&argv=" +
+                encodeURI(IMGList)
+            );
           },
           longPressed: function(sender) {
             $device.taptic(1);
-            $clipboard.text = sender.sender.code;
+
+            $clipboard.text = $cache.get("code")
+            $push.schedule({
+              title: "密码:" + $cache.get("code"),
+              body: "已复制",
+              delay: 1
+            });
             $app.openURL(sender.sender.info);
           }
         }
@@ -902,8 +912,8 @@ function getPostData(CNUN, subNum) {
     else url = category[CNUM].sub[subNum].addr + "index_" + page + ".html";
   }
   url = HOME + url;
-//  console.log(subNum)
-//  alert(url)
+  //  console.log(subNum)
+  //  alert(url)
   $http.request({
     url: url,
     handler: function(resp) {
@@ -915,7 +925,7 @@ function getPostData(CNUN, subNum) {
       var removed = match.slice(8);
       //console.log(removed)
       //      var postData = []
-      $ui.clearToast()
+      $ui.clearToast();
       removed.map(function(i) {
         var image = /(lazysrc=")([\s\S]*?)(")/.exec(i)[2];
         var detail = /(href=")([\s\S]*?)(")/.exec(i)[2];
@@ -944,13 +954,15 @@ function getDetailPost(url) {
       }
       var reg = /lazysrc=[\s\S]*?  onerror/g;
       var match = resp.data.match(reg);
-//      console.log(match)
-//      console.log(url)
+      //      console.log(match)
+      //      console.log(url)
       IMGList = [];
       match.map(function(i) {
-        IMGList.push(/lazysrc=(\r\n)?([\s\S]*?) /g.exec(i)[2].replace(/\r\n|\n/g,""))
+        IMGList.push(
+          /lazysrc=(\r\n)?([\s\S]*?) /g.exec(i)[2].replace(/\r\n|\n/g, "")
+        );
       });
-//      console.log(IMGList)
+      //      console.log(IMGList)
       $ui.clearToast();
       $("detailView").data = $("detailView").data.concat(
         IMGList.map(function(i) {
@@ -970,7 +982,7 @@ function favoriteButtonTapped(mode, data) {
     LocalData.fav.unshift(data);
     LocalList.unshift(data.src);
     if ($("l5").hidden == false) {
-      var temp = $("preView").data
+      var temp = $("preView").data;
       temp.unshift({
         title: data.title,
         detail: data.url,
@@ -978,7 +990,7 @@ function favoriteButtonTapped(mode, data) {
           src: data.src
         }
       });
-      $("preView").data = temp
+      $("preView").data = temp;
     }
   } else if (mode == "del") {
     var idx = LocalList.indexOf(data.src);
@@ -1047,37 +1059,36 @@ function showSearch(text) {
 }
 
 function underline(num) {
-  if(CNUM ==5){
-    $("main").remove()
-    mainUI(2,270)
+  if (CNUM == 5) {
+    $("main").remove();
+    mainUI(2, 270);
   }
   $("l0").hidden = true;
-    $("l1").hidden = true;
-    $("l2").hidden = true;
-    $("l3").hidden = true;
-    $("l4").hidden = true;
-    $("l5").hidden = true;
-    $("l" + num).hidden = false;
+  $("l1").hidden = true;
+  $("l2").hidden = true;
+  $("l3").hidden = true;
+  $("l4").hidden = true;
+  $("l5").hidden = true;
+  $("l" + num).hidden = false;
   CNUM = num;
-  
 }
 
-function listGone(){
-  if (subNum >= 0&& CNUM!=5) {
-                $ui.animate({
-                  duration: 0.5,
-                  animation: function() {
-                    $("listView").alpha = 0;
-                  }
-                });
-                
-              }
+function listGone() {
+  if (subNum >= 0 && CNUM != 5) {
+    $ui.animate({
+      duration: 0.5,
+      animation: function() {
+        $("listView").alpha = 0;
+      }
+    });
+  }
 }
 
 function changeButton(num) {
-  $("search").text = ""
-  $ui.toast("加载中...",5)
-  listGone()
+  $device.taptic(0);
+  $("search").text = "";
+  $ui.toast("加载中...", 5);
+  listGone();
   subNum = -1;
   underline(num);
   page = 0;
@@ -1087,11 +1098,12 @@ function changeButton(num) {
 }
 
 function subChannel(num) {
-  changeButton(num)
-  $("search").text = ""
- listGone()
+  $device.taptic(1);
+  if (CNUM != num) changeButton(num);
+  $("search").text = "";
+  listGone();
   subNum = num;
-  underline(num)
+  underline(num);
   $("main").add(listView(num));
   $ui.animate({
     duration: 0.5,
@@ -1115,12 +1127,13 @@ function getBaidu(url) {
     handler: function(resp) {
       var data = resp.data;
       var shortU = /http:\/\/17.*?"/g.exec(data)[0].slice(0, -1);
-//      console.log(data)
+      //      console.log(data)
       var code = /码[:：]\s?(\w{4})/g.exec(data)[1];
-      console.log(code)
-      $clipboard.text = code
+      console.log(code);
+      $cache.set("code",code)
+//      $clipboard.text = code
       $("share").code = code;
-//      alert(shortU)
+      //      alert(shortU)
       $http.get({
         url: shortU,
         handler: function(resp) {
