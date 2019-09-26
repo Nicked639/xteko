@@ -40,7 +40,7 @@ https://t.me/nicked
 
 */
 
-version = 7.98;
+version = 7.99;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1572,7 +1572,7 @@ function detailView(code) {
                 "磁链",
                 "Avgle",
                 "JAV.GURU",
-                "JaponX",
+                "Jable.TV",
                 "JavLibrary",
                 "Netflav"
               ],
@@ -1636,9 +1636,7 @@ function detailView(code) {
                   $app.openURL("https://jav.guru/zh/?s=" + favCode);
                 } else if (idx == 3) {
                   $app.openURL(
-                    "https://www.japonx.tv/portal/index/search.html?k=" +
-                      favCode +
-                      "&x=0&y=0"
+                    "https://jable.tv/videos/" + favCode +"/"
                   );
                 } else if (idx == 4) {
                   $app.openURL(
@@ -1697,7 +1695,12 @@ function detailView(code) {
                   getAvglePreview(sender.info, filmCover, 1);
                 } else if (idx == 2) {
                   $device.taptic(1);
-                  JaponX(favCode, name, 1);
+//                  JaponX(favCode, name, 1);
+if($cache.get("m3u8")){
+  play($cache.get("m3u8"))
+}else{
+  $ui.error("未找到完整影片！");
+}
                 }
               }
             });
@@ -3898,6 +3901,7 @@ function getDetail(url) {
           });
         });
         //        JaponX(favCode,name,0)
+        jableTv(favCode,0)
       } else {
         $("whoInFilm").hidden = true;
       }
@@ -4964,6 +4968,33 @@ function readMe() {
       });
     }
   });
+}
+
+function jableTv(code,flag){
+  var jableUrl = "https://jable.tv/videos/"+code+"/"
+  console.log(jableUrl)
+  $http.get({
+    url:jableUrl,
+    handler:function(resp){
+//      console.log(resp.data)
+      let data = resp.data
+      let pattern = /hlsUrl = '(.*)?'/g
+      let m3u8 = pattern.exec(data)[1]
+      console.log(m3u8)
+      if(m3u8){
+        $cache.set("m3u8",m3u8)
+        
+                    //            $ui.toast("可预览完整影片！",0.8)
+                    $("check").bgcolor = $color("tint");
+                    $("check").titleColor = $color("white");
+                    return;
+                  
+            
+      }
+      
+    }
+  })
+  
 }
 
 function JaponX(code, name, flag) {
