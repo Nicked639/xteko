@@ -40,7 +40,7 @@ https://t.me/nicked
 
 */
 
-version = 7.99;
+version = 8.00;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -61,6 +61,7 @@ uncensored = false; // 无码状态
 JavMag = 0; // 磁链获取状态
 Timeout = 10;
 flag = 0; // 用于判断从通知中心启动的状态
+Jable = false
 if (isInToday()) runWhere();
 var colorData = [
   [$color("#fd354a"), $color("#da0a6f")],
@@ -1636,7 +1637,7 @@ function detailView(code) {
                   $app.openURL("https://jav.guru/zh/?s=" + favCode);
                 } else if (idx == 3) {
                   $app.openURL(
-                    "https://jable.tv/videos/" + favCode +"/"
+                    "https://jable.tv/search/" + favCode +"/"
                   );
                 } else if (idx == 4) {
                   $app.openURL(
@@ -1692,7 +1693,8 @@ function detailView(code) {
                 } else if (idx == 1) {
                   $device.taptic(1);
                   //                  alert(sender.info)
-                  getAvglePreview(sender.info, filmCover, 1);
+//                  getAvglePreview(sender.info, filmCover, 1);
+preAvgle(favCode,1)
                 } else if (idx == 2) {
                   $device.taptic(1);
 //                  JaponX(favCode, name, 1);
@@ -1707,7 +1709,13 @@ if($cache.get("m3u8")){
           },
           longPressed(sender) {
             $device.taptic(1);
-            getAvglePreview(sender.sender.info, filmCover, 1);
+//            getAvglePreview(sender.sender.info, filmCover, 1);
+             if(Jable){
+               $ui.toast("预览来自 Jable")
+               play($cache.get("preJable"));
+             }
+             
+             else $ui.toast("Jable 无预览")
           }
         }
       },
@@ -3762,111 +3770,153 @@ function getJavMag(link, flag = "0") {
   });
 }
 
-function getAvglePreview(keyword, poster, flag) {
+function preAvgle(code,flag){
   let url =
-    "https://api.avgle.com/v1/search/" +
-    encodeURI(keyword) +
-    "/0?limit=10&t=a&o=bw";
-  $http.request({
-    url: url,
-    handler: function(resp) {
-      if ($("player")) {
-        $("player").pause();
-        $("player").stopLoading();
-        $("player").remove();
-      }
-      var success = resp.data.success;
-      if (!success || !resp.response) {
-        $ui.error("❌ 网络连接出错！");
-        return;
-      }
-      let video_num = resp.data.response.total_videos;
-      //      $console.log(video_num)
-      if (video_num == 0) {
-        if (flag == 1) $ui.error("☹️ 暂无八秒预览！");
-        $ui.loading(false);
-        return;
-      }
-      let infos = resp.data.response.videos;
-      let videoUrl = infos[0].preview_video_url;
-      $("detailView").add({
-        type: "video",
-        props: {
-          id: "player",
-          src: videoUrl,
-          poster: poster,
-          loop: true
-        },
-        layout: function(make, view) {
-          let width = $device.info.screen.width - 16;
-          let height = (width * 67) / 100;
-          make.centerX.equalTo();
-          make.top.equalTo($("filmName").bottom).offset(5);
-          make.size.equalTo($size(width, height));
+      "https://api.avgle.com/v1/search/" +encodeURI(code) +"/0?limit=10&t=a&o=bw";
+      $http.get({
+        url: url,
+        handler: function(resp) {
+          var data = resp.data;
+            var success = resp.data.success;
+                if (!success || !resp.response) {
+                  $ui.error("❌ 网络连接出错！");
+                  return;
+                }
+                let video_num = resp.data.response.total_videos;
+                //      $console.log(video_num)
+                if (video_num == 0) {
+                  
+                  $delay(2,()=>{
+                    
+//                  console.log("djdjd")
+                    if(Jable){
+                      
+                    $ui.toast("预览来自 Jable")
+                      play($cache.get("preJable"))
+                     
+                    }else{
+                      if (flag == 1) $ui.error("☹️ 暂无八秒预览！");
+                      $ui.loading(false);
+                                        
+                    }
+                  })
+                  return
+                }
+                let infos = resp.data.response.videos;
+                let videoUrl = infos[0].preview_video_url;
+                play(videoUrl)
         }
       });
-      $("detailView").add({
-        type: "button",
-        props: {
-          title: "X",
-          id: "X",
-          bgcolor: $color("clear")
-        },
-        layout: function(make, view) {
-          //          make.top.equalTo($("filmName").bottom).offset(6);
-          make.top.equalTo($("player").top).offset(3);
-          make.right.inset(11);
-          make.width.equalTo(20);
-          make.height.equalTo(20);
-        },
-        events: {
-          tapped(sender) {
-            if ($("player")) {
-              $("player").pause();
-              $("player").stopLoading();
-              $("player").remove();
-            }
-            $("X").hidden = true;
-          }
-        }
-      });
-      $("detailView").add({
-        type: "button",
-        props: {
-          title: "↗",
-          id: "shareVideo",
-          bgcolor: $color("clear")
-        },
-        layout: function(make, view) {
-          make.top.equalTo($("player").bottom).offset(-20);
-          make.right.inset(11);
-          make.width.equalTo(20);
-          make.height.equalTo(20);
-        },
-        events: {
-          tapped(sender) {
-            $ui.menu({
-              items: ["nplayer打开", "分享链接"],
-              handler: function(title, idx) {
-                if (idx == 0) $app.openURL("nplayer-" + videoUrl);
-                else if (idx == 1) $share.sheet([videoUrl]);
-              }
-            });
-          }
-        }
-      });
-      $delay(0.5, function() {
-        $("player").play();
-        //        $delay(12,()=>{
-        //          $("player").pause();
-        //                        $("player").stopLoading();
-        //                        $("player").remove();
-        //        })
-      });
-    }
-  });
+  
 }
 
+
+//function getAvglePreview(keyword, poster, flag) {
+//  let url =
+//    "https://api.avgle.com/v1/search/" +
+//    encodeURI(keyword) +
+//    "/0?limit=10&t=a&o=bw";
+//  $http.request({
+//    url: url,
+//    handler: function(resp) {
+//      if ($("player")) {
+//        $("player").pause();
+//        $("player").stopLoading();
+//        $("player").remove();
+//        
+//      }
+//      var success = resp.data.success;
+//      if (!success || !resp.response) {
+//        $ui.error("❌ 网络连接出错！");
+//        return;
+//      }
+//      let video_num = resp.data.response.total_videos;
+//      //      $console.log(video_num)
+//      if (video_num == 0) {
+//        if (flag == 1) $ui.error("☹️ 暂无八秒预览！");
+//        $ui.loading(false);
+//        return;
+//      }
+//      let infos = resp.data.response.videos;
+//      let videoUrl = infos[0].preview_video_url;
+//      $("detailView").add({
+//        type: "video",
+//        props: {
+//          id: "player",
+//          src: videoUrl,
+//          poster: poster,
+//          loop: true
+//        },
+//        layout: function(make, view) {
+//          let width = $device.info.screen.width - 16;
+//          let height = (width * 67) / 100;
+//          make.centerX.equalTo();
+//          make.top.equalTo($("filmName").bottom).offset(5);
+//          make.size.equalTo($size(width, height));
+//        }
+//      });
+//      $("detailView").add({
+//        type: "button",
+//        props: {
+//          title: "X",
+//          id: "X",
+//          bgcolor: $color("clear")
+//        },
+//        layout: function(make, view) {
+//          //          make.top.equalTo($("filmName").bottom).offset(6);
+//          make.top.equalTo($("player").top).offset(3);
+//          make.right.inset(11);
+//          make.width.equalTo(20);
+//          make.height.equalTo(20);
+//        },
+//        events: {
+//          tapped(sender) {
+//            if ($("player")) {
+//              $("player").pause();
+//              $("player").stopLoading();
+//              $("player").remove();
+//            }
+//            $("X").hidden = true;
+//          }
+//        }
+//      });
+//      $("detailView").add({
+//        type: "button",
+//        props: {
+//          title: "↗",
+//          id: "shareVideo",
+//          bgcolor: $color("clear")
+//        },
+//        layout: function(make, view) {
+//          make.top.equalTo($("player").bottom).offset(-20);
+//          make.right.inset(11);
+//          make.width.equalTo(20);
+//          make.height.equalTo(20);
+//        },
+//        events: {
+//          tapped(sender) {
+//            $ui.menu({
+//              items: ["nplayer打开", "分享链接"],
+//              handler: function(title, idx) {
+//                if (idx == 0) $app.openURL("nplayer-" + videoUrl);
+//                else if (idx == 1) $share.sheet([videoUrl]);
+//              }
+//            });
+//          }
+//        }
+//      });
+//      $delay(0.5, function() {
+//        $("player").play();
+//        //        $delay(12,()=>{
+//        //          $("player").pause();
+//        //                        $("player").stopLoading();
+//        //                        $("player").remove();
+//        //        })
+//      });
+//    }
+//  });
+//}
+//
 function getDetail(url) {
   flag++;
   Trans = 0;
@@ -3901,6 +3951,7 @@ function getDetail(url) {
           });
         });
         //        JaponX(favCode,name,0)
+        Jable = false
         jableTv(favCode,0)
       } else {
         $("whoInFilm").hidden = true;
@@ -4032,7 +4083,8 @@ function getDetail(url) {
       //        $("loadingm").text = "☹️ JavBus 暂无磁链"
       //        $("loadingm").hidden = false
       //      } else $("loadingm").hidden = true;
-      getAvglePreview(favCode, filmCover);
+//      getAvglePreview(favCode, filmCover);
+     preAvgle(favCode)
     }
   });
 }
@@ -4971,29 +5023,59 @@ function readMe() {
 }
 
 function jableTv(code,flag){
-  var jableUrl = "https://jable.tv/videos/"+code+"/"
-  console.log(jableUrl)
+  var jableUrl = "https://jable.tv/search/"+code+"/"
   $http.get({
     url:jableUrl,
     handler:function(resp){
 //      console.log(resp.data)
       let data = resp.data
-      let pattern = /hlsUrl = '(.*)?'/g
-      let m3u8 = pattern.exec(data)[1]
-      console.log(m3u8)
-      if(m3u8){
-        $cache.set("m3u8",m3u8)
-        
-                    //            $ui.toast("可预览完整影片！",0.8)
-                    $("check").bgcolor = $color("tint");
-                    $("check").titleColor = $color("white");
-                    return;
-                  
-            
+      let avPattern = /https:\/\/jable.tv\/videos\/(.*)?\//g
+      let avUrl = avPattern.exec(data)[0]
+//      console.log(avUrl)
+      if(avUrl){
+        $("check").bgcolor = $color("tint");
+        $("check").titleColor = $color("white");
+        Jable = true
+        let prePattern = /data-preview="(https:\/\/assets\.jable\.tv\/.*?_preview\.mp4)/g
+              let preUrl = prePattern.exec(data)[1]
+              $cache.set("preJable",preUrl)
+//              console.log(preUrl)
+        $http.get({
+          url:avUrl,
+          handler:function(resp){
+            let data = resp.data
+//            console.log(data)
+            let pattern = /hlsUrl = '(.*)?'/g
+                let m3u8 = pattern.exec(data)[1]
+                console.log(m3u8)
+                $cache.set("m3u8",m3u8)
+          }
+        })
       }
       
     }
   })
+//  $http.get({
+//    url:jableUrl,
+//    handler:function(resp){
+////      console.log(resp.data)
+//      let data = resp.data
+//      let pattern = /hlsUrl = '(.*)?'/g
+//      let m3u8 = pattern.exec(data)[1]
+//      console.log(m3u8)
+//      if(m3u8){
+//        $cache.set("m3u8",m3u8)
+//        
+//                    //            $ui.toast("可预览完整影片！",0.8)
+//                    $("check").bgcolor = $color("tint");
+//                    $("check").titleColor = $color("white");
+//                    return;
+//                  
+//            
+//      }
+//      
+//    }
+//  })
   
 }
 
