@@ -40,7 +40,7 @@ https://t.me/nicked
 
 */
 
-version = 8.00;
+version = 8.01;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1805,12 +1805,19 @@ if($cache.get("m3u8")){
                   let url =
                     "https://shadowNicked.github.io/?code=" +
                     sender.info;
-                  $http.shorten({
-                    url: url,
-                    handler: function(url) {
-                      $share.sheet(url);
-                    }
-                  });
+//                  $http.shorten({
+//                    url: url,
+//                    handler: function(url) {
+//                      $share.sheet(url);
+//                    }
+//                  });
+var sina = "https://api.weibo.com/2/short_url/shorten.json?source=560331235&url_long="
+$http.get({
+  url:sina+url,
+  handler:function(resp){
+    $share.sheet(resp.data.urls[0].url_short)
+  }
+})
                 } else if (idx == 1) {
                   $clipboard.text = sender.info;
                   $ui.toast("番号 " + sender.info + " 已复制");
