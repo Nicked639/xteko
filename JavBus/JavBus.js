@@ -693,14 +693,15 @@ function searchView(height, catname, cols = 3, spa = 1) {
           pulled(sender) {
             $("initialView").endRefreshing();
             $ui.menu({
-              items: ["作者声明", "微信赞赏", "联系作者"],
+              items: ["作者声明", "微信赞赏", "更新说明"],
               handler: function(title, idx) {
                 if (idx == 0) {
                   tutorial();
                 } else if (idx == 1) {
                   wechatPay();
                 } else if (idx == 2) {
-                  $app.openURL("https://t.me/nicked");
+//                  $app.openURL("https://t.me/nicked");
+                    readMe()
                 }
               }
             });
@@ -3017,7 +3018,7 @@ $ui.render({
                 $ui.alert({
                   title: "收藏夹为空，如果做过收藏请看下面 ⬇️",
                   message:
-                    "鉴于 iCloud 网络问题经常使备份文件丢失，7.95 版本开始备份改为本地存储，可访问脚本内的文件管理查看，亦可将原 iCloud 里的 JavbusBackup.json 移动至脚本的文件管理接续前期的收藏数据(请在脚本边际页面点击右下角的设置按钮，再点击文件管理。￼)",
+                    "鉴于 iCloud 网络问题经常使备份文件丢失，7.95 版本开始备份改为本地存储，可访问脚本内的文件管理查看，亦可将原 iCloud 里的 JavbusBackup.json 移动至脚本的文件管理接续前期的收藏数据(请在脚本编辑页面点击右下角的设置按钮，再点击文件管理。￼)",
                   actions: [
                     {
                       title: "打开",
