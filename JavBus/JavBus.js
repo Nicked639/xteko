@@ -40,7 +40,7 @@ https://t.me/nicked
 
 */
 
-version = 8.01;
+version = 8.02;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -3565,15 +3565,21 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
       //      if(uncensored) $("tabC").index = 1;
       //      else if(homepage.includes("org")) $("tabC").index = 2;
       //       else $("tabC").index = 0;
-      var reg = /<a class="movie-box"[\s\S]*?<\/span>/g;
+      var reg = /<a class="movie-box"[\s\S]*?<\/span>\s/g;
       var match = resp.data.match(reg);
-      //      $console.log(match)
+      console.log(resp.data)
+      $console.log(match)
       var data = [];
       match.map(function(i) {
+//        console.log(i)
         link = /href="([\s\S]*?)(")/.exec(i)[1];
+//        console.log(link)
         image = /<img src="([\s\S]*?)(")/.exec(i)[1];
+//        console.log(image)
         var title = /title="(.*?)(">)/.exec(i)[1];
+//        console.log(title)
         code = /<date>(.*?)<\/date>/.exec(i)[1];
+//        console.log(code)
         date = /\/\s<date>(.*?)<\/date><\/span>/.exec(i)[1];
         let hd = i.includes("高清");
         let sub = i.includes("字幕");
