@@ -1,0 +1,9 @@
+"OK" = "OK";
+"DONE" = "Done";
+"HELLO_WORLD" = "Hello, World!";
+"START" = "Please Restart";
+"SUCCEED" = "Succeed!";
+"ERROR" = "Error ❌";
+"DBERROR" = "Douban  URL Error ❌";
+"LOAD" = "Loading...";
+"WRONG" = "Cannot Detect ID ❌";

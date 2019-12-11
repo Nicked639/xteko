@@ -1,0 +1,9 @@
+"OK" = "好的";
+"DONE" = "完成";
+"HELLO_WORLD" = "你好，世界！";
+"START" = "请重新启动";
+"SUCCEED" = "成功!";
+"ERROR" = "失败 ❌";
+"DBERROR" = "豆瓣 URL 错误 ❌";
+"LOAD" = "载入中...";
+"WRONG" = "未检测到 id ❌";
