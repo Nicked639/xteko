@@ -1,5 +1,6 @@
-$widget.height = 300
+
 var airtable = require('scripts/airtable');
+var scrollFlag = 0
 if (!$cache.get("apiKey")) {
   $input.text({
     type: $kbType.default,
@@ -11,47 +12,61 @@ if (!$cache.get("apiKey")) {
   })
   return
 }else{
-  var keyword = $clipboard.text 
-  $ui.alert({
-    title: "在豆瓣中搜索",
-    message: keyword,
-    actions: [
-      {
-        title: "确定",
-        disabled: false, // Optional
-        handler: function() {
-          let k = keyword
-          doubanUI(k)
-        }
-      },
-      {
-        title: "输入",
-        handler: async function() {
-         let k = await $input.text()
-         doubanUI(k)
-        }
-      }
-    ]
+  var keyword = $clipboard.text
+  let k = await $input.text({
+    placeholder: keyword
   })
-  
+  if(!k) k = keyword
+  doubanUI(k)
+//  $delay(0.3, () => {
+//      $ui.alert({
+//        title: "在豆瓣中搜索",
+//        message: keyword,
+//        actions: [
+//          {
+//            title: "输入",
+//            disabled: false, // Optional
+//            handler: async function() {
+//              let k = await $input.text()
+//              $clipboard.text = k
+//              doubanUI(k)
+//            }
+//          },
+//          {
+//            title: "确定",
+//            handler: function() {
+//             
+//    
+//             let k = keyword
+//             doubanUI(k)
+//            }
+//          }
+//        ]
+//      })
+//      
+//  });
+
 }
 
 function doubanUI(keyword){
-  
+  $widget.height = 300
 $ui.render({
     props: {
-        title: keyword
+        title: keyword,
+        
     },
     views: [{
         type: "web",
         props: {
             url: "https://m.douban.com/search/?query=" + $text.URLEncode(keyword),
+            id:"douban",
 //            toolbar: 1
         },
         layout: $layout.fill,
         events: {
             didFinish: function (sender, navigation) {
-                var webUrl = $("web").url.match(/\/subject\/\d+/)
+                var webUrl = $("douban").url.match(/\/subject\/\d+/)
+//                alert($("douban").url)
                 $("button").hidden = webUrl ? false : true
             }
         }
@@ -69,7 +84,7 @@ $ui.render({
         events: {
             tapped: function (sender) {
               $device.taptic(2)
-                var doubanUrl = $("web").url
+                var doubanUrl = $("douban").url
                   $ui.toast($l10n("LOAD"),10)
                     
                     if(!/\/(\d{5,8})\//g.test(doubanUrl)) wrong();
@@ -78,7 +93,9 @@ $ui.render({
                 
             }
         }
-    }]
+    },
+    createScrollButtonView()
+    ]
 });
 
 }
@@ -105,4 +122,72 @@ function wrong(){
   $ui.toast("",.1)  
   $ui.error($l10n("WRONG"))
   return
+}
+
+function createScrollButtonView(){
+  let views =  [{
+      type: "button",
+      props: {
+        src:"assets/arrowUp.png",
+        font: $font(34),
+        bgcolor: $color("clear"),
+        id: "scrollUp"
+      },
+      layout: function(make,view){
+        make.right.inset(9)
+        make.height.equalTo(30)
+        make.width.equalTo(30)
+        make.bottom.inset(170)
+      },
+      events: {
+        tapped: function(sender){
+          if(scrollFlag >0){
+            scrollFlag--;
+            $cache.set("scrollFlag",scrollFlag)
+                       let distance = scrollFlag*30
+                       $("douban").scrollView.contentOffset = $point(0, distance);
+          }else{
+            $ui.error("已经到头",0.3)
+          }
+           
+        },
+      }
+    },{
+      type: "button",
+      props: {
+//        icon: $icon("24", $color("darkText"), $size(18, 18)),
+        font: $font(34),
+        src:"assets/arrowDown.png",
+        bgcolor: $color("clear"),
+        id: "scrollDown"
+      },
+      layout: function(make,view){
+        make.right.inset(9)
+        make.height.equalTo(30) 
+        make.width.equalTo(30)
+        make.bottom.inset(105)
+      },
+      events: {
+        tapped: function(sender){
+           
+           scrollFlag++;
+            $cache.set("scrollFlag",scrollFlag)
+           let distance = scrollFlag*30
+           $("douban").scrollView.contentOffset = $point(0, distance);
+           
+        },
+      }
+    }]
+    return {
+      type:"view",
+      props:{
+        bgcolor:$color("clear")
+      },
+      layout: function(make,view){
+        make.top.bottom.inset(30)
+        make.width.equalTo(30)
+        make.right.inset(0)
+      },
+      views:views
+    }
 }
