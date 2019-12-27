@@ -10,7 +10,7 @@ var interface = "";
 var title = "";
 var detailUrl = "";
 var folderName = "";
-var girlName = ""
+var girlName = "";
 var subNum = -1;
 var IMGList = [];
 let category = [
@@ -519,9 +519,11 @@ function mainUI(column, rowHeight) {
           make.width.equalTo(view.super).multipliedBy(0.12);
         },
         function() {
-          if($("l5").hidden==false) return
+          if ($("l5").hidden == false) return;
           $("main").remove();
-          mainUI(4, 135);
+//          mainUI(4, 135);
+          let column = $cache.get("column") || 0;
+          mainUI(Math.pow(2, column + 1), 275 / Math.pow(2, column));
           $("preView").data = [];
           underline(5);
           if (LocalList.length == 0) {
@@ -565,6 +567,58 @@ function mainUI(column, rowHeight) {
         }
       },
       {
+        type: "tab",
+        props: {
+          id: "tabC",
+          hidden: false,
+          items: ["二列", "四列", "八列"],
+          tintColor: $color("tint"),
+          radius: 5,
+          bgcolor: $color("white"),
+          alpha: 0.8,
+          index: $cache.get("column") ? $cache.get("column") : 0
+        },
+        layout: function(make) {
+          make.right.inset(10);
+          make.top.inset(33);
+          make.height.equalTo(22);
+          make.width.equalTo(130);
+        },
+        events: {
+          changed(sender) {
+            let id = sender.index;
+            $cache.set("column", id);
+            $("main").remove();
+            mainUI(Math.pow(2, id + 1), 275 / Math.pow(2, id));
+            if (CNUM == 5) {
+              underline(5)
+              $("preView").data = [];
+             
+              
+                LocalData.fav.map(function(i) {
+                  $("preView").data = $("preView").data.concat({
+                    title: i.title,
+                    detail: i.url,
+                    interface: {
+                      src: i.src
+                    }
+                  });
+                });
+              
+
+              $("preView").contentOffset = $point(0, 0);
+              return
+            }
+            changeButton(CNUM);
+            if(id==2){
+              getPostData(CNUM)
+              getPostData(CNUM)
+            }
+          }
+        }
+      },
+
+      {
         type: "matrix",
         props: {
           id: "preView",
@@ -605,16 +659,17 @@ function mainUI(column, rowHeight) {
             }
           },
           didSelect(sender, indexPath, data) {
-//            $ui.toast("加载中...", 5);
+            //            $ui.toast("加载中...", 5);
             interface = data.interface.src;
             title = data.title;
             folderName = title;
-//            console.log(folderName)
-          
-            if(/.*\s(.+)/g.test(folderName)) girlName = /.*\s(.+)/g.exec(folderName)[1]
-            else girlName = folderName
-            
-            console.log(girlName)
+            //            console.log(folderName)
+
+            if (/.*\s(.+)/g.test(folderName))
+              girlName = /.*\s(.+)/g.exec(folderName)[1];
+            else girlName = folderName;
+
+            console.log(girlName);
             console.log(data.detail);
             if ($("l5").hidden == false) {
               //收藏栏
@@ -624,12 +679,12 @@ function mainUI(column, rowHeight) {
               $("favorite").info = data.detail;
               $("detailView").data = [];
               getDetailPost(data.detail);
-              getBaidu(data.detail)
+              getBaidu(data.detail);
               return;
             } else {
               showPhotos(title, 2, 270);
             }
-            $ui.toast("载入中...",0.4)
+            $ui.toast("载入中...", 0.4);
             $http.request({
               method: "GET",
               url: data.detail,
@@ -659,43 +714,50 @@ function mainUI(column, rowHeight) {
   });
 }
 
+function detailMatrix(columns,rowHeight){
+  return {
+    type: "matrix",
+            props: {
+              id: "detailView",
+              itemHeight: rowHeight,
+              columns: columns,
+              spacing: 2,
+              bgcolor: $color("clear"),
+              template: [
+                {
+                  type: "image",
+                  props: {
+                    contentMode: $contentMode.scaleAspectFit,
+                    id: "detailImage"
+                  },
+                  layout: $layout.fill
+                }
+              ]
+            },
+            layout: function(make,view){
+              make.left.right.top.inset(0)
+              make.bottom.inset(50)
+            },
+            events: {
+              didSelect(sender, indexPath, data) {
+                var v = $("detailView").cell(indexPath).views[0].views[0];
+                //$ui.action(indexPath.constructor)
+                $quicklook.open({
+                  image: v.image
+                });
+              }
+            }
+  }
+}
+
 function showPhotos(title, columns, rowHeight) {
   $ui.push({
     props: {
       title: title,
-      
+      id:"photos"
     },
     views: [
-      {
-        type: "matrix",
-        props: {
-          id: "detailView",
-          itemHeight: rowHeight,
-          columns: columns,
-          spacing: 2,
-          bgcolor: $color("clear"),
-          template: [
-            {
-              type: "image",
-              props: {
-                contentMode: $contentMode.scaleAspectFit,
-                id: "detailImage"
-              },
-              layout: $layout.fill
-            }
-          ]
-        },
-        layout: $layout.fill,
-        events: {
-          didSelect(sender, indexPath, data) {
-            var v = $("detailView").cell(indexPath).views[0].views[0];
-            //$ui.action(indexPath.constructor)
-            $quicklook.open({
-              image: v.image
-            });
-          }
-        }
-      },
+      detailMatrix(columns,rowHeight),
       {
         type: "button",
         props: {
@@ -723,9 +785,10 @@ function showPhotos(title, columns, rowHeight) {
               urlList = $("detailView").data.map(function(i) {
                 return i.detailImage.src;
               });
-              if(!$drive.exist("套图吧/"+girlName)) $drive.mkdir("套图吧/"+girlName)
-              if (!$drive.exists("套图吧/"+girlName+"/" + folderName)) {
-                $drive.mkdir("套图吧/"+girlName+"/" + folderName);
+              if (!$drive.exist("套图吧/" + girlName))
+                $drive.mkdir("套图吧/" + girlName);
+              if (!$drive.exists("套图吧/" + girlName + "/" + folderName)) {
+                $drive.mkdir("套图吧/" + girlName + "/" + folderName);
               }
               $("progress").value = 0;
               var count = 0;
@@ -742,7 +805,12 @@ function showPhotos(title, columns, rowHeight) {
                       $("progress").value = 0;
                     }
                     var path =
-                      "套图吧/"+girlName+"/" + folderName + "/" + resp.response.suggestedFilename;
+                      "套图吧/" +
+                      girlName +
+                      "/" +
+                      folderName +
+                      "/" +
+                      resp.response.suggestedFilename;
                     $drive.write({
                       data: resp.data,
                       path: path
@@ -770,7 +838,7 @@ function showPhotos(title, columns, rowHeight) {
 
           make.bottom.inset(0);
           make.left.inset(0);
-          make.width.equalTo(view.super).dividedBy(2);
+          make.width.equalTo(view.super).dividedBy(3);
           make.height.equalTo(50);
         },
         events: {
@@ -791,19 +859,23 @@ function showPhotos(title, columns, rowHeight) {
             //              "pythonista://Tools/taotu8?action=run&args=" +
             //                encodeURI($("favorite").info)
             //            );
-            
-            
+
             $app.openURL(
               "pythonista://Tools/taotu8_jsbox" +
                 method +
-                "?action=run&argv=" + encodeURI(girlName) +"&argv=" +encodeURI(folderName) + "&argv=" + encodeURI(IMGList)
+                "?action=run&argv=" +
+                encodeURI(girlName) +
+                "&argv=" +
+                encodeURI(folderName) +
+                "&argv=" +
+                encodeURI(IMGList)
             );
-//            console.log(IMGList)
+            //            console.log(IMGList)
           },
           longPressed: function(sender) {
             $device.taptic(1);
 
-            $clipboard.text = $cache.get("code")
+            $clipboard.text = $cache.get("code");
             $push.schedule({
               title: "密码:" + $cache.get("code"),
               body: "已复制",
@@ -812,7 +884,45 @@ function showPhotos(title, columns, rowHeight) {
             $app.openURL(sender.sender.info);
           }
         }
-      },
+      },{
+        type: "button",
+        props: {
+          id: "vc",
+          bgcolor: $color("#00ae95"),
+          radius: 0,
+          title: "视图",
+          alpha: 0.9
+        },
+        layout: function(make, view) {
+          let w = $device.info.screen.width / 3
+          make.right.inset(w);
+          make.bottom.inset(0)
+          make.width.equalTo(view.super).dividedBy(3);
+          make.height.equalTo(50);
+        },
+        events:{
+          tapped(sender){
+            $device.taptic(0)
+            $ui.menu({
+              items: [1,2,4],
+              handler: (title, idx) => {
+                $("detailView").remove()
+                $("photos").add(detailMatrix(Math.pow(2,idx),563/Math.pow(2,idx)))
+                $("detailView").data=[]
+                      $("detailView").data = $("detailView").data.concat(
+                        IMGList.map(function(i) {
+                          return {
+                            detailImage: {
+                              src: i
+                            }
+                          };
+                        })
+                      );
+              }
+            });
+          }
+        }
+        },
       {
         type: "button",
         props: {
@@ -824,7 +934,7 @@ function showPhotos(title, columns, rowHeight) {
         },
         layout: function(make, view) {
           make.right.bottom.inset(0);
-          make.width.equalTo(view.super).dividedBy(2);
+          make.width.equalTo(view.super).dividedBy(3);
           make.height.equalTo(50);
         },
         events: {
@@ -848,8 +958,8 @@ function showPhotos(title, columns, rowHeight) {
           },
           longPressed: function(sender) {
             $device.taptic(1);
-            if($("l5").hidden == false) $app.openURL(detailUrl)
-//            console.log(sender.sender)
+            if ($("l5").hidden == false) $app.openURL(detailUrl);
+            //            console.log(sender.sender)
             $app.openURL(sender.sender.info);
           }
         }
@@ -964,15 +1074,15 @@ function getDetailPost(url) {
       }
       var reg = /lazysrc=[\s\S]*?  onerror/g;
       var match = resp.data.match(reg);
-      //      console.log(match)
-      //      console.log(url)
+//            console.log(match)
+//            console.log(url)
       IMGList = [];
       match.map(function(i) {
         IMGList.push(
           /lazysrc=(\r\n)?([\s\S]*?) /g.exec(i)[2].replace(/\r\n|\n/g, "")
         );
       });
-      //      console.log(IMGList)
+            console.log(IMGList)
       $ui.clearToast();
       $("detailView").data = $("detailView").data.concat(
         IMGList.map(function(i) {
@@ -1069,10 +1179,10 @@ function showSearch(text) {
 }
 
 function underline(num) {
-  if (CNUM == 5) {
-    $("main").remove();
-    mainUI(2, 270);
-  }
+//  if (CNUM == 5) {
+//    $("main").remove();
+//    mainUI(2, 270);
+//  }
   $("l0").hidden = true;
   $("l1").hidden = true;
   $("l2").hidden = true;
@@ -1136,17 +1246,17 @@ function getBaidu(url) {
     url: url,
     handler: function(resp) {
       var data = resp.data;
-      var shortU = /http:\/\/17.*?"/g.exec(data)
-      if(!shortU){
-        $ui.error("暂无百度云链接",0.4)
-        return
+      var shortU = /http:\/\/17.*?"/g.exec(data);
+      if (!shortU) {
+        $ui.error("暂无百度云链接", 0.4);
+        return;
       }
       shortU = shortU[0].slice(0, -1);
       //      console.log(data)
       var code = /码[:：]\s?(\w{4})/g.exec(data)[1];
       console.log(code);
-      $cache.set("code",code)
-//      $clipboard.text = code
+      $cache.set("code", code);
+      //      $clipboard.text = code
       $("share").code = code;
       //      alert(shortU)
       $http.get({
@@ -1174,6 +1284,6 @@ function main() {
     LocalList = [];
   }
 }
-
-mainUI(2, 270);
+let column = $cache.get("column") || 0;
+mainUI(Math.pow(2, column + 1), 275 / Math.pow(2, column));
 main();
