@@ -10,6 +10,7 @@ var interface = "";
 var title = "";
 var detailUrl = "";
 var folderName = "";
+var girlName = ""
 var subNum = -1;
 var IMGList = [];
 let category = [
@@ -518,6 +519,7 @@ function mainUI(column, rowHeight) {
           make.width.equalTo(view.super).multipliedBy(0.12);
         },
         function() {
+          if($("l5").hidden==false) return
           $("main").remove();
           mainUI(4, 135);
           $("preView").data = [];
@@ -603,22 +605,31 @@ function mainUI(column, rowHeight) {
             }
           },
           didSelect(sender, indexPath, data) {
-            $ui.toast("加载中...", 5);
+//            $ui.toast("加载中...", 5);
             interface = data.interface.src;
             title = data.title;
             folderName = title;
+//            console.log(folderName)
+          
+            if(/.*\s(.+)/g.test(folderName)) girlName = /.*\s(.+)/g.exec(folderName)[1]
+            else girlName = folderName
+            
+            console.log(girlName)
             console.log(data.detail);
             if ($("l5").hidden == false) {
               //收藏栏
               showPhotos(title, 1, 563);
               $("favorite").title = "取消收藏";
               $("favorite").bgcolor = $color("#4f86f2");
+              $("favorite").info = data.detail;
               $("detailView").data = [];
               getDetailPost(data.detail);
+              getBaidu(data.detail)
               return;
             } else {
               showPhotos(title, 2, 270);
             }
+            $ui.toast("载入中...",0.4)
             $http.request({
               method: "GET",
               url: data.detail,
@@ -712,9 +723,9 @@ function showPhotos(title, columns, rowHeight) {
               urlList = $("detailView").data.map(function(i) {
                 return i.detailImage.src;
               });
-
-              if (!$drive.exists("套图吧/" + folderName)) {
-                $drive.mkdir("套图吧/" + folderName);
+              if(!$drive.exist("套图吧/"+girlName)) $drive.mkdir("套图吧/"+girlName)
+              if (!$drive.exists("套图吧/"+girlName+"/" + folderName)) {
+                $drive.mkdir("套图吧/"+girlName+"/" + folderName);
               }
               $("progress").value = 0;
               var count = 0;
@@ -731,10 +742,7 @@ function showPhotos(title, columns, rowHeight) {
                       $("progress").value = 0;
                     }
                     var path =
-                      "套图吧/" +
-                      folderName +
-                      "/" +
-                      resp.response.suggestedFilename;
+                      "套图吧/"+girlName+"/" + folderName + "/" + resp.response.suggestedFilename;
                     $drive.write({
                       data: resp.data,
                       path: path
@@ -783,14 +791,14 @@ function showPhotos(title, columns, rowHeight) {
             //              "pythonista://Tools/taotu8?action=run&args=" +
             //                encodeURI($("favorite").info)
             //            );
+            
+            
             $app.openURL(
               "pythonista://Tools/taotu8_jsbox" +
                 method +
-                "?action=run&argv=" +
-                encodeURI(folderName) +
-                "&argv=" +
-                encodeURI(IMGList)
+                "?action=run&argv=" + encodeURI(girlName) +"&argv=" +encodeURI(folderName) + "&argv=" + encodeURI(IMGList)
             );
+//            console.log(IMGList)
           },
           longPressed: function(sender) {
             $device.taptic(1);
@@ -840,6 +848,8 @@ function showPhotos(title, columns, rowHeight) {
           },
           longPressed: function(sender) {
             $device.taptic(1);
+            if($("l5").hidden == false) $app.openURL(detailUrl)
+//            console.log(sender.sender)
             $app.openURL(sender.sender.info);
           }
         }
@@ -1126,7 +1136,12 @@ function getBaidu(url) {
     url: url,
     handler: function(resp) {
       var data = resp.data;
-      var shortU = /http:\/\/17.*?"/g.exec(data)[0].slice(0, -1);
+      var shortU = /http:\/\/17.*?"/g.exec(data)
+      if(!shortU){
+        $ui.error("暂无百度云链接",0.4)
+        return
+      }
+      shortU = shortU[0].slice(0, -1);
       //      console.log(data)
       var code = /码[:：]\s?(\w{4})/g.exec(data)[1];
       console.log(code);
