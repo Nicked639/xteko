@@ -561,6 +561,7 @@ function mainUI(column, rowHeight) {
         },
         events: {
           returned: function(sender) {
+            page = 0
             showSearch(sender.text);
             $("search").blur();
             listGone();
@@ -604,7 +605,10 @@ function mainUI(column, rowHeight) {
                 detail: i.detail,
                 interface: {
                   src: i.interface.src
-                }
+                },
+                recGra:{
+                                      hidden:LocalList.indexOf(i.interface.src)>=0?false:true
+                                      }
               });
             });
             
@@ -643,7 +647,22 @@ function mainUI(column, rowHeight) {
                 id: "interface"
               },
               layout: $layout.fill
-            }
+            },
+                   {
+                     type: "gradient",
+                     props: {
+                       id: "recGra",
+                       colors: [$color("#2f74e0"), $color("#5d44e0")],
+                       locations: [0.0, 1.0],
+                       startPoint: $point(0, 0),
+                       endPoint: $point(1, 1),
+                       radius: 8,
+                       hidden: true,
+                       alpha: 0.4
+                     },
+                     layout: $layout.fill
+                   },
+            
           ]
         },
         layout: function(make, view) {
@@ -657,6 +676,7 @@ function mainUI(column, rowHeight) {
           },
           didReachBottom(sender) {
             sender.endFetchingMore();
+            
             if ($("l5").hidden !== false) {
               getPostData(CNUM, subNum);
 
@@ -691,7 +711,7 @@ function mainUI(column, rowHeight) {
               getDetailPost(data.detail);
               getBaidu(data.detail);
               return;
-            } else $ui.toast("载入中...", 0.4);
+            } else $ui.toast("载入中...", 5);
             $http.request({
               method: "GET",
               url: data.detail,
@@ -1038,6 +1058,49 @@ function createButton(text, id1, id2, layout, handler, handler2) {
 
 function getPostData(CNUN, subNum) {
   page++;
+  if(SEARCH_MODE==true){
+      let u = $cache.get("searchUrl")
+      let a = u.split("-")
+      let url = a[0]+"-"+page+"-"+a[2]
+//      console.log(url)
+      $http.get({
+        url: url,
+        handler: resp => {
+          var data = resp.data;
+//          console.log(data)
+          var reg = /<li>[\s\S]*?<\/li>/g;
+                var match = resp.data.match(reg);
+                var removed = match.slice(8);
+//                console.log(removed)
+                //      var postData = []
+                $ui.clearToast();
+                if(removed==0){
+                  $ui.toast("已到底",0.5)
+                  return
+                }
+                removed.map(function(i) {
+                  var image = /(img src=")([\s\S]*?)(")/.exec(i)[2];
+                  var detail = /(href=")([\s\S]*?)(")/.exec(i)[2];
+                  if (detail.indexOf(HOME) < 0) {
+                    detail = HOME + detail;
+                  }
+                  var title = /<span>(.*?)<\/span>/.exec(i)[1];
+                  $("preView").data = $("preView").data.concat({
+                    title: title,
+                    detail: detail,
+                    interface: {
+                      src: image
+                    },
+                    recGra:{
+                      hidden:LocalList.indexOf(image)>=0?false:true
+                    }
+                  });
+                });
+        }
+      });
+//      alert("d")
+      return
+    }
   if (page == 1) {
     if (!(subNum >= 0)) var url = category[CNUM].addr;
     else url = category[CNUM].sub[subNum].addr;
@@ -1072,6 +1135,9 @@ function getPostData(CNUN, subNum) {
           detail: detail,
           interface: {
             src: image
+          },
+          recGra:{
+            hidden:LocalList.indexOf(image)>=0?false:true
           }
         });
       });
@@ -1096,8 +1162,7 @@ function getDetailPost(url) {
           /lazysrc=(\r\n)?([\s\S]*?) /g.exec(i)[2].replace(/\r\n|\n/g, "")
         );
       });
-      console.log(IMGList);
-      $ui.clearToast();
+      console.log("共计 "+IMGList.length+" 张图");
       $("detailView").data = $("detailView").data.concat(
         IMGList.map(function(i) {
           return {
@@ -1107,6 +1172,7 @@ function getDetailPost(url) {
           };
         })
       );
+           $ui.clearToast();
     }
   });
 }
@@ -1159,17 +1225,16 @@ function showSearch(text) {
       show: "title,keyboard"
     },
     handler: function(resp) {
-      //      $("menu").remove()
-      //      mainUI(2,280)
-      $("search").text = text;
-      //      let data = resp
+//      $("search").text = text;
+      $cache.set("searchUrl",resp.response.url)
+      
       var reg = /<li>[\s\S]*?<\/li>/g;
       var match = resp.data.match(reg);
       if (!match) {
         alert("未找到结果");
         return;
       }
-      console.log(match);
+//      console.log(match);
       var removed = match.slice(8);
       //      console.log(removed);
       //      var postData = []
@@ -1188,7 +1253,10 @@ function showSearch(text) {
           detail: detail,
           interface: {
             src: image
-          }
+          },
+          recGra:{
+                      hidden:LocalList.indexOf(image)>=0?false:true
+                      }
         });
       });
     }
@@ -1224,7 +1292,7 @@ function listGone() {
 
 function changeButton(num) {
   $device.taptic(0);
-  SEARCH_MODE = true;
+  SEARCH_MODE = false;
   $("search").text = "";
   $ui.toast("加载中...", 5);
   listGone();
@@ -1273,7 +1341,7 @@ function getBaidu(url) {
       shortU = shortU[0].slice(0, -1);
       //      console.log(data)
       var code = /码[:：]\s?(\w{4})/g.exec(data)[1];
-      console.log(code);
+//      console.log(code);
       $cache.set("code", code);
       //      $clipboard.text = code
       $("share").code = code;
@@ -1303,6 +1371,7 @@ function main() {
     LocalList = [];
   }
 }
+$cache.remove("searchUrl")
 let column = $cache.get("column") || 0;
 mainUI(Math.pow(2, column + 1), 275 / Math.pow(2, column));
 main();
