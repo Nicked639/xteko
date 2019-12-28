@@ -13,6 +13,7 @@ var folderName = "";
 var girlName = "";
 var subNum = -1;
 var IMGList = [];
+var SEARCH_MODE = false;
 let category = [
   {
     title: "高清",
@@ -521,7 +522,7 @@ function mainUI(column, rowHeight) {
         function() {
           if ($("l5").hidden == false) return;
           $("main").remove();
-//          mainUI(4, 135);
+          //          mainUI(4, 135);
           let column = $cache.get("column") || 0;
           mainUI(Math.pow(2, column + 1), 275 / Math.pow(2, column));
           $("preView").data = [];
@@ -586,34 +587,40 @@ function mainUI(column, rowHeight) {
         },
         events: {
           changed(sender) {
+            $device.taptic(0);
             let id = sender.index;
             $cache.set("column", id);
+            let text = $("search").text;
+   
+            let temp = $("preView").data;
+
             $("main").remove();
             mainUI(Math.pow(2, id + 1), 275 / Math.pow(2, id));
-            if (CNUM == 5) {
-              underline(5)
-              $("preView").data = [];
-             
-              
-                LocalData.fav.map(function(i) {
-                  $("preView").data = $("preView").data.concat({
-                    title: i.title,
-                    detail: i.url,
-                    interface: {
-                      src: i.src
-                    }
-                  });
-                });
-              
+            $("preView").data = [];
 
-              $("preView").contentOffset = $point(0, 0);
-              return
+            temp.map(function(i) {
+              $("preView").data = $("preView").data.concat({
+                title: i.title,
+                detail: i.detail,
+                interface: {
+                  src: i.interface.src
+                }
+              });
+            });
+            
+            if (SEARCH_MODE == true && text) {
+              $("search").text = text;
+              return;
+            }else{
+              underline(CNUM)
             }
-            changeButton(CNUM);
+            $("preView").contentOffset = $point(0, 0);
             if(id==2){
+              
               getPostData(CNUM)
               getPostData(CNUM)
             }
+            
           }
         }
       },
@@ -671,9 +678,12 @@ function mainUI(column, rowHeight) {
 
             console.log(girlName);
             console.log(data.detail);
+            let idx = $cache.get("shitu") || 1;
+
+            showPhotos(title, Math.pow(2, idx), 563 / Math.pow(2, idx));
             if ($("l5").hidden == false) {
               //收藏栏
-              showPhotos(title, 1, 563);
+
               $("favorite").title = "取消收藏";
               $("favorite").bgcolor = $color("#4f86f2");
               $("favorite").info = data.detail;
@@ -681,10 +691,7 @@ function mainUI(column, rowHeight) {
               getDetailPost(data.detail);
               getBaidu(data.detail);
               return;
-            } else {
-              showPhotos(title, 2, 270);
-            }
-            $ui.toast("载入中...", 0.4);
+            } else $ui.toast("载入中...", 0.4);
             $http.request({
               method: "GET",
               url: data.detail,
@@ -714,50 +721,50 @@ function mainUI(column, rowHeight) {
   });
 }
 
-function detailMatrix(columns,rowHeight){
+function detailMatrix(columns, rowHeight) {
   return {
     type: "matrix",
-            props: {
-              id: "detailView",
-              itemHeight: rowHeight,
-              columns: columns,
-              spacing: 2,
-              bgcolor: $color("clear"),
-              template: [
-                {
-                  type: "image",
-                  props: {
-                    contentMode: $contentMode.scaleAspectFit,
-                    id: "detailImage"
-                  },
-                  layout: $layout.fill
-                }
-              ]
-            },
-            layout: function(make,view){
-              make.left.right.top.inset(0)
-              make.bottom.inset(50)
-            },
-            events: {
-              didSelect(sender, indexPath, data) {
-                var v = $("detailView").cell(indexPath).views[0].views[0];
-                //$ui.action(indexPath.constructor)
-                $quicklook.open({
-                  image: v.image
-                });
-              }
-            }
-  }
+    props: {
+      id: "detailView",
+      itemHeight: rowHeight,
+      columns: columns,
+      spacing: 2,
+      bgcolor: $color("clear"),
+      template: [
+        {
+          type: "image",
+          props: {
+            contentMode: $contentMode.scaleAspectFit,
+            id: "detailImage"
+          },
+          layout: $layout.fill
+        }
+      ]
+    },
+    layout: function(make, view) {
+      make.left.right.top.inset(0);
+      make.bottom.inset(50);
+    },
+    events: {
+      didSelect(sender, indexPath, data) {
+        var v = $("detailView").cell(indexPath).views[0].views[0];
+        //$ui.action(indexPath.constructor)
+        $quicklook.open({
+          image: v.image
+        });
+      }
+    }
+  };
 }
 
 function showPhotos(title, columns, rowHeight) {
   $ui.push({
     props: {
       title: title,
-      id:"photos"
+      id: "photos"
     },
     views: [
-      detailMatrix(columns,rowHeight),
+      detailMatrix(columns, rowHeight),
       {
         type: "button",
         props: {
@@ -874,7 +881,10 @@ function showPhotos(title, columns, rowHeight) {
           },
           longPressed: function(sender) {
             $device.taptic(1);
-
+            if (!sender.sender.info) {
+              $ui.error("暂无百度云链接", 0.5);
+              return;
+            }
             $clipboard.text = $cache.get("code");
             $push.schedule({
               title: "密码:" + $cache.get("code"),
@@ -884,7 +894,8 @@ function showPhotos(title, columns, rowHeight) {
             $app.openURL(sender.sender.info);
           }
         }
-      },{
+      },
+      {
         type: "button",
         props: {
           id: "vc",
@@ -894,35 +905,38 @@ function showPhotos(title, columns, rowHeight) {
           alpha: 0.9
         },
         layout: function(make, view) {
-          let w = $device.info.screen.width / 3
+          let w = $device.info.screen.width / 3;
           make.right.inset(w);
-          make.bottom.inset(0)
+          make.bottom.inset(0);
           make.width.equalTo(view.super).dividedBy(3);
           make.height.equalTo(50);
         },
-        events:{
-          tapped(sender){
-            $device.taptic(0)
+        events: {
+          tapped(sender) {
+            $device.taptic(0);
             $ui.menu({
-              items: [1,2,4],
+              items: [1, 2, 4],
               handler: (title, idx) => {
-                $("detailView").remove()
-                $("photos").add(detailMatrix(Math.pow(2,idx),563/Math.pow(2,idx)))
-                $("detailView").data=[]
-                      $("detailView").data = $("detailView").data.concat(
-                        IMGList.map(function(i) {
-                          return {
-                            detailImage: {
-                              src: i
-                            }
-                          };
-                        })
-                      );
+                $("detailView").remove();
+                $("photos").add(
+                  detailMatrix(Math.pow(2, idx), 563 / Math.pow(2, idx))
+                );
+                $cache.set("shitu", idx);
+                $("detailView").data = [];
+                $("detailView").data = $("detailView").data.concat(
+                  IMGList.map(function(i) {
+                    return {
+                      detailImage: {
+                        src: i
+                      }
+                    };
+                  })
+                );
               }
             });
           }
         }
-        },
+      },
       {
         type: "button",
         props: {
@@ -1074,15 +1088,15 @@ function getDetailPost(url) {
       }
       var reg = /lazysrc=[\s\S]*?  onerror/g;
       var match = resp.data.match(reg);
-//            console.log(match)
-//            console.log(url)
+      //            console.log(match)
+      //            console.log(url)
       IMGList = [];
       match.map(function(i) {
         IMGList.push(
           /lazysrc=(\r\n)?([\s\S]*?) /g.exec(i)[2].replace(/\r\n|\n/g, "")
         );
       });
-            console.log(IMGList)
+      console.log(IMGList);
       $ui.clearToast();
       $("detailView").data = $("detailView").data.concat(
         IMGList.map(function(i) {
@@ -1131,6 +1145,8 @@ function writeCache() {
 }
 
 function showSearch(text) {
+  SEARCH_MODE = true;
+  $("l" + CNUM).hidden = true;
   $ui.toast("搜索中...", 5);
   $http.post({
     url: HOME + "/e/search/",
@@ -1153,8 +1169,9 @@ function showSearch(text) {
         alert("未找到结果");
         return;
       }
+      console.log(match);
       var removed = match.slice(8);
-      console.log(removed);
+      //      console.log(removed);
       //      var postData = []
       $ui.toast("", 0.1);
       $("preView").data = [];
@@ -1179,10 +1196,10 @@ function showSearch(text) {
 }
 
 function underline(num) {
-//  if (CNUM == 5) {
-//    $("main").remove();
-//    mainUI(2, 270);
-//  }
+  //  if (CNUM == 5) {
+  //    $("main").remove();
+  //    mainUI(2, 270);
+  //  }
   $("l0").hidden = true;
   $("l1").hidden = true;
   $("l2").hidden = true;
@@ -1194,6 +1211,7 @@ function underline(num) {
 }
 
 function listGone() {
+  //  SEARCH_MODE = true
   if (subNum >= 0 && CNUM != 5) {
     $ui.animate({
       duration: 0.5,
@@ -1206,6 +1224,7 @@ function listGone() {
 
 function changeButton(num) {
   $device.taptic(0);
+  SEARCH_MODE = true;
   $("search").text = "";
   $ui.toast("加载中...", 5);
   listGone();
