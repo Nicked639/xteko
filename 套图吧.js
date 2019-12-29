@@ -1066,14 +1066,13 @@ function getPostData(CNUN, subNum) {
       $http.get({
         url: url,
         handler: resp => {
-          var data = resp.data;
-//          console.log(data)
+          
           var reg = /<li>[\s\S]*?<\/li>/g;
                 var match = resp.data.match(reg);
                 var removed = match.slice(8);
 //                console.log(removed)
                 //      var postData = []
-                $ui.clearToast();
+//                $ui.clearToast();
                 if(removed==0){
                   $ui.toast("已到底",0.5)
                   return
@@ -1122,7 +1121,7 @@ function getPostData(CNUN, subNum) {
       var removed = match.slice(8);
       //console.log(removed)
       //      var postData = []
-      $ui.clearToast();
+//      $ui.clearToast();
       removed.map(function(i) {
         var image = /(lazysrc=")([\s\S]*?)(")/.exec(i)[2];
         var detail = /(href=")([\s\S]*?)(")/.exec(i)[2];
@@ -1172,7 +1171,7 @@ function getDetailPost(url) {
           };
         })
       );
-           $ui.clearToast();
+//           $ui.clearToast();
     }
   });
 }
@@ -1335,7 +1334,7 @@ function getBaidu(url) {
       var data = resp.data;
       var shortU = /http:\/\/17.*?"/g.exec(data);
       if (!shortU) {
-        $ui.error("暂无百度云链接", 0.4);
+        $ui.error("暂无百度云链接: "+IMGList.length+" 张图",1);
         return;
       }
       shortU = shortU[0].slice(0, -1);
@@ -1352,7 +1351,7 @@ function getBaidu(url) {
           var data = resp.data;
           var panU = /https?:\/\/pan.*?"/g.exec(data)[0].slice(0, -1);
           $("share").info = panU;
-          $ui.toast("百度盘链接已获取", 0.4);
+          $ui.toast("百度盘链接已获取: "+IMGList.length+" 张图",1)
         }
       });
     }
