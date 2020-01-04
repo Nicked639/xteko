@@ -17,6 +17,8 @@ var IMGList = [];
 var SEARCH_MODE = false;
 var Browse = true
 var TIME = 1 //自动浏览间隔
+var Position=0
+var PFlag = false
 let category = [
   {
     title: "高清",
@@ -533,8 +535,9 @@ function mainUI(column, rowHeight) {
           if (LocalList.length == 0) {
             $ui.toast("暂无收藏内容，请收藏");
           } else {
+            let temp = $("preView").data
             LocalData.fav.map(function(i) {
-              $("preView").data = $("preView").data.concat({
+           temp = temp.concat({
                 title: i.title,
                 detail: i.url,
                 interface: {
@@ -542,8 +545,10 @@ function mainUI(column, rowHeight) {
                 }
               });
             });
+//            console.log(temp)
+             $("preView").data = temp
           }
-
+         
           $("preView").contentOffset = $point(0, 0);
         }
       ),
@@ -601,9 +606,9 @@ function mainUI(column, rowHeight) {
             $("main").remove();
             mainUI(Math.pow(2, id + 1), 275 / Math.pow(2, id));
             $("preView").data = [];
-
+            
             temp.map(function(i) {
-              $("preView").data = $("preView").data.concat({
+              temp.data = temp.concat({
                 title: i.title,
                 detail: i.detail,
                 interface: {
@@ -614,7 +619,7 @@ function mainUI(column, rowHeight) {
                                       }
               });
             });
-            
+            $("preView").data = temp
             if (SEARCH_MODE == true && text) {
               $("search").text = text;
               return;
@@ -697,6 +702,7 @@ function mainUI(column, rowHeight) {
 
             if (/.*\s(.+)/g.test(folderName)){
               girlName = /.*\s(.+)/g.exec(folderName)[1];
+              if( /\d{4}-\d{2}-\d{2}\sVol\.\d{3,4}/g.exec(folderName))
               namePrefix = /\d{4}-\d{2}-\d{2}\sVol\.\d{3,4}/g.exec(folderName)[0]
               console.log(namePrefix)
               
@@ -775,9 +781,13 @@ function detailMatrix(columns, rowHeight) {
     },
     events: {
       didSelect(sender, indexPath, data) {
-        var v = $("detailView").cell(indexPath).views[0].views[0];
+//        var v = $("detailView").cell(indexPath).views[0].views[0];
         //$ui.action(indexPath.constructor)
-        playImg(IMGList,indexPath.row,girlName)
+        PFlag = false
+        if($cache.get("shitu")==3)
+           playImg2(indexPath,girlName)
+        else
+          playImg(IMGList,indexPath.row,girlName)
 //        $quicklook.open({
 //          image: v.image
 //        });
@@ -947,15 +957,17 @@ function showPhotos(title, columns, rowHeight) {
           tapped(sender) {
             $device.taptic(0);
             $ui.menu({
-              items: [1, 2, 4],
+              items: [1, 2, 4,8],
               handler: (title, idx) => {
+                
                 $("detailView").remove();
                 $("photos").add(
                   detailMatrix(Math.pow(2, idx), 563 / Math.pow(2, idx))
                 );
                 $cache.set("shitu", idx);
                 $("detailView").data = [];
-                $("detailView").data = $("detailView").data.concat(
+                let temp = []
+                 temp = temp.concat(
                   IMGList.map(function(i) {
                     return {
                       detailImage: {
@@ -964,6 +976,8 @@ function showPhotos(title, columns, rowHeight) {
                     };
                   })
                 );
+                $("detailView").data = temp
+                
               }
             });
           }
@@ -1069,6 +1083,7 @@ function createButton(text, id1, id2, layout, handler, handler2) {
 }
 
 function getPostData(CNUN, subNum) {
+  if(CNUM==5) return
   page++;
   if(SEARCH_MODE==true){
       let u = $cache.get("searchUrl")
@@ -1096,7 +1111,8 @@ function getPostData(CNUN, subNum) {
                     detail = HOME + detail;
                   }
                   var title = /<span>(.*?)<\/span>/.exec(i)[1];
-                  $("preView").data = $("preView").data.concat({
+                  let temp = $("preView").data
+                  temp = temp.concat({
                     title: title,
                     detail: detail,
                     interface: {
@@ -1106,6 +1122,7 @@ function getPostData(CNUN, subNum) {
                       hidden:LocalList.indexOf(image)>=0?false:true
                     }
                   });
+                  $("preView").data = temp
                 });
         }
       });
@@ -1141,7 +1158,8 @@ function getPostData(CNUN, subNum) {
           detail = HOME + detail;
         }
         var title = /alt="(.*?)"/.exec(i)[1];
-        $("preView").data = $("preView").data.concat({
+        let temp = $("preView").data
+        temp = temp.concat({
           title: title,
           detail: detail,
           interface: {
@@ -1151,7 +1169,9 @@ function getPostData(CNUN, subNum) {
             hidden:LocalList.indexOf(image)>=0?false:true
           }
         });
+        $("preView").data=  temp
       });
+      $ui.clearToast()
     }
   });
 }
@@ -1175,7 +1195,8 @@ function getDetailPost(url) {
       });
       console.log("共计 "+IMGList.length+" 张图");
 //       console.log(IMGList)
-      $("detailView").data = $("detailView").data.concat(
+let temp = $("detailView").data
+temp = temp.concat(
         IMGList.map(function(i) {
           return {
             detailImage: {
@@ -1184,6 +1205,7 @@ function getDetailPost(url) {
           };
         })
       );
+      $("detailView").data = temp
 //           $ui.clearToast();
     }
   });
@@ -1391,44 +1413,46 @@ $ui.push({
             type: "button",
             props: {
               id: "download",
-              bgcolor: $color("black"),
-              radius: 0,
+              bgcolor: $color("tint"),
+              radius: 20,
               title: "向左",
               alpha: 0.9,
 //              hidden: true
             },
             layout: function(make, view) {
-              make.left.bottom.inset(0);
-              make.width.equalTo(view.super).dividedBy(2);
-              make.height.equalTo(50);
+              make.left.bottom.inset(20);
+              make.width.equalTo(120);
+              make.height.equalTo(40);
             },
             events: {
               tapped(sender){
                 Browse = false
-               let p = --position
-               console.log(p)
-               if(p<0){
+               position = position-1
+//               console.log()
+               if(position<0){
                  $ui.error("已浏览到第一页")
                  position = 0
                  return
                }
-               position = p
-               $("IMG").url = imgList[p]
+           
+               $("page").text = position+"/"+imgList.length
+               $("IMG").url = imgList[position]
               },
               async longPressed(sender){
                 Browse = true
                 $ui.toast("开启负向自动浏览",0.5)
+                $device.taptic(0)
                 while(Browse){
                   await $wait(TIME)
-                  let p = --position
-                                 console.log(p)
-                                 if(p<0){
+                  position = position-1
+                  
+                                 if(position<0){
                                    $ui.error("已浏览到第一页")
                                    position = 0
                                    return
                                  }
-                                 position = p
-                                 $("IMG").url = imgList[p]
+                                    $("page").text = position+"/"+imgList.length
+                                 $("IMG").url = imgList[position]
                 }
               }
             }
@@ -1437,52 +1461,224 @@ $ui.push({
                  type: "button",
                  props: {
                    id: "download",
-                   bgcolor: $color("black"),
-                   radius: 0,
+                   bgcolor: $color("tint"),
+                   radius: 20,
                    title: "向右",
                    alpha: 0.9,
                  },
                  layout: function(make, view) {
-                   make.right.bottom.inset(0);
-                   make.width.equalTo(view.super).dividedBy(2);
-                   make.height.equalTo(50);
+                   make.right.bottom.inset(20);
+                   make.width.equalTo(120);
+                   make.height.equalTo(40);
                  },
                  events: {
                    tapped(sender){
                     Browse = false
-                     let p = ++position
-                     console.log(p)
-                     if(p>imgList.length-1){
+                     position=position+1
+                    
+                     if(position>imgList.length-1){
                        $ui.error("已浏览完图片",0.5)
                        position = imgList.length-1
                        
                        return
                      }
-                     position = p
-                     $("IMG").url = imgList[p]
+                $("page").text = position+"/"+imgList.length
+                     $("IMG").url = imgList[position]
                      
                    },
                    async longPressed(sender){
   $ui.toast("开启正向自动浏览",0.5)
 Browse = true
-
+$device.taptic(0)
                      while(Browse){
                        await $wait(TIME);
-                     let p = ++position
-                     if(p>imgList.length-1){
+                     position = position+1
+                     if(position>imgList.length-1){
                        $ui.error("已浏览完图片",0.5)
                        position = imgList.length-1
                        
                        return
                      }
-                     position = p
-                     $("IMG").url = imgList[p]
+                        $("page").text = position+"/"+imgList.length
+                     $("IMG").url = imgList[position]
                      }
                    }
                  }
-          }
+          },
+          {
+                  type: "label",
+                  props: {
+                    text: position+"/"+IMGList.length,
+                    id:"page",
+                    align: $align.center
+                  },
+                  layout: function(make, view) {
+                    make.centerX.equalTo(view.super)
+                    make.bottom.inset(30)
+                  }
+                }
   ]
 });
+}
+
+function playImg2(indexPath, title) {
+  $ui.push({
+    props: {
+      title: title
+    },
+    views: [
+      {
+        type: "scroll",
+        props: {
+          zoomEnabled: true,
+          maxZoomScale: 3, // Optional, default is 2,
+          doubleTapToZoom: true // Optional, default is true
+        },
+        layout: (make, view) => {
+          make.left.right.top.inset(0);
+          make.bottom.inset(50);
+        },
+        views: [
+          {
+            type: "image",
+            props: {
+              id: "IMG",
+              image: $("detailView").cell(indexPath).views[0].views[0].image
+            },
+            layout: $layout.fill
+          }
+        ]
+      },
+      {
+        type: "button",
+        props: {
+          id: "download",
+          bgcolor: $color("tint"),
+          title: "向左",
+          alpha: 0.9,
+          radius:20
+
+          //              hidden: true
+        },
+        layout: function(make, view) {
+          make.left.bottom.inset(20);
+          make.width.equalTo(120);
+          make.height.equalTo(40);
+        },
+        events: {
+          tapped(sender) {
+            Browse = false;
+
+            if (!PFlag) {
+              Position = indexPath.row - 1;
+              PFlag = true;
+            } else Position = Position - 1;
+            
+            if (Position < 0) {
+              $ui.error("已浏览至第一张", 0.5);
+              Position = 0;
+
+              return;
+            }
+            $("page").text = Position+"/"+IMGList.length
+            let i = $indexPath(indexPath.section, Position);
+            $("IMG").image = $("detailView").cell(i).views[0].views[0].image;
+          },
+          async longPressed(sender) {
+            Browse = true;
+            $device.taptic(0)
+            $ui.toast("开启负向自动浏览", 0.5);
+            while (Browse) {
+              await $wait(TIME);
+              if (!PFlag) {
+                Position = indexPath.row - 1;
+                PFlag = true;
+              } else Position = Position - 1;
+   
+              if (Position < 0) {
+                $ui.error("已浏览至第一张", 0.5);
+                Position = 0;
+
+                return;
+              }
+            $("page").text = Position+"/"+IMGList.length
+              let i = $indexPath(indexPath.section, Position);
+              $("IMG").image = $("detailView").cell(i).views[0].views[0].image;
+            }
+          }
+        }
+      },
+      {
+        type: "button",
+        props: {
+          id: "download",
+          bgcolor: $color("tint"),
+          title: "向右",
+          alpha: 0.9,
+          radius:20
+        },
+        layout: function(make, view) {
+          make.right.bottom.inset(20);
+          make.width.equalTo(120);
+          make.height.equalTo(40);
+        },
+        events: {
+          tapped(sender) {
+            Browse = false;
+            if (!PFlag) {
+              Position = indexPath.row + 1;
+              PFlag = true;
+            } else Position = Position + 1;
+
+            if (Position > IMGList.length - 1) {
+              $ui.error("已浏览完图片", 0.5);
+              Position = IMGList.length - 1;
+
+              return;
+            }
+            $("page").text = Position+"/"+IMGList.length
+            let i = $indexPath(indexPath.section, Position);
+            $("IMG").image = $("detailView").cell(i).views[0].views[0].image;
+          },
+          async longPressed(sender) {
+            $ui.toast("开启正向自动浏览", 0.5);
+            $device.taptic(0)
+            Browse = true;
+
+            while (Browse) {
+              await $wait(TIME);
+              if (!PFlag) {
+                Position = indexPath.row + 1;
+                PFlag = true;
+              } else Position = Position + 1;
+
+              if (Position > IMGList.length - 1) {
+                $ui.error("已浏览完图片", 0.5);
+                Position = IMGList.length - 1;
+
+                return;
+              }
+            $("page").text = Position+"/"+IMGList.length
+              let i = $indexPath(indexPath.section, Position);
+              $("IMG").image = $("detailView").cell(i).views[0].views[0].image;
+            }
+          }
+        }
+      },
+      {
+        type: "label",
+        props: {
+          text: indexPath.row+"/"+IMGList.length,
+          id:"page",
+          align: $align.center
+        },
+        layout: function(make, view) {
+          make.centerX.equalTo(view.super)
+          make.bottom.inset(30)
+        }
+      }
+    ]
+  });
 }
 
 function main() {
