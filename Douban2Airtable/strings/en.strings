@@ -7,3 +7,4 @@
 "DBERROR" = "Douban  URL Error ❌";
 "LOAD" = "Loading...";
 "WRONG" = "Cannot Detect ID ❌";
+"REPEAT"= "Exist ID!";

@@ -7,3 +7,4 @@
 "DBERROR" = "豆瓣 URL 错误 ❌";
 "LOAD" = "载入中...";
 "WRONG" = "未检测到 id ❌";
+"REPEAT" = "该记录已存在！";

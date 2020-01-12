@@ -1,12 +1,19 @@
 var dbapikey = "?apikey=0df993c66c0c636e29ecbb5344252a4a"
 
-function getAirtable(){
+async function getAirtable(cat){
     $http.get({ 
-        url: 'https://api.airtable.com/v0/appJJmTgbDFTEnJxz/Books?maxRecords=3&view=Grid%20view',
+        url: 'https://api.airtable.com/v0/appJJmTgbDFTEnJxz/'+cat+'?&view=main&fields%5B%5D=Title',
         header: {"Authorization": "Bearer "+$cache.get("apiKey")},
         handler: function(resp){
             var data = resp.data
-            $console.log(data)
+//            console.log(data)
+            let titles=[]
+            data.records.map((i)=>{
+              titles.push(i.fields.Title)
+            })
+                        
+//            $console.log(titles)
+        $cache.set(cat,titles)
         }
     })
 }
@@ -25,22 +32,33 @@ function postAirtable(datas,type){
             var data = resp.data
             $console.log(data)
             if(data.id){
+              if($app.env == $env.siri) $intents.finish($l10n("SUCCEED"));
               $ui.toast($l10n("SUCCEED"));
 //              $app.close()
             }
-            else $ui.alert($l10n("ERROR"));
+            else {
+              if($app.env == $env.siri) $intents.finish($l10n("SUCCEED"));
+              $ui.alert($l10n("ERROR"));
+            }
         }
     })
 }
 
 function postMovieData(url, id){
     let apiUrl = "https://api.douban.com/v2/movie/subject/"
+    
     $http.get({
         url: apiUrl + id + dbapikey,
-        handler: function(resp) {
-            if (!resp.response) $ui.error($l10n("DBERROR"))
-            let data = resp.data
-            console.log(data)
+        handler: async function(resp) {
+          if (!resp.response) $ui.error($l10n("DBERROR"))
+          let data = resp.data
+          let titles = $cache.get("Movies")
+            if(titles.indexOf(data.title)){
+                                      $intents.finish($l10n("REPEAT"));
+                                      $ui.toast($l10n("REPEAT"))
+                                      return
+                                    }
+//            console.log(data)
             let content = {
             "fields": {
                 "Title": data.title,
@@ -74,6 +92,12 @@ function postBookData(url, id){
         handler: function(resp) {
           if (!resp.response) $ui.error($l10n("DBERROR"))
           let data = resp.data
+          let titles = $cache.get("Books")
+                      if(titles.indexOf(data.title)){
+                                                $intents.finish($l10n("REPEAT"));
+                                                $ui.toast($l10n("REPEAT"))
+                                                return
+                                              }
           console.log(data)
           let content = {
             "fields": {

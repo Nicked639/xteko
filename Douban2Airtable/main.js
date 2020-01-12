@@ -1,5 +1,7 @@
 
 var airtable = require('scripts/airtable');
+airtable.get("Movies")
+airtable.get("Books")
 var scrollFlag = 0
 if (!$cache.get("apiKey")) {
   $input.text({
@@ -12,6 +14,21 @@ if (!$cache.get("apiKey")) {
   })
   return
 }else{
+  if($app.env == $env.action){
+      $ui.toast($l10n("LOAD"),10)
+      let item = $context.linkItems[0]
+      if(!/\/(\d{5,8})\?/g.test(item)) wrong();
+      else postData(item);
+    }else if($app.env == $env.safari){
+      $ui.toast($l10n("LOAD"),10)
+      let item = $safari.items
+      if(!/\/(\d{5,8})\//g.test(item.baseURI)) wrong();
+      else postData(item.baseURI);
+    }else if($app.env == $env.siri){
+      let item = $context.query.url
+      if(!/(\d{5,8})/g.test(item)) $intents.finish($l10n("WRONG"))
+      else postData(item);
+  }else{
   var keyword = $clipboard.text
   let k = await $input.text({
     placeholder: keyword
@@ -45,7 +62,7 @@ if (!$cache.get("apiKey")) {
 //      })
 //      
 //  });
-
+}
 }
 
 function doubanUI(keyword){
@@ -131,7 +148,8 @@ function createScrollButtonView(){
         src:"assets/arrowUp.png",
         font: $font(34),
         bgcolor: $color("clear"),
-        id: "scrollUp"
+        id: "scrollUp",
+        hidden:true
       },
       layout: function(make,view){
         make.right.inset(9)
@@ -159,7 +177,8 @@ function createScrollButtonView(){
         font: $font(34),
         src:"assets/arrowDown.png",
         bgcolor: $color("clear"),
-        id: "scrollDown"
+        id: "scrollDown",
+        hidden:true
       },
       layout: function(make,view){
         make.right.inset(9)
