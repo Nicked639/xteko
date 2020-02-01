@@ -1,7 +1,7 @@
 
 var airtable = require('scripts/airtable');
-airtable.get("Movies")
-airtable.get("Books")
+airtable.getM(0)
+airtable.getB(0)
 var scrollFlag = 0
 if (!$cache.get("apiKey")) {
   $input.text({
@@ -27,7 +27,9 @@ if (!$cache.get("apiKey")) {
     }else if($app.env == $env.siri){
       let item = $context.query.url
       if(!/(\d{5,8})/g.test(item)) $intents.finish($l10n("WRONG"))
-      else postData(item);
+      else {
+        postData(item);
+      }
   }else{
   var keyword = $clipboard.text
   let k = await $input.text({
@@ -117,7 +119,7 @@ $ui.render({
 
 }
 function postData(url){
-  var id = /\/(\d{5,8})\//g.exec(url)[1]
+  var id = /\/(\d{5,8})[/?]/g.exec(url)[1]
   console.info(id)
   if(/.*movie.*/.test(url)){            //获取 type
     data = airtable.postMovieData(url,id)
