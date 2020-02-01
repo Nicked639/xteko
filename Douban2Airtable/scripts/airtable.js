@@ -1,19 +1,42 @@
 var dbapikey = "?apikey=0df993c66c0c636e29ecbb5344252a4a"
-
-async function getAirtable(cat){
+var Mtitles = []
+var Btitles = []
+async function getAirtableMovies(offset){
     $http.get({ 
-        url: 'https://api.airtable.com/v0/appJJmTgbDFTEnJxz/'+cat+'?&view=main&fields%5B%5D=Title',
-        header: {"Authorization": "Bearer "+$cache.get("apiKey")},
+        url: `https://api.airtable.com/v0/appJJmTgbDFTEnJxz/Movies?&view=main&fields%5B%5D=Title&offset=${offset}`,
+        header: {
+          "Authorization": "Bearer "+$cache.get("apiKey"),
+          },
         handler: function(resp){
             var data = resp.data
 //            console.log(data)
-            let titles=[]
             data.records.map((i)=>{
-              titles.push(i.fields.Title)
+              Mtitles.push(i.fields.Title)
             })
-                        
-//            $console.log(titles)
-        $cache.set(cat,titles)
+            if(data.offset)
+            getAirtableMovies(data.offset)
+            $console.log(Mtitles)
+        $cache.set("Movies",Mtitles)
+        }
+    })
+}
+
+async function getAirtableBooks(offset){
+    $http.get({ 
+        url: `https://api.airtable.com/v0/appJJmTgbDFTEnJxz/Books?&view=main&fields%5B%5D=Title&offset=${offset}`,
+        header: {
+          "Authorization": "Bearer "+$cache.get("apiKey"),
+          },
+        handler: function(resp){
+            var data = resp.data
+//            console.log(data)
+            data.records.map((i)=>{
+              Btitles.push(i.fields.Title)
+            })
+            if(data.offset)
+            getAirtableBooks(data.offset)
+            $console.log(Btitles)
+        $cache.set("Books",Btitles)
         }
     })
 }
@@ -53,7 +76,11 @@ function postMovieData(url, id){
           if (!resp.response) $ui.error($l10n("DBERROR"))
           let data = resp.data
           let titles = $cache.get("Movies")
-            if(titles.indexOf(data.title)){
+          console.log(data.title)
+//          console.log(titles)
+          
+            if(titles.indexOf(data.title)>-1){
+//              console.log(titles.indexOf(data.title))
                                       $intents.finish($l10n("REPEAT"));
                                       $ui.toast($l10n("REPEAT"))
                                       return
@@ -93,7 +120,7 @@ function postBookData(url, id){
           if (!resp.response) $ui.error($l10n("DBERROR"))
           let data = resp.data
           let titles = $cache.get("Books")
-                      if(titles.indexOf(data.title)){
+           if(titles.indexOf(data.title)){
                                                 $intents.finish($l10n("REPEAT"));
                                                 $ui.toast($l10n("REPEAT"))
                                                 return
@@ -279,7 +306,8 @@ async function postBookData3(id){
 
 module.exports = {
   post: postAirtable,
-  get: getAirtable,
+  getM: getAirtableMovies,
+  getB: getAirtableBooks,
   postMovieData:postMovieData,
   postBookData:postBookData,
   postBookData2:postBookData2,
