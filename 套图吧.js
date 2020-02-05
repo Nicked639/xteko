@@ -1,4 +1,5 @@
 var host = "www.taotu8.net";
+var host2 = "https://m.xsnvshen.com"
 var method = "";
 var HOME = "https://www.192td.com";
 var CNUM = 0;
@@ -400,12 +401,18 @@ function listView(wn) {
           didSelect(sender, indexPath, data) {
             $ui.toast(data.name.text + "加载中...", 5);
             listGone();
-            $("preView").data = [];
+            
+//            $("preView").data = [];
             page = 0;
             subNum = indexPath.row;
             getPostData(CNUM, subNum);
-            $("main").title = category[CNUM].sub[subNum].title;
-
+            $("main").remove()
+            
+                      let column = $cache.get("column") || 0;
+                      title = data.name.text
+                      mainUI(Math.pow(2, column + 1), 275 / Math.pow(2, column),title);
+//console.log(data)
+underline(CNUM)
             $("preView").contentOffset = $point(0, 0);
           }
         }
@@ -422,10 +429,10 @@ function listView(wn) {
   };
 }
 
-function mainUI(column, rowHeight) {
+function mainUI(column, rowHeight,title) {
   $ui.render({
     props: {
-      title: "套图吧",
+      title: title,
       id: "main"
     },
     views: [
@@ -526,10 +533,7 @@ function mainUI(column, rowHeight) {
         },
         function() {
           if ($("l5").hidden == false) return;
-          $("main").remove();
-          //          mainUI(4, 135);
-          let column = $cache.get("column") || 0;
-          mainUI(Math.pow(2, column + 1), 275 / Math.pow(2, column));
+  
           $("preView").data = [];
           underline(5);
           if (LocalList.length == 0) {
@@ -570,6 +574,11 @@ function mainUI(column, rowHeight) {
         events: {
           returned: function(sender) {
             page = 0
+            title = "搜索"
+            $("main").remove()
+            let column = $cache.get("column") || 0;
+             mainUI(Math.pow(2, column + 1), 275 / Math.pow(2, column),title);
+                        
             showSearch(sender.text);
             $("search").blur();
             listGone();
@@ -604,8 +613,9 @@ function mainUI(column, rowHeight) {
             let temp = $("preView").data;
 
             $("main").remove();
-            mainUI(Math.pow(2, id + 1), 275 / Math.pow(2, id));
-            $("preView").data = [];
+           
+            mainUI(Math.pow(2, id + 1), 275 / Math.pow(2, id),title);
+//            $("preView").data = [];
             
             temp.map(function(i) {
               temp.data = temp.concat({
@@ -621,6 +631,7 @@ function mainUI(column, rowHeight) {
             });
             $("preView").data = temp
             if (SEARCH_MODE == true && text) {
+              
               $("search").text = text;
               return;
             }else{
@@ -683,6 +694,7 @@ function mainUI(column, rowHeight) {
             listGone();
           },
           didReachBottom(sender) {
+            $ui.toast("加载中...",0.5)
             sender.endFetchingMore();
             
             if ($("l5").hidden !== false) {
@@ -1138,7 +1150,7 @@ function getPostData(CNUN, subNum) {
   }
   url = HOME + url;
   //  console.log(subNum)
-  //  alert(url)
+//    alert(url)
   $http.request({
     url: url,
     handler: function(resp) {
@@ -1148,13 +1160,13 @@ function getPostData(CNUN, subNum) {
       var reg = /<li>[\s\S]*?<\/li>/g;
       var match = resp.data.match(reg);
       var removed = match.slice(8);
-      //console.log(removed)
+//      console.log(removed)
       //      var postData = []
 //      $ui.clearToast();
       removed.map(function(i) {
         var image = /(lazysrc=")([\s\S]*?)(")/.exec(i)[2];
         var detail = /(href=")([\s\S]*?)(")/.exec(i)[2];
-        if (detail.indexOf(HOME) < 0) {
+        if (detail.indexOf("https") < 0) {
           detail = HOME + detail;
         }
         var title = /alt="(.*?)"/.exec(i)[1];
@@ -1245,6 +1257,7 @@ function writeCache() {
 }
 
 function showSearch(text) {
+   $("search").text = text;
   SEARCH_MODE = true;
   $("l" + CNUM).hidden = true;
   $ui.toast("搜索中...", 5);
@@ -1259,7 +1272,7 @@ function showSearch(text) {
       show: "title,keyboard"
     },
     handler: function(resp) {
-//      $("search").text = text;
+     
       $cache.set("searchUrl",resp.response.url)
       
       var reg = /<li>[\s\S]*?<\/li>/g;
@@ -1326,6 +1339,10 @@ function listGone() {
 
 function changeButton(num) {
   $device.taptic(0);
+//  $("main").remove()
+//  title=category[num].title
+//  mainUI(Math.pow(2, column + 1), 275 / Math.pow(2, column),title);
+
   SEARCH_MODE = false;
   $("search").text = "";
   $ui.toast("加载中...", 5);
@@ -1414,15 +1431,15 @@ $ui.push({
             props: {
               id: "download",
               bgcolor: $color("tint"),
-              radius: 20,
+              radius: 15,
               title: "向左",
               alpha: 0.9,
 //              hidden: true
             },
             layout: function(make, view) {
-              make.left.bottom.inset(20);
-              make.width.equalTo(120);
-              make.height.equalTo(40);
+              make.left.bottom.inset(15);
+              make.width.equalTo(140);
+              make.height.equalTo(30);
             },
             events: {
               tapped(sender){
@@ -1462,18 +1479,19 @@ $ui.push({
                  props: {
                    id: "download",
                    bgcolor: $color("tint"),
-                   radius: 20,
+                   radius: 15,
                    title: "向右",
                    alpha: 0.9,
                  },
                  layout: function(make, view) {
-                   make.right.bottom.inset(20);
-                   make.width.equalTo(120);
-                   make.height.equalTo(40);
+                   make.right.bottom.inset(15);
+                   make.width.equalTo(140);
+                   make.height.equalTo(30);
                  },
                  events: {
                    tapped(sender){
                     Browse = false
+
                      position=position+1
                     
                      if(position>imgList.length-1){
@@ -1482,6 +1500,7 @@ $ui.push({
                        
                        return
                      }
+                     
                 $("page").text = position+"/"+imgList.length
                      $("IMG").url = imgList[position]
                      
@@ -1514,7 +1533,7 @@ $device.taptic(0)
                   },
                   layout: function(make, view) {
                     make.centerX.equalTo(view.super)
-                    make.bottom.inset(30)
+                    make.bottom.inset(20)
                   }
                 }
   ]
@@ -1556,14 +1575,14 @@ function playImg2(indexPath, title) {
           bgcolor: $color("tint"),
           title: "向左",
           alpha: 0.9,
-          radius:20
+          radius:15
 
           //              hidden: true
         },
         layout: function(make, view) {
-          make.left.bottom.inset(20);
-          make.width.equalTo(120);
-          make.height.equalTo(40);
+          make.left.bottom.inset(15);
+          make.width.equalTo(140);
+          make.height.equalTo(30);
         },
         events: {
           tapped(sender) {
@@ -1580,6 +1599,10 @@ function playImg2(indexPath, title) {
 
               return;
             }
+//            let c = $cache.get("column")
+//                                 let rH = 285/Math.pow(2, c)
+//                                 let row = Math.floor(Position/4)
+//                                                      $("detailView").contentOffset = $point(0, rH*row);
             $("page").text = Position+"/"+IMGList.length
             let i = $indexPath(indexPath.section, Position);
             $("IMG").image = $("detailView").cell(i).views[0].views[0].image;
@@ -1615,12 +1638,12 @@ function playImg2(indexPath, title) {
           bgcolor: $color("tint"),
           title: "向右",
           alpha: 0.9,
-          radius:20
+          radius:15
         },
         layout: function(make, view) {
-          make.right.bottom.inset(20);
-          make.width.equalTo(120);
-          make.height.equalTo(40);
+          make.right.bottom.inset(15);
+          make.width.equalTo(140);
+          make.height.equalTo(30);
         },
         events: {
           tapped(sender) {
@@ -1636,6 +1659,10 @@ function playImg2(indexPath, title) {
 
               return;
             }
+//            let c = $cache.get("column")
+//                                 let rH = 285/Math.pow(2, c)
+//                                 let row = Math.floor(Position/4)
+//                                                      $("detailView").contentOffset = $point(0, rH*row);
             $("page").text = Position+"/"+IMGList.length
             let i = $indexPath(indexPath.section, Position);
             $("IMG").image = $("detailView").cell(i).views[0].views[0].image;
@@ -1674,7 +1701,7 @@ function playImg2(indexPath, title) {
         },
         layout: function(make, view) {
           make.centerX.equalTo(view.super)
-          make.bottom.inset(30)
+          make.bottom.inset(20)
         }
       }
     ]
@@ -1695,5 +1722,5 @@ function main() {
 }
 $cache.remove("searchUrl")
 let column = $cache.get("column") || 0;
-mainUI(Math.pow(2, column + 1), 275 / Math.pow(2, column));
+mainUI(Math.pow(2, column + 1), 275 / Math.pow(2, column),"套图吧");
 main();
