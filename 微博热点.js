@@ -260,7 +260,7 @@ function openWeb(url) {
                 frame: $rect(0, 0, 0, 0),
                 events: {
                   didStart: function(sender, navigation) {
-                   setWidgetBackground(0.1)
+                   if ($app.env == $env.today && $app.widgetIndex == -1) setWidgetBackground(0.1);
                   }
                 }
               },
