@@ -1,37 +1,39 @@
 const hotSeachApi =
   "https://api.weibo.cn/2/guest/page?gsid=_2AkMtqmJ0f8NhqwJRmPEdxGnjaIx-wwDEieKb9pOvJRMxHRl-wT9kqnAAtRV6Bm0NBHg_Q_-5Rx4sx0moY_1sSSEoN2zx&uid=1009882141998&wm=3333_2001&i=ddd48a6&b=0&from=1084393010&checktoken=745495b139d5d0943c12418acc7a08f8&c=iphone&networktype=wifi&v_p=60&skin=default&s=ffffffff&v_f=1&did=10dc157a640f1c1bd53cbacbad02326f&lang=zh_CN&sflag=1&ft=0&moduleID=pagecard&uicode=10000011&featurecode=10000085&feed_mypage_card_remould_enable=1&luicode=10000003&count=20&extparam=filter_type%3Drealtimehot%26mi_cid%3D100103%26pos%3D0_0%26c_type%3D30%26display_time%3D1526132043&containerid=106003type%3D25%26t%3D3%26disable_hot%3D1%26filter_type%3Drealtimehot&fid=106003type%3D25%26t%3D3%26disable_hot%3D1%26filter_type%3Drealtimehot&page=1";
 
-const hotWeiboApi =
-  "https://api.weibo.cn/2/guest/statuses_unread_hot_timeline?gsid=_2AkMsWcS5f8NhqwJRmPEdxGnjaIx-wwDEieKaBTViJRMxHRl-wT9jqhUHtRV6Bm0NBJtwNGf7sD9vWinqTxfteTn6j0PV&uid=1009882141998&wm=3333_2001&i=ddd48a6&b=0&from=1085193010&checktoken=745495b139d5d0943c12418acc7a08f8&c=iphone&networktype=4g&v_p=60&skin=default&s=ef3ddddd&v_f=1&did=10dc157a640f1c1bd53cbacbad02326f&lang=zh_CN&sflag=1&ua=iPhone9,2__weibo__8.5.1__iphone__os11.3&ft=0&aid=01AtRD1ZgBBPGE25lc8nv6Zf3kE2dc9EyFhUimttlBTNKYNmA.&cum=47EFCA86";
-
 let containerid = {
-  "热门":"102803",
-  "小时":"102803_ctg1_9999_-_ctg1_9999",
-  "昨日":"102803_ctg1_8899_-_ctg1_8899",
-  "前日":"102803_ctg1_8799_-_ctg1_8799",
-  "周榜":"102803_ctg1_8698"
-}
+  热门: "102803",
+  小时: "102803_ctg1_9999_-_ctg1_9999",
+  昨日: "102803_ctg1_8899_-_ctg1_8899",
+  前日: "102803_ctg1_8799_-_ctg1_8799",
+  周榜: "102803_ctg1_8698"
+};
 
 const template = {
+  props: {
+    bgcolor: $color("clear")
+  },
   views: [
     {
       type: "label",
       props: {
         id: "label",
-        textColor: $color("black"),
+        bgcolor: $color("clear"),
+        textColor:
+          $device.isDarkMode == true ? $color("white") : $color("black"),
         align: $align.center,
         font: $font(14)
       },
       layout: function(make, view) {
         make.right.top.bottom.inset(0);
-        make.left.inset(15);
+        make.left.inset(0);
       }
     },
     {
       type: "label",
       props: {
         id: "icon",
-        bgcolor: $rgb(254, 158, 25),
+        bgcolor: $color("clear"),
         text: "热",
         textColor: $color("white"),
         radius: 2,
@@ -53,233 +55,80 @@ const template = {
   ]
 };
 
-const template2 = {
-  views: [
-    {
-      type: "label",
-      props: {
-        id: "label",
-        textColor: $color("black"),
-        align: $align.left,
-        font: $font(14),
-        lines:2
-      },
-      layout: function(make, view) {
-        make.right.inset(0);
-        make.centerY.equalTo()
-        make.left.inset(60);
-      }
-    },{
-      type: "label",
-      props: {
-        id: "name",
-        textColor: $color("black"),
-        align: $align.left,
-        font: $font("bold",13),
-        lines:2,
-        autoFontSize:true
-      },
-      layout: function(make, view) {
-        make.centerY.equalTo()
-        make.left.inset(10);
-        make.width.equalTo(40)
-      }
-    },
-  ]
-};
-
-function weiboList(mode,temp) {
+function weiboList(temp) {
   return {
     type: "list",
     props: {
-      id: mode,
+      id: "hotList",
       template: temp,
-      //data:options
-      bgcolor: $color("clear"),
       hidden: true,
-      rowHeight:mode=="fireList"?40:35,
+      rowHeight: 35,
+      bgcolor: $color("clear"),
       actions: [
         {
           title: "微博",
-          color: $rgb(246,22,31), // default to gray
+          color: $rgb(246, 22, 31), // default to gray
           handler: function(sender, indexPath) {
-            $cache.set("app","weibo")
-      $app.openURL(sender.data[indexPath.row].label.info);
+            console.log(sender.data[indexPath.row].label.info);
+            $cache.set("app", "weibo");
+            $app.openURL(sender.data[indexPath.row].label.info);
+          }
+        },
+        {
+          title: "微博国际",
+          color: $rgb(242, 152, 000), // default to gray
+          handler: function(sender, indexPath) {
+            //            console.log(sender.data[indexPath.row].label.info)
+            $cache.set("app", "weibointernational");
+            let url = sender.data[indexPath.row].label.info.replace(
+              "sinaweibo",
+              "weibointernational"
+            );
+            $app.openURL(url);
           }
         },
         {
           title: "墨客",
-          color:$rgb(69,134,209),
+          color: $rgb(69, 134, 209),
           handler: function(sender, indexPath) {
-            $cache.set("app","moke")
-      if(mode == "fireList"){
-                $app.openURL("moke:///status?mid="+sender.data[indexPath.row].label.id)
-              }else{
-                let text = /.、([\s\S]*)/g.exec(sender.data[indexPath.row].label.text)[1]
-                $app.openURL("moke:///search/statuses?query="+encodeURI(text))
-              }
+            $cache.set("app", "moke");
+
+            let text = /.、([\s\S]*)/g.exec(
+              sender.data[indexPath.row].label.text
+            )[1];
+            $app.openURL("moke:///search/statuses?query=" + encodeURI(text));
           }
         }
       ]
     },
-    layout: function(make, view) {
-          make.left.right.top.inset(0)
-          make.bottom.inset(40)
-        },
+    layout: $layout.fill,
     events: {
       didSelect: function(sender, indexPath) {
-        let app = $cache.get("app")||"weibo"
-        if(app=="weibo") $app.openURL(sender.data[indexPath.row].label.info);
-        else{
-          if(mode == "fireList"){
-                    $app.openURL("moke:///status?mid="+sender.data[indexPath.row].label.id)
-                  }else{
-                    let text = /.、([\s\S]*)/g.exec(sender.data[indexPath.row].label.text)[1]
-                    $app.openURL("moke:///search/statuses?query="+encodeURI(text))
-                  }
-        }
-        
+        let app = $cache.get("app") || "weibo";
+
+        let name = sender.data[indexPath.row].label.infoname;
+        url = "http://s.weibo.com/weibo?q=%23" + name + "%23&Refer=top";
+        console.log(url);
+        openWeb(url);
+      },
+      didLongPress: function(sender, indexPath, data) {
+//        let name = sender.data[indexPath.row].label.infoname;
+//        console.log(name);
+//        url = "http://s.weibo.com/weibo?q=%23" + name + "%23&Refer=top";
+//        $share.sheet(encodeURI(url));
+$app.close()
+      },
+      pulled: function(sender) {
+        $("hotList").remove();
+
+        $("weibo").add(weiboList(template));
+        getHotSearch();
       }
     }
   };
 }
 
-weekInfo=""
-function show() {
-  $ui.render({
-    props: {
-      title: "微博热点",
-      id: "weibo",
-//      navBarHidden:true,
-    },
-    views: [
-      weiboList("hotList",template),
-      weiboList("trendList",template),
-      weiboList("fireList",template2),
-      {
-        type: "tab",
-        props: {
-          id:"tab",
-          items: ["热搜", "趋势", "热门","小时","昨日","前日","周榜"],
-          bgcolor: $color("white"),
-          radius:5
-        },
-        layout: function(make, view) {
-          make.bottom.inset(15);
-          make.centerX.equalTo();
-        },
-        events: {
-          changed: function(sender) {
-            $ui.toast("载入中...",10)
-            if (sender.index == 0) getHotSearch();
-            else if (sender.index == 1) {
-              getHotSearch("trend");
-            } else if (sender.index == 2) {
-              getFire(containerid.热门);
-            }else if (sender.index == 3) {
-              getFire(containerid.小时);
-            }else if (sender.index == 4) {
-              getFire(containerid.昨日);
-            }else if (sender.index == 5) {
-              getFire(containerid.前日);
-            }else if (sender.index == 6) {
-              getFire(containerid.周榜);
-              week()
-            }
-          }
-        }
-      }
-    ]
-  });
-}
-
-function week(){
-    $http.request({
-      method: "POST",
-      url: hotWeiboApi,
-      header: {
-        "User-Agent": "Weibo/27683 (iPhone; iOS 11.3; Scale/3.00) "
-      },
-      form: {
-        refresh: "pulldown",
-        group_id: "102803",
-        extparam: "discover|new_feed",
-        fid: "102803",
-        lon: "116.233115",
-        uicode: "10000225",
-        containerid: "102803_ctg1_8699_-_ctg1_8699",
-        featurecode: "10000225",
-        refresh_sourceid: "10000365",
-        since_id: "4242760586282015",
-        need_jump_scheme: "1"
-      },
-      handler: function(resp) {
-        let data = resp.data;
-        if (data.errmsg) {
-          alert(data.errmsg);
-          return;
-        }
-        weekInfo = data.cards[1].desc_extr
-        $ui.toast(data.cards[1].desc_extr,0.8)
-        }
-     })
-}
-
-function getFire(containerid="102803") {
-  $http.request({
-    method: "POST",
-    url: hotWeiboApi,
-    header: {
-      "User-Agent": "Weibo/27683 (iPhone; iOS 11.3; Scale/3.00) "
-    },
-    form: {
-      refresh: "pulldown",
-      group_id: "102803",
-      extparam: "discover|new_feed",
-      fid: "102803",
-      lon: "116.233115",
-      uicode: "10000225",
-      containerid: containerid,
-      featurecode: "10000225",
-      refresh_sourceid: "10000365",
-      since_id: "4242760586282015",
-      need_jump_scheme: "1"
-    },
-    handler: function(resp) {
-      let data = resp.data;
-      if (data.errmsg) {
-        alert(data.errmsg);
-        return;
-      }
-//      $clipboard.text=JSON.stringify(data)
-      $("hotList").hidden = true;
-      $("trendList").hidden = true;
-      $("fireList").hidden = false;
-      $("fireList").data = [];
-      if($("tab").index==2)
-        $ui.toast(data.remind_text_old, 1);
-      else if($("tab").index==6)
-        $ui.toast(weekInfo,1)
-      else
-        $ui.clearToast()
-      let hots = data.statuses;
-      for(let i=0;i<hots.length;i++){
-        $("fireList").data = $("fireList").data.concat({
-          label:{
-            text:hots[i].text,
-            info:hots[i].scheme,
-            id:/.*mblogid=([\s\S]*)/g.exec(hots[i].scheme)[1]
-          },
-          name:{
-            text:hots[i].user.name
-          }
-        })
-      }
-    }
-  });
-}
-
-function getHotSearch(mode = "hotSearch") {
+function getHotSearch() {
   //  $ui.toast("载入中", 10);
   $http.get({
     url: hotSeachApi,
@@ -289,99 +138,236 @@ function getHotSearch(mode = "hotSearch") {
         alert(data.errmsg);
         return;
       }
-      mode = mode == "hotSearch" ? 0 : data.cards.length - 1;
-      let hotCards = data.cards[mode].card_group;
+      let hotCards = data.cards[0].card_group;
       $("hotList").data = [];
-      $("trendList").data = [];
-      if (mode == 0) {
-        $("hotList").hidden = false;
-        $("trendList").hidden = true;
-        $("fireList").hidden = true;
-      } else {
-        $("hotList").hidden = true;
-        $("trendList").hidden = false;
-        $("fireList").hidden = true;
-      }
+
+      $("hotList").hidden = false;
+      var temp = [];
       for (let i = 0; i < hotCards.length; i++) {
         let icon = {};
         let prefix = "";
-        if (mode == 0) {
-          let num = i;
-          if (i == 0) num = "🏆";
-          else if (i == 1) num = "🥇";
-          else if (i == 2) num = "🥈";
-          else if (i == 3) num = "🥉";
-          prefix = num + "、";
-          if (hotCards[i].icon) {
-            if (hotCards[i].icon.indexOf("re") > 0) {
-              icon.hidden = false;
-              icon.text = "热";
-              icon.bgcolor = $rgb(254, 158, 25);
-            } else if (hotCards[i].icon.indexOf("xin") > 0) {
-              icon.hidden = false;
-              icon.text = "新";
-              icon.bgcolor = $rgb(254, 73, 95);
-            } else if (hotCards[i].icon.indexOf("jian") > 0) {
-              icon.hidden = false;
-              icon.text = "荐";
-              icon.bgcolor = $rgb(76, 173, 254);
-            } else if (hotCards[i].icon.indexOf("fei") > 0) {
-              icon.hidden = false;
-              icon.text = "沸";
-              icon.bgcolor = $rgb(247, 98, 0);
-            }
+
+        let num = i;
+        if (i == 0) num = "🏆";
+        else if (i == 1) num = "🥇";
+        else if (i == 2) num = "🥈";
+        else if (i == 3) num = "🥉";
+        prefix = num + "、";
+        //          console.log(hotCards[i].icon)
+        if (hotCards[i].icon) {
+          if (hotCards[i].icon.indexOf("hot") > 0) {
+            icon.hidden = false;
+            icon.text = "热";
+            icon.bgcolor = $rgb(254, 158, 25);
+          } else if (hotCards[i].icon.indexOf("new") > 0) {
+            icon.hidden = false;
+            icon.text = "新";
+            icon.bgcolor = $rgb(254, 73, 95);
+          } else if (hotCards[i].icon.indexOf("recom") > 0) {
+            icon.hidden = false;
+            icon.text = "荐";
+            icon.bgcolor = $rgb(76, 173, 254);
+          } else if (hotCards[i].icon.indexOf("fei") > 0) {
+            icon.hidden = false;
+            icon.text = "沸";
+            icon.bgcolor = $rgb(247, 98, 0);
           }
-          $("hotList").data = $("hotList").data.concat({
-            label: {
-              text: prefix + hotCards[i].desc,
-              info: hotCards[i].scheme
-            },
-            icon: icon
-          });
-        } else {
-          if (hotCards[i].icon) {
-            if (hotCards[i].icon.indexOf("sheng") > 0) {
-              icon.hidden = false;
-              icon.text = "⤴︎";
-              icon.bgcolor = $rgb(254, 75, 95);
-            }
-          }
-          $("trendList").data = $("trendList").data.concat({
-            label: {
-              text: prefix + hotCards[i].desc,
-              info: hotCards[i].scheme
-            },
-            icon: icon
-          });
         }
+
+        temp = temp.concat({
+          label: {
+            text: prefix + hotCards[i].desc,
+            info: hotCards[i].scheme,
+            infoname: hotCards[i].desc
+          },
+          icon: icon
+        });
       }
-      
-$ui.toast(timeConvert(data.pageInfo.starttime)+"  更新", 1);
+      $("hotList").data = temp;
+      $ui.toast(timeConvert(data.pageInfo.starttime) + "  更新", 0.6);
     }
   });
-//  alert($props($("tab")))
+  //  alert($props($("tab")))
 }
 
-function timeConvert(unixTime){
-  let date = new Date(unixTime*1000);
-        // Hours part from the timestamp
-        let hours = date.getHours();
-        // Minutes part from the timestamp
-        let minutes = "0" + date.getMinutes();
-        // Seconds part from the timestamp
-        let seconds = "0" + date.getSeconds();
-        
-        let year = date.getFullYear()
-        let month = date.getMonth()+1
-        let dateN = date.getDate()
-        // Will display time in 10:30:23 format
-        let formattedTime = year + "-"+month+"-"+dateN+ "  "+hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-        return formattedTime
+function timeConvert(unixTime) {
+  let date = new Date(unixTime * 1000);
+  // Hours part from the timestamp
+  let hours = date.getHours();
+  // Minutes part from the timestamp
+  let minutes = "0" + date.getMinutes();
+  // Seconds part from the timestamp
+  let seconds = "0" + date.getSeconds();
+
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let dateN = date.getDate();
+  // Will display time in 10:30:23 format
+  let formattedTime =
+    year +
+    "-" +
+    month +
+    "-" +
+    dateN +
+    "  " +
+    hours +
+    ":" +
+    minutes.substr(-2) +
+    ":" +
+    seconds.substr(-2);
+  return formattedTime;
+}
+
+function openWeb(url) {
+  $ui.push({
+    props: {
+      navBarHidden: true,
+      bgcolor:$color("clear")
+    },
+    views: [
+      {
+        type: "web",
+        props: {
+          url: encodeURI(url),
+          bgcolor:$color("clear")
+        },
+        layout: function(make, view) {
+          make.left.right.inset(0);
+          make.bottom.inset(0);
+          make.top.inset(-45);
+        },
+        events: {
+          didFinish: function(sender, navigation) {
+            $delay(0.45,()=>{
+              shareButtonAnimate(make => {
+                            make.centerX.equalTo();
+                            make.width.equalTo(125);
+                            make.height.equalTo(34);
+                            make.bottom.inset(81);
+                           
+                          });
+                          
+            })
+            
+          }
+        }
+      },{
+                type: "web",
+                props: {
+                  id: "web",
+                  html: ""
+                },
+                frame: $rect(0, 0, 0, 0),
+                events: {
+                  didStart: function(sender, navigation) {
+                   setWidgetBackground(0.1)
+                  }
+                }
+              },
+      {
+        type: "gradient",
+        props: {
+          id: "gradient",
+          colors: [$color("#ff8502"), $color("#ffb831")],
+          locations: [0.0, 1.0],
+          startPoint: $point(0, 0),
+          endPoint: $point(1, 1),
+          Radius: 18,
+          alpha:0
+        },
+        views: [
+          {
+            type: "button",
+            props: {
+              title: "分享热点",
+              font: $font(15),
+              radius: 18,
+              bgcolor: $color("clear"),
+              id: "share"
+            },
+            layout: $layout.fill,
+            events: {
+              tapped: function(sender) {
+                $share.sheet(encodeURI(url));
+              }
+            }
+          }
+        ],
+        layout: function(make, view) {
+          make.centerX.equalTo();
+          make.width.equalTo(125);
+          make.height.equalTo(34);
+          make.bottom.inset(0);
+        }
+      }
+    ]
+  });
+  setWidgetBackground()
+}
+
+function shareButtonAnimate(layout) {
+  $("gradient").remakeLayout(layout);
+  let alpha = 0
+  $ui.animate({
+    duration: 1,
+    damping: 0.9,
+    velocity: 0.8,
+    animation: () => {
+      $("gradient").relayout();
+      let timer = $timer.schedule({
+              interval: 0.01,
+              handler: function() {
+                if (alpha < 1) {
+                  $("gradient").alpha=alpha
+                  alpha += 0.02;
+                } else {
+                  timer.invalidate();
+                }
+              }
+            });
+    }
+  });
+}
+
+function setWidgetBackground(time=0.5) {
+  let alpha = 1;
+  $delay(time, function() {
+    let timer = $timer.schedule({
+      interval: 0.01,
+      handler: function() {
+        if (alpha > 0) {
+          $ui.vc
+            .runtimeValue()
+            .$view()
+            .$setBackgroundColor(
+              $device.isDarkMode
+                ? $rgba(0, 0, 0, alpha)
+                : $rgba(255, 255, 255, alpha)
+            );
+          alpha -= 0.02;
+        } else {
+          timer.invalidate();
+        }
+      }
+    });
+  });
+}
+
+function show() {
+  if ($app.env == $env.today && $app.widgetIndex == -1) setWidgetBackground(0.3);
+  $ui.render({
+    props: {
+      title: "微博热点",
+      id: "weibo",
+      navBarHidden:true,
+      //      bgcolor: $color("clear")
+    },
+    views: [weiboList(template)]
+  });
 }
 
 function run() {
   show();
   getHotSearch();
 }
-
 run();
