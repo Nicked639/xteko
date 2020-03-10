@@ -1,4 +1,4 @@
-$widget.height=320
+$widget.height = 320;
 const hotSeachApi =
   "https://api.weibo.cn/2/guest/page?gsid=_2AkMtqmJ0f8NhqwJRmPEdxGnjaIx-wwDEieKb9pOvJRMxHRl-wT9kqnAAtRV6Bm0NBHg_Q_-5Rx4sx0moY_1sSSEoN2zx&uid=1009882141998&wm=3333_2001&i=ddd48a6&b=0&from=1084393010&checktoken=745495b139d5d0943c12418acc7a08f8&c=iphone&networktype=wifi&v_p=60&skin=default&s=ffffffff&v_f=1&did=10dc157a640f1c1bd53cbacbad02326f&lang=zh_CN&sflag=1&ft=0&moduleID=pagecard&uicode=10000011&featurecode=10000085&feed_mypage_card_remould_enable=1&luicode=10000003&count=20&extparam=filter_type%3Drealtimehot%26mi_cid%3D100103%26pos%3D0_0%26c_type%3D30%26display_time%3D1526132043&containerid=106003type%3D25%26t%3D3%26disable_hot%3D1%26filter_type%3Drealtimehot&fid=106003type%3D25%26t%3D3%26disable_hot%3D1%26filter_type%3Drealtimehot&page=1";
 
@@ -109,8 +109,8 @@ const template2 = {
         make.size.equalTo($size(34, 34));
       },
       events: {
-        tapped(sender){
-          openWeb2(sender.info)
+        tapped(sender) {
+          openSafari(sender.info);
         }
       }
     },
@@ -118,8 +118,8 @@ const template2 = {
       type: "image",
       props: {
         id: "pic",
-        radius:5,
-        src:"https://www.b2b315.com/skin/m03skinBlue/image/nopic320.gif"
+        radius: 5,
+        src: "https://www.b2b315.com/skin/m03skinBlue/image/nopic320.gif"
       },
       layout: function(make, view) {
         make.right.inset(10);
@@ -128,18 +128,22 @@ const template2 = {
       },
       events: {
         tapped(sender) {
-//          console.log(sender.src);
-          console.log(sender.info)
-          if (sender.info.length==1&&sender.info[0].indexOf("video")>0)
-          openWeb2(sender.info[0])
+          //          console.log(sender.src);
+          console.log(sender.info);
+          if(typeof sender.info =="string"){
+            getStreamUrl("safari",sender.info)
+          }else{
+          if (sender.info.length == 1 && sender.info[0].indexOf("video") > 0)
+            openSafari(sender.info[0]);
           else
-          $quicklook.open({
-            list: sender.info,
-            handler: function() {
-              if ($app.env == $env.today && $app.widgetIndex == -1)
+            $quicklook.open({
+              list: sender.info,
+              handler: function() {
+                if ($app.env == $env.today && $app.widgetIndex == -1)
                   setWidgetBackground(0.1);
+              }
+            });
             }
-          });
         }
       },
       views: [
@@ -149,61 +153,64 @@ const template2 = {
             id: "play",
             font: $font(12),
             icon: $icon("049", $rgba(255, 255, 255, 0.7), $size(30, 30)),
-            bgcolor:$color("clear"),
+            bgcolor: $color("clear"),
             hidden: true
           },
           layout: function(make, view) {
             make.center.equalTo(view.super);
-            
           },
           events: {
             tapped(sender) {
-              $ui.toast("视频载入中...",5)
-                 $quicklook.open({
-                          url: sender.info,
-                          handler: function() {
-                            if ($app.env == $env.today && $app.widgetIndex == -1)
-                                setWidgetBackground(0.1);
-                          }
-                        });
+              $ui.toast("视频载入中...", 5);
+              if($("tab").index==0){
+                console.log(sender.info)
+                getStreamUrl("safari",sender.info)
+              }else
+              $quicklook.open({
+                url: sender.info,
+                handler: function() {
+                  if ($app.env == $env.today && $app.widgetIndex == -1)
+                    setWidgetBackground(0.1);
+                }
+              });
             }
           }
-        },{
-          type: "label",
-                props: {
-                  id: "num",
-                  textColor:
-                    $color("white"),
-                  align: $align.right,
-                  font: $font("bold", 15),
-                  bgcolor:$color("clear")
-                },
-                layout: function(make, view) {
-                  make.bottom.inset(-12)
-                  make.right.inset(1)
-                  make.width.equalTo(40)
-                  make.height.equalTo(40)
-                }
-        },{
-          type: "label",
-                props: {
-                  id: "gif",
-                  textColor:
-                    $color("white"),
-                  align: $align.center,
-                  font: $font(10),
-                  bgcolor:$color("#637B96"),
-                  text:"含动图",
-                  radius:5,
-                  hidden:true
-                },
-                layout: function(make, view) {
-                  make.bottom.inset(0)
-                  make.left.inset(0)
-                  make.width.equalTo(35)
-                  make.height.equalTo(17)
-                }
         },
+        {
+          type: "label",
+          props: {
+            id: "num",
+            textColor: $color("white"),
+            align: $align.right,
+            font: $font("bold", 15),
+            bgcolor: $color("clear")
+          },
+          layout: function(make, view) {
+            make.bottom.inset(-12);
+            make.right.inset(1);
+            make.width.equalTo(40);
+            make.height.equalTo(40);
+          }
+        },
+        {
+          type: "label",
+          props: {
+            id: "gif",
+            textColor: $color("white"),
+            align: $align.center,
+            font: $font(10),
+            bgcolor: $color("#637B96"),
+            text: "含动图",
+            radius: 5,
+            hidden: true
+          },
+          layout: function(make, view) {
+            make.bottom.inset(0);
+            make.left.inset(0);
+            make.width.equalTo(35);
+            make.height.equalTo(17);
+          }
+        }
       ]
     },
     {
@@ -225,22 +232,21 @@ const template2 = {
         make.width.equalTo(200);
         make.top.inset(10);
       }
-    },{
+    },
+    {
       type: "label",
       props: {
         id: "time",
-        textColor:
- $color("gray")
-      ,
+        textColor: $color("gray"),
         align: $align.left,
         font: $font(10)
       },
       layout: function(make, view) {
         //        make.centerY.equalTo()
-        make.top.equalTo($("name").bottom).offset(0)
-        make.left.inset(50)
+        make.top.equalTo($("name").bottom).offset(0);
+        make.left.inset(50);
         make.width.equalTo(200);
-//        make.top.inset(18);
+        //        make.top.inset(18);
       }
     }
   ]
@@ -255,7 +261,8 @@ function weiboList(id, temp, height) {
       hidden: true,
       rowHeight: height,
       bgcolor: $color("clear"),
-      actions: [{
+      actions: [
+        {
           title: "微博国际",
           color: $rgb(242, 152, 0), // default to gray
           handler: function(sender, indexPath) {
@@ -277,7 +284,7 @@ function weiboList(id, temp, height) {
             $app.openURL(sender.data[indexPath.row].label.info);
           }
         },
-        
+
         {
           title: "墨客",
           color: $rgb(69, 134, 209),
@@ -305,7 +312,7 @@ function weiboList(id, temp, height) {
       didSelect: function(sender, indexPath) {
         //        let app = $cache.get("app") || "weibo";
 
-        let url = sender.data[indexPath.row].avatar.info;
+        let url = sender.data[indexPath.row].label.link;
         //console.log(sender.data[indexPath.row]);
         console.log(url);
         openWeb(url);
@@ -315,7 +322,7 @@ function weiboList(id, temp, height) {
         //        console.log(name);
         //        url = "http://s.weibo.com/weibo?q=%23" + name + "%23&Refer=top";
         //        $share.sheet(encodeURI(url));
-        if ($app.env == $env.app || $app.widgetIndex !== -1) return
+        if ($app.env == $env.app || $app.widgetIndex !== -1) return;
         $app.close();
       },
       pulled: function(sender) {
@@ -336,7 +343,7 @@ function weiboList(id, temp, height) {
 }
 
 function getHotSearch() {
-    $ui.toast("载入中...", 10);
+  $ui.toast("载入中...", 10);
   $http.get({
     url: hotSeachApi,
     handler: function(resp) {
@@ -401,7 +408,7 @@ function getHotSearch() {
 }
 
 function getFire(containerid = "102803") {
-  $ui.toast("载入中...")
+  $ui.toast("载入中...");
   $http.request({
     method: "POST",
     url: hotWeiboApi,
@@ -451,50 +458,56 @@ function getFire(containerid = "102803") {
       else $ui.clearToast();
       var hots = data.statuses;
       var temp = [];
-      
+
       for (let i = 0; i < hots.length; i++) {
-       var pic_url = "";
-       var ori_pic = "";
-       var gifHidden = true
-       var d = new Date(hots[i].created_at)
-       var num = hots[i].pic_num
-       var page_info = hots[i].page_info
-//       console.log(page_info)
-       var pic_infos = hots[i].pic_infos
-       var pic_array = []
-       d = d.getMonth()+1+"-"+d.getDate()+" "+addZero(d.getHours())+":"+addZero(d.getMinutes())
- 
+        var pic_url = "";
+        var ori_pic = "";
+        var gifHidden = true;
+        var d = new Date(hots[i].created_at);
+        var num = hots[i].pic_num;
+        var page_info = hots[i].page_info;
+        //       console.log(page_info)
+        var pic_infos = hots[i].pic_infos;
+        var pic_array = [];
+        var isVideo = false
+        d =
+          d.getMonth() +
+          1 +
+          "-" +
+          d.getDate() +
+          " " +
+          addZero(d.getHours()) +
+          ":" +
+          addZero(d.getMinutes());
+
         if (num > 0) {
-          num=num-1
+          num = num - 1;
           pic_url = hots[i].thumbnail_pic;
           ori_pic = hots[i].original_pic;
-          for (var key in pic_infos){
-            var reg =/.gif$/;
-            if (reg.test(pic_infos[key].original.url)){
-            pic_array=pic_array.concat(pic_infos[key].video)
-            gifHidden = false
-            }
-            else
-            pic_array=pic_array.concat(pic_infos[key].original.url)
-            
+          for (var key in pic_infos) {
+            var reg = /.gif$/;
+            if (reg.test(pic_infos[key].original.url)) {
+              pic_array = pic_array.concat(pic_infos[key].video);
+              gifHidden = false;
+            } else pic_array = pic_array.concat(pic_infos[key].original.url);
           }
-
         } else if (page_info) {
-          
           pic_url = page_info.page_pic;
-          if(!pic_url)
-          pic_url=page_info.cards[0].page_pic
-          if (page_info.media_info)
-            ori_pic = page_info.media_info.stream_url;
-          else ori_pic = pic_url;
-          pic_array=[ori_pic]
+          if (!pic_url) pic_url = page_info.cards[0].page_pic;
+          if (page_info.media_info) {
+            ori_pic = page_info.media_info.stream_url_hd;
+            if(!ori_pic)
+            ori_pic = page_info.media_info.stream_url
+            isVideo = true
+          } else ori_pic = pic_url;
+          pic_array = [ori_pic];
         }
         temp = temp.concat({
           label: {
             text: hots[i].text,
             info: hots[i].scheme,
             id: /.*mblogid=([\s\S]*)/g.exec(hots[i].scheme)[1],
-            
+            link: "https://m.weibo.cn/" + hots[i].user.id + "/" + hots[i].id
           },
           name: {
             text: hots[i].user.name
@@ -504,23 +517,27 @@ function getFire(containerid = "102803") {
             info: "https://m.weibo.cn/" + hots[i].user.id + "/" + hots[i].id
           },
           pic: {
-            src: pic_url?pic_url:"http://ucar.gac-toyota.com.cn/Images/no_photo.GIF",
-//            info: ori_pic,
-            info:pic_array
-           },
-           play:{
-             hidden:ori_pic.indexOf("video")>0?false:true,
-             info:ori_pic
-           },
-           time:{
-             text:d
-           },
-           num:{
-             text:num>0?"+"+num:""
-           },
-           gif:{
-             hidden:gifHidden
-           }
+            src: pic_url
+              ? pic_url
+              : "http://ucar.gac-toyota.com.cn/Images/no_photo.GIF",
+//            info:pic_array.length==0?pic_array:("tab").index>0?pic_array:pic_array.length>1?pic_array:pic_array[0].indexOf("video")<0?pic_array:"https://m.weibo.cn/" + hots[i].user.id + "/" + hots[i].id
+            info:isVideo?"https://m.weibo.cn/" + hots[i].user.id + "/" + hots[i].id:pic_array
+           
+          },
+          play: {
+            hidden: ori_pic.indexOf("video") > 0 ? false : true,
+            info: $("tab").index==0?"https://m.weibo.cn/" + hots[i].user.id + "/" + hots[i].id:ori_pic,
+           
+          },
+          time: {
+            text: d
+          },
+          num: {
+            text: num > 0 ? "+" + num : ""
+          },
+          gif: {
+            hidden: gifHidden
+          }
         });
       }
       $("fireList").data = temp;
@@ -564,7 +581,7 @@ function timeConvert(unixTime) {
 }
 
 function openWeb(url) {
-  $widget.height=525
+  $widget.height = 525;
   $ui.push({
     props: {
       navBarHidden: $app.env == $env.app ? false : true,
@@ -576,12 +593,13 @@ function openWeb(url) {
         props: {
           url: encodeURI(url),
           bgcolor: $color("clear"),
-          ua:"Mozilla/5.0 (iPhone; CPU iPhone OS 13_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1"
+          ua:
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 13_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1"
         },
         layout: function(make, view) {
           make.left.right.inset(0);
           make.bottom.inset(0);
-          make.top.inset($app.env == $env.app ? 0:0);
+          make.top.inset($app.env == $env.app ? 0 : 0);
         },
         events: {
           didFinish: function(sender, navigation) {
@@ -592,24 +610,24 @@ function openWeb(url) {
                 make.height.equalTo(34);
                 make.bottom.inset(81);
               });
-//              $widget.height=320
+              //              $widget.height=320
             });
-            $("loading").hidden=true
+            $("loading").hidden = true;
           }
         }
-      },{
-          type: "label",
-                props: {
-                  id: "loading",
-                  textColor:
-                    $color("gray"),
-                  align: $align.center,
-                  font: $font("Rockwell-BoldItalic", 20),
-                  bgcolor:$color("clear"),
-                  text:"Loading..."
-                },
-                layout: $layout.fill
+      },
+      {
+        type: "label",
+        props: {
+          id: "loading",
+          textColor: $color("gray"),
+          align: $align.center,
+          font: $font("Rockwell-BoldItalic", 20),
+          bgcolor: $color("clear"),
+          text: "Loading..."
         },
+        layout: $layout.fill
+      },
       {
         type: "web",
         props: {
@@ -669,23 +687,44 @@ function openWeb(url) {
   setWidgetBackground();
 }
 
-function openWeb2(url){
+function openSafari(url) {
   $safari.open({
     url: url,
     entersReader: false,
     height: 500,
     handler: () => {
       if ($app.env == $env.today && $app.widgetIndex == -1)
-      $delay(0.1,()=>{
-        setWidgetBackground(0.1);
-      })
-                    
-//                      $widget.height = 320
+        $delay(0.1, () => {
+          setWidgetBackground(0.1);
+        });
+
+      //                      $widget.height = 320
     }
-  
   });
 }
 
+async function getStreamUrl(mode="quicklook",url) {
+  console.log(url);
+  $http.get({
+    url: url,
+    handler: function(resp) {
+      var data = resp.data;
+      var reg = /stream_url": "([\s\S]*?)"/g;
+      var video = reg.exec(data)[1];
+      if(mode=="safari") {
+        openSafari(video)
+        return
+      }
+     $quicklook.open({
+                   url: video,
+                   handler: function() {
+                     if ($app.env == $env.today && $app.widgetIndex == -1)
+                       setWidgetBackground(0.1);
+                   }
+                 });
+    }
+  });
+}
 
 function shareButtonAnimate(layout) {
   $("gradient").remakeLayout(layout);
@@ -760,7 +799,7 @@ function show() {
         },
         events: {
           changed: function(sender) {
-//            $ui.toast("载入中...", 10);
+            //            $ui.toast("载入中...", 10);
             if (sender.index == 1) getHotSearch();
             else {
               getFire(containerid[sender.index]);
