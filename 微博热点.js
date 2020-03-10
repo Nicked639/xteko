@@ -91,7 +91,7 @@ const template2 = {
         autoFontSize: true
       },
       layout: function(make, view) {
-        make.right.inset(90);
+        make.right.inset(95);
         make.left.inset(50);
         make.top.inset(35);
         make.bottom.inset(5);
@@ -161,18 +161,22 @@ const template2 = {
           },
           events: {
             tapped(sender) {
+//              console.log(sender.info)
               $ui.toast("视频载入中...", 5);
               if($("tab").index==0){
-                console.log(sender.info)
+                
                 getStreamUrl("safari",sender.info)
-              }else
+              }else {
+                console.log(sender.info)
+                if(sender.info.indexOf("video")>0) openSafari(sender.info)
+              else
               $quicklook.open({
                 url: sender.info,
                 handler: function() {
                   if ($app.env == $env.today && $app.widgetIndex == -1)
                     setWidgetBackground(0.1);
                 }
-              });
+              });}
             }
           }
         },
@@ -594,7 +598,9 @@ function openWeb(url) {
           url: encodeURI(url),
           bgcolor: $color("clear"),
           ua:
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 13_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1"
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 13_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1",
+              style: "login-btn,.OpenInAppButton{display:none;}"
+            
         },
         layout: function(make, view) {
           make.left.right.inset(0);
