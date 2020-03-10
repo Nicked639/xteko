@@ -112,7 +112,8 @@ const template2 = {
       type: "image",
       props: {
         id: "pic",
-        radius:5
+        radius:5,
+        src:"https://www.b2b315.com/skin/m03skinBlue/image/nopic320.gif"
       },
       layout: function(make, view) {
         make.right.inset(10);
@@ -164,17 +165,36 @@ const template2 = {
                   id: "num",
                   textColor:
                     $color("white"),
-                  align: $align.center,
+                  align: $align.right,
                   font: $font("bold", 15),
                   bgcolor:$color("clear")
                 },
                 layout: function(make, view) {
-                  make.bottom.inset(-10)
-                  make.right.inset(-7)
+                  make.bottom.inset(-12)
+                  make.right.inset(1)
                   make.width.equalTo(40)
                   make.height.equalTo(40)
                 }
-        }
+        },{
+          type: "label",
+                props: {
+                  id: "gif",
+                  textColor:
+                    $color("white"),
+                  align: $align.center,
+                  font: $font(10),
+                  bgcolor:$color("#637B96"),
+                  text:"含动图",
+                  radius:5,
+                  hidden:true
+                },
+                layout: function(make, view) {
+                  make.bottom.inset(0)
+                  make.left.inset(0)
+                  make.width.equalTo(35)
+                  make.height.equalTo(17)
+                }
+        },
       ]
     },
     {
@@ -424,6 +444,7 @@ function getFire(containerid = "102803") {
       for (let i = 0; i < hots.length; i++) {
        var pic_url = "";
        var ori_pic = "";
+       var gifHidden = true
        var d = new Date(hots[i].created_at)
        var num = hots[i].pic_num
        var page_info = hots[i].page_info
@@ -438,8 +459,10 @@ function getFire(containerid = "102803") {
           ori_pic = hots[i].original_pic;
           for (var key in pic_infos){
             var reg =/.gif$/;
-            if (reg.test(pic_infos[key].original.url))
+            if (reg.test(pic_infos[key].original.url)){
             pic_array=pic_array.concat(pic_infos[key].video)
+            gifHidden = false
+            }
             else
             pic_array=pic_array.concat(pic_infos[key].original.url)
             
@@ -469,7 +492,7 @@ function getFire(containerid = "102803") {
             src: hots[i].user.profile_image_url
           },
           pic: {
-            src: pic_url,
+            src: pic_url?pic_url:"http://ucar.gac-toyota.com.cn/Images/no_photo.GIF",
 //            info: ori_pic,
             info:pic_array
            },
@@ -482,6 +505,9 @@ function getFire(containerid = "102803") {
            },
            num:{
              text:num>0?"+"+num:""
+           },
+           gif:{
+             hidden:gifHidden
            }
         });
       }
@@ -528,7 +554,7 @@ function timeConvert(unixTime) {
 function openWeb(url) {
   $ui.push({
     props: {
-      navBarHidden: true,
+      navBarHidden: $app.env == $env.app ? false : true,
       bgcolor: $color("clear")
     },
     views: [
