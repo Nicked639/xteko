@@ -1,9 +1,12 @@
-$widget.height = 320;
+$widget.height = 325
+var page = 1
+//var detailHeight=320
 const hotSeachApi =
   "https://api.weibo.cn/2/guest/page?gsid=_2AkMtqmJ0f8NhqwJRmPEdxGnjaIx-wwDEieKb9pOvJRMxHRl-wT9kqnAAtRV6Bm0NBHg_Q_-5Rx4sx0moY_1sSSEoN2zx&uid=1009882141998&wm=3333_2001&i=ddd48a6&b=0&from=1084393010&checktoken=745495b139d5d0943c12418acc7a08f8&c=iphone&networktype=wifi&v_p=60&skin=default&s=ffffffff&v_f=1&did=10dc157a640f1c1bd53cbacbad02326f&lang=zh_CN&sflag=1&ft=0&moduleID=pagecard&uicode=10000011&featurecode=10000085&feed_mypage_card_remould_enable=1&luicode=10000003&count=20&extparam=filter_type%3Drealtimehot%26mi_cid%3D100103%26pos%3D0_0%26c_type%3D30%26display_time%3D1526132043&containerid=106003type%3D25%26t%3D3%26disable_hot%3D1%26filter_type%3Drealtimehot&fid=106003type%3D25%26t%3D3%26disable_hot%3D1%26filter_type%3Drealtimehot&page=1";
 
-const hotWeiboApi = "https://api.weibo.cn/2/statuses/unread_hot_timeline";
+//const hotWeiboApi = "https://api.weibo.cn/2/statuses/unread_hot_timeline";
 
+const hotWeiboApi = "https://api.weibo.cn/2/statuses/unread_hot_timeline?gsid=_2A25zbf5gDeRxGedP71YS8SbFzT2IHXVuO3aorDV6PUJbkdANLVr5kWpNX-gVeUGvGmi6BRcxOymooYVtsr1th2nA&sensors_mark=0&wm=3333_2001&sensors_is_first_day=true&from=10A3093010&b=0&c=iphone&networktype=wifi&skin=default&v_p=81&v_f=1&s=88888888&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10,3__weibo__10.3.0__iphone__os13.4&ft=0&aid=01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo.&launchid=10000365--x"
 //let containerid = {
 //  "热门":"102803",
 //  "小时":"102803_ctg1_9999_-_ctg1_9999_home",
@@ -130,15 +133,20 @@ const template2 = {
         tapped(sender) {
           //          console.log(sender.src);
           console.log(sender.info);
+          if(sender.info.length)
+          $ui.toast("载入中...",3)
+
           if(typeof sender.info =="string"){
             getStreamUrl("safari",sender.info)
           }else{
+            
           if (sender.info.length == 1 && sender.info[0].indexOf("video") > 0)
             openSafari(sender.info[0]);
           else
             $quicklook.open({
               list: sender.info,
               handler: function() {
+                $ui.clearToast()
                 if ($app.env == $env.today && $app.widgetIndex == -1)
                   setWidgetBackground(0.1);
               }
@@ -174,7 +182,7 @@ const template2 = {
                 url: sender.info,
                 handler: function() {
                   if ($app.env == $env.today && $app.widgetIndex == -1)
-                    setWidgetBackground(0.1);
+                    setWidgetBackground(0.5);
                 }
               });}
             }
@@ -338,11 +346,22 @@ function weiboList(id, temp, height) {
         } else {
           $("fireList").data = [];
 
-          getFire(containerid[$("tab").index]);
+          page=1
+          getFire(containerid[$("tab").index],page);
         }
         sender.endRefreshing();
-      }
-    }
+      },
+      didReachBottom:function(sender){
+            if($("tab").index!==1){
+              page++
+                    $ui.toast("载入中...")
+                    getFire(containerid[$("tab").index],page)
+                    
+            }
+            sender.endFetchingMore()
+          }
+    },
+    
   };
 }
 
@@ -411,7 +430,7 @@ function getHotSearch() {
   //  alert($props($("tab")))
 }
 
-function getFire(containerid = "102803") {
+function getFire(containerid = "102803",page) {
   $ui.toast("载入中...");
   $http.request({
     method: "POST",
@@ -423,29 +442,49 @@ function getFire(containerid = "102803") {
       "X-Sessionid": "FB2B9D47-FFCD-4A94-8D33-FDE1313557D9"
     },
     body: {
-      adss: "a829644381d03fe621933a54999bc051",
-      aid: "01A_gQlePB46dDPjzk7p6P7s8w1dwrmoa-4SYtwkBUm38_q48.",
-      c: "weicoabroad",
-      containerid: containerid,
-      count: "25",
-      extparam: "discover|new_feed",
-      fid: "102803_ctg1_9999_-_ctg1_9999_home",
-      from: "1237393010",
-      fromlog: "1028039999",
-      group_id: "1028039999",
-      gsid:
-        "_2A25zYd3xDeRxGedP71YS8SbFzT2IHXVuN1Y5rDV6PUJbkdAKLW7VkWpNX-gVeSRDdU4PP1TCE6amEC95bgTLekqn",
-      i: "15a1eb5",
-      lang: "zh_CN",
-      refresh: "pulldown",
-      s: "603068d8",
-      since_id: "4480206255699492",
-      trim_level: 1,
-      trim_page_recom: 0,
-      tz: "Asia/Shanghai",
-      ua: "iPhone10,3_iOS13.4_Weibo_intl._3730_wifi",
-      uid: "1144318961",
-      v_p: 59
+//      adss: "a829644381d03fe621933a54999bc051",
+//      aid: "01A_gQlePB46dDPjzk7p6P7s8w1dwrmoa-4SYtwkBUm38_q48.",
+//      c: "weicoabroad",
+//      containerid: containerid,
+//      count: "25",
+//      extparam: "discover|new_feed",
+//      fid: "102803_ctg1_9999_-_ctg1_9999_home",
+//      from: "1237393010",
+//      fromlog: "1028039999",
+//      group_id: "1028039999",
+//      gsid:
+//        "_2A25zYd3xDeRxGedP71YS8SbFzT2IHXVuN1Y5rDV6PUJbkdAKLW7VkWpNX-gVeSRDdU4PP1TCE6amEC95bgTLekqn",
+//      i: "15a1eb5",
+//      lang: "zh_CN",
+//      refresh: "pulldown",
+//      s: "603068d8",
+//      since_id: "4480206255699492",
+//      trim_level: 1,
+//      trim_page_recom: 0,
+//      tz: "Asia/Shanghai",
+//      ua: "iPhone10,3_iOS13.4_Weibo_intl._3730_wifi",
+//      uid: "1144318961",
+//      v_p: 59
+      refresh:"loadmore",
+      group_id:1028038799,
+      show_toplist:1,
+      extparam:"discover|new_feed",
+      fid:containerid,
+      uicode:10000495,
+      count:25,
+      trim_level:1,
+      max_id:page,
+      trim_page_recom:0,
+      containerid:containerid,
+      fromlog:1028038799,
+      uid:1144318961,
+      orifid:"",
+      refresh_sourceid:10000010,
+      featurecode:10000001,
+      lastAdInterval:-1,
+      oriuicode:"",
+      daily_total_times:20,
+      need_jump_scheme:1,
     },
 
     handler: function(resp) {
@@ -455,9 +494,9 @@ function getFire(containerid = "102803") {
       //        return;
       //      }
       //      $clipboard.text=JSON.stringify(data)
+      console.log(data)
       $("hotList").hidden = true;
       $("fireList").hidden = false;
-      $("fireList").data = [];
       if ($("tab").index == 1) $ui.toast(data.remind_text_old, 1);
       else $ui.clearToast();
       var hots = data.statuses;
@@ -488,13 +527,23 @@ function getFire(containerid = "102803") {
           num = num - 1;
           pic_url = hots[i].thumbnail_pic;
           ori_pic = hots[i].original_pic;
+          if(pic_infos){
           for (var key in pic_infos) {
             var reg = /.gif$/;
             if (reg.test(pic_infos[key].original.url)) {
-              pic_array = pic_array.concat(pic_infos[key].video);
+//              if(pic_infos[key].video) pic_array=pic_array.concat(pic_infos[key].video)
+//              else
+//              pic_array = pic_array.concat(pic_infos[key].original.url)
               gifHidden = false;
-            } else pic_array = pic_array.concat(pic_infos[key].original.url);
+            } //else
+            pic_array = pic_array.concat(pic_infos[key].original.url);
+          
           }
+          }
+          else{
+            ori_pic = page_info.page_pic
+          }
+          
         } else if (page_info) {
           pic_url = page_info.page_pic;
           if (!pic_url) pic_url = page_info.cards[0].page_pic;
@@ -506,6 +555,7 @@ function getFire(containerid = "102803") {
           } else ori_pic = pic_url;
           pic_array = [ori_pic];
         }
+        //if(!ori_pic) console.log(hots[i].text)
         temp = temp.concat({
           label: {
             text: hots[i].text,
@@ -544,7 +594,17 @@ function getFire(containerid = "102803") {
           }
         });
       }
-      $("fireList").data = temp;
+      if(page>1){
+        temp = $("fireList").data.concat(temp)
+        $("fireList").data =[]
+        $("fireList").data =temp
+      }
+     
+      else{
+        $("fireList").data = [];
+         $("fireList").data = temp;
+      }
+     
     }
   });
 }
@@ -585,7 +645,7 @@ function timeConvert(unixTime) {
 }
 
 function openWeb(url) {
-  $widget.height = 525;
+//  $widget.height = detailHeight;
   $ui.push({
     props: {
       navBarHidden: $app.env == $env.app ? false : true,
@@ -599,7 +659,7 @@ function openWeb(url) {
           bgcolor: $color("clear"),
           ua:
             "Mozilla/5.0 (iPhone; CPU iPhone OS 13_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1",
-              style: "login-btn,.OpenInAppButton{display:none;}"
+              style: ".login-btn,.OpenInAppButton{display:none;}"
             
         },
         layout: function(make, view) {
@@ -609,14 +669,15 @@ function openWeb(url) {
         },
         events: {
           didFinish: function(sender, navigation) {
+       
             $delay(0.45, () => {
               shareButtonAnimate(make => {
                 make.centerX.equalTo();
                 make.width.equalTo(125);
                 make.height.equalTo(34);
-                make.bottom.inset(81);
+                make.bottom.inset(10);
               });
-              //              $widget.height=320
+              
             });
             $("loading").hidden = true;
           }
@@ -644,11 +705,11 @@ function openWeb(url) {
         events: {
           didFinish: function(sender, navigation) {
             if ($app.env == $env.today && $app.widgetIndex == -1)
-              setWidgetBackground(0.1);
+              setWidgetBackground(0.5);
           },
           didStart: function(sender, navigation) {
             if ($app.env == $env.today && $app.widgetIndex == -1)
-              setWidgetBackground(0.1);
+              setWidgetBackground(0.5);
           }
         }
       },
@@ -697,14 +758,14 @@ function openSafari(url) {
   $safari.open({
     url: url,
     entersReader: false,
-    height: 500,
+    height: 550,
     handler: () => {
+      $ui.clearToast()
       if ($app.env == $env.today && $app.widgetIndex == -1)
         $delay(0.1, () => {
-          setWidgetBackground(0.1);
+          setWidgetBackground(0.4);
         });
 
-      //                      $widget.height = 320
     }
   });
 }
@@ -714,6 +775,7 @@ async function getStreamUrl(mode="quicklook",url) {
   $http.get({
     url: url,
     handler: function(resp) {
+      $ui.clearToast()
       var data = resp.data;
       var reg = /stream_url": "([\s\S]*?)"/g;
       var video = reg.exec(data)[1];
@@ -725,7 +787,7 @@ async function getStreamUrl(mode="quicklook",url) {
                    url: video,
                    handler: function() {
                      if ($app.env == $env.today && $app.widgetIndex == -1)
-                       setWidgetBackground(0.1);
+                       setWidgetBackground(0.5);
                    }
                  });
     }
@@ -806,10 +868,16 @@ function show() {
         events: {
           changed: function(sender) {
             //            $ui.toast("载入中...", 10);
-            if (sender.index == 1) getHotSearch();
-            else {
-              getFire(containerid[sender.index]);
+            page=1
+            if (sender.index == 1) {
+              getHotSearch();
+              $("hotList").contentOffset = $point(0,0)
             }
+            else {
+              getFire(containerid[sender.index],page);
+              $("fireList").contentOffset = $point(0, 0);
+            }
+              
           }
         }
       }
