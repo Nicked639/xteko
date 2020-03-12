@@ -1,4 +1,4 @@
-$widget.height = 325;
+$widget.height = 320
 var page = 1;
 //var detailHeight=320
 const hotSeachApi =
@@ -18,6 +18,7 @@ const searchUrl =
 //  "前日":"102803_ctg1_8799_-_ctg1_8799",
 //  "周榜":"102803_ctg1_8698_-_ctg1_8698"
 //}
+
 let containerid = [
   "102803",
   "",
@@ -236,10 +237,11 @@ const template2 = {
             bgcolor: $color("clear")
           },
           layout: function(make, view) {
-            make.bottom.inset(-12);
+            make.bottom.inset(-3);
             make.right.inset(1);
-            make.width.equalTo(40);
-            make.height.equalTo(40);
+            make.width.equalTo(20);
+            make.height.equalTo(20);
+            
           }
         },
         {
@@ -302,102 +304,129 @@ const template2 = {
   ]
 };
 
-function weiboList(id, temp, height) {
-  return {
-    type: "list",
-    props: {
-      id: id,
-      template: temp,
-      hidden: true,
-      rowHeight: 100,
-      bgcolor: $color("clear"),
-      actions: [
-        {
-          title: "微博国际",
-          color: $rgb(242, 152, 0), // default to gray
-          handler: function(sender, indexPath) {
-            //            console.log(sender.data[indexPath.row].label.info)
-            $cache.set("app", "weibointernational");
-            let url = sender.data[indexPath.row].hotContent.info.replace(
-              "sinaweibo",
-              "weibointernational"
-            );
-            $app.openURL(url);
-          }
-        },
-        {
-          title: "微博",
-          color: $rgb(246, 22, 31), // default to gray
-          handler: function(sender, indexPath) {
-            //console.log(sender.data[indexPath.row].label.info);
-            $cache.set("app", "weibo");
-            $app.openURL(sender.data[indexPath.row].hotContent.info);
-          }
-        },
 
-        {
-          title: "墨客",
-          color: $rgb(69, 134, 209),
-          handler: function(sender, indexPath) {
-            $cache.set("app", "moke");
-            if ($("fireList").hidden == false) {
-              $app.openURL(
-                "moke:///status?mid=" + sender.data[indexPath.row].hotContent.id
-              );
-            } else {
-              let text = sender.data[indexPath.row].hotTitle.text;
-              //              console.log(text)
-              $app.openURL("moke:///search/statuses?query=" + encodeURI(text));
-            }
-          }
-        }
-      ]
-    },
-    layout: (make, view) => {
-      make.left.right.bottom.inset(0);
-      make.top.inset(25);
-    },
-    events: {
-      didSelect: function(sender, indexPath) {
-        //        let app = $cache.get("app") || "weibo";
 
-        let url = sender.data[indexPath.row].hotContent.link;
-        //console.log(sender.data[indexPath.row]);
-        console.log(url);
-        openWeb(url);
-      },
-      didLongPress: function(sender, indexPath, data) {
-        //        let name = sender.data[indexPath.row].label.infoname;
-        //        console.log(name);
-        //        url = "http://s.weibo.com/weibo?q=%23" + name + "%23&Refer=top";
-        //        $share.sheet(encodeURI(url));
-        if ($app.env == $env.app || $app.widgetIndex !== -1) return;
-        $app.close();
-      },
-      pulled: function(sender) {
-        if ($("fireList").hidden == true) {
-          $("hotList").data = [];
-
-          //                  $("weibo").add(weiboList("hotList",template));
-          getHotSearch();
-        } else {
-          $("fireList").data = [];
-
-          page = 1;
-          getFire(containerid[$("tab").index], page);
-        }
-        sender.endRefreshing();
-      },
-      didReachBottom: function(sender) {
-        if ($("fireList").hidden == false) {
-          page++;
-          $ui.toast("载入中...");
-          getFire(containerid[$("tab").index], page);
-        }
-        sender.endFetchingMore();
-      }
-    }
-  };
+function list(id,temp){
+      return {
+           type: "list",
+           props: {
+             id: id,
+             template: temp,
+             hidden: false,
+             rowHeight: 100,
+             bgcolor: $color("clear"),
+             header:searchText(),
+             actions: [
+               {
+                 title: "微博国际",
+                 color: $rgb(242, 152, 0), // default to gray
+                 handler: function(sender, indexPath) {
+                   //            console.log(sender.data[indexPath.row].label.info)
+                   $cache.set("app", "weibointernational");
+                   let url = sender.data[indexPath.row].hotContent.info.replace(
+                     "sinaweibo",
+                     "weibointernational"
+                   );
+                   $app.openURL(url);
+                 }
+               },
+               {
+                 title: "微博",
+                 color: $rgb(246, 22, 31), // default to gray
+                 handler: function(sender, indexPath) {
+                   //console.log(sender.data[indexPath.row].label.info);
+                   $cache.set("app", "weibo");
+                   $app.openURL(sender.data[indexPath.row].hotContent.info);
+                 }
+               },
+       
+               {
+                 title: "墨客",
+                 color: $rgb(69, 134, 209),
+                 handler: function(sender, indexPath) {
+                   $cache.set("app", "moke");
+                   if ($("fireList").hidden == false) {
+                     $app.openURL(
+                       "moke:///status?mid=" + sender.data[indexPath.row].hotContent.id
+                     );
+                   } else {
+                     let text = sender.data[indexPath.row].hotTitle.text;
+                     //              console.log(text)
+                     $app.openURL("moke:///search/statuses?query=" + encodeURI(text));
+                   }
+                 }
+               }
+             ]
+           },
+           layout: function(make,view){
+             make.bottom.left.right.inset(0)
+             make.top.inset(0)
+           },
+           events: {
+             didEndDragging: function(sender) {
+               if($("fireList")){
+             let y = $("fireList").contentOffset.y
+             console.log(y)
+             let t=null
+      
+             if(y<35&&y>=0) t=0
+             if(y>=26&&y<45) t=45
+             if(t==null) return
+             else searchAnimate(t)
+             }
+             
+             else{
+               let y = $("hotList").contentOffset.y
+                            console.log(y)
+                            let t=null
+                     
+                            if(y<35&&y>=0) t=0
+                            if(y>=26&&y<45) t=45
+                            if(t==null) return
+                            else searchAnimate(t,"hotList")
+             }
+             },
+             
+             didSelect: function(sender, indexPath) {
+               //        let app = $cache.get("app") || "weibo";
+       
+               let url = sender.data[indexPath.row].hotContent.link;
+               //console.log(sender.data[indexPath.row]);
+               console.log(url);
+               openWeb(url);
+             },
+             didLongPress: function(sender, indexPath, data) {
+               //        let name = sender.data[indexPath.row].label.infoname;
+               //        console.log(name);
+               //        url = "http://s.weibo.com/weibo?q=%23" + name + "%23&Refer=top";
+               //        $share.sheet(encodeURI(url));
+               if ($app.env == $env.app || $app.widgetIndex !== -1) return;
+               $app.close();
+             },
+             pulled: function(sender) {
+               if ($("fireList").hidden == true) {
+                 $("hotList").data = [];
+       
+                 //                  $("weibo").add(weiboList("hotList",template));
+                 getHotSearch();
+               } else {
+                 $("fireList").data = [];
+       
+                 page = 1;
+                 getFire(containerid[$("tab").index], page);
+               }
+               sender.endRefreshing();
+             },
+             didReachBottom: function(sender) {
+               if ($("fireList").hidden == false) {
+                 page++;
+                 $ui.toast("载入中...");
+                 getFire(containerid[$("tab").index], page);
+               }
+               sender.endFetchingMore();
+             }
+           }
+         }
 }
 
 function getHotSearch() {
@@ -411,8 +440,7 @@ function getHotSearch() {
         alert(data.errmsg);
         return;
       }
-      $("hotList").hidden = false;
-      $("fireList").hidden = true;
+      
       $("hotList").data = [];
       var temp = [];
       var topics = resp.data.topics;
@@ -453,6 +481,8 @@ function getHotSearch() {
 
       $("hotList").data = temp;
       $ui.toast(timeConvert() + "  更新", 0.6);
+searchAnimate(45,"hotList")
+      $("header").hidden = false
     }
   });
   //  alert($props($("tab")))
@@ -523,8 +553,9 @@ function getFire(containerid = "102803", page) {
       //      }
       //      $clipboard.text=JSON.stringify(data)
       console.log(data);
-      $("hotList").hidden = true;
-      $("fireList").hidden = false;
+      
+
+      
       if ($("tab").index == 0) $ui.toast(data.remind_text_old, 1);
       else $ui.clearToast();
       var hots = data.statuses;
@@ -543,6 +574,7 @@ function getFire(containerid = "102803", page) {
         $("fireList").data = [];
         $("fireList").data = temp;
       }
+      searchAnimate(45,"fireList")
     }
   });
 }
@@ -556,6 +588,10 @@ function getSearch(kw, page) {
     handler: resp => {
       var data = resp.data;
       let cards = data.cards;
+      if(!cards) {
+        $ui.error("无搜索结果")
+        return
+      }
       var temp = [];
       for (var i = 0; i < cards.length; i++) {
         if (cards[i].mblog) {
@@ -564,6 +600,7 @@ function getSearch(kw, page) {
         }
       }
       console.log(temp);
+       
       if (page > 1) {
         temp = $("fireList").data.concat(temp);
         $("fireList").data = [];
@@ -572,6 +609,7 @@ function getSearch(kw, page) {
         $("fireList").data = [];
         $("fireList").data = temp;
       }
+      searchAnimate(45,"fireList")
     }
   });
 }
@@ -878,26 +916,15 @@ function shareButtonAnimate(layout) {
   });
 }
 
-function searchAnimate(layout) {
-  $("fireList").remakeLayout(layout);
+function searchAnimate(num,list="fireList") {
   //  let alpha = 0;
   $ui.animate({
     duration: 1,
     damping: 0.9,
     velocity: 0.8,
     animation: () => {
-      $("fireList").relayout();
-      //      let timer = $timer.schedule({
-      //        interval: 0.01,
-      //        handler: function() {
-      //          if (alpha < 1) {
-      //            $("gradient").alpha = alpha;
-      //            alpha += 0.02;
-      //          } else {
-      //            timer.invalidate();
-      //          }
-      //        }
-      //      });
+      $(`${list}`).contentOffset = $point(0,num);
+      
     }
   });
 }
@@ -928,43 +955,129 @@ function setWidgetBackground(time = 0.5) {
 
 function searchText() {
   return {
-    type: "label",
+    type:"view",
     props: {
-      id:"searchText",
-//      type: $kbType.search,
-      darkKeyboard: true,
-//      placeholder: "点击输入内容搜索微博",
-      font:$font(12),
-      bgcolor:$color("clear"),
-      hidden:true,
-      text:"点击输入内容搜索微博",
-      textColor:$color("gray")
+      id:"header",
+      hidden:false
     },
-    layout: function(make, view) {
-      make.centerX.equalTo(view.super);
-      make.top.inset(25);
-      make.left.right.inset(10);
-      make.height.equalTo(25);
-    },
-    events: {
-      tapped:function(sender){
-        $input.text({
-          type: $kbType.search,
-          placeholder: "点击输入内容搜索微博",
-          
-          darkKeyboard:true,
-          handler: function(text) {
-              $("searchText").text=text
-              page = 1
-                    $("fireList").data=[]
-                    getSearch(text, page);
-          }
-        })
+    views: [
+      {
+          type: "label",
+          props: {
+            id:"searchText",
+      //      type: $kbType.search,
+            darkKeyboard: true,
+      //      placeholder: "点击输入内容搜索微博",
       
-        
-      }
-    }
-  };
+            font:$font(14),
+            bgcolor:$color("clear"),
+            
+            text:"点击输入搜索微博",
+            textColor:$color("gray"),
+//            borderColor:$color("black"),
+//            borderWidth:1,
+//            radius:5
+          },
+          layout: function(make, view) {
+            make.centerX.equalTo(view.super);
+            make.top.bottom.inset(0);
+            make.left.right.inset(10);
+//            make.height.equalTo(20);
+          },
+          events: {
+            tapped:function(sender){
+              searchAnimate(0)
+              $input.text({
+                type: $kbType.search,
+                placeholder: $clipboard.text?$clipboard.text:"点击输入搜索微博",
+                
+                darkKeyboard:true,
+                handler: function(text) {
+                    
+                    page = 1
+                    
+                     if($("hotList")){
+                                           $("hotList").remove()
+                                           $("weiboList").add(list("fireList",template2))
+                                         $("header").hidden=false}
+                                         $("searchText").text=text
+                     $("fireList").data=[]
+                    getSearch(text, page);
+                }
+              })
+            
+              
+            }
+          }
+        }
+    ]
+  }
+}
+
+function tabView(){
+  return       {
+         type: "tab",
+         props: {
+           id: "tab",
+           items: [
+             "热搜",
+             "热门",
+             "小时",
+             "昨日",
+             "前日",
+             "周榜",
+             "关注"
+           ],
+           radius: 5
+         },
+         layout: function(make, view) {
+           make.top.inset(0);
+           make.centerX.equalTo();
+           make.left.right.inset(10);
+           make.height.equalTo(22);
+         },
+         events: {
+           changed: function(sender) {
+             //            $ui.toast("载入中...", 10);
+             page = 1;
+             if (sender.index == 1) {
+               if($("fireList")){
+                       $("fireList").remove()
+                       $("weiboList").add(list("hotList",template))
+                     }
+               getHotSearch();
+       
+             } else {
+//               $("fireList").data = [];
+               if($("hotList")){
+                       $("hotList").remove()
+                       $("weiboList").add(list("fireList",template2))
+                     }
+                     searchAnimate(0)
+                 getFire(containerid[sender.index], page);
+               
+         
+             }
+           }
+         }
+       }
+}
+
+function weiboList(list) {
+  return {
+   props: {
+     type:"view",
+     id:"weiboList"
+   },
+   layout: (make, view) => {
+              make.left.right.bottom.inset(0);
+              make.top.inset(22);
+            },
+   views: [
+//     searchText(),
+     list
+   ]
+ }
 }
 
 function show() {
@@ -972,67 +1085,19 @@ function show() {
     props: {
       title: "微博热点",
       id: "weibo",
-      navBarHidden: $app.env == $env.app ? false : true
-      //      bgcolor: $color("clear")
+      navBarHidden: $app.env == $env.app ? false : true,
     },
     views: [
-      weiboList("fireList", template2, 100),
-      weiboList("hotList", template, 35),
-      searchText(),
-      {
-        type: "tab",
-        props: {
-          id: "tab",
-          items: [
-            "热搜",
-            "热门",
-            "小时",
-            "昨日",
-            "前日",
-            "周榜",
-            "搜索",
-            "关注"
-          ],
-          radius: 5
-        },
-        layout: function(make, view) {
-          make.top.inset(0);
-          make.centerX.equalTo();
-          make.left.right.inset(10);
-          make.height.equalTo(22);
-        },
-        events: {
-          changed: function(sender) {
-            //            $ui.toast("载入中...", 10);
-            $("searchText").hidden=true
-            page = 1;
-            if (sender.index == 1) {
-              getHotSearch();
-              $("hotList").contentOffset = $point(0, 0);
-            } else {
-              $("fireList").data = [];
-              if (sender.index == 6) {
-                $("searchText").hidden=false
-                let text = $clipboard.text
-                if(!text) text = "JSBox"
-                $("searchText").text = text
-                getSearch(text, page);
-                $delay(0.45, () => {
-                  searchAnimate(make => {
-                     make.left.right.bottom.inset(0);
-                          make.top.inset(50);
-                  });
-                });
-              } else {
-                getFire(containerid[sender.index], page);
-              }
-              $("fireList").contentOffset = $point(0, 0);
-            }
-          }
-        }
-      }
-    ]
+      tabView(),
+      
+//      weiboList("hotList", template),
+      weiboList(list("fireList",template2)),
+//      searchText(),
+    ],
+    layout:$layout.fill
   });
+
+  
   if ($app.env == $env.today && $app.widgetIndex == -1)
     setWidgetBackground(0.5);
 }
@@ -1040,5 +1105,6 @@ function show() {
 function run() {
   show();
   getFire();
+  
 }
 run();
