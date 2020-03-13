@@ -1,12 +1,16 @@
-var setHeight = 320;
+var setHeight = 320; // 通知中心默认高度
 $widget.height = setHeight;
+var extendHeight = 500// 通知中心展开高度
 var hotMode = $cache.get("hotMode") ? $cache.get("hotMode") : "simple";
-  var hotSearchMode = $cache.get("hotSearchMode")
+var hotSearchMode = $cache.get("hotSearchMode")
     ? $cache.get("hotSearchMode")
     : "web";
 var page = 1;
 var searchOn = 0;
-//var detailHeight=320
+var areaCode = $cache.get("areaCode")?$cache.get("areaCode"):getAreaCode()
+var code = $cache.get("code")?$cache.get("code"):""
+var city = code? getKeyByValue($cache.get("areaCode"),code):""
+
 const hotSeachApi =
   "https://weibointl.api.weibo.cn/portal.php?ct=feed&a=get_topic_weibo&auth=137bc4c95743aa9cb487e885df73c36c&lang=zh-Hans&page=1&time=1583981594565&ua=iPhone10%2C3_iOS13.4_Weibo_intl._373_wifi&udid=2AD2FF08-A479-49B1-984D-152652C6E0F4&user_id=1144318961&version=373";
 
@@ -132,7 +136,7 @@ const template1 = {
     {
       type: "label",
       props: {
-        id: "hotContent",
+        id: "hotTitle",
         bgcolor: $color("clear"),
         textColor:
           $app.env == $env.app
@@ -141,7 +145,7 @@ const template1 = {
             ? $color("white")
             : $color("black"),
         align: $align.center,
-        font: $font(14)
+        font: $font(12)
       },
       layout: function(make, view) {
         make.right.top.bottom.inset(0);
@@ -243,7 +247,7 @@ const template2 = {
             if (sender.info.length == 1 && sender.info[0].indexOf("video") > 0)
               openSafari(sender.info[0]);
             else {
-              $widget.height = 500;
+              $widget.height = extendHeight;
 
               $quicklook.open({
                 list: sender.info,
@@ -407,12 +411,17 @@ function list(id, temp) {
           color: $rgb(69, 134, 209),
           handler: function(sender, indexPath) {
             $cache.set("app", "moke");
-            if ($("fireList").hidden == false) {
+            if ($("fireList")) {
               $app.openURL(
                 "moke:///status?mid=" + sender.data[indexPath.row].hotContent.id
               );
             } else {
-              let text = sender.data[indexPath.row].hotTitle.text;
+              let text = ""
+              if(hotMode=="detail")
+              text = sender.data[indexPath.row].hotTitle.text;
+              else text = /.、([\s\S]*)/g.exec(
+                 sender.data[indexPath.row].hotTitle.text
+               )[1];
               //              console.log(text)
               $app.openURL("moke:///search/statuses?query=" + encodeURI(text));
             }
@@ -453,7 +462,7 @@ function list(id, temp) {
         let url = sender.data[indexPath.row].hotContent.link;
         //console.log(sender.data[indexPath.row]);
         console.log(url);
-        $widget.height = 500;
+        $widget.height = extendHeight;
         $delay(0.1, () => {
           openWeb(url);
         });
@@ -542,7 +551,7 @@ function getHotSearch1() {
         }
 
         temp = temp.concat({
-          hotContent: {
+          hotTitle: {
             text: prefix + hotCards[i].desc,
             info: hotCards[i].scheme,
             link:
@@ -708,29 +717,51 @@ function getFire(page, containerid = "102803") {
   });
 }
 
+
+
+function getAreaCode(){
+  $http.get({
+    url: "http://www.ip33.com/area_code.html",
+    handler: resp => {
+      var data = resp.data;
+      var c = [...data.matchAll(/>(.+(市|区)) (\d{4,6})</g)]
+      //console.log(c)
+      var dict = {}
+      for(var i=0;i<c.length;i++){
+        let cc=c[i]
+        let area=cc[1]
+        let code = cc[3].toString()
+        code=code.length==4?code+"00":code
+        dict[area] = code
+      }
+      dict["北京市"]=110000
+      dict["天津市"]=120000
+      dict["上海市"]=310000
+      areaCode=  dict
+      $cache.set("areaCode",dict)
+    }
+  });
+}
+function getKeyByValue(object, value) { 
+
+    return Object.keys(object).find(key => object[key] === value); 
+}
+
+
+
 async function getLocal(page){
-  let url = "https://2020.ip138.com"
-  let resp = await $http.get({url: url})
-  let data = resp.data
-  let reg=/来自：.*省?(.{2,3}市)/i
-  if(!reg.exec(data)){
-    $ui.error("获取地理位置失败！")
+  $("searchText").text="输入完整市或区名称以更改（当前："+city+"）"
+  if(!code) {
+    alert("请在上方输入完整市或区名称\n如：北京市")
+    searchAnimate(0)
     return
   }
-  let city = reg.exec(data)[1]
-
-  console.log(city)
-  let codeUrl = "https://xingzhengquhua.51240.com/"+encodeURI(city)+"__xingzhengquhua/"
-  resp = await $http.get({url:codeUrl})
-  data= resp.data
-  reg = /\/(\d{12})__xingzhengquhua/
-  let code = reg.exec(data)[1]
   console.log(code)
-  
-  let m = "102803_ctg1_1552_-_ctg1_1552_-_object_id_-_80086"+code+"00_-_page_type_-_1_-_name_-_"+encodeURI(city)
+  let m = "102803_ctg1_1552_-_ctg1_1552_-_object_id_-_80086"+code+"00000000_-_page_type_-_1_-_name_-_"//+encodeURI(city)
+//  console.log(m)
   let locUrl = locationUrl + m+"&fid="+m+"&page="+page
-  resp = await $http.get({url:locUrl})
-  data= resp.data
+  let resp = await $http.get({url:locUrl})
+  let data= resp.data
 //  console.log(data)
         let cards = data.cards;
   
@@ -1168,7 +1199,8 @@ function searchText() {
         },
         events: {
           tapped: function(sender) {
-            //              searchAnimate(0)
+//            searchAnimate(0)
+           
             $input.text({
               type: $kbType.search,
               placeholder: $clipboard.text
@@ -1176,7 +1208,22 @@ function searchText() {
                 : "点击输入搜索微博",
 
               darkKeyboard: true,
-              handler: function(text) {
+              handler: async function(text) {
+                if($("fireList")&&hotSearchMode=="local"){
+                  
+                  code = areaCode[text]
+                  if(!code){
+                    $ui.error("市区名字输入有误,请输入完整市区名",2)
+                    return
+                  }
+                  $ui.toast("地名记录成功")
+                  city = text
+                  $cache.set("code",code)
+                  
+                  getLocal(page)
+
+                  return
+                }
                 page = 1;
                 searchOn = 1
                 if ($("hotList")) {
@@ -1198,22 +1245,23 @@ function searchText() {
           id: "mode",
           hidden: false,
           items: ["全网", "本地"],
-          //          index: hotMode == "simple" ? 0 : 1,
+          index: hotSearchMode == "web" ? 0 : 1,
           radius: 5,
-          font: $font(10)
+          font: $font(9)
         },
         layout: function(make, view) {
-          make.top.inset(10);
+          make.top.inset(7);
 
           make.right.inset(10);
-          make.height.equalTo(22);
-          make.width.equalTo(80);
+          make.height.equalTo(28);
+          make.width.equalTo(90);
         },
         events: {
           changed: function(sender) {
             page = 1;
             searchOn=0
             if (sender.index == 0) {
+                     $("searchText").text="点击输入搜索微博"
               if ($("hotList")) {
                 hotMode = "simple";
 
@@ -1283,6 +1331,7 @@ function tabView() {
         //$ui.toast("载入中...", 10);
         page = 1;
         searchOn = 0
+        $("searchText").text="点击输入搜索微博"
         if (sender.index == 1) {
           if ($("fireList")) {
             $("fireList").remove();
@@ -1366,6 +1415,9 @@ function show() {
 function run() {
   
   show();
-  getFire(page);
+  if(hotSearchMode=="web")
+  getFire(page)
+  else
+  getLocal(page)
 }
 run();
