@@ -1,15 +1,15 @@
-var dHeight = $cache.get("dh")?$cache.get("dh"):320; // 通知中心默认展开高度
+var dHeight = $cache.get("dh") ? $cache.get("dh") : 320; // 通知中心默认展开高度
 $widget.height = dHeight;
-var eHeight = $cache.get("eh")?$cache.get("eh"):450;// 通知中心默认扩展高度
+var eHeight = $cache.get("eh") ? $cache.get("eh") : 450; // 通知中心默认扩展高度
 var hotMode = $cache.get("hotMode") ? $cache.get("hotMode") : "simple";
 var hotSearchMode = $cache.get("hotSearchMode")
-    ? $cache.get("hotSearchMode")
-    : "web";
+  ? $cache.get("hotSearchMode")
+  : "web";
 var page = 1;
 var searchOn = 0;
-var areaCode = $cache.get("areaCode")?$cache.get("areaCode"):getAreaCode()
-var code = $cache.get("code")?$cache.get("code"):""
-var city = code? getKeyByValue($cache.get("areaCode"),code):""
+var areaCode = $cache.get("areaCode") ? $cache.get("areaCode") : getAreaCode();
+var code = $cache.get("code") ? $cache.get("code") : "";
+var city = code ? getKeyByValue($cache.get("areaCode"), code) : "";
 const hotSeachApi =
   "https://weibointl.api.weibo.cn/portal.php?ct=feed&a=get_topic_weibo&auth=137bc4c95743aa9cb487e885df73c36c&lang=zh-Hans&page=1&time=1583981594565&ua=iPhone10%2C3_iOS13.4_Weibo_intl._373_wifi&udid=2AD2FF08-A479-49B1-984D-152652C6E0F4&user_id=1144318961&version=373";
 
@@ -23,8 +23,9 @@ const searchUrl =
 
 const hotSeachApi1 =
   "https://api.weibo.cn/2/guest/page?gsid=_2AkMtqmJ0f8NhqwJRmPEdxGnjaIx-wwDEieKb9pOvJRMxHRl-wT9kqnAAtRV6Bm0NBHg_Q_-5Rx4sx0moY_1sSSEoN2zx&uid=1009882141998&wm=3333_2001&i=ddd48a6&b=0&from=1084393010&checktoken=745495b139d5d0943c12418acc7a08f8&c=iphone&networktype=wifi&v_p=60&skin=default&s=ffffffff&v_f=1&did=10dc157a640f1c1bd53cbacbad02326f&lang=zh_CN&sflag=1&ft=0&moduleID=pagecard&uicode=10000011&featurecode=10000085&feed_mypage_card_remould_enable=1&luicode=10000003&count=20&extparam=filter_type%3Drealtimehot%26mi_cid%3D100103%26pos%3D0_0%26c_type%3D30%26display_time%3D1526132043&containerid=106003type%3D25%26t%3D3%26disable_hot%3D1%26filter_type%3Drealtimehot&fid=106003type%3D25%26t%3D3%26disable_hot%3D1%26filter_type%3Drealtimehot&page=1";
-  
-const locationUrl = "https://api.weibo.cn/2/cardlist?gsid=_2A25zbf5gDeRxGedP71YS8SbFzT2IHXVuO3aorDV6PUJbkdANLVr5kWpNX-gVeUGvGmi6BRcxOymooYVtsr1th2nA&sensors_mark=0&wm=3333_2001&sensors_is_first_day=true&from=10A3093010&b=0&c=iphone&networktype=wifi&skin=default&v_p=81&v_f=1&s=88888888&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10%2C3__weibo__10.3.0__iphone__os13.4&ft=0&aid=01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo.&page_interrupt_enable=0&scenes=0&extparam=discover&orifid=231619&count=20&luicode=10000010&uicode=10000327&need_head_cards=0&need_new_pop=1&scenes_t=0&oriuicode=10000010&lfid=231619&moduleID=pagecard&launchid=10000365--x&containerid="
+
+const locationUrl =
+  "https://api.weibo.cn/2/cardlist?gsid=_2A25zbf5gDeRxGedP71YS8SbFzT2IHXVuO3aorDV6PUJbkdANLVr5kWpNX-gVeUGvGmi6BRcxOymooYVtsr1th2nA&sensors_mark=0&wm=3333_2001&sensors_is_first_day=true&from=10A3093010&b=0&c=iphone&networktype=wifi&skin=default&v_p=81&v_f=1&s=88888888&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10%2C3__weibo__10.3.0__iphone__os13.4&ft=0&aid=01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo.&page_interrupt_enable=0&scenes=0&extparam=discover&orifid=231619&count=20&luicode=10000010&uicode=10000327&need_head_cards=0&need_new_pop=1&scenes_t=0&oriuicode=10000010&lfid=231619&moduleID=pagecard&launchid=10000365--x&containerid=";
 //let containerid = {
 //  "热门":"102803",
 //  "小时":"102803_ctg1_9999_-_ctg1_9999_home",
@@ -356,7 +357,7 @@ const template2 = {
       type: "label",
       props: {
         id: "time",
-        textColor: $device.isDarkMode?$color("#aaaaaaa"):$color("#666666"),
+        textColor: $device.isDarkMode ? $color("#aaaaaaa") : $color("#666666"),
         align: $align.left,
         font: $font(10)
       },
@@ -415,24 +416,25 @@ function list(id, temp) {
                 "moke:///status?mid=" + sender.data[indexPath.row].hotContent.id
               );
             } else {
-              let text = ""
-              if(hotMode=="detail")
-              text = sender.data[indexPath.row].hotTitle.text;
-              else text = /.、([\s\S]*)/g.exec(
-                 sender.data[indexPath.row].hotTitle.text
-               )[1];
+              let text = "";
+              if (hotMode == "detail")
+                text = sender.data[indexPath.row].hotTitle.text;
+              else
+                text = /.、([\s\S]*)/g.exec(
+                  sender.data[indexPath.row].hotTitle.text
+                )[1];
               //              console.log(text)
               $app.openURL("moke:///search/statuses?query=" + encodeURI(text));
             }
           }
         },
         {
-                  title: "赞赏",
-                  color: $rgb(44, 161, 67), // default to gray
-                  handler: function(sender, indexPath) {
-                   wechatPay()
-                  }
-                },
+          title: "赞赏",
+          color: $rgb(44, 161, 67), // default to gray
+          handler: function(sender, indexPath) {
+            wechatPay();
+          }
+        }
       ]
     },
     layout: function(make, view) {
@@ -443,7 +445,7 @@ function list(id, temp) {
       didEndDragging: function(sender) {
         if ($("fireList")) {
           let y = $("fireList").contentOffset.y;
-//          console.log(y);
+          //          console.log(y);
           let t = null;
 
           if (y < 35 && y >= 0) t = 0;
@@ -452,7 +454,7 @@ function list(id, temp) {
           else searchAnimate(t);
         } else {
           let y = $("hotList").contentOffset.y;
-//          console.log(y);
+          //          console.log(y);
           let t = null;
 
           if (y < 35 && y >= 0) t = 0;
@@ -463,12 +465,10 @@ function list(id, temp) {
       },
 
       didSelect: function(sender, indexPath) {
-        let url = ""
-        if($("hotList")&&hotMode=="simple")
-        url = sender.data[indexPath.row].hotTitle.link;
-        else
-        url = sender.data[indexPath.row].hotContent.link;
-        
+        let url = "";
+        if ($("hotList") && hotMode == "simple")
+          url = sender.data[indexPath.row].hotTitle.link;
+        else url = sender.data[indexPath.row].hotContent.link;
 
         //console.log(sender.data[indexPath.row]);
         console.log(url);
@@ -495,19 +495,21 @@ function list(id, temp) {
           $("fireList").data = [];
 
           page = 1;
+          if(hotSearchMode=="web")
           getFire(page, containerid[$("tab").index]);
+          else
+          getLocal(page)
         }
         sender.endRefreshing();
       },
       didReachBottom: function(sender) {
         if ($("fireList")) {
           page++;
-          $ui.toast("载入中...",1);
-          if(searchOn==1)
-          getSearch($("searchText").text,page)
-          else if(hotSearchMode=="web")
-          getFire(page, containerid[$("tab").index]);
-          else getLocal(page)
+          $ui.toast("载入中...", 1);
+          if (searchOn == 1) getSearch($("searchText").text, page);
+          else if (hotSearchMode == "web")
+            getFire(page, containerid[$("tab").index]);
+          else getLocal(page);
         }
         sender.endFetchingMore();
       }
@@ -516,7 +518,7 @@ function list(id, temp) {
 }
 
 function getHotSearch1() {
-//  $ui.toast("载入中...", 10);
+  //  $ui.toast("载入中...", 10);
   $http.get({
     url: hotSeachApi1,
     handler: function(resp) {
@@ -702,7 +704,7 @@ function getFire(page, containerid = "102803") {
       //        return;
       //      }
       //      $clipboard.text=JSON.stringify(data)
-//      console.log(data);
+      //      console.log(data);
 
       //      if ($("tab").index == 0) $ui.toast(data.remind_text_old, 1);
       //      else $ui.clearToast();
@@ -727,8 +729,6 @@ function getFire(page, containerid = "102803") {
   });
 }
 
-
-
 function getAreaCode() {
   let url =
     "https://raw.githubusercontent.com/Nicked639/xteko/master/Weibo/areaCode.txt";
@@ -736,59 +736,57 @@ function getAreaCode() {
   $http.get({
     url: url,
     handler: function(resp) {
-      areaCode = resp.data
-      $cache.set("areaCode",resp.data)
+      areaCode = resp.data;
+      $cache.set("areaCode", resp.data);
     }
-  }); 
+  });
 }
 
-function getKeyByValue(object, value) { 
-
-    return Object.keys(object).find(key => object[key] === value); 
+function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
 }
 
-
-
-async function getLocal(page){
-  $("searchText").text="输入完整市或区名称以更改（当前："+city+"）"
-  if(!code) {
-    alert("请在上方输入完整市或区名称\n如：北京市")
-    searchAnimate(0)
-    return
+async function getLocal(page) {
+  $("searchText").text = "输入完整市或区名称以更改（当前：" + city + "）";
+  if (!code) {
+    alert("请在上方输入完整市或区名称\n如：北京市");
+    searchAnimate(0);
+    return;
   }
-  console.log(code)
-  let m = "102803_ctg1_1552_-_ctg1_1552_-_object_id_-_80086"+code+"00000000_-_page_type_-_1_-_name_-_"//+encodeURI(city)
-//  console.log(m)
-  let locUrl = locationUrl + m+"&fid="+m+"&page="+page
-  let resp = await $http.get({url:locUrl})
-  let data= resp.data
-//  console.log(data)
-        let cards = data.cards;
-  
-        var temp = [];
-        for (var i = 0; i < cards.length; i++) {
-          if (cards[i].mblog) {
-            var t = calcHots(cards[i].mblog);
-            temp = temp.concat(t);
-          }
-        }
-//        console.log(temp);
-        if (temp.length == 0) {
-          $ui.error("无本地结果");
-          return;
-        }
-  
-        if (page > 1) {
-          temp = $("fireList").data.concat(temp);
-          $("fireList").data = [];
-          $("fireList").data = temp;
-        } else {
-          $("fireList").data = [];
-          $("fireList").data = temp;
-          searchAnimate(45, "fireList");
-        }
-        
-  
+//  console.log(code);
+  let m =
+    "102803_ctg1_1552_-_ctg1_1552_-_object_id_-_80086" +
+    code +
+    "00000000_-_page_type_-_1_-_name_-_"; //+encodeURI(city)
+  //  console.log(m)
+  let locUrl = locationUrl + m + "&fid=" + m + "&page=" + page;
+  let resp = await $http.get({ url: locUrl });
+  let data = resp.data;
+  //  console.log(data)
+  let cards = data.cards;
+
+  var temp = [];
+  for (var i = 0; i < cards.length; i++) {
+    if (cards[i].mblog) {
+      var t = calcHots(cards[i].mblog);
+      temp = temp.concat(t);
+    }
+  }
+  //        console.log(temp);
+  if (temp.length == 0) {
+    $ui.error("无本地结果");
+    return;
+  }
+
+  if (page > 1) {
+    temp = $("fireList").data.concat(temp);
+    $("fireList").data = [];
+    $("fireList").data = temp;
+  } else {
+    $("fireList").data = [];
+    $("fireList").data = temp;
+    searchAnimate(45, "fireList");
+  }
 }
 
 function getSearch(kw, page) {
@@ -824,8 +822,6 @@ function getSearch(kw, page) {
         $("fireList").data = temp;
         searchAnimate(45, "fireList");
       }
-      
-      
     }
   });
 }
@@ -1199,8 +1195,8 @@ function searchText() {
         },
         events: {
           tapped: function(sender) {
-//            searchAnimate(0)
-           
+            //            searchAnimate(0)
+
             $input.text({
               type: $kbType.search,
               placeholder: $clipboard.text
@@ -1209,25 +1205,24 @@ function searchText() {
 
               darkKeyboard: true,
               handler: async function(text) {
-                if (setHeight(text))
-                return
-                if($("fireList")&&hotSearchMode=="local"){
-                  console.log(areaCode)
-                  code = areaCode[text]
-                  if(!code){
-                    $ui.error("市区名字输入有误,请输入完整市区名",2)
-                    return
+                if (setHeight(text)) return;
+                if ($("fireList") && hotSearchMode == "local") {
+                  console.log(areaCode);
+                  code = areaCode[text];
+                  if (!code) {
+                    $ui.error("市区名字输入有误,请输入完整市区名", 2);
+                    return;
                   }
-                  $ui.toast("地名记录成功")
-                  city = text
-                  $cache.set("code",code)
-                  
-                  getLocal(page)
+                  $ui.toast("地名记录成功");
+                  city = text;
+                  $cache.set("code", code);
 
-                  return
+                  getLocal(page);
+
+                  return;
                 }
                 page = 1;
-                searchOn = 1
+                searchOn = 1;
                 if ($("hotList")) {
                   $("hotList").remove();
                   $("weiboList").add(list("fireList", template2));
@@ -1261,9 +1256,9 @@ function searchText() {
         events: {
           changed: function(sender) {
             page = 1;
-            searchOn=0
+            searchOn = 0;
             if (sender.index == 0) {
-                     $("searchText").text="点击输入搜索微博"
+              $("searchText").text = "点击输入搜索微博";
               if ($("hotList")) {
                 hotMode = "simple";
 
@@ -1332,8 +1327,9 @@ function tabView() {
       changed: function(sender) {
         //$ui.toast("载入中...", 10);
         page = 1;
-        searchOn = 0
-        $("searchText").text="点击输入搜索微博"
+        searchOn = 0;
+        $("searchText").text = "点击输入搜索微博";
+        $cache.set("tabIndex", sender.index);
         if (sender.index == 1) {
           if ($("fireList")) {
             $("fireList").remove();
@@ -1356,8 +1352,7 @@ function tabView() {
             getFire(page, containerid[sender.index]);
           } else {
             $("mode").hidden = false;
-            if (hotSearchMode == "web")
-              getFire(page, "102803");
+            if (hotSearchMode == "web") getFire(page, "102803");
             else getLocal(page);
           }
 
@@ -1369,25 +1364,23 @@ function tabView() {
   };
 }
 
-function setHeight(text){
-  let h = text.match(/\$[d|e]h\s*(\d+)/)
-  if(h) {
-    console.log(h)
-    if(h[0].indexOf("d")==1){
-    $cache.set("dh",h[1])
-    dHeight = h[1]
-    $widget.height = dHeight
-    $ui.toast("默认展开 => "+dHeight)
+function setHeight(text) {
+  let h = text.match(/\$[d|e]h\s*(\d+)/);
+  if (h) {
+    console.log(h);
+    if (h[0].indexOf("d") == 1) {
+      $cache.set("dh", h[1]);
+      dHeight = h[1];
+      $widget.height = dHeight;
+      $ui.toast("默认展开 => " + dHeight);
+    } else {
+      $cache.set("eh", h[1]);
+      eHeight = h[1];
+      $ui.toast("默认扩展 => " + eHeight);
     }
-
-    else{
-      $cache.set("eh",h[1])
-      eHeight= h[1]
-      $ui.toast("默认扩展 => "+ eHeight)
-    }
-    return true
+    return true;
   }
-  return false
+  return false;
 }
 
 function determineModeTab() {
@@ -1429,7 +1422,7 @@ function wechatPay() {
             url:
               "https://raw.githubusercontent.com/Nicked639/xteko/master/JavBus/wechat.jpg",
             progress: function(bytesWritten, totalBytes) {
-//              var percentage = (bytesWritten * 1.0) / totalBytes;
+              //              var percentage = (bytesWritten * 1.0) / totalBytes;
             },
             handler: function(resp) {
               $photo.save({
@@ -1464,26 +1457,25 @@ function show() {
       id: "weibo",
       navBarHidden: $app.env == $env.app ? false : true,
       navButtons: [
-              
-              {
-                symbol: "lightbulb",
-                handler: () => {
-                  $ui.push({
-                          views: [
-                            {
-                              type: "markdown",
-                              props: {
-                                content: $cache.get("tips")
-                              },
-                              layout: function(make, view) {
-                                make.left.bottom.right.top.inset(0);
-                              }
-                            }
-                          ]
-                        });
+        {
+          symbol: "lightbulb",
+          handler: () => {
+            $ui.push({
+              views: [
+                {
+                  type: "markdown",
+                  props: {
+                    content: $cache.get("tips")
+                  },
+                  layout: function(make, view) {
+                    make.left.bottom.right.top.inset(0);
+                  }
                 }
-              }
-            ]
+              ]
+            });
+          }
+        }
+      ]
     },
     views: [
       tabView(),
@@ -1494,9 +1486,6 @@ function show() {
     ],
     layout: $layout.fill
   });
-
-  if ($app.env == $env.today && $app.widgetIndex == -1)
-    setWidgetBackground(0.5);
 }
 
 function readMe() {
@@ -1507,7 +1496,7 @@ function readMe() {
     url: url,
     handler: function(resp) {
       $cache.set("readme", "1");
-      $cache.set("tips",resp.data)
+      $cache.set("tips", resp.data);
       $ui.push({
         views: [
           {
@@ -1525,15 +1514,16 @@ function readMe() {
   });
 }
 
+function init() {
+  if ($app.env == $env.today && $app.widgetIndex == -1)
+    setWidgetBackground(0.5);
+  if (hotSearchMode == "web") getFire(page);
+  else getLocal(page);
+  if (!$cache.get("readme")) readMe();
+}
 
 function run() {
-  
   show();
-  if(hotSearchMode=="web")
-  getFire(page)
-  else
-  getLocal(page)
-  if(!$cache.get("readme"))
-  readMe()
+  init();
 }
 run();
