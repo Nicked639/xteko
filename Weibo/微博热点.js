@@ -10,6 +10,8 @@ var searchOn = 0;
 var areaCode = $cache.get("areaCode") ? $cache.get("areaCode") : getAreaCode();
 var code = $cache.get("code") ? $cache.get("code") : "";
 var city = code ? getKeyByValue($cache.get("areaCode"), code) : "";
+var tabIndex= $cache.get("tabIndex")?$cache.get("tabIndex"):0
+var readme = $cache.get("readme")?$cache.get("readme"):""
 const hotSeachApi =
   "https://weibointl.api.weibo.cn/portal.php?ct=feed&a=get_topic_weibo&auth=137bc4c95743aa9cb487e885df73c36c&lang=zh-Hans&page=1&time=1583981594565&ua=iPhone10%2C3_iOS13.4_Weibo_intl._373_wifi&udid=2AD2FF08-A479-49B1-984D-152652C6E0F4&user_id=1144318961&version=373";
 
@@ -749,8 +751,23 @@ function getKeyByValue(object, value) {
 async function getLocal(page) {
   $("searchText").text = "输入完整市或区名称以更改（当前：" + city + "）";
   if (!code) {
-    alert("请在上方输入完整市或区名称\n如：北京市");
-    searchAnimate(0);
+    $ui.alert({
+      title: "请在上方输入完整市或区名称",
+      message: "如「北京市」",
+      actions: [
+        {
+          title: "OK",
+          disabled: false, // Optional
+          handler: function() {
+            searchAnimate(0);
+             inputCity()
+          }
+        },
+       
+      ]
+    })
+    
+
     return;
   }
 //  console.log(code);
@@ -1197,42 +1214,7 @@ function searchText() {
           tapped: function(sender) {
             //            searchAnimate(0)
 
-            $input.text({
-              type: $kbType.search,
-              placeholder: $clipboard.text
-                ? $clipboard.text
-                : "点击输入搜索微博",
-
-              darkKeyboard: true,
-              handler: async function(text) {
-                if (setHeight(text)) return;
-                if ($("fireList") && hotSearchMode == "local") {
-                  console.log(areaCode);
-                  code = areaCode[text];
-                  if (!code) {
-                    $ui.error("市区名字输入有误,请输入完整市区名", 2);
-                    return;
-                  }
-                  $ui.toast("地名记录成功");
-                  city = text;
-                  $cache.set("code", code);
-
-                  getLocal(page);
-
-                  return;
-                }
-                page = 1;
-                searchOn = 1;
-                if ($("hotList")) {
-                  $("hotList").remove();
-                  $("weiboList").add(list("fireList", template2));
-                  $("header").hidden = false;
-                }
-                $("searchText").text = text;
-                $("fireList").data = [];
-                getSearch(text, page);
-              }
-            });
+           inputCity()
           }
         }
       },
@@ -1301,6 +1283,45 @@ function searchText() {
   };
 }
 
+function inputCity(){
+   $input.text({
+                type: $kbType.search,
+                placeholder: $clipboard.text
+                  ? $clipboard.text
+                  : "点击输入搜索微博",
+  
+                darkKeyboard: true,
+                handler: async function(text) {
+                  if (setHeight(text)) return;
+                  if ($("fireList") && hotSearchMode == "local") {
+                    console.log(areaCode);
+                    code = areaCode[text];
+                    if (!code) {
+                      $ui.error("市区名字输入有误,请输入完整市区名", 2);
+                      return;
+                    }
+                    $ui.toast("地名记录成功");
+                    city = text;
+                    $cache.set("code", code);
+  
+                    getLocal(page);
+  
+                    return;
+                  }
+                  page = 1;
+                  searchOn = 1;
+                  if ($("hotList")) {
+                    $("hotList").remove();
+                    $("weiboList").add(list("fireList", template2));
+                    $("header").hidden = false;
+                  }
+                  $("searchText").text = text;
+                  $("fireList").data = [];
+                  getSearch(text, page);
+                }
+              });
+}
+
 function tabView() {
   return {
     type: "tab",
@@ -1329,36 +1350,9 @@ function tabView() {
         page = 1;
         searchOn = 0;
         $("searchText").text = "点击输入搜索微博";
+        if(sender.index<6)
         $cache.set("tabIndex", sender.index);
-        if (sender.index == 1) {
-          if ($("fireList")) {
-            $("fireList").remove();
-            $("weiboList").add(
-              list("hotList", hotMode == "simple" ? template1 : template)
-            );
-            $("mode").index = hotMode == "simple" ? 0 : 1;
-          }
-          $("mode").items = ["简单", "详情"];
-          $("mode").hidden = false;
-          if (hotMode == "simple") getHotSearch1();
-          else getHotSearch();
-        } else {
-          if ($("hotList")) {
-            $("hotList").remove();
-            $("weiboList").add(list("fireList", template2));
-          }
-          if (sender.index !== 0) {
-            $("mode").hidden = true;
-            getFire(page, containerid[sender.index]);
-          } else {
-            $("mode").hidden = false;
-            if (hotSearchMode == "web") getFire(page, "102803");
-            else getLocal(page);
-          }
-
-          searchAnimate(0);
-        }
-        determineModeTab();
+        tabInit(sender.index)
       }
     }
   };
@@ -1383,13 +1377,6 @@ function setHeight(text) {
   return false;
 }
 
-function determineModeTab() {
-  if ($("hotList")) {
-    $("mode").index = hotMode == "simple" ? 0 : 1;
-  } else {
-    $("mode").index = hotSearchMode == "web" ? 0 : 1;
-  }
-}
 function weiboList(list) {
   return {
     props: {
@@ -1460,19 +1447,7 @@ function show() {
         {
           symbol: "lightbulb",
           handler: () => {
-            $ui.push({
-              views: [
-                {
-                  type: "markdown",
-                  props: {
-                    content: $cache.get("tips")
-                  },
-                  layout: function(make, view) {
-                    make.left.bottom.right.top.inset(0);
-                  }
-                }
-              ]
-            });
+      readMe()
           }
         }
       ]
@@ -1496,7 +1471,7 @@ function readMe() {
     url: url,
     handler: function(resp) {
       $cache.set("readme", "1");
-      $cache.set("tips", resp.data);
+//      $cache.set("tips", resp.data);
       $ui.push({
         views: [
           {
@@ -1514,12 +1489,49 @@ function readMe() {
   });
 }
 
+function tabInit(index){
+  if (index == 1) {
+            if ($("fireList")) {
+              $("fireList").remove();
+              $("weiboList").add(
+                list("hotList", hotMode == "simple" ? template1 : template)
+              );
+              $("mode").index = hotMode == "simple" ? 0 : 1;
+            }
+            $("mode").items = ["简单", "详情"];
+            $("mode").hidden = false;
+            if (hotMode == "simple") getHotSearch1();
+            else getHotSearch();
+          } else {
+            if ($("hotList")) {
+              $("hotList").remove();
+              $("weiboList").add(list("fireList", template2));
+            }
+            if (index !== 0) {
+              $("mode").hidden = true;
+              getFire(page, containerid[index]);
+            } else {
+              $("mode").hidden = false;
+              if (hotSearchMode == "web") getFire(page, "102803");
+              else getLocal(page);
+            }
+  
+            searchAnimate(0);
+          }
+          if ($("hotList")) {
+              $("mode").index = hotMode == "simple" ? 0 : 1;
+            } else {
+              $("mode").index = hotSearchMode == "web" ? 0 : 1;
+            }
+}
+
 function init() {
   if ($app.env == $env.today && $app.widgetIndex == -1)
     setWidgetBackground(0.5);
-  if (hotSearchMode == "web") getFire(page);
-  else getLocal(page);
-  if (!$cache.get("readme")) readMe();
+  $("tab").index=tabIndex
+   tabInit(tabIndex)
+   if(!readme) readMe()
+  
 }
 
 function run() {
