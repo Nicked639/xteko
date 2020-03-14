@@ -1,6 +1,6 @@
-var setHeight = 320; // 通知中心默认高度
-$widget.height = setHeight;
-var extendHeight = 500// 通知中心展开高度
+var dHeight = $cache.get("dh")?$cache.get("dh"):320; // 通知中心默认展开高度
+$widget.height = dHeight;
+var eHeight = $cache.get("eh")?$cache.get("eh"):450;// 通知中心默认扩展高度
 var hotMode = $cache.get("hotMode") ? $cache.get("hotMode") : "simple";
 var hotSearchMode = $cache.get("hotSearchMode")
     ? $cache.get("hotSearchMode")
@@ -10,7 +10,6 @@ var searchOn = 0;
 var areaCode = $cache.get("areaCode")?$cache.get("areaCode"):getAreaCode()
 var code = $cache.get("code")?$cache.get("code"):""
 var city = code? getKeyByValue($cache.get("areaCode"),code):""
-
 const hotSeachApi =
   "https://weibointl.api.weibo.cn/portal.php?ct=feed&a=get_topic_weibo&auth=137bc4c95743aa9cb487e885df73c36c&lang=zh-Hans&page=1&time=1583981594565&ua=iPhone10%2C3_iOS13.4_Weibo_intl._373_wifi&udid=2AD2FF08-A479-49B1-984D-152652C6E0F4&user_id=1144318961&version=373";
 
@@ -145,7 +144,7 @@ const template1 = {
             ? $color("white")
             : $color("black"),
         align: $align.center,
-        font: $font(12)
+        font: $font(13)
       },
       layout: function(make, view) {
         make.right.top.bottom.inset(0);
@@ -247,7 +246,7 @@ const template2 = {
             if (sender.info.length == 1 && sender.info[0].indexOf("video") > 0)
               openSafari(sender.info[0]);
             else {
-              $widget.height = extendHeight;
+              $widget.height = eHeight;
 
               $quicklook.open({
                 list: sender.info,
@@ -255,7 +254,7 @@ const template2 = {
                   $ui.clearToast();
                   if ($app.env == $env.today && $app.widgetIndex == -1)
                     setWidgetBackground(0.1);
-                  $widget.height = setHeight;
+                  $widget.height = dHeight;
                 }
               });
             }
@@ -308,7 +307,7 @@ const template2 = {
           layout: function(make, view) {
             make.bottom.inset(-3);
             make.right.inset(1);
-            make.width.equalTo(20);
+            make.width.equalTo(30);
             make.height.equalTo(20);
           }
         },
@@ -357,7 +356,7 @@ const template2 = {
       type: "label",
       props: {
         id: "time",
-        textColor: $color("#aaaaaa"),
+        textColor: $device.isDarkMode?$color("#aaaaaaa"):$color("#666666"),
         align: $align.left,
         font: $font(10)
       },
@@ -426,7 +425,14 @@ function list(id, temp) {
               $app.openURL("moke:///search/statuses?query=" + encodeURI(text));
             }
           }
-        }
+        },
+        {
+                  title: "赞赏",
+                  color: $rgb(44, 161, 67), // default to gray
+                  handler: function(sender, indexPath) {
+                   wechatPay()
+                  }
+                },
       ]
     },
     layout: function(make, view) {
@@ -457,12 +463,16 @@ function list(id, temp) {
       },
 
       didSelect: function(sender, indexPath) {
-        //        let app = $cache.get("app") || "weibo";
+        let url = ""
+        if($("hotList")&&hotMode=="simple")
+        url = sender.data[indexPath.row].hotTitle.link;
+        else
+        url = sender.data[indexPath.row].hotContent.link;
+        
 
-        let url = sender.data[indexPath.row].hotContent.link;
         //console.log(sender.data[indexPath.row]);
         console.log(url);
-        $widget.height = extendHeight;
+        $widget.height = eHeight;
         $delay(0.1, () => {
           openWeb(url);
         });
@@ -692,7 +702,7 @@ function getFire(page, containerid = "102803") {
       //        return;
       //      }
       //      $clipboard.text=JSON.stringify(data)
-      console.log(data);
+//      console.log(data);
 
       //      if ($("tab").index == 0) $ui.toast(data.remind_text_old, 1);
       //      else $ui.clearToast();
@@ -719,29 +729,19 @@ function getFire(page, containerid = "102803") {
 
 
 
-function getAreaCode(){
+function getAreaCode() {
+  let url =
+    "https://raw.githubusercontent.com/Nicked639/xteko/master/Weibo/areaCode.txt";
+
   $http.get({
-    url: "http://www.ip33.com/area_code.html",
-    handler: resp => {
-      var data = resp.data;
-      var c = [...data.matchAll(/>(.+(市|区)) (\d{4,6})</g)]
-      //console.log(c)
-      var dict = {}
-      for(var i=0;i<c.length;i++){
-        let cc=c[i]
-        let area=cc[1]
-        let code = cc[3].toString()
-        code=code.length==4?code+"00":code
-        dict[area] = code
-      }
-      dict["北京市"]=110000
-      dict["天津市"]=120000
-      dict["上海市"]=310000
-      areaCode=  dict
-      $cache.set("areaCode",dict)
+    url: url,
+    handler: function(resp) {
+      areaCode = resp.data
+      $cache.set("areaCode",resp.data)
     }
-  });
+  }); 
 }
+
 function getKeyByValue(object, value) { 
 
     return Object.keys(object).find(key => object[key] === value); 
@@ -971,7 +971,7 @@ function openWeb(url) {
       disappeared: function() {
         if ($app.env == $env.today && $app.widgetIndex == -1)
           setWidgetBackground(0);
-        $widget.height = setHeight;
+        $widget.height = dHeight;
       }
     },
     views: [
@@ -1209,8 +1209,10 @@ function searchText() {
 
               darkKeyboard: true,
               handler: async function(text) {
+                if (setHeight(text))
+                return
                 if($("fireList")&&hotSearchMode=="local"){
-                  
+                  console.log(areaCode)
                   code = areaCode[text]
                   if(!code){
                     $ui.error("市区名字输入有误,请输入完整市区名",2)
@@ -1367,6 +1369,27 @@ function tabView() {
   };
 }
 
+function setHeight(text){
+  let h = text.match(/\$[d|e]h\s*(\d+)/)
+  if(h) {
+    console.log(h)
+    if(h[0].indexOf("d")==1){
+    $cache.set("dh",h[1])
+    dHeight = h[1]
+    $widget.height = dHeight
+    $ui.toast("默认展开 => "+dHeight)
+    }
+
+    else{
+      $cache.set("eh",h[1])
+      eHeight= h[1]
+      $ui.toast("默认扩展 => "+ eHeight)
+    }
+    return true
+  }
+  return false
+}
+
 function determineModeTab() {
   if ($("hotList")) {
     $("mode").index = hotMode == "simple" ? 0 : 1;
@@ -1391,12 +1414,76 @@ function weiboList(list) {
   };
 }
 
+function wechatPay() {
+  $ui.alert({
+    title: "赞赏脚本作者？",
+    message:
+      "点击确定二维码图片会自动存入相册同时会跳转至微信扫码,请选择相册中的二维码图片进行赞赏。",
+    actions: [
+      {
+        title: "确定",
+        handler: function() {
+          let payUrl = "weixin://scanqrcode";
+          $ui.toast("赞赏码下载中...", 5);
+          $http.download({
+            url:
+              "https://raw.githubusercontent.com/Nicked639/xteko/master/JavBus/wechat.jpg",
+            progress: function(bytesWritten, totalBytes) {
+//              var percentage = (bytesWritten * 1.0) / totalBytes;
+            },
+            handler: function(resp) {
+              $photo.save({
+                data: resp.data,
+                handler: function(success) {
+                  if (success) {
+                    $push.schedule({
+                      title: "二维码已存入相册",
+                      body: "点击右下角「相册」选取",
+                      delay: 0.8
+                    });
+                    $app.openURL(payUrl);
+                  }
+                }
+              });
+            }
+          });
+        }
+      },
+      {
+        title: "取消",
+        handler: function() {}
+      }
+    ]
+  });
+}
+
 function show() {
   $ui.render({
     props: {
       title: "微博热点",
       id: "weibo",
-      navBarHidden: $app.env == $env.app ? false : true
+      navBarHidden: $app.env == $env.app ? false : true,
+      navButtons: [
+              
+              {
+                symbol: "lightbulb",
+                handler: () => {
+                  $ui.push({
+                          views: [
+                            {
+                              type: "markdown",
+                              props: {
+                                content: $cache.get("tips")
+                              },
+                              layout: function(make, view) {
+                                make.left.bottom.right.top.inset(0);
+                              }
+                            }
+                          ]
+                        });
+                }
+              }
+            ]
     },
     views: [
       tabView(),
@@ -1412,6 +1499,33 @@ function show() {
     setWidgetBackground(0.5);
 }
 
+function readMe() {
+  let url =
+    "https://raw.githubusercontent.com/Nicked639/xteko/master/Weibo/Readme.txt";
+
+  $http.get({
+    url: url,
+    handler: function(resp) {
+      $cache.set("readme", "1");
+      $cache.set("tips",resp.data)
+      $ui.push({
+        views: [
+          {
+            type: "markdown",
+            props: {
+              content: resp.data
+            },
+            layout: function(make, view) {
+              make.left.bottom.right.top.inset(0);
+            }
+          }
+        ]
+      });
+    }
+  });
+}
+
+
 function run() {
   
   show();
@@ -1419,5 +1533,7 @@ function run() {
   getFire(page)
   else
   getLocal(page)
+  if(!$cache.get("readme"))
+  readMe()
 }
 run();
