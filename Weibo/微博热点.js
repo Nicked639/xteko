@@ -1340,7 +1340,8 @@ function tabView() {
         searchOn = 0;
         $("searchText").text = "点击输入搜索微博";
         $cache.set("tabIndex", sender.index);
-        tabInit(sender.index)
+        tabIndex = sender.index
+        tabInit(tabIndex)
       }
     }
   };
