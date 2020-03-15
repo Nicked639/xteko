@@ -1,3 +1,4 @@
+$app.theme = "auto";
 var dHeight = $cache.get("dh") ? $cache.get("dh") : 320; // 通知中心默认展开高度
 $widget.height = dHeight;
 var eHeight = $cache.get("eh") ? $cache.get("eh") : 450; // 通知中心默认扩展高度
@@ -75,7 +76,7 @@ const template = {
         bgcolor: $color("clear"),
         textColor:
           $app.env == $env.app
-            ? $color("black")
+            ? ( $device.isDarkMode?$color("white"):$color("black"))
             : $device.isDarkMode == true
             ? $color("white")
             : $color("black"),
@@ -142,10 +143,10 @@ const template1 = {
         bgcolor: $color("clear"),
         textColor:
           $app.env == $env.app
-            ? $color("black")
-            : $device.isDarkMode == true
-            ? $color("white")
-            : $color("black"),
+                      ? ( $device.isDarkMode?$color("white"):$color("black"))
+                      : $device.isDarkMode == true
+                      ? $color("white")
+                      : $color("black"),
         align: $align.center,
         font: $font(13)
       },
@@ -191,10 +192,10 @@ const template2 = {
         id: "hotContent",
         textColor:
           $app.env == $env.app
-            ? $color("black")
-            : $device.isDarkMode == true
-            ? $color("white")
-            : $color("black"),
+                      ? ( $device.isDarkMode?$color("white"):$color("black"))
+                      : $device.isDarkMode == true
+                      ? $color("white")
+                      : $color("black"),
         align: $align.left,
         font: $font(12),
         bgcolor: $color("clear"),
@@ -347,10 +348,10 @@ const template2 = {
         id: "name",
         textColor:
           $app.env == $env.app
-            ? $color("black")
-            : $device.isDarkMode == true
-            ? $color("white")
-            : $color("black"),
+                      ? ( $device.isDarkMode?$color("white"):$color("black"))
+                      : $device.isDarkMode == true
+                      ? $color("white")
+                      : $color("black"),
         align: $align.left,
         font: $font("bold", 13)
       },
@@ -667,29 +668,7 @@ function getFire(page, containerid = "102803") {
       "X-Sessionid": "FB2B9D47-FFCD-4A94-8D33-FDE1313557D9"
     },
     body: {
-      //      adss: "a829644381d03fe621933a54999bc051",
-      //      aid: "01A_gQlePB46dDPjzk7p6P7s8w1dwrmoa-4SYtwkBUm38_q48.",
-      //      c: "weicoabroad",
-      //      containerid: containerid,
-      //      count: "25",
-      //      extparam: "discover|new_feed",
-      //      fid: "102803_ctg1_9999_-_ctg1_9999_home",
-      //      from: "1237393010",
-      //      fromlog: "1028039999",
-      //      group_id: "1028039999",
-      //      gsid:
-      //        "_2A25zYd3xDeRxGedP71YS8SbFzT2IHXVuN1Y5rDV6PUJbkdAKLW7VkWpNX-gVeSRDdU4PP1TCE6amEC95bgTLekqn",
-      //      i: "15a1eb5",
-      //      lang: "zh_CN",
-      //      refresh: "pulldown",
-      //      s: "603068d8",
-      //      since_id: "4480206255699492",
-      //      trim_level: 1,
-      //      trim_page_recom: 0,
-      //      tz: "Asia/Shanghai",
-      //      ua: "iPhone10,3_iOS13.4_Weibo_intl._3730_wifi",
-      //      uid: "1144318961",
-      //      v_p: 59
+      
       refresh: "loadmore",
       group_id: 1028038799,
       show_toplist: 1,
@@ -714,15 +693,7 @@ function getFire(page, containerid = "102803") {
 
     handler: function(resp) {
       let data = resp.data;
-      //      if (data.errmsg) {
-      //        alert(data.errmsg);
-      //        return;
-      //      }
-      //      $clipboard.text=JSON.stringify(data)
-            console.log(data);
-
-      //      if ($("tab").index == 0) $ui.toast(data.remind_text_old, 1);
-      //      else $ui.clearToast();
+     console.log(data)
       var hots = data.statuses;
       var temp = [];
 
@@ -861,6 +832,7 @@ function calcHots(hots) {
   var ori_pic = "";
   var gifHidden = true;
   var d = new Date(hots.created_at);
+  var unixT = d.getTime();
   var num = hots.pic_num;
   var page_info = hots.page_info;
   //       console.log(page_info)
@@ -896,18 +868,22 @@ function calcHots(hots) {
       ori_pic = page_info.page_pic;
     }
   } else if (page_info) {
+    console.log(page_info)
     pic_url = page_info.page_pic;
-    if (!pic_url) pic_url = page_info.cards[0].page_pic;
+    if (!pic_url) {
+      if(page_info.cards)
+      pic_url = page_info.cards[0].page_pic;
+    }
     if (page_info.media_info) {
       ori_pic = page_info.media_info.stream_url_hd;
       if (!ori_pic) ori_pic = page_info.media_info.stream_url;
       isVideo = true;
     } else ori_pic = pic_url;
-    pic_array = [ori_pic];
+    pic_array = ori_pic?[ori_pic]:[];
   }
   //if(!ori_pic) console.log(hots[i].text)
-  var t = [
-    {
+  var t = 
+    {uTime:unixT,
       hotContent: {
         text: hots.text,
         info: hots.scheme,
@@ -931,7 +907,7 @@ function calcHots(hots) {
           : pic_array
       },
       play: {
-        hidden: ori_pic.indexOf("video") > 0 ? false : true,
+        hidden: !ori_pic?true:ori_pic.indexOf("video") > 0 ? false : true,
         info:
           $("tab").index == 0
             ? "https://m.weibo.cn/" + hots.user.id + "/" + hots.id
@@ -947,7 +923,7 @@ function calcHots(hots) {
         hidden: gifHidden
       }
     }
-  ];
+  
   return t;
 }
 
@@ -1346,8 +1322,8 @@ function tabView() {
         "小时",
         "昨日",
         "前日",
-        "周榜"
-        //             "关注"
+        "周榜",
+        "关注"
       ],
       radius: 5
     },
@@ -1511,6 +1487,7 @@ function tabInit(index){
               $("mode").index = hotMode == "simple" ? 0 : 1;
             }
             $("mode").items = ["简单", "详情"];
+            $("mode").index = hotMode == "simple" ? 0 : 1;
             $("mode").hidden = false;
             if (hotMode == "simple") getHotSearch1();
             else getHotSearch();
@@ -1527,14 +1504,12 @@ function tabInit(index){
               if (hotSearchMode == "web") getFire(page, "102803");
               else getLocal(page);
             }
+           
+                          $("mode").index = hotSearchMode == "web" ? 0 : 1;
   
             searchAnimate(0);
           }
-          if ($("hotList")) {
-              $("mode").index = hotMode == "simple" ? 0 : 1;
-            } else {
-              $("mode").index = hotSearchMode == "web" ? 0 : 1;
-            }
+          
 }
 
 function init() {
