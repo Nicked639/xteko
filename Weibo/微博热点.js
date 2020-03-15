@@ -240,6 +240,8 @@ const template2 = {
       events: {
         tapped(sender) {
           //          console.log(sender.src);
+          
+//          alert("d")
           console.log(sender.info);
           if (sender.info.length) $ui.toast("载入中...", 3);
 
@@ -249,17 +251,21 @@ const template2 = {
             if (sender.info.length == 1 && sender.info[0].indexOf("video") > 0)
               openSafari(sender.info[0]);
             else {
-              $widget.height = eHeight;
-
-              $quicklook.open({
-                list: sender.info,
-                handler: function() {
-                  $ui.clearToast();
-                  if ($app.env == $env.today && $app.widgetIndex == -1)
-                    setWidgetBackground(0.1);
-                  $widget.height = dHeight;
-                }
-              });
+//              alert("f")
+//              return
+              $delay(0.3,()=>{
+                 $widget.height = eHeight;
+                              $quicklook.open({
+                                list: sender.info,
+                                handler: function() {
+                                  $ui.clearToast();
+                                  if ($app.env == $env.today && $app.widgetIndex == -1)
+                                    setWidgetBackground(0.1);
+                                  $widget.height = dHeight;
+                                }
+                              });
+              })
+             
             }
           }
         }
@@ -506,12 +512,19 @@ function list(id, temp) {
       },
       didReachBottom: function(sender) {
         if ($("fireList")) {
+//           alert(hotSearchMode)
           page++;
           $ui.toast("载入中...", 1);
           if (searchOn == 1) getSearch($("searchText").text, page);
-          else if (hotSearchMode == "web")
+          else if (tabIndex==0){
+            if(hotSearchMode=="web")
             getFire(page, containerid[$("tab").index]);
-          else getLocal(page);
+            else
+              getLocal(page)
+          }
+            
+          else 
+            getFire(page, containerid[$("tab").index]);
         }
         sender.endFetchingMore();
       }
@@ -706,7 +719,7 @@ function getFire(page, containerid = "102803") {
       //        return;
       //      }
       //      $clipboard.text=JSON.stringify(data)
-      //      console.log(data);
+            console.log(data);
 
       //      if ($("tab").index == 0) $ui.toast(data.remind_text_old, 1);
       //      else $ui.clearToast();
@@ -1350,7 +1363,6 @@ function tabView() {
         page = 1;
         searchOn = 0;
         $("searchText").text = "点击输入搜索微博";
-        if(sender.index<6)
         $cache.set("tabIndex", sender.index);
         tabInit(sender.index)
       }
