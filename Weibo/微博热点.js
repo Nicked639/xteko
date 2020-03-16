@@ -13,6 +13,14 @@ var code = $cache.get("code") ? $cache.get("code") : "";
 var city = code ? getKeyByValue($cache.get("areaCode"), code) : "";
 var tabIndex= $cache.get("tabIndex")?$cache.get("tabIndex"):0
 var readme = $cache.get("readme")?$cache.get("readme"):""
+var LocalDataPath = "Weibo.json";
+var LocalData = ""
+if ($file.read(LocalDataPath)) {
+  LocalData = JSON.parse($file.read(LocalDataPath).string);
+} else {
+  LocalData = { follows: [] };
+}
+var arrayTemp=[]
 const hotSeachApi =
   "https://weibointl.api.weibo.cn/portal.php?ct=feed&a=get_topic_weibo&auth=137bc4c95743aa9cb487e885df73c36c&lang=zh-Hans&page=1&time=1583981594565&ua=iPhone10%2C3_iOS13.4_Weibo_intl._373_wifi&udid=2AD2FF08-A479-49B1-984D-152652C6E0F4&user_id=1144318961&version=373";
 
@@ -29,6 +37,11 @@ const hotSeachApi1 =
 
 const locationUrl =
   "https://api.weibo.cn/2/cardlist?gsid=_2A25zbf5gDeRxGedP71YS8SbFzT2IHXVuO3aorDV6PUJbkdANLVr5kWpNX-gVeUGvGmi6BRcxOymooYVtsr1th2nA&sensors_mark=0&wm=3333_2001&sensors_is_first_day=true&from=10A3093010&b=0&c=iphone&networktype=wifi&skin=default&v_p=81&v_f=1&s=88888888&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10%2C3__weibo__10.3.0__iphone__os13.4&ft=0&aid=01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo.&page_interrupt_enable=0&scenes=0&extparam=discover&orifid=231619&count=20&luicode=10000010&uicode=10000327&need_head_cards=0&need_new_pop=1&scenes_t=0&oriuicode=10000010&lfid=231619&moduleID=pagecard&launchid=10000365--x&containerid=";
+  
+const userInfoApi =
+  "https://api.weibo.cn/2/users/show?sensors_mark=0&wm=3333_2001&sensors_is_first_day=false&from=10A3193010&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&c=iphone&networktype=wifi&v_p=82&skin=default&v_f=1&b=0&lang=zh_CN&sflag=1&ua=iPhone10%2C3__weibo__10.3.1__iphone__os13.4&ft=0&aid=01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo.&get_teenager=1&has_extend=1&s=8d2817c2&gsid=_2A25zaNB5DeRxGedP71YS8SbFzT2IHXVuPGSxrDV6PUJbkdANLVr5kWpNX-gVeWuDRrLLptpiHaYYy2jINw_P-LMw&has_profile=1&launchid=--x&uid=";
+
+const userStApi = "https://api.weibo.cn/2/statuses/show?gsid=_2A25zaNB5DeRxGedP71YS8SbFzT2IHXVuPGSxrDV6PUJbkdANLVr5kWpNX-gVeWuDRrLLptpiHaYYy2jINw_P-LMw&sensors_mark=0&wm=3333_2001&sensors_is_first_day=false&from=10A3193010&b=0&c=iphone&networktype=wifi&skin=default&v_p=82&v_f=1&s=8d2817c2&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10,3__weibo__10.3.1__iphone__os13.4&ft=0&aid=01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo.&uicode=10000002&moduleID=feed&orifid=universallink&has_member=1&lfid=universallink&isGetLongText=1&oriuicode=10000360&launchid=default&id="
 //let containerid = {
 //  "热门":"102803",
 //  "小时":"102803_ctg1_9999_-_ctg1_9999_home",
@@ -393,6 +406,28 @@ function list(id, temp) {
       header: searchText(),
       actions: [
         {
+                  title: "墨客",
+                  color: $rgb(69, 134, 209),
+                  handler: function(sender, indexPath) {
+                    $cache.set("app", "moke");
+                    if ($("fireList")) {
+                      $app.openURL(
+                        "moke:///status?mid=" + sender.data[indexPath.row].hotContent.id
+                      );
+                    } else {
+                      let text = "";
+                      if (hotMode == "detail")
+                        text = sender.data[indexPath.row].hotTitle.text;
+                      else
+                        text = /.、([\s\S]*)/g.exec(
+                          sender.data[indexPath.row].hotTitle.text
+                        )[1];
+                      //              console.log(text)
+                      $app.openURL("moke:///search/statuses?query=" + encodeURI(text));
+                    }
+                  }
+                },
+        {
           title: "微博国际",
           color: $rgb(242, 152, 0), // default to gray
           handler: function(sender, indexPath) {
@@ -415,33 +450,27 @@ function list(id, temp) {
           }
         },
 
+        
         {
-          title: "墨客",
-          color: $rgb(69, 134, 209),
-          handler: function(sender, indexPath) {
-            $cache.set("app", "moke");
-            if ($("fireList")) {
-              $app.openURL(
-                "moke:///status?mid=" + sender.data[indexPath.row].hotContent.id
-              );
-            } else {
-              let text = "";
-              if (hotMode == "detail")
-                text = sender.data[indexPath.row].hotTitle.text;
-              else
-                text = /.、([\s\S]*)/g.exec(
-                  sender.data[indexPath.row].hotTitle.text
-                )[1];
-              //              console.log(text)
-              $app.openURL("moke:///search/statuses?query=" + encodeURI(text));
+          title: tabIndex==6?"删除":"赞赏",
+          color: tabIndex==6?$color("gray"):$rgb(44, 161, 67), // default to gray
+          handler: async function(sender, indexPath) {
+          
+            if(tabIndex!==6) wechatPay();
+            else{
+              let uid = sender.data[indexPath.row].userId.toString()
+              let index = LocalData.follows.indexOf(uid)
+              //console.log("uid: "+uid+",index: "+index+",fo:"+LocalData.follows)
+              
+              LocalData.follows.splice(index,1)
+              let name = await getUserName(uid)
+              
+              writeCache()
+              $ui.error("已删除: "+name)
+              
+              $("fireList").delete(indexPath.row)
+              //console.log(LocalData)
             }
-          }
-        },
-        {
-          title: "赞赏",
-          color: $rgb(44, 161, 67), // default to gray
-          handler: function(sender, indexPath) {
-            wechatPay();
           }
         }
       ]
@@ -495,12 +524,13 @@ function list(id, temp) {
         $app.close();
       },
       pulled: function(sender) {
-        if ($("tab").index == 1) {
+        if (tabIndex == 1) {
           $("hotList").data = [];
 
           if (hotMode == "simple") getHotSearch1();
           else getHotSearch();
-        } else {
+        } else if(tabIndex==6)getFollows()
+        else {
           $("fireList").data = [];
 
           page = 1;
@@ -512,7 +542,7 @@ function list(id, temp) {
         sender.endRefreshing();
       },
       didReachBottom: function(sender) {
-        if ($("fireList")) {
+        if ($("fireList")&&tabIndex!==6) {
 //           alert(hotSearchMode)
           page++;
           $ui.toast("载入中...", 1);
@@ -827,6 +857,122 @@ function getSearch(kw, page) {
   });
 }
 
+function getFollows(){
+ $("searchText").text = "点击输入要关注的用户 UID"
+ $("fireList").data=[]
+  if(LocalData.follows.length==0){
+    $ui.alert({
+          title: "请在上方输入要关注的用户 UID",
+          message: "也可粘贴该用户微博链接",
+          actions: [
+            {
+              title: "OK",
+              disabled: false, // Optional
+              handler: function() {
+                searchAnimate(0);
+//                 inputUid()
+                 return
+              }
+            },
+           
+          ]
+        })
+    
+  }
+  arrayTemp = []
+  LocalData.follows.map((i)=>{
+    getUserInfo(i);
+  })
+  
+}
+
+function inputUid(){
+   $input.text({
+                type: $kbType.search,
+                placeholder: $clipboard.text
+                  ? $clipboard.text
+                  : "点击输入要关注的用户 UID",
+  
+                darkKeyboard: true,
+                handler:  async function(text) {
+                  if (!text)
+                  text = $clipboard.text
+                  let reg = /\/?(\d{10})\/?/
+                  if(text.match(reg))
+                  {
+                     console.log(text.match(reg))
+                    let uid = text.match(reg)[1]
+                    let name = await getUserName(uid)
+                    if(!name){
+                                    $ui.error("用户 UID 错误！")
+                                    return
+                                  }
+                    $ui.toast("已关注用户: "+name)
+                    LocalData.follows.push(uid)
+                    writeCache()
+                    getFollows()
+                  }else $ui.error("用户 UID 输入错误")
+                }
+              });
+}
+
+
+function writeCache() {
+  $file.write({
+    data: $data({string: JSON.stringify(LocalData) }),
+    path: LocalDataPath
+  });
+}
+
+function getUserInfo(userid) {
+  $http.get({
+    url: userInfoApi + userid,
+    handler:function(resp){
+        var d = resp.data;
+        //console.log(resp)
+//        let id = d.id;
+        let st = d.status;
+        let stId = st.id
+        console.log(stId)
+        
+        $http.get({
+          url: userStApi +stId + "&mid="+stId+"&luicode=10000360&_status_id="+stId,
+          handler: resp => {
+            var data = resp.data;
+//             console.log(data)
+            var temp = calcHots(data)
+       
+            arrayTemp = arrayTemp.concat(temp)
+            arrayTemp.sort((x,y)=>{
+              return y.time - x.time
+            })
+//            console.log(array)
+//            $("followList").data=[]
+              $("fireList").data = arrayTemp
+              
+            
+//            console.log($("followList").data)
+//        console.log(t)
+          }
+        });
+      
+    }
+  });
+
+}
+
+async function getUserName(userid) {
+   let resp = await $http.get({
+     url:userInfoApi + userid,
+   })
+   let name =  resp.data.name
+   console.log(name)
+   return name
+  
+}
+
+
+
 function calcHots(hots) {
   var pic_url = "";
   var ori_pic = "";
@@ -883,7 +1029,8 @@ function calcHots(hots) {
   }
   //if(!ori_pic) console.log(hots[i].text)
   var t = 
-    {uTime:unixT,
+    { userId:hots.user.id,
+      uTime:unixT,
       hotContent: {
         text: hots.text,
         info: hots.scheme,
@@ -974,6 +1121,17 @@ function openWeb(url) {
         if ($app.env == $env.today && $app.widgetIndex == -1)
           setWidgetBackground(0);
         $widget.height = dHeight;
+      },
+      appeared:function(){
+        $delay(0.45, () => {
+                      shareButtonAnimate(make => {
+                        make.centerX.equalTo();
+                        make.width.equalTo(125);
+                        make.height.equalTo(34);
+                        make.bottom.inset(10);
+                      });
+                    });
+                    $("loading").hidden = true;
       }
     },
     views: [
@@ -993,19 +1151,7 @@ function openWeb(url) {
           make.bottom.inset(0);
           make.top.inset($app.env == $env.app ? 0 : 0);
         },
-        events: {
-          didFinish: function(sender, navigation) {
-            $delay(0.45, () => {
-              shareButtonAnimate(make => {
-                make.centerX.equalTo();
-                make.width.equalTo(125);
-                make.height.equalTo(34);
-                make.bottom.inset(10);
-              });
-            });
-            $("loading").hidden = true;
-          }
-        }
+        
       },
       {
         type: "label",
@@ -1202,8 +1348,9 @@ function searchText() {
         events: {
           tapped: function(sender) {
             //            searchAnimate(0)
-
+           if(tabIndex!==6)
            inputCity()
+           else inputUid()
           }
         }
       },
@@ -1281,6 +1428,8 @@ function inputCity(){
   
                 darkKeyboard: true,
                 handler: async function(text) {
+                  if (!text)
+                                    text = $clipboard.text
                   if (setHeight(text)) return;
                   if ($("fireList") && hotSearchMode == "local") {
                     console.log(areaCode);
@@ -1497,13 +1646,21 @@ function tabInit(index){
               $("hotList").remove();
               $("weiboList").add(list("fireList", template2));
             }
-            if (index !== 0) {
-              $("mode").hidden = true;
-              getFire(page, containerid[index]);
-            } else {
+            $("fireList").remove()
+            $("weiboList").add(list("fireList", template2));
+            $("fireList").data=[]
+            if (index == 0) {
               $("mode").hidden = false;
-              if (hotSearchMode == "web") getFire(page, "102803");
-              else getLocal(page);
+                            if (hotSearchMode == "web") getFire(page, "102803");
+                            else getLocal(page);
+              
+              
+            } else {
+              $("mode").hidden = true;
+              if(index == 6)
+              getFollows()
+              else
+              getFire(page, containerid[index]);
             }
            
                           $("mode").index = hotSearchMode == "web" ? 0 : 1;
