@@ -9,7 +9,7 @@ var hotSearchMode = $cache.get("hotSearchMode")
 var page = 1;
 var uPage = 1;
 var userId = "";
-var searchOn = 1;
+var searchOn = 0;
 var areaCode = $cache.get("areaCode") ? $cache.get("areaCode") : getAreaCode();
 var code = $cache.get("code") ? $cache.get("code") : "";
 var city = code ? getKeyByValue($cache.get("areaCode"), code) : "";
@@ -1022,7 +1022,7 @@ function calcHots(hots) {
   var pic_array = [];
   var isVideo = false;
   let m = d.getMonth()+1
-  d =d.getFullYear().toString().substr(0,2)+"-"+
+  d =d.getFullYear()+"-"+
     m +
     "-" +
     d.getDate() +
@@ -1467,9 +1467,9 @@ function searchText(id) {
         events: {
           changed: function(sender) {
             page = 1;
+            searchOn=0
             if(id=="hotList"){
               let t = sender.index
-              searchOn = 1
               hotMode=sender.index==0?"simple":"detail"
               $("hotList").remove();
                             $("weiboList").add(
@@ -1488,11 +1488,9 @@ function searchText(id) {
               hotSearchMode=sender.index==0?"web":"local"
               $cache.set("hotSearchMode",hotSearchMode)
               if(hotSearchMode=="web"){
-                searchOn=1
                 $("searchText").text = "点击输入搜索微博";
                 getFire(page, "102803")
               }else{
-                searchOn=0
                 getLocal(page)
               }
               
@@ -1609,6 +1607,7 @@ function tabView() {
         //$ui.toast("载入中...", 10);
       
         page = 1;
+        searchOn=0
         $cache.set("tabIndex", sender.index);
         tabIndex = sender.index;
         tabInit(tabIndex);
