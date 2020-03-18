@@ -1,4 +1,4 @@
-//$app.theme = "light";
+$app.theme = "auto";
 var dHeight = $cache.get("dh") ? $cache.get("dh") : 320; // 通知中心默认展开高度
 $widget.height = dHeight;
 var eHeight = $cache.get("eh") ? $cache.get("eh") : 450; // 通知中心默认扩展高度
@@ -203,7 +203,7 @@ const template1 = {
     }
   ]
 };
-
+console.log("darkmode:"+$device.isDarkMode)
 const template2 = {
   props: {
     bgcolor: $color("clear")
@@ -409,7 +409,7 @@ function list(id, temp) {
       template: temp,
       hidden: false,
       rowHeight: temp == template1 ? 35 : 100,
-      bgcolor: $color("clear"),
+      bgcolor: $app.env==$env.today?$color("clear"):$device.isDarkMode?$color("black"):$color("white"),
       header: searchText(id),
       actions: [
         {
@@ -490,12 +490,13 @@ function list(id, temp) {
       didEndDragging: function(sender) {
         if ($("fireList")) {
           let y = $("fireList").contentOffset.y;
-          //          console.log(y);
+                    console.log(y);
           let t = null;
 
           if (y < 35 && y >= 0) t = 0;
-          if (y >= 26 && y < 45) t = 45;
-          if (t == null) return;
+          if (y >= 30 && y < 45) t = 45;
+          console.log(t)
+          if (t == null) return
           else searchAnimate(t);
         } else {
           let y = $("hotList").contentOffset.y;
@@ -541,7 +542,10 @@ function list(id, temp) {
 
           if (hotMode == "simple") getHotSearch1();
           else getHotSearch();
-        } else if (tabIndex == 6) getFollows();
+        } else if (tabIndex == 6) {
+          getFollows();
+    
+        }
         else {
           $("fireList").data = [];
 
@@ -826,7 +830,6 @@ async function getLocal(page) {
   } else {
     $("fireList").data = [];
     $("fireList").data = temp;
-    searchAnimate(45, "fireList");
   }
 }
 
@@ -849,7 +852,7 @@ function getSearch(kw, page) {
           temp = temp.concat(t);
         }
       }
-      console.log(temp);
+//      console.log(temp);
       if (temp.length == 0) {
         $ui.error("无搜索结果");
         return;
@@ -871,27 +874,22 @@ function getSearch(kw, page) {
 function getFollows() {
   $("searchText").text = "点击输入要关注的用户 UID";
   $("fireList").data = [];
+  
   if (LocalData.follows.length == 0) {
     $ui.alert({
       title: "请在上方输入要关注的用户 UID",
       message: "也可粘贴该用户微博链接",
-      actions: [
-        {
-          title: "OK",
-          disabled: false, // Optional
-          handler: function() {
-            searchAnimate(0);
-            //                 inputUid()
-            return;
-          }
-        }
-      ]
     });
   }
   arrayTemp = [];
   LocalData.follows.map(i => {
     getUserInfo(i);
+    
   });
+  
+//  $delay(1,()=>{
+//    searchAnimate(45,"fireList");
+//  })
 }
 
 function inputUid() {
@@ -955,12 +953,9 @@ function getUserInfo(userid) {
           arrayTemp.sort((x, y) => {
             return y.time - x.time;
           });
-          //            console.log(array)
-          //            $("followList").data=[]
+          
           $("fireList").data = arrayTemp;
 
-          //            console.log($("followList").data)
-          //        console.log(t)
         }
       });
     }
@@ -1283,7 +1278,7 @@ function openWeb(url, userName, userId) {
             layout: $layout.fill,
             events: {
               tapped: function(sender) {
-                showuUserContent(userName);
+                showUserContent(userName);
                 
                 uPage = 1;
                 $("userContentListheader").hidden=true
@@ -1446,7 +1441,6 @@ function searchText(id) {
         },
         events: {
           tapped: function(sender) {
-            //            searchAnimate(0)
             
             if (tabIndex !== 6) inputCity();
             else inputUid();
@@ -1456,9 +1450,9 @@ function searchText(id) {
       {
         type: "tab",
         props: {
-          id: "mode",
+          id: id+"mode",
           hidden: false,
-          items: ["全网", "本地"],
+          items: tabIndex==1?["简单", "详情"]:["全网", "本地"],
           index: hotSearchMode == "web" ? 0 : 1,
           radius: 5,
           font: $font(9)
@@ -1473,47 +1467,80 @@ function searchText(id) {
         events: {
           changed: function(sender) {
             page = 1;
-            
-            if (sender.index == 0) {
-              $("searchText").text = "点击输入搜索微博";
+            if(id=="hotList"){
+              let t = sender.index
               searchOn = 1
-              if ($("hotList")) {
-                hotMode = "simple";
-
-                $cache.set("hotMode", hotMode);
-
-                getHotSearch1();
-              } else {
-                hotSearchMode = "web";
-                $cache.set("hotSearchMode", hotSearchMode);
-                getFire(page);
-              }
-            } else {
-              if ($("hotList")) {
-                hotMode = "detail";
-
-                $cache.set("hotMode", hotMode);
-
-searchOn = 1
-                getHotSearch();
-              } else {
-                hotSearchMode = "local";
-                $cache.set("hotSearchMode", hotSearchMode);
-                searchOn = 0
-                getLocal(page);
-              }
-            }
-            if ($("hotList")) {
+              hotMode=sender.index==0?"simple":"detail"
               $("hotList").remove();
-              $("weiboList").add(
-                list("hotList", hotMode == "simple" ? template1 : template)
-              );
-              $("mode").items = ["简单", "详情"];
-            } else {
-              $("fireList").data = [];
+                            $("weiboList").add(
+                              list("hotList", hotMode == "simple" ? template1 : template)
+                            );
+              $("hotListmode").index=t
+              $cache.set("hotMode",hotMode)
+              if(hotMode=="simple"){
+                getHotSearch1()
+              }else{
+                getHotSearch()
+              }
+              
+            }else{
+              $("fireList").data=[]
+              hotSearchMode=sender.index==0?"web":"local"
+              $cache.set("hotSearchMode",hotSearchMode)
+              if(hotSearchMode=="web"){
+                searchOn=1
+                $("searchText").text = "点击输入搜索微博";
+                getFire(page, "102803")
+              }else{
+                searchOn=0
+                getLocal(page)
+              }
+              
             }
-
-            $("mode").index = sender.index;
+            
+            
+            
+            
+//            if (sender.index == 0) {
+//              $("searchText").text = "点击输入搜索微博";
+//              searchOn = 1
+//              if ($("hotList")) {
+//                hotMode = "simple";
+//
+//                $cache.set("hotMode", hotMode);
+//
+//                getHotSearch1();
+//              } else {
+//                hotSearchMode = "web";
+//                $cache.set("hotSearchMode", hotSearchMode);
+//                getFire(page);
+//              }
+//            } else {
+//              if ($("hotList")) {
+//                hotMode = "detail";
+//
+//                $cache.set("hotMode", hotMode);
+//
+//searchOn = 1
+//                getHotSearch();
+//              } else {
+//                hotSearchMode = "local";
+//                $cache.set("hotSearchMode", hotSearchMode);
+//                searchOn = 0
+//                getLocal(page);
+//              }
+//            }
+//            if ($("hotList")) {
+//              $("hotList").remove();
+//              $("weiboList").add(
+//                list("hotList", hotMode == "simple" ? template1 : template)
+//              );
+//              $("mode").items = ["简单", "详情"];
+//            } else {
+//              $("fireList").data = [];
+//            }
+//
+//            $("mode").index = sender.index;
           }
         }
       }
@@ -1551,9 +1578,11 @@ function inputCity() {
       if ($("hotList")) {
         $("hotList").remove();
         $("weiboList").add(list("fireList", template2));
+        
         $("fireListheader").hidden = false;
       }
-      
+      tabIndex=0
+              $("tab").index=0
       $("searchText").text = text;
       $("fireList").data = [];
       getSearch(text, page);
@@ -1567,7 +1596,7 @@ function tabView() {
     props: {
       id: "tab",
       items: ["热搜", "热门", "小时", "昨日", "前日", "周榜", "关注"],
-      radius: 5
+      radius: 5,
     },
     layout: function(make, view) {
       make.top.inset(0);
@@ -1580,8 +1609,6 @@ function tabView() {
         //$ui.toast("载入中...", 10);
       
         page = 1;
-//        searchOn = 1;
-        $("searchText").text = "点击输入搜索微博";
         $cache.set("tabIndex", sender.index);
         tabIndex = sender.index;
         tabInit(tabIndex);
@@ -1668,7 +1695,7 @@ function wechatPay() {
   });
 }
 
-function showuUserContent(name) {
+function showUserContent(name) {
   $ui.push({
     props: {
       title: name,
@@ -1691,7 +1718,7 @@ function show() {
       title: "微博热点",
       id: "weibo",
       navBarHidden: $app.env == $env.app ? false : true,
-
+//bgcolor:$color("black"),
       navButtons: [
         {
           symbol: "lightbulb",
@@ -1703,7 +1730,7 @@ function show() {
     },
     views: [
       tabView(),
-      weiboList(list("fireList", template2))
+      weiboList(list("fireList"),template2)
     ],
     layout: $layout.fill
   });
@@ -1742,11 +1769,9 @@ function tabInit(index) {
       $("weiboList").add(
         list("hotList", hotMode == "simple" ? template1 : template)
       );
-      $("mode").index = hotMode == "simple" ? 0 : 1;
     }
-    $("mode").items = ["简单", "详情"];
-    $("mode").index = hotMode == "simple" ? 0 : 1;
-    $("mode").hidden = false;
+       $("hotListmode").index = hotMode == "simple" ? 0 : 1;
+    $("hotListmode").hidden = false;
     if (hotMode == "simple") getHotSearch1();
     else getHotSearch();
   } else {
@@ -1758,18 +1783,16 @@ function tabInit(index) {
     $("weiboList").add(list("fireList", template2));
     $("fireList").data = [];
     if (index == 0) {
-      $("mode").hidden = false;
+      $("fireListmode").hidden = false;
       if (hotSearchMode == "web") getFire(page, "102803");
       else getLocal(page);
     } else {
-      $("mode").hidden = true;
+      $("fireListmode").hidden = true;
       if (index == 6) getFollows();
       else getFire(page, containerid[index]);
     }
 
-    $("mode").index = hotSearchMode == "web" ? 0 : 1;
-
-    searchAnimate(0);
+    $("fireListmode").index = hotSearchMode == "web" ? 0 : 1;
   }
 }
 
