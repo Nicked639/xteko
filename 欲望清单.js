@@ -6,9 +6,6 @@
  部分影片支持视频截图预览
  几大厂商番号可复制后启动脚本直接进入搜索结果
 
- By Nicked
-
- https://t.me/nicked
 
 */
 const searchView = {
