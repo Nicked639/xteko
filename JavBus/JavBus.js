@@ -33,11 +33,6 @@
 9. 支持推荐分享私人珍藏经典好片
 
 
-
-By Nicked
-
-https://t.me/nicked
-
 */
 //$app.theme="auto"
 version = 8.03;
