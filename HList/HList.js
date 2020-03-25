@@ -12,10 +12,6 @@
 
 3. 脚本制作纯属技术交流，无任何商业利益或传播淫秽目的
 
- By Nicked
-
- https://t.me/nicked
-
 */
 
 var version = 1.8
