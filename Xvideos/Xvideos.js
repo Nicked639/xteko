@@ -15,13 +15,12 @@
 
     注：源码来自 wind. 经 Nicked 修改。
 
-    联系：https://t.me/nicked
 
     Tips: 轻按时间戳收藏视频，长按时间戳下载视频。
 
    */
 
-version = 1.9
+version = 1.91
 
 var scale = 600 / 337;
 const searchPreview = {
@@ -617,13 +616,11 @@ const localVideoListView = {
     pulled(sender) {
           $("localFavVideoList").endRefreshing()
           $ui.menu({
-            items: ["微信赞赏","作者声明","使用提示"],
+            items: ["作者声明","使用提示"],
             handler: function(title, idx) {
-              if (idx == 0) {
-                wechatPay()
-              }else if(idx ==1){
+              if(idx ==0){
                 tutorial()
-              }else if(idx==2){
+              }else if(idx==1){
                 alert("Tips: \n轻按时间戳收藏视频，长按时间戳下载视频");
               }
             }
@@ -1828,41 +1825,6 @@ const checkAdultView = {
   layout: $layout.fill
 }
 
-function wechatPay() {
-  $ui.alert({
-    title: "确定赞赏？",
-    message: "点击确定二维码图片会自动存入相册同时会跳转至微信扫码,请选择相册中的二维码图片进行赞赏。",
-    actions: [{
-        title: "确定",
-        handler: function() {
-          let payUrl = "weixin://scanqrcode"
-          $http.download({
-            url: "https://raw.githubusercontent.com/nicktimebreak/xteko/master/JavBus/wechat.jpg",
-            progress: function(bytesWritten, totalBytes) {
-              var percentage = bytesWritten * 1.0 / totalBytes
-            },
-            handler: function(resp) {
-              $photo.save({
-                data: resp.data,
-                handler: function(success) {
-                  if (success) {
-                    $app.openURL(payUrl)
-                  }
-                }
-              })
-            }
-          })
-        }
-      },
-      {
-        title: "取消",
-        handler: function() {
-
-        }
-      }
-    ]
-  })
-}
 
 function tutorial() {
   var text = "声明\n\n1. 脚本含成人内容，未满十八岁禁止运行；\n2. 脚本所有内容来自 https://www.xvideos.com 与脚本作者无任何关系；\n3. 脚本制作纯属技术交流，无任何商业利益或传播淫秽目的。"
