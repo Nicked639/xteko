@@ -23,31 +23,33 @@ if ($file.read(LocalDataPath)) {
   LocalData = { follows: [] };
 }
 var arrayTemp = [];
+var gsid = "_2A25zcQ4NDeRxGedP71YS8SbFzT2IHXVuJwbFrDV6PUJbkdANLVr5kWpNX-gVeW5dJBmzCj6SQyqltAo5kMsypLeM"
+var aid = "01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo."
 const hotSeachApi =
   "https://weibointl.api.weibo.cn/portal.php?ct=feed&a=get_topic_weibo&auth=137bc4c95743aa9cb487e885df73c36c&lang=zh-Hans&page=1&time=1583981594565&ua=iPhone10%2C3_iOS13.4_Weibo_intl._373_wifi&udid=2AD2FF08-A479-49B1-984D-152652C6E0F4&user_id=1144318961&version=373";
 
 //const hotWeiboApi = "https://api.weibo.cn/2/statuses/unread_hot_timeline";
 
 const hotWeiboApi =
-  "https://api.weibo.cn/2/statuses/unread_hot_timeline?gsid=_2A25zbf5gDeRxGedP71YS8SbFzT2IHXVuO3aorDV6PUJbkdANLVr5kWpNX-gVeUGvGmi6BRcxOymooYVtsr1th2nA&sensors_mark=0&wm=3333_2001&sensors_is_first_day=true&from=10A3093010&b=0&c=iphone&networktype=wifi&skin=default&v_p=81&v_f=1&s=88888888&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10,3__weibo__10.3.0__iphone__os13.4&ft=0&aid=01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo.&launchid=10000365--x";
+  "https://api.weibo.cn/2/statuses/unread_hot_timeline?gsid="+gsid+"&sensors_mark=0&wm=3333_2001&sensors_is_first_day=true&from=10A3093010&b=0&c=iphone&networktype=wifi&skin=default&v_p=81&v_f=1&s=88888888&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10,3__weibo__10.3.0__iphone__os13.4&ft=0&aid="+aid+"&launchid=10000365--x";
 
 const searchUrl =
-  "https://api.weibo.cn/2/searchall?gsid=_2A25zbf5gDeRxGedP71YS8SbFzT2IHXVuO3aorDV6PUJbkdANLVr5kWpNX-gVeUGvGmi6BRcxOymooYVtsr1th2nA&sensors_mark=0&wm=3333_2001&sensors_is_first_day=true&from=10A3093010&b=0&c=iphone&networktype=wifi&skin=default&v_p=81&v_f=1&s=88888888&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10%2C3__weibo__10.3.0__iphone__os13.4&ft=0&aid=01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo.&uid=1144318961&luicode=10000327&count=10&featurecode=10000085&uicode=10000003&need_head_cards=1&extparam=phototab_style%3Dtrue&feed_mypage_card_remould_enable=1&st_bottom_bar_new_style_enable=0&need_new_pop=1&client_key=75e2c9bcd65d13ac61c877ddaa458060&moduleID=pagecard&oriuicode=10000010_10000327&launchid=10000365--x&page=";
+  "https://api.weibo.cn/2/searchall?gsid="+gsid+"&sensors_mark=0&wm=3333_2001&sensors_is_first_day=true&from=10A3093010&b=0&c=iphone&networktype=wifi&skin=default&v_p=81&v_f=1&s=88888888&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10%2C3__weibo__10.3.0__iphone__os13.4&ft=0&aid="+aid+"&uid=1144318961&luicode=10000327&count=10&featurecode=10000085&uicode=10000003&need_head_cards=1&extparam=phototab_style%3Dtrue&feed_mypage_card_remould_enable=1&st_bottom_bar_new_style_enable=0&need_new_pop=1&client_key=75e2c9bcd65d13ac61c877ddaa458060&moduleID=pagecard&oriuicode=10000010_10000327&launchid=10000365--x&page=";
 
 const hotSeachApi1 =
   "https://api.weibo.cn/2/guest/page?gsid=_2AkMtqmJ0f8NhqwJRmPEdxGnjaIx-wwDEieKb9pOvJRMxHRl-wT9kqnAAtRV6Bm0NBHg_Q_-5Rx4sx0moY_1sSSEoN2zx&uid=1009882141998&wm=3333_2001&i=ddd48a6&b=0&from=1084393010&checktoken=745495b139d5d0943c12418acc7a08f8&c=iphone&networktype=wifi&v_p=60&skin=default&s=ffffffff&v_f=1&did=10dc157a640f1c1bd53cbacbad02326f&lang=zh_CN&sflag=1&ft=0&moduleID=pagecard&uicode=10000011&featurecode=10000085&feed_mypage_card_remould_enable=1&luicode=10000003&count=20&extparam=filter_type%3Drealtimehot%26mi_cid%3D100103%26pos%3D0_0%26c_type%3D30%26display_time%3D1526132043&containerid=106003type%3D25%26t%3D3%26disable_hot%3D1%26filter_type%3Drealtimehot&fid=106003type%3D25%26t%3D3%26disable_hot%3D1%26filter_type%3Drealtimehot&page=1";
 
 const locationUrl =
-  "https://api.weibo.cn/2/cardlist?gsid=_2A25zbf5gDeRxGedP71YS8SbFzT2IHXVuO3aorDV6PUJbkdANLVr5kWpNX-gVeUGvGmi6BRcxOymooYVtsr1th2nA&sensors_mark=0&wm=3333_2001&sensors_is_first_day=true&from=10A3093010&b=0&c=iphone&networktype=wifi&skin=default&v_p=81&v_f=1&s=88888888&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10%2C3__weibo__10.3.0__iphone__os13.4&ft=0&aid=01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo.&page_interrupt_enable=0&scenes=0&extparam=discover&orifid=231619&count=20&luicode=10000010&uicode=10000327&need_head_cards=0&need_new_pop=1&scenes_t=0&oriuicode=10000010&lfid=231619&moduleID=pagecard&launchid=10000365--x&containerid=";
+  "https://api.weibo.cn/2/cardlist?gsid="+gsid+"&sensors_mark=0&wm=3333_2001&sensors_is_first_day=true&from=10A3093010&b=0&c=iphone&networktype=wifi&skin=default&v_p=81&v_f=1&s=88888888&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10%2C3__weibo__10.3.0__iphone__os13.4&ft=0&aid="+aid+"&page_interrupt_enable=0&scenes=0&extparam=discover&orifid=231619&count=20&luicode=10000010&uicode=10000327&need_head_cards=0&need_new_pop=1&scenes_t=0&oriuicode=10000010&lfid=231619&moduleID=pagecard&launchid=10000365--x&containerid=";
 
 const userInfoApi =
-  "https://api.weibo.cn/2/users/show?sensors_mark=0&wm=3333_2001&sensors_is_first_day=false&from=10A3193010&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&c=iphone&networktype=wifi&v_p=82&skin=default&v_f=1&b=0&lang=zh_CN&sflag=1&ua=iPhone10%2C3__weibo__10.3.1__iphone__os13.4&ft=0&aid=01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo.&get_teenager=1&has_extend=1&s=8d2817c2&gsid=_2A25zaNB5DeRxGedP71YS8SbFzT2IHXVuPGSxrDV6PUJbkdANLVr5kWpNX-gVeWuDRrLLptpiHaYYy2jINw_P-LMw&has_profile=1&launchid=--x&uid=";
+  "https://api.weibo.cn/2/users/show?sensors_mark=0&wm=3333_2001&sensors_is_first_day=false&from=10A3193010&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&c=iphone&networktype=wifi&v_p=82&skin=default&v_f=1&b=0&lang=zh_CN&sflag=1&ua=iPhone10%2C3__weibo__10.3.1__iphone__os13.4&ft=0&aid="+aid+"&get_teenager=1&has_extend=1&s=8d2817c2&gsid="+gsid+"&has_profile=1&launchid=--x&uid=";
 
 const userStApi =
-  "https://api.weibo.cn/2/statuses/show?gsid=_2A25zaNB5DeRxGedP71YS8SbFzT2IHXVuPGSxrDV6PUJbkdANLVr5kWpNX-gVeWuDRrLLptpiHaYYy2jINw_P-LMw&sensors_mark=0&wm=3333_2001&sensors_is_first_day=false&from=10A3193010&b=0&c=iphone&networktype=wifi&skin=default&v_p=82&v_f=1&s=8d2817c2&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10,3__weibo__10.3.1__iphone__os13.4&ft=0&aid=01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo.&uicode=10000002&moduleID=feed&orifid=universallink&has_member=1&lfid=universallink&isGetLongText=1&oriuicode=10000360&launchid=default&id=";
+  "https://api.weibo.cn/2/statuses/show?gsid="+gsid+"&sensors_mark=0&wm=3333_2001&sensors_is_first_day=false&from=10A3193010&b=0&c=iphone&networktype=wifi&skin=default&v_p=82&v_f=1&s=8d2817c2&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10,3__weibo__10.3.1__iphone__os13.4&ft=0&aid="+aid+"&uicode=10000002&moduleID=feed&orifid=universallink&has_member=1&lfid=universallink&isGetLongText=1&oriuicode=10000360&launchid=default&id=";
 
 const userContentApi =
-  "https://api.weibo.cn/2/profile/statuses?gsid=_2A25zaNB5DeRxGedP71YS8SbFzT2IHXVuPGSxrDV6PUJbkdANLVr5kWpNX-gVeWuDRrLLptpiHaYYy2jINw_P-LMw&sensors_mark=0&wm=3333_2001&sensors_is_first_day=false&from=10A3193010&b=0&c=iphone&networktype=wifi&skin=default&v_p=82&v_f=1&s=8d2817c2&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10%2C3__weibo__10.3.1__iphone__os13.4&ft=0&aid=01A4mJNKK6GKh7WFpYiAYjBb1tVUqpdpIUMj5xc42WDV5i_Lo.&oriuicode=10000011&count=20&luicode=10000011&uicode=10000198&st_bottom_bar_new_style_enable=0&need_head_cards=0&need_new_pop=1&client_key=4654bde8da914bb619fd60a5c1e8cc5d&moduleID=pagecard&page_interrupt_enable=0&launchid=--x&containerid=107603";
+  "https://api.weibo.cn/2/profile/statuses?gsid="+gsid+"&sensors_mark=0&wm=3333_2001&sensors_is_first_day=false&from=10A3193010&b=0&c=iphone&networktype=wifi&skin=default&v_p=82&v_f=1&s=8d2817c2&sensors_device_id=443E6FB5-2EC1-4EC1-A52C-79FE7AB02DDB&lang=zh_CN&sflag=1&ua=iPhone10%2C3__weibo__10.3.1__iphone__os13.4&ft=0&aid="+aid+"&oriuicode=10000011&count=20&luicode=10000011&uicode=10000198&st_bottom_bar_new_style_enable=0&need_head_cards=0&need_new_pop=1&client_key=4654bde8da914bb619fd60a5c1e8cc5d&moduleID=pagecard&page_interrupt_enable=0&launchid=--x&containerid=107603";
 //let containerid = {
 //  "热门":"102803",
 //  "小时":"102803_ctg1_9999_-_ctg1_9999_home",
@@ -203,7 +205,7 @@ const template1 = {
     }
   ]
 };
-console.log("darkmode:"+$device.isDarkMode)
+
 const template2 = {
   props: {
     bgcolor: $color("clear")
@@ -337,6 +339,7 @@ const template2 = {
             make.right.inset(1);
             make.width.equalTo(30);
             make.height.equalTo(20);
+            
           }
         },
         {
@@ -401,6 +404,7 @@ const template2 = {
   ]
 };
 
+
 function list(id, temp) {
   return {
     type: "list",
@@ -434,21 +438,7 @@ function list(id, temp) {
             }
           }
         },
-        {
-          title: "微博国际",
-          color: $rgb(242, 152, 0), // default to gray
-          handler: function(sender, indexPath) {
-                        
-            $cache.set("app", "weibointernational");
-            
-            let url = sender.data[indexPath.row].hotContent.info.replace(
-              "sinaweibo",
-              "weibointernational"
-            );
-            console.log(url)
-            $app.openURL(url);
-          }
-        },
+        
         {
           title: "微博",
           color: $rgb(246, 22, 31), // default to gray
@@ -458,28 +448,8 @@ function list(id, temp) {
             $app.openURL(sender.data[indexPath.row].hotContent.info);
           }
         },
-
-        {
-          title: tabIndex == 6 ? "删除" : "赞赏",
-          color: tabIndex == 6 ? $color("gray") : $rgb(44, 161, 67), // default to gray
-          handler: async function(sender, indexPath) {
-            if (tabIndex !== 6) wechatPay();
-            else {
-              let uid = sender.data[indexPath.row].userId.toString();
-              let index = LocalData.follows.indexOf(uid);
-              //console.log("uid: "+uid+",index: "+index+",fo:"+LocalData.follows)
-
-              LocalData.follows.splice(index, 1);
-              let name = await getUserName(uid);
-
-              writeCache();
-              $ui.error("已删除: " + name);
-
-              $("fireList").delete(indexPath.row);
-              //console.log(LocalData)
-            }
-          }
-        }
+tabIndex==6?folDel():weiboIntel()
+  
       ]
     },
     layout: function(make, view) {
@@ -575,6 +545,47 @@ function list(id, temp) {
       }
     }
   };
+}
+
+function weiboIntel(){
+  return{
+          title: "微博国际",
+          color: $rgb(242, 152, 0), // default to gray
+          handler: function(sender, indexPath) {
+                        
+            $cache.set("app", "weibointernational");
+            
+            let url = sender.data[indexPath.row].hotContent.info.replace(
+              "sinaweibo",
+              "weibointernational"
+            );
+            console.log(url)
+            $app.openURL(url);
+          }
+        }
+}
+
+function folDel(){
+  return         {
+           title: "删除" ,
+           color: $color("gray"), // default to gray
+           handler: async function(sender, indexPath) {
+             
+               let uid = sender.data[indexPath.row].userId.toString();
+               let index = LocalData.follows.indexOf(uid);
+               //console.log("uid: "+uid+",index: "+index+",fo:"+LocalData.follows)
+ 
+               LocalData.follows.splice(index, 1);
+               let name = await getUserName(uid);
+ 
+               writeCache();
+               $ui.error("已删除: " + name);
+ 
+               $("fireList").delete(indexPath.row);
+               //console.log(LocalData)
+             
+           }
+         }
 }
 
 function getHotSearch1() {
@@ -739,7 +750,11 @@ function getFire(page, containerid = "102803") {
 
     handler: function(resp) {
       let data = resp.data;
-//      console.log(data);
+      if (data.errmsg) {
+              alert(data.errmsg);
+              return;
+            }
+      console.log(data);
       var hots = data.statuses;
       var temp = [];
 
@@ -1405,7 +1420,8 @@ function searchText(id) {
     type: "view",
     props: {
       id: id+"header",
-      hidden: false
+      hidden: false,
+      //height:50
     },
     views: [
       {
@@ -1664,7 +1680,7 @@ function wechatPay() {
           $ui.toast("赞赏码下载中...", 5);
           $http.download({
             url:
-              "https://raw.githubusercontent.com/Nicked639/xteko/master/JavBus/wechat.jpg",
+              "wechat.jpg",
             progress: function(bytesWritten, totalBytes) {
               //              var percentage = (bytesWritten * 1.0) / totalBytes;
             },
@@ -1787,7 +1803,9 @@ function tabInit(index) {
       else getLocal(page);
     } else {
       $("fireListmode").hidden = true;
-      if (index == 6) getFollows();
+      if (index == 6) {
+        getFollows()
+      }
       else getFire(page, containerid[index]);
     }
 
