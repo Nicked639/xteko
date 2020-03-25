@@ -1,4 +1,4 @@
-# JavBus V8.02
+# JavBus V8.03
 
 ### 声明
 
@@ -19,9 +19,3 @@
 - 新增 Jable 预览，长按预览按钮获取
 
 - 归档 tab 下搜索为本地搜索
-
-- 再试试 Telegram 上的 @JBGuidebot 吧，给他发番号
-
-
-
-> [联系作者](https://t.me/nicked)

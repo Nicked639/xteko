@@ -39,8 +39,8 @@ By Nicked
 https://t.me/nicked
 
 */
-
-version = 8.02;
+//$app.theme="auto"
+version = 8.03;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -413,9 +413,8 @@ recView = {
         },
         pulled: function(sender) {
           //                $ui.toast("打开 Javlibrary")
-          $safari.open({
-            url: "http://www.javlibrary.com/cn/vl_bestrated.php"
-          });
+          $app.openURL("http://www.javlibrary.com/cn/vl_bestrated.php")
+          $("recMatrix").endRefreshing()
         }
       },
       layout: function(make, view) {
@@ -628,6 +627,13 @@ function searchView(height, catname, cols = 3, spa = 1) {
               .runtimeValue()
               .invoke("selectAll");
           },
+          changed: function(sender){
+            if ($("menu").index == 5) {
+                          searchAr(sender.text);
+//                          sender.blur()
+                          return;
+                        } else return;
+          },
           returned: function(sender) {
             if ($("menu").index == 5) {
               searchAr(sender.text);
@@ -693,13 +699,12 @@ function searchView(height, catname, cols = 3, spa = 1) {
           pulled(sender) {
             $("initialView").endRefreshing();
             $ui.menu({
-              items: ["作者声明", "微信赞赏", "更新说明"],
+              items: ["作者声明", "更新说明"],
               handler: function(title, idx) {
                 if (idx == 0) {
                   tutorial();
-                } else if (idx == 1) {
-                  wechatPay();
-                } else if (idx == 2) {
+                }
+                else if (idx == 1) {
 //                  $app.openURL("https://t.me/nicked");
                     readMe()
                 }
@@ -1680,8 +1685,10 @@ function detailView(code) {
           tapped(sender) {
             //            $app.tips("预览视频来自 Avgle，请将 Avgle.com 加入代理");
             showTips("preview", "预览视频来自 Avgle，请将 Avgle.com 加入代理");
+         
+            let item= Jable?["样品图像", "八秒视频", "完整视频"]:["样品图像", "八秒视频"]
             $ui.menu({
-              items: ["样品图像", "八秒视频", "完整视频"],
+              items:  item,
               handler: function(title, idx) {
                 if (idx == 0) {
                   if (screenData == "no") {
@@ -2874,14 +2881,7 @@ $ui.render({
     title: "JavBus",
     id: "JavBus",
     navBarHidden: isInToday()
-    //    navButtons: [
-    //                {
-    //                    icon: "058",
-    //                    handler: function () {
-    //                        wechatPay()
-    //                    }
-    //                },
-    //            ]
+
   },
   views: [
     {
@@ -4769,48 +4769,6 @@ function isInToday() {
   return $app.env == $env.today ? true : false;
 }
 
-function wechatPay() {
-  $ui.alert({
-    title: "确定赞赏？",
-    message:
-      "点击确定二维码图片会自动存入相册同时会跳转至微信扫码,请选择相册中的二维码图片进行赞赏。",
-    actions: [
-      {
-        title: "确定",
-        handler: function() {
-          let payUrl = "weixin://scanqrcode";
-          $ui.toast("赞赏码下载中...", 5);
-          $http.download({
-            url:
-              "https://raw.githubusercontent.com/Nicked639/xteko/master/JavBus/wechat.jpg",
-            progress: function(bytesWritten, totalBytes) {
-              var percentage = (bytesWritten * 1.0) / totalBytes;
-            },
-            handler: function(resp) {
-              $photo.save({
-                data: resp.data,
-                handler: function(success) {
-                  if (success) {
-                    $push.schedule({
-                      title: "二维码已存入相册",
-                      body: "点击右侧「相册」选取",
-                      delay: 0.8
-                    });
-                    $app.openURL(payUrl);
-                  }
-                }
-              });
-            }
-          });
-        }
-      },
-      {
-        title: "取消",
-        handler: function() {}
-      }
-    ]
-  });
-}
 
 function runWhere() {
   let clip = $clipboard.text;
@@ -5199,7 +5157,8 @@ function play(url) {
       id: "player",
       src: url,
       poster: filmCover,
-      loop: true
+      loop: true,
+      radius:10
     },
     layout: function(make, view) {
       let width = $device.info.screen.width - 16;
@@ -5207,6 +5166,7 @@ function play(url) {
       make.centerX.equalTo();
       make.top.equalTo($("filmName").bottom).offset(5);
       make.size.equalTo($size(width, height));
+//      make.left.right.inset(0)
     }
   });
   $("detailView").add({
