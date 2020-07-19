@@ -35,7 +35,7 @@
 
 */
 //$app.theme="auto"
-version = 8.03;
+version = 8.1;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -56,7 +56,8 @@ uncensored = false; // 无码状态
 JavMag = 0; // 磁链获取状态
 Timeout = 10;
 flag = 0; // 用于判断从通知中心启动的状态
-Jable = false
+Jable = false;
+Avgle = false
 if (isInToday()) runWhere();
 var colorData = [
   [$color("#fd354a"), $color("#da0a6f")],
@@ -408,8 +409,8 @@ recView = {
         },
         pulled: function(sender) {
           //                $ui.toast("打开 Javlibrary")
-          $app.openURL("http://www.javlibrary.com/cn/vl_bestrated.php")
-          $("recMatrix").endRefreshing()
+          $app.openURL("http://www.javlibrary.com/cn/vl_bestrated.php");
+          $("recMatrix").endRefreshing();
         }
       },
       layout: function(make, view) {
@@ -622,17 +623,17 @@ function searchView(height, catname, cols = 3, spa = 1) {
               .runtimeValue()
               .invoke("selectAll");
           },
-          changed: function(sender){
+          changed: function(sender) {
             if ($("menu").index == 5) {
-                          searchAr(sender.text);
-//                          sender.blur()
-                          return;
-                        } else return;
+              searchAr(sender.text);
+              //                          sender.blur()
+              return;
+            } else return;
           },
           returned: function(sender) {
             if ($("menu").index == 5) {
               searchAr(sender.text);
-              sender.blur()
+              sender.blur();
               return;
             }
             Again = 0;
@@ -698,10 +699,9 @@ function searchView(height, catname, cols = 3, spa = 1) {
               handler: function(title, idx) {
                 if (idx == 0) {
                   tutorial();
-                }
-                else if (idx == 1) {
-//                  $app.openURL("https://t.me/nicked");
-                    readMe()
+                } else if (idx == 1) {
+                  //                  $app.openURL("https://t.me/nicked");
+                  readMe();
                 }
               }
             });
@@ -1637,9 +1637,7 @@ function detailView(code) {
                 } else if (idx == 2) {
                   $app.openURL("https://jav.guru/zh/?s=" + favCode);
                 } else if (idx == 3) {
-                  $app.openURL(
-                    "https://jable.tv/search/" + favCode +"/"
-                  );
+                  $app.openURL("https://jable.tv/search/" + favCode + "/");
                 } else if (idx == 4) {
                   $app.openURL(
                     "http://www.javlibrary.com/cn/vl_searchbyid.php?keyword=" +
@@ -1680,10 +1678,13 @@ function detailView(code) {
           tapped(sender) {
             //            $app.tips("预览视频来自 Avgle，请将 Avgle.com 加入代理");
             showTips("preview", "预览视频来自 Avgle，请将 Avgle.com 加入代理");
-         
-            let item= Jable?["样品图像", "八秒视频", "完整视频"]:["样品图像", "八秒视频"]
+            let item = Avgle ?["样品图像", "八秒视频"]:["样品图像"]
+            if(Jable) item.push("完整视频")
+//            let item = Jable
+//              ? ["样品图像", "八秒视频", "完整视频"]
+//              : ["样品图像", "八秒视频"];
             $ui.menu({
-              items:  item,
+              items: item,
               handler: function(title, idx) {
                 if (idx == 0) {
                   if (screenData == "no") {
@@ -1693,32 +1694,30 @@ function detailView(code) {
                     $ui.push(screenshotView);
                     $("screenshot").data = screenData;
                   }
-                } else if (idx == 1) {
+                } else if (title == "八秒视频") {
                   $device.taptic(1);
                   //                  alert(sender.info)
-//                  getAvglePreview(sender.info, filmCover, 1);
-preAvgle(favCode,1)
-                } else if (idx == 2) {
+                  //                  getAvglePreview(sender.info, filmCover, 1);
+                  preAvgle(favCode, 1);
+                } else if (title == "完整视频") {
                   $device.taptic(1);
-//                  JaponX(favCode, name, 1);
-if($cache.get("m3u8")){
-  play($cache.get("m3u8"))
-}else{
-  $ui.error("未找到完整影片！");
-}
+                  //                  JaponX(favCode, name, 1);
+                  if ($cache.get("m3u8")) {
+                    play($cache.get("m3u8"));
+                  } else {
+                    $ui.error("未找到完整影片！");
+                  }
                 }
               }
             });
           },
           longPressed(sender) {
             $device.taptic(1);
-//            getAvglePreview(sender.sender.info, filmCover, 1);
-             if(Jable){
-               $ui.toast("预览来自 Jable")
-               play($cache.get("preJable"));
-             }
-             
-             else $ui.toast("Jable 无预览")
+            //            getAvglePreview(sender.sender.info, filmCover, 1);
+            if (Jable) {
+              $ui.toast("预览来自 Jable");
+              play($cache.get("preJable"));
+            } else $ui.toast("Jable 无预览");
           }
         }
       },
@@ -1806,21 +1805,21 @@ if($cache.get("m3u8")){
               handler: function(title, idx) {
                 if (idx == 0) {
                   let url =
-                    "https://shadowNicked.github.io/?code=" +
-                    sender.info;
-//                  $http.shorten({
-//                    url: url,
-//                    handler: function(url) {
-//                      $share.sheet(url);
-//                    }
-//                  });
-var sina = "https://api.weibo.com/2/short_url/shorten.json?source=560331235&url_long="
-$http.get({
-  url:sina+url,
-  handler:function(resp){
-    $share.sheet(resp.data.urls[0].url_short)
-  }
-})
+                    "https://shadowNicked.github.io/?code=" + sender.info;
+                  //                  $http.shorten({
+                  //                    url: url,
+                  //                    handler: function(url) {
+                  //                      $share.sheet(url);
+                  //                    }
+                  //                  });
+                  var sina =
+                    "https://api.weibo.com/2/short_url/shorten.json?source=560331235&url_long=";
+                  $http.get({
+                    url: sina + url,
+                    handler: function(resp) {
+                      $share.sheet(resp.data.urls[0].url_short);
+                    }
+                  });
                 } else if (idx == 1) {
                   $clipboard.text = sender.info;
                   $ui.toast("番号 " + sender.info + " 已复制");
@@ -2119,8 +2118,7 @@ const urls = [
   },
   {
     name: "BT4G",
-    pattern:
-      "https://bt.biedian.me/api/search?source=BT4G&keyword="
+    pattern: "https://bt.biedian.me/api/search?source=BT4G&keyword="
   },
   {
     name: "Nyaa",
@@ -2294,7 +2292,44 @@ function magnetList(code) {
                 $device.taptic(0);
                 $ui.toast("💡 磁链已复制");
                 $app.openURL("wb1307639798://");
-                $app.openURL("weixin://");
+                if (!$cache.get("qkMail")) {
+                  $input.text({
+                    type: $kbType.search,
+                    placeholder: "Input Quicker Mail Address",
+                    handler: function(text) {
+                      $cache.set("qkMail", text);
+                      if (!$cache.get("qkCode")) {
+                        $input.text({
+                          type: $kbType.search,
+                          placeholder: "Input Quicker Code",
+                          handler: function(text) {
+                            $cache.set("qkCode", text);
+                            
+                              
+                          }
+                        });
+                      }
+                    }
+                  });
+                }else{
+                  let url =
+                                                "https://push.getquicker.net/push?toUser=" +
+                                                $cache.get("qkMail") +
+                                                "&code=" +
+                                                $cache.get("qkCode") +
+                                                "&operation=copy&data=" +
+                                                encodeURI($clipboard.text);
+                                                $http.get({
+                                                  url: url,
+                                                  handler: resp => {
+                                                    var data = resp.data;
+                                                    //console.log(data)
+                                                  if(data.errorMessage) $ui.error(data.errorMessage)
+                                                  else $ui.toast("发送成功")} 
+                                                });
+                }
+
+                //                $app.openURL("weixin://");
               },
               pulled(sender) {
                 if ($("javbusList").data.length == 0) {
@@ -2876,7 +2911,6 @@ $ui.render({
     title: "JavBus",
     id: "JavBus",
     navBarHidden: isInToday()
-
   },
   views: [
     {
@@ -3562,19 +3596,19 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
       //       else $("tabC").index = 0;
       var reg = /<a class="movie-box"[\s\S]*?<\/span>\s/g;
       var match = resp.data.match(reg);
-      console.log(resp.data)
-      $console.log(match)
+//      console.log(resp.data);
+//      $console.log(match);
       var data = [];
       match.map(function(i) {
-//        console.log(i)
+        //        console.log(i)
         link = /href="([\s\S]*?)(")/.exec(i)[1];
-//        console.log(link)
+        //        console.log(link)
         image = /<img src="([\s\S]*?)(")/.exec(i)[1];
-//        console.log(image)
+        //        console.log(image)
         var title = /title="(.*?)(">)/.exec(i)[1];
-//        console.log(title)
+        //        console.log(title)
         code = /<date>(.*?)<\/date>/.exec(i)[1];
-//        console.log(code)
+        //        console.log(code)
         date = /\/\s<date>(.*?)<\/date><\/span>/.exec(i)[1];
         let hd = i.includes("高清");
         let sub = i.includes("字幕");
@@ -3718,9 +3752,7 @@ function getJavMag(link, flag = "0") {
       didSendRequest(request) {
         if (!/uncledatoolsbyajax\.php/.test(request.url)) return;
         $("magnet").eval({
-          script: `$.get('${
-            request.url
-          }', function(rep){$notify('getUrl', rep);})`
+          script: `$.get('${request.url}', function(rep){$notify('getUrl', rep);})`
         });
       },
       getUrl(data) {
@@ -3779,46 +3811,38 @@ function getJavMag(link, flag = "0") {
   });
 }
 
-function preAvgle(code,flag){
+function preAvgle(code, flag) {
+  Avgle = false
   let url =
-      "https://api.avgle.com/v1/search/" +encodeURI(code) +"/0?limit=10&t=a&o=bw";
-      $http.get({
-        url: url,
-        handler: function(resp) {
-          var data = resp.data;
-            var success = resp.data.success;
-                if (!success || !resp.response) {
-                  $ui.error("❌ 网络连接出错！");
-                  return;
-                }
-                let video_num = resp.data.response.total_videos;
-                //      $console.log(video_num)
-                if (video_num == 0) {
-                  
-                  $delay(2,()=>{
-                    
-//                  console.log("djdjd")
-                    if(Jable){
-                      
-                    $ui.toast("预览来自 Jable")
-                      play($cache.get("preJable"))
-                     
-                    }else{
-                      if (flag == 1) $ui.error("☹️ 暂无八秒预览！");
-                      $ui.loading(false);
-                                        
-                    }
-                  })
-                  return
-                }
-                let infos = resp.data.response.videos;
-                let videoUrl = infos[0].preview_video_url;
-                play(videoUrl)
-        }
-      });
-  
-}
+    "https://api.avgle.com/v1/search/" +
+    encodeURI(code) +
+    "/0?limit=10&t=a&o=bw";
+  $http.get({
+    url: url,
+    handler: function(resp) {
+      var data = resp.data;
+      var success = resp.data.success;
+      if (!success || !resp.response) {
+        $ui.error("❌ 网络连接出错！");
+        return;
+      }
+      let video_num = resp.data.response.total_videos;
+//            $console.log(resp.data)
+      if (video_num == 0) {
 
+      return
+      }
+      let infos = resp.data.response.videos;
+      let title = infos[0].title
+      if(title.indexOf(code)>-1){
+        Avgle = true
+        play(infos[0].preview_video_url);
+      }
+      
+      
+    }
+  });
+}
 
 //function getAvglePreview(keyword, poster, flag) {
 //  let url =
@@ -3832,7 +3856,7 @@ function preAvgle(code,flag){
 //        $("player").pause();
 //        $("player").stopLoading();
 //        $("player").remove();
-//        
+//
 //      }
 //      var success = resp.data.success;
 //      if (!success || !resp.response) {
@@ -3929,6 +3953,8 @@ function preAvgle(code,flag){
 function getDetail(url) {
   flag++;
   Trans = 0;
+  
+        preAvgle(favCode);
   $http.request({
     url: url,
     timeout: Timeout,
@@ -3960,8 +3986,8 @@ function getDetail(url) {
           });
         });
         //        JaponX(favCode,name,0)
-        Jable = false
-        jableTv(favCode,0)
+        Jable = false;
+        jableTv(favCode, 0);
       } else {
         $("whoInFilm").hidden = true;
       }
@@ -4092,8 +4118,8 @@ function getDetail(url) {
       //        $("loadingm").text = "☹️ JavBus 暂无磁链"
       //        $("loadingm").hidden = false
       //      } else $("loadingm").hidden = true;
-//      getAvglePreview(favCode, filmCover);
-     preAvgle(favCode)
+      //      getAvglePreview(favCode, filmCover);
+      
     }
   });
 }
@@ -4492,10 +4518,13 @@ function getMagnet(code) {
   showTips("Meg", "单击复制磁链，\n左滑分享磁链,\n若无磁链，尝试下拉刷新");
   $ui.loading(true);
   $http.request({
-    url: urls[$("mMenu").index].pattern + code+"&page=1&sort=time&a=1566535262486&b=9e46e189be0a95d862379467a19322e7" ,
+    url:
+      urls[$("mMenu").index].pattern +
+      code +
+      "&page=1&sort=time&a=1566535262486&b=9e46e189be0a95d862379467a19322e7",
     handler: function(resp) {
       var data = resp.data;
-      $console.log(resp.data)
+      $console.log(resp.data);
       if (!data.success) {
         $("mlist").data = [
           {
@@ -4516,7 +4545,8 @@ function getMagnet(code) {
           $("mlist").data = $("mlist").data.concat({
             mFileName: {
               text: i.name,
-              textColor:i.name.indexOf("中文")>-1?$color("red"):$color("black")
+              textColor:
+                i.name.indexOf("中文") > -1 ? $color("red") : $color("black")
             },
             mFileSize: {
               text: i.formatSize
@@ -4764,7 +4794,6 @@ function isInToday() {
   return $app.env == $env.today ? true : false;
 }
 
-
 function runWhere() {
   let clip = $clipboard.text;
   let link = $detector.link(clip);
@@ -4989,61 +5018,75 @@ function readMe() {
   });
 }
 
-function jableTv(code,flag){
-  var jableUrl = "https://jable.tv/search/"+code+"/"
+function jableTv(code, flag) {
+  var jableUrl = "https://jable.tv/search/" + code + "/";
   $http.get({
-    url:jableUrl,
-    handler:function(resp){
-//      console.log(resp.data)
-      let data = resp.data
-      let avPattern = /https:\/\/jable.tv\/videos\/(.*)?\//g
-      let avUrl = avPattern.exec(data)[0]
-//      console.log(avUrl)
-      if(avUrl){
+    url: jableUrl,
+    handler: function(resp) {
+      //      console.log(resp.data)
+      let data = resp.data;
+      let avPattern = /https:\/\/jable.tv\/videos\/(.*)?"/g;
+      let avUrl=  ""
+      if(avPattern.exec(data)){
+         avUrl = avPattern.exec(data)[0];
+         avUrl=$detector.link(avUrl)
+         }
+      console.log("url: "+avUrl)
+      if (avUrl) {
         $("check").bgcolor = $color("tint");
         $("check").titleColor = $color("white");
-        Jable = true
-        let prePattern = /data-preview="(https:\/\/assets\.jable\.tv\/.*?_preview\.mp4)/g
-              let preUrl = prePattern.exec(data)[1]
-              $cache.set("preJable",preUrl)
-//              console.log(preUrl)
+        Jable = true;
+        let prePattern = /data-preview="(https:\/\/assets\.jable\.tv\/.*?_preview\.mp4)/g;
+        let preUrl = prePattern.exec(data)[1];
+        $cache.set("preJable", preUrl);
+        
+                        
+            }
+        //              console.log(preUrl)
         $http.get({
-          url:avUrl,
-          handler:function(resp){
-            let data = resp.data
-//            console.log(data)
-            let pattern = /hlsUrl = '(.*)?'/g
-                let m3u8 = pattern.exec(data)[1]
-                console.log(m3u8)
-                $cache.set("m3u8",m3u8)
+          url: avUrl,
+          handler: function(resp) {
+            let data = resp.data;
+            console.log(data)
+            let pattern = /hlsUrl = '(.*)?'/g;
+            let m3u8 = pattern.exec(data)[1];
+            console.log(m3u8);
+            $cache.set("m3u8", m3u8);
           }
-        })
+        });
+        $delay(1, () => {
+          if(Avgle == true) return
+        
+          else if(avUrl){
+                                                            $ui.toast("预览来自 Jable");
+                                                            play($cache.get("preJable"));
+                                                           
+                                                        }  else $ui.error("暂无八秒预览");
+        });
       }
       
-    }
-  })
-//  $http.get({
-//    url:jableUrl,
-//    handler:function(resp){
-////      console.log(resp.data)
-//      let data = resp.data
-//      let pattern = /hlsUrl = '(.*)?'/g
-//      let m3u8 = pattern.exec(data)[1]
-//      console.log(m3u8)
-//      if(m3u8){
-//        $cache.set("m3u8",m3u8)
-//        
-//                    //            $ui.toast("可预览完整影片！",0.8)
-//                    $("check").bgcolor = $color("tint");
-//                    $("check").titleColor = $color("white");
-//                    return;
-//                  
-//            
-//      }
-//      
-//    }
-//  })
-  
+  });
+  //  $http.get({
+  //    url:jableUrl,
+  //    handler:function(resp){
+  ////      console.log(resp.data)
+  //      let data = resp.data
+  //      let pattern = /hlsUrl = '(.*)?'/g
+  //      let m3u8 = pattern.exec(data)[1]
+  //      console.log(m3u8)
+  //      if(m3u8){
+  //        $cache.set("m3u8",m3u8)
+  //
+  //                    //            $ui.toast("可预览完整影片！",0.8)
+  //                    $("check").bgcolor = $color("tint");
+  //                    $("check").titleColor = $color("white");
+  //                    return;
+  //
+  //
+  //      }
+  //
+  //    }
+  //  })
 }
 
 function JaponX(code, name, flag) {
@@ -5153,7 +5196,7 @@ function play(url) {
       src: url,
       poster: filmCover,
       loop: true,
-      radius:10
+      radius: 10
     },
     layout: function(make, view) {
       let width = $device.info.screen.width - 16;
@@ -5161,7 +5204,7 @@ function play(url) {
       make.centerX.equalTo();
       make.top.equalTo($("filmName").bottom).offset(5);
       make.size.equalTo($size(width, height));
-//      make.left.right.inset(0)
+      //      make.left.right.inset(0)
     }
   });
   $("detailView").add({
