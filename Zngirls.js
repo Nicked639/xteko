@@ -20,42 +20,42 @@ var Browse = true;
 var TIME = 1; //自动浏览间隔
 var Position = 0;
 var PFlag = false;
-var viewMode = "httpToView";
+var viewMode = "downToView";
 var pushFlag = false;
 
-const searchUrl = "https://m.nvshens.net/query.aspx?name=";
+const searchUrl = "https://m.nvshens.org/query.aspx?name=";
 const category = [
   {
     title: "首页",
-    addr: "https://m.nvshens.net/gallery/"
+    addr: "https://m.nvshens.org/gallery/"
   },
   {
     title: "美媛",
-    addr: "https://m.nvshens.net/gallery/meiyuanguan/"
+    addr: "https://m.nvshens.org/gallery/meiyuanguan/"
   },
   {
     title: "秀人",
-    addr: "https://m.nvshens.net/gallery/xiuren/"
+    addr: "https://m.nvshens.org/gallery/xiuren/"
   },
   {
     title: "尤果",
-    addr: "https://m.nvshens.net/gallery/ugirl/"
+    addr: "https://m.nvshens.org/gallery/ugirl/"
   },
   {
     title: "魅妍",
-    addr: "https://m.nvshens.net/gallery/mistar/"
+    addr: "https://m.nvshens.org/gallery/mistar/"
   },
   {
     title: "爱蜜",
-    addr: "https://m.nvshens.net/gallery/imiss/"
+    addr: "https://m.nvshens.org/gallery/imiss/"
   },
   {
     title: "尤蜜",
-    addr: "https://m.nvshens.net/gallery/mfstar/"
+    addr: "https://m.nvshens.org/gallery/mfstar/"
   },
   {
     title: "模范",
-    addr: "https://m.nvshens.net/gallery/mfstar/"
+    addr: "https://m.nvshens.org/gallery/mfstar/"
   },
   {
     title: "收藏"
@@ -156,7 +156,13 @@ function tabView() {
                 title: i.title,
                 detail: i.url,
                 interface: {
-                  src: i.src
+//                  src: i.src
+                  source: {
+                                url: i.src,
+                                header: {
+                                  "Referer": "https://m.nvshens.org/"
+                                }
+                              }
                 },
                 recGra: {
                   hidden: true
@@ -198,7 +204,7 @@ function tabView() {
                       });
                       
                     }
-                    console.log(temp)
+//                    console.log(temp)
           showSearch("女神");
            $("acList").data = temp;
         } else getPostData(CNUM, page);
@@ -281,7 +287,13 @@ function mainSplit(id, title) {
       title: i.title,
       detail: i.detail,
       interface: {
-        src: i.interface.src
+       // src: i.interface.src
+        source: {
+          url: i.interface.src,
+          header: {
+            "Referer": "https://m.nvshens.org/"
+          }
+        }
       },
       recGra: {
         hidden: LocalList.indexOf(i.interface.src) >= 0 ? false : true
@@ -316,7 +328,13 @@ function acSplit(id, title) {
       title: i.title,
       detail: i.detail,
       interface: {
-        src: i.interface.src
+        //src: i.interface.src
+        source: {
+                  url: i.interface.src,
+                  header: {
+                    "Referer": "https://m.nvshens.org/"
+                  }
+                }
       },
       recGra: {
         hidden: LocalList.indexOf(i.interface.src) >= 0 ? false : true
@@ -406,6 +424,7 @@ function matrixView(column, rowHeight) {
         folderName = title;
         console.log(folderName);
         detailUrl = data.detail;
+        $clipboard.text = detailUrl
         if (/.*\s(.+)/g.test(folderName)) {
           girlName = /.*\s(.+)/g.exec(folderName)[1];
           if (/\d{4}\.\d{2}\.\d{2}\s(VOL\.\d{3,4})?/g.exec(folderName))
@@ -414,7 +433,7 @@ function matrixView(column, rowHeight) {
         } else girlName = folderName;
 
 //        console.log(girlName);
-        console.log(data.detail);
+//        console.log(data.detail);
         let idx = $cache.get("shitu") || 1;
 
         showPhotos(girlName, Math.pow(2, idx), 563 / Math.pow(2, idx));
@@ -629,7 +648,7 @@ function showPhotos(title, columns, rowHeight) {
             //            );
 
             $app.openURL(
-              "pythonista://Tools/taotu8_jsbox" +
+              "pythonista2://Tools/taotu8_jsbox" +
                 method +
                 "?action=run&argv=" +
                 encodeURI(girlName) +
@@ -803,16 +822,18 @@ function getPostData(num, page, acUrl) {
     url = acUrl + page;
     url = page > 0 ? url + ".html" : url;
   }
+  console.log(url)
   $http.get({
     url: url,
     handler: resp => {
       var data = resp.data;
-      //console.log(url);
+//      console.log(data);
       $ui.clearToast();
       let match0 = "";
       if (num >= 0) {
         let reg0 = /div id="ddesc"[\s\S]*?回顶部/g;
         match0 = data.match(reg0)[0];
+        
       } else {
         let reg0 = /册<.*"/g;
         if (!data.match(reg0) && page < 2) {
@@ -824,19 +845,29 @@ function getPostData(num, page, acUrl) {
         match0 = data.match(reg0)[0];
       }
 
-      //console.log(match0)
+//      console.log(match0)
       let reg = /a href='([\s\S]*?)' class='ck-link[\s\S]*?img (src|data-original)='([\s\S]*?)' alt='([\s\S]*?)'/g;
       let array = [...match0.matchAll(reg)];
       //let match1 = match0.match(reg)
-      //console.log(array);
+//      console.log(array);
       let temp = [];
-
+      
       array.map(i => {
+        if (i[1].indexOf("girl")>=0){
+                i[1] = i[1].match(/\/g\/\d{5}/)
+             
+              }
         temp = temp.concat({
           title: i[4],
-          detail: num >= 0 ? i[1] : "https://m.nvshens.net" + i[1],
+          detail: num >= 0 ? i[1] : "https://m.nvshens.org" + i[1],
           interface: {
-            src: i[3]
+//            src: i[3]
+            source: {
+              url: i[3],
+              header: {
+                "Referer": "https://m.nvshens.org/"
+              }
+            }
           },
           recGra: {
             hidden: LocalList.indexOf(i[3]) >= 0 ? false : true
@@ -854,6 +885,7 @@ function getPostData(num, page, acUrl) {
         let len = temp.length;
         if (len > 6) temp.splice(len - 3, 3);
         $("acView").data = $("acView").data.concat(temp);
+        console.log(temp)
       }
     }
   });
@@ -870,17 +902,17 @@ function getDetailPost(url) {
       let reg = /(\d{2,3})张/;
       let picNum = resp.data.match(reg)[1];
       picNum = Number(picNum);
-      console.log(picNum);
+//      console.log(picNum);
       reg = /gallery\/(\d{5})\/\d{5}\/s/;
       let actressUrl = resp.data.match(reg)[1];
-      actressUrl = "https://m.nvshens.net/girl/" + actressUrl + "/album/";
+      actressUrl = "https://m.nvshens.org/girl/" + actressUrl + "/album/";
       $("actress").info = actressUrl;
       let imgPattern = resp.data.match(reg)[0];
-      //console.log(imgPattern)
+      console.log(resp.data)
       let url_head = "https://t1.onvshen.com:85/" + imgPattern + "/";
       let imgU = "";
       IMGList = [];
-      IMGList.push(interface)
+      //IMGList.push(interface)
       IMGList.push(url_head + "0.jpg");
       for (var i = 1; i < picNum; i++) {
         if (i < 10) imgU = url_head + "00" + i + ".jpg";
@@ -888,19 +920,27 @@ function getDetailPost(url) {
         else imgU = url_head + i + ".jpg";
         IMGList.push(imgU);
       }
-      //console.log(IMGList);
+      console.log(IMGList);
       console.log("共计 " + IMGList.length + " 张图");
-      //       console.log(IMGList)
+     
       let temp = $("detailView").data;
+      
       temp = temp.concat(
         IMGList.map(function(i) {
           return {
             detailImage: {
-              src: i
+              source: {
+                url: i,
+                header: {
+                  "Referer": "https://m.nvshens.org/"
+              
+                }
+              }
             }
           };
         })
       );
+      
       $("detailView").data = temp;
       //           $ui.clearToast();
     }
@@ -976,17 +1016,19 @@ function getSearch(text) {
       let match0 = data.match(reg0)[0];
 
       //      console.log(match0);
-      let reg = /a href='([\s\S]*?)' class='ck-link[\s\S]*?img src='([\s\S]*?)'.*?ck-title'>([\s\S]*?)</g;
+      let reg = /a href=’([\s\S]*?)‘ class=’ck-link[\s\S]*?img src=‘([\s\S]*?)’.*?ck-title‘>([\s\S]*?)</g;
       let array = [...match0.matchAll(reg)];
       //let match1 = match0.match(reg)
       //      console.log(array);
+      if(array.length==0)
+      $ui.error("无搜索结果")
       let temp = [];
       $("acList").data = [];
       array.map(i => {
         temp.push({
           acName: {
             text: i[3],
-            info: "https://m.nvshens.net" + i[1] + "album/"
+            info: "https://m.nvshens.org" + i[1] + "album/"
           },
           acImg: {
             src: i[2]
@@ -996,7 +1038,7 @@ function getSearch(text) {
             bgcolor:GirlList.indexOf(i[3])>=0?$color("gray"):$color("tint"),
             info: {
               src: i[2],
-              url: "https://m.nvshens.net" + i[1] + "album/",
+              url: "https://m.nvshens.org" + i[1] + "album/",
               name: i[3]
             }
           }
@@ -1346,7 +1388,7 @@ function main() {
     GirlList = [];
     GoodList = []
   }
-  console.log(GirlList)
+  
 }
 
 var column = $cache.get("column") || 0;
