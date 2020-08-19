@@ -419,11 +419,14 @@ function matrixView(column, rowHeight) {
       },
       didSelect(sender, indexPath, data) {
         
-        interface = data.interface.src;
+        interface = data.interface.source.url;
+        //console.log(interface)
         title = data.title;
         folderName = title;
         console.log(folderName);
-        detailUrl = data.detail;
+        detailUrl = data.detail.replace("net","org");
+        
+        
         $clipboard.text = detailUrl
         if (/.*\s(.+)/g.test(folderName)) {
           girlName = /.*\s(.+)/g.exec(folderName)[1];
@@ -453,7 +456,7 @@ function matrixView(column, rowHeight) {
         $("favorite").info = data.detail;
         $("detailView").data = [];
 
-        getDetailPost(data.detail);
+        getDetailPost(detailUrl);
       },
       didLongPress(sender, indexPath, data) {
         alert(data.title);
@@ -760,6 +763,7 @@ function showPhotos(title, columns, rowHeight) {
         events: {
           tapped(sender) {
             $device.taptic(0);
+            console.log(interface)
             var data = {
               src: interface,
               url: detailUrl,
@@ -885,13 +889,14 @@ function getPostData(num, page, acUrl) {
         let len = temp.length;
         if (len > 6) temp.splice(len - 3, 3);
         $("acView").data = $("acView").data.concat(temp);
-        console.log(temp)
+        //console.log(temp)
       }
     }
   });
 }
 
 function getDetailPost(url) {
+  url.replace("net","org")
   $http.request({
     url: url,
     handler: function(resp) {
@@ -899,6 +904,7 @@ function getDetailPost(url) {
         $ui.alert("❌ 请检查网络");
       }
       $ui.clearToast();
+      console.log(url)
       let reg = /(\d{2,3})张/;
       let picNum = resp.data.match(reg)[1];
       picNum = Number(picNum);
@@ -908,7 +914,7 @@ function getDetailPost(url) {
       actressUrl = "https://m.nvshens.org/girl/" + actressUrl + "/album/";
       $("actress").info = actressUrl;
       let imgPattern = resp.data.match(reg)[0];
-      console.log(resp.data)
+      //console.log(resp.data)
       let url_head = "https://t1.onvshen.com:85/" + imgPattern + "/";
       let imgU = "";
       IMGList = [];
@@ -920,7 +926,7 @@ function getDetailPost(url) {
         else imgU = url_head + i + ".jpg";
         IMGList.push(imgU);
       }
-      console.log(IMGList);
+      //console.log(IMGList);
       console.log("共计 " + IMGList.length + " 张图");
      
       let temp = $("detailView").data;
@@ -951,6 +957,7 @@ function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
     LocalData.fav.unshift(data);
     LocalList.unshift(data.src);
+    console.log(data.src)
     if ($("tab").index == 8) {
       var temp = $("preView").data;
       temp.unshift({
@@ -1006,20 +1013,21 @@ function writeCache() {
 
 function getSearch(text) {
   let url = searchUrl + encodeURI(text);
+  console.log(url)
   $http.get({
     url: url,
     handler: resp => {
       var data = resp.data;
-      //      console.log(data);
+      //console.log(data);
 
       let reg0 = /查询结果.*"/g;
       let match0 = data.match(reg0)[0];
 
-      //      console.log(match0);
-      let reg = /a href=’([\s\S]*?)‘ class=’ck-link[\s\S]*?img src=‘([\s\S]*?)’.*?ck-title‘>([\s\S]*?)</g;
+      console.log(match0);
+      let reg = /a href='([\s\S]*?)' class='ck-link[\s\S]*?img src='([\s\S]*?)'.*?ck-title'>([\s\S]*?)</g;
       let array = [...match0.matchAll(reg)];
       //let match1 = match0.match(reg)
-      //      console.log(array);
+      console.log(array);
       if(array.length==0)
       $ui.error("无搜索结果")
       let temp = [];
