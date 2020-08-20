@@ -3,7 +3,7 @@ var CNUM = 0;
 var LocalDataPath = "zngirls.json";
 var LocalList = [];
 var GirlList = [];
-var GoodList = []
+var GoodList = [];
 var page = 0;
 var acPage = 0;
 var LocalData = [];
@@ -22,6 +22,8 @@ var Position = 0;
 var PFlag = false;
 var viewMode = "downToView";
 var pushFlag = false;
+var count = 0;
+
 
 const searchUrl = "https://m.nvshens.org/query.aspx?name=";
 const category = [
@@ -107,7 +109,7 @@ const template = [
     events: {
       tapped(sender) {
         $device.taptic(0);
-        var data = sender.info
+        var data = sender.info;
         if (sender.title == "收藏") {
           girlFavButtonTapped("add", data);
           sender.title = "取消收藏";
@@ -132,15 +134,14 @@ function tabView() {
       }),
       radius: 5
     },
-    layout: function(make, view) {
+    layout: function (make, view) {
       make.top.inset(0);
       make.centerX.equalTo();
       make.left.right.inset(5);
       make.height.equalTo(22);
     },
     events: {
-      changed: function(sender) {
-        
+      changed: function (sender) {
         CNUM = sender.index;
         page = 1;
 
@@ -150,25 +151,25 @@ function tabView() {
           if (LocalList.length == 0) {
             $ui.error("暂无收藏内容，请收藏");
           } else {
-            let temp = []
-            LocalData.fav.map(function(i) {
+            let temp = [];
+            LocalData.fav.map(function (i) {
               temp = temp.concat({
                 title: i.title,
                 detail: i.url,
                 interface: {
-//                  src: i.src
+                  //                  src: i.src
                   source: {
-                                url: i.src,
-                                header: {
-                                  "Referer": "https://m.nvshens.org/"
-                                }
-                              }
+                    url: i.src,
+                    header: {
+                      Referer: "https://m.nvshens.org/"
+                    }
+                  }
                 },
                 recGra: {
                   hidden: true
                 },
-                goodGra:{
-                  hidden:GoodList.indexOf(i.src)>-1?false:true
+                goodGra: {
+                  hidden: GoodList.indexOf(i.src) > -1 ? false : true
                 }
               });
             });
@@ -176,37 +177,34 @@ function tabView() {
             $("preView").data = temp;
           }
         } else if (CNUM == 9) {
-          var temp=[]
-          if(GirlList.length==0)
-          $ui.error("暂无收藏女神，请收藏");
+          var temp = [];
+          if (GirlList.length == 0) $ui.error("暂无收藏女神，请收藏");
           else {
-                 
-                      LocalData.girl.map(function(i) {
-                        temp = temp.concat({
-                          acName:{
-                            text: i.name,
-                            info:i.url
-                          },
-                        
-                          acImg: {
-                            src: i.src
-                          },
-                          acFav: {
-                            title:"取消收藏",
-                            bgcolor:$color("gray"),
-                            info:{
-                              src: i.src,
-                                            url: i.url,
-                                            title: i.name
-                            }
-                          }
-                        });
-                      });
-                      
-                    }
-//                    console.log(temp)
+            LocalData.girl.map(function (i) {
+              temp = temp.concat({
+                acName: {
+                  text: i.name,
+                  info: i.url
+                },
+
+                acImg: {
+                  src: i.src
+                },
+                acFav: {
+                  title: "取消收藏",
+                  bgcolor: $color("gray"),
+                  info: {
+                    src: i.src,
+                    url: i.url,
+                    title: i.name
+                  }
+                }
+              });
+            });
+          }
+          //                    console.log(temp)
           showSearch("女神");
-           $("acList").data = temp;
+          $("acList").data = temp;
         } else getPostData(CNUM, page);
         $("preView").contentOffset = $point(0, 0);
       }
@@ -224,13 +222,13 @@ let searchView = {
     font: $font(14),
     radius: 5
   },
-  layout: function(make, view) {
+  layout: function (make, view) {
     make.left.right.inset(5);
     make.top.inset(30);
     make.height.equalTo(27);
   },
   events: {
-    returned: function(sender) {
+    returned: function (sender) {
       showSearch(sender.text);
       getSearch(sender.text);
       $("search").blur();
@@ -251,7 +249,7 @@ function splitView(title) {
       alpha: 0.8,
       index: $cache.get("column") ? $cache.get("column") : 0
     },
-    layout: function(make) {
+    layout: function (make) {
       let top = pushFlag ? 0 : 33;
       let right = pushFlag ? 120 : 10;
       make.right.inset(right);
@@ -282,24 +280,25 @@ function mainSplit(id, title) {
   mainUI(Math.pow(2, id + 1), 275 / Math.pow(2, id), title);
   //            $("preView").data = [];
 
-  temp.map(function(i) {
+  temp.map(function (i) {
     temp.data = temp.concat({
       title: i.title,
       detail: i.detail,
       interface: {
-       // src: i.interface.src
+        // src: i.interface.src
         source: {
           url: i.interface.src,
           header: {
-            "Referer": "https://m.nvshens.org/"
+            Referer: "https://m.nvshens.org/"
           }
         }
       },
       recGra: {
         hidden: LocalList.indexOf(i.interface.src) >= 0 ? false : true
       },
-      goodGra:{
-        hidden:GoodList.indexOf(i.interface.src)>-1?false:true}
+      goodGra: {
+        hidden: GoodList.indexOf(i.interface.src) > -1 ? false : true
+      }
     });
   });
   $("preView").data = temp;
@@ -323,23 +322,25 @@ function acSplit(id, title) {
   $("actessView").add(matrixView(Math.pow(2, id + 1), 275 / Math.pow(2, id)));
   //            $("preView").data = [];
 
-  temp.map(function(i) {
+  temp.map(function (i) {
     temp.data = temp.concat({
       title: i.title,
       detail: i.detail,
       interface: {
         //src: i.interface.src
         source: {
-                  url: i.interface.src,
-                  header: {
-                    "Referer": "https://m.nvshens.org/"
-                  }
-                }
+          url: i.interface.src,
+          header: {
+            Referer: "https://m.nvshens.org/"
+          }
+        }
       },
       recGra: {
         hidden: LocalList.indexOf(i.interface.src) >= 0 ? false : true
-      },goodGra:{
-        hidden:GoodList.indexOf(i.interface.src)>-1?false:true}
+      },
+      goodGra: {
+        hidden: GoodList.indexOf(i.interface.src) > -1 ? false : true
+      }
     });
   });
   $("acView").data = temp;
@@ -381,7 +382,8 @@ function matrixView(column, rowHeight) {
             alpha: 0.4
           },
           layout: $layout.fill
-        },{
+        },
+        {
           type: "gradient",
           props: {
             id: "goodGra",
@@ -391,13 +393,13 @@ function matrixView(column, rowHeight) {
             endPoint: $point(1, 1),
             radius: 8,
             hidden: true,
-            alpha: 0.5,
+            alpha: 0.5
           },
           layout: $layout.fill
         }
       ]
     },
-    layout: function(make, view) {
+    layout: function (make, view) {
       make.left.right.bottom.inset(5);
       let top = pushFlag ? 22 : 60;
       make.top.inset(top);
@@ -418,25 +420,25 @@ function matrixView(column, rowHeight) {
         sender.endFetchingMore();
       },
       didSelect(sender, indexPath, data) {
-        
         interface = data.interface.source.url;
         //console.log(interface)
         title = data.title;
         folderName = title;
         console.log(folderName);
-        detailUrl = data.detail.replace("net","org");
-        
-        
-        $clipboard.text = detailUrl
+        detailUrl = data.detail.replace("net", "org");
+
+        $clipboard.text = detailUrl;
         if (/.*\s(.+)/g.test(folderName)) {
           girlName = /.*\s(.+)/g.exec(folderName)[1];
           if (/\d{4}\.\d{2}\.\d{2}\s(VOL\.\d{3,4})?/g.exec(folderName))
-            namePrefix = /\d{4}.\d{2}.\d{2}\s(VOL\.\d{3,4})?/g.exec(folderName)[0];
-//          console.log(namePrefix);
+            namePrefix = /\d{4}.\d{2}.\d{2}\s(VOL\.\d{3,4})?/g.exec(
+              folderName
+            )[0];
+          //          console.log(namePrefix);
         } else girlName = folderName;
 
-//        console.log(girlName);
-//        console.log(data.detail);
+        //        console.log(girlName);
+        //        console.log(data.detail);
         let idx = $cache.get("shitu") || 1;
 
         showPhotos(girlName, Math.pow(2, idx), 563 / Math.pow(2, idx));
@@ -446,8 +448,6 @@ function matrixView(column, rowHeight) {
 
           $("favorite").title = "取消收藏";
           $("favorite").bgcolor = $color("tint");
-
-         
         } else if (LocalList.indexOf(interface) > -1) {
           $("favorite").title = "取消收藏";
           $("favorite").bgcolor = $color("tint");
@@ -468,7 +468,7 @@ function mainUI(column, rowHeight, title) {
   $ui.render({
     props: {
       title: title,
-      id: "main",
+      id: "main"
       //pageSheet:true
     },
     views: [
@@ -486,10 +486,10 @@ function showAcView(column, rowHeight, name) {
       id: "actessView"
     },
     events: {
-      disappeared: function() {
+      disappeared: function () {
         pushFlag = false;
       },
-      appeared: function() {
+      appeared: function () {
         pushFlag = true;
       }
     },
@@ -516,7 +516,7 @@ function detailMatrix(columns, rowHeight) {
         }
       ]
     },
-    layout: function(make, view) {
+    layout: function (make, view) {
       make.left.right.top.inset(0);
       make.bottom.inset(50);
     },
@@ -531,7 +531,7 @@ function detailMatrix(columns, rowHeight) {
         //          image: v.image
         //        });
       },
-      didLongPress: function(sender, indexPath, data) {
+      didLongPress: function (sender, indexPath, data) {
         if (viewMode == "downToView") viewMode = "httpToView";
         else viewMode = "downToView";
         $ui.toast("View Changed");
@@ -539,6 +539,89 @@ function detailMatrix(columns, rowHeight) {
     }
   };
 }
+function download(params) {
+  params = params || {};
+  params.handlers = params.handlers || {};
+  const url = params.url;
+  const method = params.method || "GET";
+  const timeout =  10;
+  const header = {
+       Referer: "https://m.nvshens.org/"
+     };
+  const body = params.body;
+  const callback = params.handler;
+
+  const request = $objc("NSMutableURLRequest").$requestWithURL($objc("NSURL").$URLWithString(url));
+  request.$setHTTPMethod(method);
+  request.$setTimeoutInterval(timeout);
+
+  for (const [key, value] of Object.entries(header)) {
+    request.$addValue_forHTTPHeaderField(value, key);
+  }
+
+  if (body) {
+    request.$setHTTPBody(body.ocValue());
+  }
+
+  const session = $objc("NSURLSession").$sharedSession();
+  const completionHandler = $block("void, NSURL *, NSURLResponse *, NSError *", (location, response, error) => {
+    if (callback) {
+      const data = $objc("NSData").$dataWithContentsOfURL(location).$copy();
+      $thread.main({
+        handler: () => {
+          callback({
+            "data": data.jsValue(),
+            "response": response.jsValue(),
+            "error": error.jsValue(),
+          });
+        }
+      });
+    }
+  });
+
+  const task = session.$downloadTaskWithRequest_completionHandler(request, completionHandler);
+  task.$resume();
+}
+
+// exports.download = download;
+function downImg(url,sender){
+  download({
+    "url": url,
+    "handler": result => {
+//      console.log(`Finished: ${JSON.stringify(result)}`);
+      // props: data, response, error
+      const data = result.data;
+      let error = result.error
+      if ('key' in error)
+      console.log(error)
+      count++;
+            sender.title = count;
+            //                    $("progress").value = (count * 1.0) / urlList.length;
+            if (count == IMGList.length) {
+              sender.title = "完成";
+              $device.taptic(1);
+            }
+            
+            var fileName = url.split("/").pop();
+            var namePrefix = folderName.split(' ')[1]
+            if (namePrefix)
+            fileName = namePrefix+"-"+fileName
+            var path =
+              "Zngirls/" +
+              girlName +
+              "/" +
+              folderName +
+              "/" +
+              fileName;
+            $drive.write({
+              data: data,
+              path: path
+            });
+    }
+  });
+}
+
+
 
 function showPhotos(title, columns, rowHeight) {
   $ui.push({
@@ -556,60 +639,49 @@ function showPhotos(title, columns, rowHeight) {
           radius: 0,
           title: "下载",
           alpha: 0.9,
-          hidden: true
+          hidden: false
         },
-        layout: function(make, view) {
-          make.left.bottom.inset(0);
-          make.width.equalTo(view.super).dividedBy(2);
+        layout: function (make, view) {
+          make.bottom.inset(0);
+          make.left.inset(0);
+          make.width.equalTo(view.super).dividedBy(4);
           make.height.equalTo(50);
         },
         events: {
           tapped(sender) {
-            $cache.clear();
-            $device.taptic(0);
+            //$cache.clear();
+                    $device.taptic(0);
+                     var data = {
+                       src: interface,
+                       url: detailUrl,
+                       title: title
+                     };
+                     if ($("favorite").title == "收藏") {
+                       favoriteButtonTapped("add", data);
+                       $("favorite").title = "取消收藏";
+                       $("favorite").bgcolor = $color("#4f86f2");
+                     }
 
-            var urlList = [];
-            if ($("download").title == "下载") {
-              $delay(0.5, function() {});
+            if (sender.title == "下载") {
+              $delay(0.5, function () {});
               sender.title = "正在下载...";
-              urlList = $("detailView").data.map(function(i) {
-                return i.detailImage.src;
-              });
-              if (!$drive.exist("套图吧/" + girlName))
-                $drive.mkdir("套图吧/" + girlName);
-              if (!$drive.exists("套图吧/" + girlName + "/" + folderName)) {
-                $drive.mkdir("套图吧/" + girlName + "/" + folderName);
+
+              if (!$drive.exists("Zngirls/" + girlName))
+                $drive.mkdir("Zngirls/" + girlName);
+              if (!$drive.exists("Zngirls/" + girlName + "/" + folderName)) {
+                $drive.mkdir("Zngirls/" + girlName + "/" + folderName);
               }
-              $("progress").value = 0;
-              var count = 0;
-              for (var i = 0; i < urlList.length; i++) {
-                $http.download({
-                  url: urlList[i],
-                  handler: function(resp) {
-                    count++;
-                    sender.title = "正在下载第 " + count + " 幅图";
-                    $("progress").value = (count * 1.0) / urlList.length;
-                    if (count == urlList.length) {
-                      sender.title = "完成, iCloud Drive 查看";
-                      $device.taptic(1);
-                      $("progress").value = 0;
-                    }
-                    var path =
-                      "套图吧/" +
-                      girlName +
-                      "/" +
-                      folderName +
-                      "/" +
-                      resp.response.suggestedFilename;
-                    $drive.write({
-                      data: resp.data,
-                      path: path
-                    });
-                  }
-                });
-              }
+
+              count = 0;
+              for (var i = 0; i < IMGList.length; i++) {
+               downImg(IMGList[i],sender)
+                            }
+//              let requests = IMGList.map(img => downImg(img, sender));
+
+             
+//              Promise.all(IMGList).then(urls=>urls.forEach(url=>downImg(url,sender)));
             }
-            $cache.clear();
+            //            $cache.clear();
           }
         }
       },
@@ -621,9 +693,9 @@ function showPhotos(title, columns, rowHeight) {
           radius: 0,
           title: "下载",
           alpha: 0.9,
-          hidden: false
+          hidden: true
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           //        let w = $device.info.screen.width / 3
 
           make.bottom.inset(0);
@@ -675,7 +747,7 @@ function showPhotos(title, columns, rowHeight) {
           title: "视图",
           alpha: 0.9
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           let w = $device.info.screen.width / 4;
           make.right.inset(w);
           make.bottom.inset(0);
@@ -696,7 +768,7 @@ function showPhotos(title, columns, rowHeight) {
                 $("detailView").data = [];
                 let temp = [];
                 temp = temp.concat(
-                  IMGList.map(function(i) {
+                  IMGList.map(function (i) {
                     return {
                       detailImage: {
                         src: i
@@ -719,7 +791,7 @@ function showPhotos(title, columns, rowHeight) {
           title: "个人",
           alpha: 0.9
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           let w = $device.info.screen.width / 4;
           w = w * 2;
           make.right.inset(w);
@@ -739,11 +811,10 @@ function showPhotos(title, columns, rowHeight) {
             );
             getPostData(-1, acPage, acUrl);
           },
-          longPressed: function(sender) {
-                      $device.taptic(1);
-                      $app.openURL(detailUrl);
-                      
-                    }
+          longPressed: function (sender) {
+            $device.taptic(1);
+            $app.openURL(detailUrl);
+          }
         }
       },
       {
@@ -755,7 +826,7 @@ function showPhotos(title, columns, rowHeight) {
           title: "收藏",
           alpha: 0.9
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.right.bottom.inset(0);
           make.width.equalTo(view.super).dividedBy(4);
           make.height.equalTo(50);
@@ -763,7 +834,7 @@ function showPhotos(title, columns, rowHeight) {
         events: {
           tapped(sender) {
             $device.taptic(0);
-            console.log(interface)
+            console.log(interface);
             var data = {
               src: interface,
               url: detailUrl,
@@ -778,25 +849,24 @@ function showPhotos(title, columns, rowHeight) {
               $("favorite").title = "收藏";
               $("favorite").bgcolor = $color("black");
             }
-            $delay(0.5, function() {});
+            $delay(0.5, function () {});
           },
-          longPressed: function(sender) {
+          longPressed: function (sender) {
             $device.taptic(1);
-//            $app.openURL(detailUrl);
-            console.log(detailUrl+" "+interface+" "+title)
+            //            $app.openURL(detailUrl);
+            console.log(detailUrl + " " + interface + " " + title);
             let data = {
-              src:interface,
-              url:detailUrl,
-              title:title
+              src: interface,
+              url: detailUrl,
+              title: title
+            };
+            if (GoodList.indexOf(interface) < 0) {
+              goodButtonTapped("add", data);
+              $ui.toast("已添加到精选集");
+            } else {
+              goodButtonTapped("del", data);
+              $ui.error("已从精选集中删除");
             }
-            if(GoodList.indexOf(interface)<0){
-              goodButtonTapped("add", data)
-              $ui.toast("已添加到精选集")
-            }else{
-              goodButtonTapped("del",data)
-              $ui.error("已从精选集中删除")
-            }
-            
           }
         }
       },
@@ -810,7 +880,7 @@ function showPhotos(title, columns, rowHeight) {
           progressColor: $color("green"),
           userInteractionEnabled: false
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.bottom.left.right.inset(0);
           make.height.equalTo(40);
         }
@@ -826,18 +896,17 @@ function getPostData(num, page, acUrl) {
     url = acUrl + page;
     url = page > 0 ? url + ".html" : url;
   }
-  console.log(url)
+  console.log(url);
   $http.get({
     url: url,
     handler: resp => {
       var data = resp.data;
-//      console.log(data);
+      //      console.log(data);
       $ui.clearToast();
       let match0 = "";
       if (num >= 0) {
         let reg0 = /div id="ddesc"[\s\S]*?回顶部/g;
         match0 = data.match(reg0)[0];
-        
       } else {
         let reg0 = /册<.*"/g;
         if (!data.match(reg0) && page < 2) {
@@ -849,34 +918,35 @@ function getPostData(num, page, acUrl) {
         match0 = data.match(reg0)[0];
       }
 
-//      console.log(match0)
+      //      console.log(match0)
       let reg = /a href='([\s\S]*?)' class='ck-link[\s\S]*?img (src|data-original)='([\s\S]*?)' alt='([\s\S]*?)'/g;
       let array = [...match0.matchAll(reg)];
       //let match1 = match0.match(reg)
-//      console.log(array);
+      //      console.log(array);
       let temp = [];
-      
+
       array.map(i => {
-        if (i[1].indexOf("girl")>=0){
-                i[1] = i[1].match(/\/g\/\d{5}/)
-             
-              }
+        if (i[1].indexOf("girl") >= 0) {
+          i[1] = i[1].match(/\/g\/\d{5}/);
+        }
         temp = temp.concat({
           title: i[4],
           detail: num >= 0 ? i[1] : "https://m.nvshens.org" + i[1],
           interface: {
-//            src: i[3]
+            //            src: i[3]
             source: {
               url: i[3],
               header: {
-                "Referer": "https://m.nvshens.org/"
+                Referer: "https://m.nvshens.org/"
               }
             }
           },
           recGra: {
             hidden: LocalList.indexOf(i[3]) >= 0 ? false : true
-          },goodGra:{
-        hidden:GoodList.indexOf(i[3])>-1?false:true}
+          },
+          goodGra: {
+            hidden: GoodList.indexOf(i[3]) > -1 ? false : true
+          }
         });
       });
       if (num >= 0) {
@@ -896,19 +966,19 @@ function getPostData(num, page, acUrl) {
 }
 
 function getDetailPost(url) {
-  url.replace("net","org")
+  url.replace("net", "org");
   $http.request({
     url: url,
-    handler: function(resp) {
+    handler: function (resp) {
       if (!resp) {
         $ui.alert("❌ 请检查网络");
       }
       $ui.clearToast();
-      console.log(url)
+      console.log(url);
       let reg = /(\d{2,3})张/;
       let picNum = resp.data.match(reg)[1];
       picNum = Number(picNum);
-//      console.log(picNum);
+      //      console.log(picNum);
       reg = /gallery\/(\d{5})\/\d{5}\/s/;
       let actressUrl = resp.data.match(reg)[1];
       actressUrl = "https://m.nvshens.org/girl/" + actressUrl + "/album/";
@@ -928,25 +998,24 @@ function getDetailPost(url) {
       }
       //console.log(IMGList);
       console.log("共计 " + IMGList.length + " 张图");
-     
+
       let temp = $("detailView").data;
-      
+
       temp = temp.concat(
-        IMGList.map(function(i) {
+        IMGList.map(function (i) {
           return {
             detailImage: {
               source: {
                 url: i,
                 header: {
-                  "Referer": "https://m.nvshens.org/"
-              
+                  Referer: "https://m.nvshens.org/"
                 }
               }
             }
           };
         })
       );
-      
+
       $("detailView").data = temp;
       //           $ui.clearToast();
     }
@@ -957,7 +1026,7 @@ function favoriteButtonTapped(mode, data) {
   if (mode == "add") {
     LocalData.fav.unshift(data);
     LocalList.unshift(data.src);
-    console.log(data.src)
+    console.log(data.src);
     if ($("tab").index == 8) {
       var temp = $("preView").data;
       temp.unshift({
@@ -1013,7 +1082,7 @@ function writeCache() {
 
 function getSearch(text) {
   let url = searchUrl + encodeURI(text);
-  console.log(url)
+  console.log(url);
   $http.get({
     url: url,
     handler: resp => {
@@ -1028,8 +1097,7 @@ function getSearch(text) {
       let array = [...match0.matchAll(reg)];
       //let match1 = match0.match(reg)
       console.log(array);
-      if(array.length==0)
-      $ui.error("无搜索结果")
+      if (array.length == 0) $ui.error("无搜索结果");
       let temp = [];
       $("acList").data = [];
       array.map(i => {
@@ -1042,8 +1110,9 @@ function getSearch(text) {
             src: i[2]
           },
           acFav: {
-            title:GirlList.indexOf(i[3])>=0?"取消收藏":"收藏",
-            bgcolor:GirlList.indexOf(i[3])>=0?$color("gray"):$color("tint"),
+            title: GirlList.indexOf(i[3]) >= 0 ? "取消收藏" : "收藏",
+            bgcolor:
+              GirlList.indexOf(i[3]) >= 0 ? $color("gray") : $color("tint"),
             info: {
               src: i[2],
               url: "https://m.nvshens.org" + i[1] + "album/",
@@ -1116,7 +1185,7 @@ function playImg(imgList, position, title) {
           alpha: 0.9
           //              hidden: true
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.bottom.inset(15);
           make.width.equalTo(140);
           make.height.equalTo(30);
@@ -1163,7 +1232,7 @@ function playImg(imgList, position, title) {
           title: "向右",
           alpha: 0.9
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.right.bottom.inset(15);
           make.width.equalTo(140);
           make.height.equalTo(30);
@@ -1210,7 +1279,7 @@ function playImg(imgList, position, title) {
           id: "page",
           align: $align.center
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.centerX.equalTo(view.super);
           make.bottom.inset(20);
         }
@@ -1258,7 +1327,7 @@ function playImg2(indexPath, title) {
 
           //              hidden: true
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.bottom.inset(15);
           make.width.equalTo(140);
           make.height.equalTo(30);
@@ -1278,7 +1347,7 @@ function playImg2(indexPath, title) {
 
               return;
             }
-            
+
             $("page").text = Position + "/" + IMGList.length;
             let i = $indexPath(indexPath.section, Position);
             $("IMG").image = $("detailView").cell(i).views[0].views[0].image;
@@ -1316,7 +1385,7 @@ function playImg2(indexPath, title) {
           alpha: 0.9,
           radius: 15
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.right.bottom.inset(15);
           make.width.equalTo(140);
           make.height.equalTo(30);
@@ -1335,7 +1404,7 @@ function playImg2(indexPath, title) {
 
               return;
             }
-            
+
             $("page").text = Position + "/" + IMGList.length;
             let i = $indexPath(indexPath.section, Position);
             $("IMG").image = $("detailView").cell(i).views[0].views[0].image;
@@ -1372,7 +1441,7 @@ function playImg2(indexPath, title) {
           id: "page",
           align: $align.center
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.centerX.equalTo(view.super);
           make.bottom.inset(20);
         }
@@ -1388,15 +1457,14 @@ function main() {
   if ($file.read(LocalDataPath)) {
     LocalData = JSON.parse($file.read(LocalDataPath).string);
     LocalList = LocalData.fav.map(i => i.src);
-    GirlList = LocalData.girl.map(i=>i.name);
-    GoodList = LocalData.good.map(i=>i.src)
+    GirlList = LocalData.girl.map(i => i.name);
+    GoodList = LocalData.good.map(i => i.src);
   } else {
-    LocalData = { fav: [], girl: [] ,good:[]};
+    LocalData = { fav: [], girl: [], good: [] };
     LocalList = [];
     GirlList = [];
-    GoodList = []
+    GoodList = [];
   }
-  
 }
 
 var column = $cache.get("column") || 0;
