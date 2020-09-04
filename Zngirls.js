@@ -452,7 +452,8 @@ function matrixView(column, rowHeight) {
           $("favorite").title = "取消收藏";
           $("favorite").bgcolor = $color("tint");
         }
-        $ui.toast("载入中...", 5);
+        
+        $ui.toast(IMGList.length + "张图载入中...", 5);
         $("favorite").info = data.detail;
         $("detailView").data = [];
 
@@ -544,7 +545,7 @@ function download(params) {
   params.handlers = params.handlers || {};
   const url = params.url;
   const method = params.method || "GET";
-  const timeout =  10;
+  const timeout =  60;
   const header = {
        Referer: "https://m.nvshens.org/"
      };
@@ -595,7 +596,7 @@ function downImg(url,sender){
       if ('key' in error)
       console.log(error)
       count++;
-            sender.title = count;
+            sender.title = count+"/"+IMGList.length;
             //                    $("progress").value = (count * 1.0) / urlList.length;
             if (count == IMGList.length) {
               sender.title = "完成";
@@ -779,7 +780,10 @@ function showPhotos(title, columns, rowHeight) {
                 $("detailView").data = temp;
               }
             });
-          }
+          },
+          longPressed: function (sender) {
+                      $ui.toast("共计: "+IMGList.length+" 张图")
+                    }
         }
       },
       {
@@ -887,6 +891,7 @@ function showPhotos(title, columns, rowHeight) {
       }
     ]
   });
+  
 }
 
 function getPostData(num, page, acUrl) {
@@ -997,7 +1002,7 @@ function getDetailPost(url) {
         IMGList.push(imgU);
       }
       //console.log(IMGList);
-      console.log("共计 " + IMGList.length + " 张图");
+      $console.log("共计 " + IMGList.length + " 张图");
 
       let temp = $("detailView").data;
 
