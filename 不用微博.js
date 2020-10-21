@@ -224,7 +224,7 @@ async function getTimeStamp(family){
   let ld = resp.data.data[0].calendarDay.lunarDayText
   let timeStamp = lm+"月"+ld+"  "+date.toDateString().slice(4,10)
 //  console.log(timeStamp)
-  timeStamp = "微博热搜                             " + timeStamp
+  timeStamp = "微博热搜                           " + timeStamp
   return timeStamp
 }
 
@@ -260,7 +260,7 @@ function requestFailed(resp) {
 }
 
 async function fetch() {
-  const cache = $cache.get("image");
+  const cache = $file.read("bg.jpg")
   let size = "500x500";
   if (family == 1) size = "800x375";
   let url = "https://source.unsplash.com/random/" + size + "/?dark";
@@ -269,8 +269,12 @@ async function fetch() {
     return cache;
   }
   const image = file.data.image;
+  
   if (image) {
-    $cache.set("image", image);
+    $file.write({
+        data: file.data,
+        path: "bg.jpg"
+      })
   }
 
   return image;
@@ -298,9 +302,9 @@ function getGrid(family, data) {
           props: {
             spacing: 8,
             alignment: $widget.horizontalAlignment.leading,
-            offset: $point(-5, 7),
+            offset: $point(2, 7),
             frame: {
-                            width: 140,
+                            width: 150,
                            
                           }
           },
@@ -311,9 +315,9 @@ function getGrid(family, data) {
           props: {
             spacing: 8,
             alignment: $widget.horizontalAlignment.leading,
-            offset: $point(-5, 7),
+            offset: $point(-15, 7),
             frame: {
-                width: 140,
+                width: 145,
                
               }
             
@@ -342,7 +346,7 @@ async function widgetInit() {
   let temp = [];
   let data = await getHotSearch();
   let hot = data.hotCards;
-  let upTime = data.upTime;
+  let upTime = data.upTime
   let image = await fetch();
   const date = new Date();
   date.setMinutes(date.getMinutes(date) + 15);
@@ -395,7 +399,7 @@ async function widgetInit() {
               image: image,
               resizable: true,
               scaledToFit: false,
-              opacity: 0.9,
+              opacity: 0.5,
               background: {
                   type: "gradient",
                   props: {
@@ -427,7 +431,10 @@ async function widgetInit() {
                     alignment: $widget.alignment.leading,
                     height: 18
                   },
-                  offset: family==1?$point(15, 5):$point(10,5)
+                  offset: family==1?$point(15, 5):$point(10,5),
+                  
+                                      
+                                   
                 }
               },
               getGrid(family, temp),
@@ -436,12 +443,14 @@ async function widgetInit() {
                 props: {
                   text: "更新时间:" + timeConvert(upTime),
                   font: $font(8),
-                  color: $color("white"),
+                  color: $color("#7e8b8c"),
                   frame: {
                     maxWidth: Infinity,
                     alignment: $widget.alignment.trailing
                   },
-                  offset: $point(-10, 5)
+                  
+                  offset: $point(-10, 7),
+                  
                 }
               }
             ]
@@ -455,5 +464,6 @@ async function widgetInit() {
 if ($env.app == $app.env) {
   inAppShow();
   inAppInit();
-} else
-widgetInit();
+} else widgetInit();
+
+
