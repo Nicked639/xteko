@@ -188,7 +188,12 @@ function tabView() {
                 },
 
                 acImg: {
-                  src: i.src
+                  source: {
+                                      url: i.src,
+                                      header: {
+                                        Referer: "https://m.nvshens.org/"
+                                      }
+                                    }
                 },
                 acFav: {
                   title: "取消收藏",
@@ -608,13 +613,13 @@ function downImg(url,sender){
             if (namePrefix)
             fileName = namePrefix+"-"+fileName
             var path =
-              "Zngirls/" +
+              "shared://Zngirls/" +
               girlName +
               "/" +
               folderName +
               "/" +
               fileName;
-            $drive.write({
+            $file.write({
               data: data,
               path: path
             });
@@ -667,10 +672,10 @@ function showPhotos(title, columns, rowHeight) {
               $delay(0.5, function () {});
               sender.title = "正在下载...";
 
-              if (!$drive.exists("Zngirls/" + girlName))
-                $drive.mkdir("Zngirls/" + girlName);
-              if (!$drive.exists("Zngirls/" + girlName + "/" + folderName)) {
-                $drive.mkdir("Zngirls/" + girlName + "/" + folderName);
+              if (!$file.exists("shared://Zngirls/" + girlName))
+                $file.mkdir("shared://Zngirls/" + girlName);
+              if (!$file.exists("shared://Zngirls/" + girlName + "/" + folderName)) {
+                $file.mkdir("shared://Zngirls/" + girlName + "/" + folderName);
               }
 
               count = 0;
@@ -1112,7 +1117,12 @@ function getSearch(text) {
             info: "https://m.nvshens.org" + i[1] + "album/"
           },
           acImg: {
-            src: i[2]
+            source: {
+                                url: i[2],
+                                header: {
+                                  Referer: "https://m.nvshens.org/"
+                                }
+                              }
           },
           acFav: {
             title: GirlList.indexOf(i[3]) >= 0 ? "取消收藏" : "收藏",
@@ -1152,8 +1162,8 @@ function showSearch(text) {
             acPage = 1;
             acUrl = data.acName.info;
             showAcView(
-              Math.pow(2, column + 1),
-              275 / Math.pow(2, column),
+              Math.pow(2, $cache.get("column") + 1),
+              275 / Math.pow(2, $cache.get("column")),
               data.acName.text
             );
             getPostData(-1, acPage, acUrl);
