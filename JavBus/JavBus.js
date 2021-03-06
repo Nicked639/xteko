@@ -35,7 +35,7 @@
 
 */
 //$app.theme="auto"
-version = 8.1;
+version = 8.11;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1576,7 +1576,8 @@ function detailView(code) {
                 "JAV.GURU",
                 "Jable.TV",
                 "JavLibrary",
-                "Netflav"
+                "Netflav",
+"JavDB"
               ],
               handler: function(title, idx) {
                 if (idx == 0) {
@@ -1647,6 +1648,8 @@ function detailView(code) {
                   $app.openURL(
                     "https://netflav.com/search?type=title&keyword=" + favCode
                   );
+                } else if(idx ==6){
+                  $app.openURL("https://javdb.com/search?q="+favCode+"&f=all")
                 }
               }
             });
@@ -1812,12 +1815,12 @@ function detailView(code) {
                   //                      $share.sheet(url);
                   //                    }
                   //                  });
-                  var sina =
-                    "https://api.weibo.com/2/short_url/shorten.json?source=560331235&url_long=";
+                  var tinyUrl =
+                    "http://tinyurl.com/api-create.php?url=";
                   $http.get({
-                    url: sina + url,
+                    url: tinyUrl + url,
                     handler: function(resp) {
-                      $share.sheet(resp.data.urls[0].url_short);
+                      $share.sheet(resp.data);
                     }
                   });
                 } else if (idx == 1) {
@@ -3649,12 +3652,12 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
         $("bgInfo").hidden = true;
         //        $("bgImage").hidden = true;
         $ui.push(detailView(code));
-        getDetail(link);
         favLink = link;
         favSrc = image;
         favCode = code;
         favInfo = code + " | " + date;
         shortCode = favLink.split("/").pop();
+        getDetail(link);
         favData = {
           code: code,
           src: favSrc,
@@ -3954,7 +3957,7 @@ function getDetail(url) {
   flag++;
   Trans = 0;
   
-        preAvgle(favCode);
+  preAvgle(favCode);
   $http.request({
     url: url,
     timeout: Timeout,
@@ -4088,18 +4091,24 @@ function getDetail(url) {
       screenData = [];
       var regScreenshot = /<a class="sample-box" href="(.*?)"[\s\S]*?<img src="(.*?)">/g;
       var match = resp.data.match(regScreenshot);
+      //console.log("screen")
+      //console.log(match)
       if (match) {
         match.map(function(i) {
           var screenshot = /<a class="sample-box" href="(.*?)"[\s\S]*?<img src="(.*?)">/g.exec(
             i
           )[1];
           //         var resp = await $http.get(screenshot);
-          var screenshotCover = /<a class="sample-box" href="(.*?)"[\s\S]*?<img src="(.*?)"\s/g.exec(
-            i
-          )[2];
+          var screenshotCover = /<a class="sample-box" href="(.*?)"[\s\S]*?<img src="(.*?)"\s/g.exec(i)[2];
           screenData.push({
             screenshotCover: {
-              src: screenshot
+              source:{
+                              url: screenshot,
+                              header:{
+                                authority:"pics.dmm.co.jp"
+                              }
+                            }
+                            
             },
             link: screenshot
           });
@@ -4524,7 +4533,7 @@ function getMagnet(code) {
       "&page=1&sort=time&a=1566535262486&b=9e46e189be0a95d862379467a19322e7",
     handler: function(resp) {
       var data = resp.data;
-      $console.log(resp.data);
+
       if (!data.success) {
         $("mlist").data = [
           {
@@ -5036,7 +5045,7 @@ function jableTv(code, flag) {
         $("check").bgcolor = $color("tint");
         $("check").titleColor = $color("white");
         Jable = true;
-        let prePattern = /data-preview="(https:\/\/assets\.jable\.tv\/.*?_preview\.mp4)/g;
+        let prePattern = /data-preview="(https.*?_preview\.mp4)/g;
         let preUrl = prePattern.exec(data)[1];
         $cache.set("preJable", preUrl);
         
