@@ -35,7 +35,7 @@
 
 */
 //$app.theme="auto"
-version = 8.11;
+version = 8.12;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -2294,7 +2294,7 @@ function magnetList(code) {
                 $clipboard.text = magnet;
                 $device.taptic(0);
                 $ui.toast("💡 磁链已复制");
-                $app.openURL("wb1307639798://");
+                //$app.openURL("weixin://");
                 if (!$cache.get("qkMail")) {
                   $input.text({
                     type: $kbType.search,
@@ -2316,7 +2316,7 @@ function magnetList(code) {
                   });
                 }else{
                   let url =
-                                                "https://push.getquicker.net/push?toUser=" +
+                                                "https://push.getquicker.cn/to/quicker?toUser=" +
                                                 $cache.get("qkMail") +
                                                 "&code=" +
                                                 $cache.get("qkCode") +
@@ -3599,15 +3599,15 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
       //       else $("tabC").index = 0;
       var reg = /<a class="movie-box"[\s\S]*?<\/span>\s/g;
       var match = resp.data.match(reg);
-//      console.log(resp.data);
-//      $console.log(match);
+      //console.log(resp.data);
+      //console.log(match);
       var data = [];
       match.map(function(i) {
         //        console.log(i)
         link = /href="([\s\S]*?)(")/.exec(i)[1];
         //        console.log(link)
-        image = /<img src="([\s\S]*?)(")/.exec(i)[1];
-        //        console.log(image)
+        image = homepage + /<img src="([\s\S]*?)(")/.exec(i)[1];
+               console.log(image)
         var title = /title="(.*?)(">)/.exec(i)[1];
         //        console.log(title)
         code = /<date>(.*?)<\/date>/.exec(i)[1];
@@ -3692,7 +3692,7 @@ function getInitialActress(url) {
       var data = [];
       match.map(function(i) {
         var link = /href="([\s\S]*?)(")/.exec(i)[1];
-        var image = /<img src="([\s\S]*?)(")/.exec(i)[1];
+        var image = homepage+/<img src="([\s\S]*?)(")/.exec(i)[1];
         var title = /title="(.*?)(">)/.exec(i)[1];
         $("initialView").data = $("initialView").data.concat({
           link: link,
@@ -3976,7 +3976,7 @@ function getDetail(url) {
           name = /<span>(.*?)<\/span>/.exec(i)[1];
 
           var nameLink = /href="([\s\S]*?)(")/.exec(i)[1];
-          var nameImage = /<img src="([\s\S]*?)(")/.exec(i)[1];
+          var nameImage = homepage+/<img src="([\s\S]*?)(")/.exec(i)[1];
           //$ui.action(nameImage)
           $("filmActress").data = $("filmActress").data.concat({
             link: nameLink,
@@ -3995,7 +3995,7 @@ function getDetail(url) {
         $("whoInFilm").hidden = true;
       }
       // 影片详情
-      filmCover = /<a class="bigImage" href="(.*?)"/.exec(resp.data)[1];
+      filmCover = homepage+/<a class="bigImage" href="(.*?)"/.exec(resp.data)[1];
       $("filmCover").src = filmCover;
       var filmName = /<a class="bigImage" href="(.*?)" title="(.*?)"/.exec(
         resp.data
@@ -4232,7 +4232,7 @@ function getActress(url) {
       var data = [];
       match.map(function(i) {
         var link = /href="([\s\S]*?)(")/.exec(i)[1];
-        var image = /<img src="([\s\S]*?)(")/.exec(i)[1];
+        var image = homepage+/<img src="([\s\S]*?)(")/.exec(i)[1];
         var title = /title="(.*?)(">)/.exec(i)[1];
         var code = /<date>(.*?)<\/date>/.exec(i)[1];
         var date = /\/\s<date>(.*?)<\/date><\/span>/.exec(i)[1];
