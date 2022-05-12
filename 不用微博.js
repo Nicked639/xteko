@@ -2,17 +2,22 @@ const hotSearchApi =
   "https://m.weibo.cn/api/container/getIndex?containerid=106003%26filter_type%3Drealtimehot";
 const family = $widget.family;
 async function getHotSearch() {
-  //    $ui.toast(family);
+
+  let cache = $cache.get("c")
   let resp = await $http.get(hotSearchApi);
+  if (requestFailed(resp)) {  
+      return JSON.parse(cache)
+    }
   let data = resp.data.data;
   //    if (data.errmsg) {
-  //        alert(data.errmsg);
+  //        alert(data.errmsg); 
   //        return;
   //    }
   let hotCards = data.cards[0].card_group;
   let upTime = data.cardlistInfo.starttime;
-  //console.log(upTime)
-  return { hotCards, upTime };
+  let c = { hotCards, upTime }
+  $cache.set("hot",c)
+  return c
 }
 
 function list() {
@@ -47,9 +52,10 @@ function list() {
           title: "微博",
           color: $rgb(246, 22, 31), // default to gray
           handler: function (sender, indexPath) {
-            //console.log(sender.data[indexPath.row].label.info);
+
             $cache.set("app", "weibo");
-            $app.openURL(sender.data[indexPath.row].hotContent.info);
+            //console.log(sender.data[indexPath.row])
+            $app.openURL(sender.data[indexPath.row].hotTitle.link);
           }
         }
       ]
@@ -77,12 +83,73 @@ function list() {
   };
 }
 function openSafari(url) {
-  $safari.open({
-    url: url,
-    entersReader: false,
-    handler: () => {
-      $ui.clearToast();
-    }
+  $ui.push({
+     props:{},
+     views: [
+       {
+            type: 'web',
+            props: {
+              id: 'web',
+              url: encodeURI(url),
+              script: function () {
+                var script = document.createElement('script');
+                script.src = "https://unpkg.com/ajax-hook@2.0.9/dist/ajaxhook.min.js";
+                document.getElementsByTagName('head')[0].appendChild(script);
+        
+                var timer = setInterval(function () {
+                  if (ah) {
+                    clearInterval(timer);
+                    ah.proxy({
+                      //请求发起前进入
+                      onRequest: (config, handler) => {
+                        // console.log(config.url)
+                        handler.next(config);
+                      },
+                      //请求发生错误时进入，比如超时；注意，不包括http状态码错误，如404仍然会认为请求成功
+                      onError: (err, handler) => {
+                        // console.log(err.type)
+                        handler.next(err)
+                      },
+                      //请求成功后进入
+                      onResponse: (response, handler) => {
+                        console.log(response.response)
+                        var resp = JSON.parse(response.response);
+                        if(resp.ok == -100) {
+                          $notify("login", {"key": "value"})
+                          resp.ok = 1;
+                          resp.data = {
+                            status: {
+                              comment_manage_info: {
+                                comment_permission_type : -1,
+                                approval_comment_type : 0,
+                                comment_sort_type : 0
+                              }
+                            },
+                            data: [],
+                            total_number : 0,
+                            max_id : 0,
+                            max: 89,
+                            max_id_type: 0,
+                          };
+                          resp.url = "";
+                          response.response = JSON.stringify(resp);
+                        }
+                        handler.next(response);
+                      }
+                    })
+                  }
+                }, 1000)
+              }
+            },
+            layout: $layout.fill,
+        
+            events: {
+              login: function(object) {
+                $ui.toast("已拦截登录请求！");
+              },
+            }
+       }
+     ]
   });
 }
 const template = {
@@ -185,6 +252,7 @@ async function inAppInit() {
     });
   }
   $("hotList").data = temp;
+  
   //$ui.toast(timeConvert(data.pageInfo.starttime) + "  更新", 0.6);
 }
 function inAppShow() {
@@ -210,22 +278,24 @@ function inAppShow() {
 }
 
 async function getTimeStamp(family){
-  if(family==0) return "微博热搜"
-  let url = "http://calendar.netcore.show/api/day/days?day="
-  let date = new Date()
-  let m = date.getMonth()+1
-  let d = date.getDate()
-  let y = date.getFullYear()
-  
-  url = url+y+"-"+m+"-"+d
-  let resp = await $http.get(url)
-  if (!resp) return
-  let lm = resp.data.data[0].calendarMonth.lunarMonthText
-  let ld = resp.data.data[0].calendarDay.lunarDayText
-  let timeStamp = lm+"月"+ld+"  "+date.toDateString().slice(4,10)
-//  console.log(timeStamp)
-  timeStamp = "微博热搜                           " + timeStamp
-  return timeStamp
+//  if(family==0) return "微博热搜"
+//  let url = "http://calendar.netcore.show/api/day/days?day="
+//  let date = new Date()
+//  let m = date.getMonth()+1
+//  let d = date.getDate()
+//  let y = date.getFullYear()
+//  
+//  url = url+y+"-"+m+"-"+d
+//  let resp = await $http.get(url)
+//  
+//  if (requestFailed(resp)) return "微博热搜"
+//  let lm = resp.data.data[0].calendarMonth.lunarMonthText
+//  let ld = resp.data.data[0].calendarDay.lunarDayText
+//  let timeStamp = lm+"月"+ld+"  "+date.toDateString().slice(4,10)
+////  console.log(timeStamp)
+//  timeStamp = "微博热搜                           " + timeStamp
+//  return timeStamp
+return "不用微博"
 }
 
 function timeConvert() {
@@ -265,8 +335,9 @@ async function fetch() {
   if (family == 1) size = "800x375";
   let url = "https://source.unsplash.com/random/" + size + "/?dark";
   const file = await $http.download(url);
+  console.log(file)
   if (requestFailed(file)) {
-    return cache;
+    return cache.image;
   }
   const image = file.data.image;
   
@@ -302,9 +373,9 @@ function getGrid(family, data) {
           props: {
             spacing: 8,
             alignment: $widget.horizontalAlignment.leading,
-            offset: $point(2, 7),
+            offset: $point(-2, 7),
             frame: {
-                            width: 150,
+                        width: 145,
                            
                           }
           },
@@ -375,9 +446,8 @@ async function widgetInit() {
         offset: $point(7, 0),
         lineLimit: 1,
         link:
-          "http://s.weibo.com/weibo?q=%23" +
-          encodeURI(hot[i].desc) +
-          "%23&Refer=top"
+          "jsbox://run?name=" + encodeURI("不用微博") + ".js&url=" + encodeURI("http://s.weibo.com/weibo?q=%23" )+encodeURI(hot[i].desc)
+
       }
     });
   }
@@ -390,7 +460,8 @@ async function widgetInit() {
         type: "zstack",
         props: {
           alignment: $widget.alignment.center,
-          widgetURL: "jsbox://run?name=" + encodeURI("不用微博") + ".js"
+          
+          widgetURL: "jsbox://run?name="+encodeURI("不用微博")+".js"
         },
         views: [
           {
@@ -415,10 +486,8 @@ async function widgetInit() {
             type: "vstack",
             props: {
               spacing: 5,
-              alignment: $widget.horizontalAlignment.leading
-              // spacing: 10,
-              //alignment: $widget.verticalAlignment.left
-              //widgetURL: "jsbox://runjs?file=javbus.js"
+              alignment: $widget.horizontalAlignment.leading,
+              
             },
             views: [
               {
@@ -449,7 +518,7 @@ async function widgetInit() {
                     alignment: $widget.alignment.trailing
                   },
                   
-                  offset: $point(-10, 7),
+                  offset: $point(-8, 7),
                   
                 }
               }
@@ -464,6 +533,6 @@ async function widgetInit() {
 if ($env.app == $app.env) {
   inAppShow();
   inAppInit();
+  if($context.query.url!==undefined)
+    openSafari($context.query.url)
 } else widgetInit();
-
-
