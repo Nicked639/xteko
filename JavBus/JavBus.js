@@ -57,7 +57,8 @@ JavMag = 0; // 磁链获取状态
 Timeout = 10;
 flag = 0; // 用于判断从通知中心启动的状态
 Jable = false;
-Avgle = false
+Avgle = false;
+Missav = false;
 if (isInToday()) runWhere();
 var colorData = [
   [$color("#fd354a"), $color("#da0a6f")],
@@ -1352,7 +1353,7 @@ function detailView(code) {
       {
         type: "text",
         props: {
-          text: "系列:",
+          text: " 系列:",
           bgcolor: $color("white"),
           id: "series",
           font: $font("bold", 17),
@@ -1365,7 +1366,7 @@ function detailView(code) {
           insets: $insets(0, 0, 0, 0)
         },
         layout: function(make, view) {
-          make.left.inset(5);
+          make.left.inset(0);
           make.top.equalTo($("filmMaker").bottom).offset(5);
           //make.height.equalTo(20)
         }
@@ -1401,7 +1402,7 @@ function detailView(code) {
       {
         type: "text",
         props: {
-          text: "导演:",
+          text: " 导演:",
           bgcolor: $color("white"),
           id: "director",
           font: $font("bold", 17),
@@ -1414,7 +1415,7 @@ function detailView(code) {
           insets: $insets(0, 0, 0, 0)
         },
         layout: function(make, view) {
-          make.left.inset(5);
+          make.left.inset(0);
           make.top.equalTo($("series").bottom).offset(5);
           //make.height.equalTo(20)
         }
@@ -1450,7 +1451,7 @@ function detailView(code) {
       {
         type: "text",
         props: {
-          text: "参演:",
+          text: " 参演:",
           bgcolor: $color("white"),
           id: "whoInFilm",
           font: $font("bold", 17),
@@ -1463,7 +1464,7 @@ function detailView(code) {
           insets: $insets(0, 0, 0, 0)
         },
         layout: function(make, view) {
-          make.left.inset(5);
+          make.left.inset(0);
           make.top.equalTo($("director").bottom).offset(5);
           //make.height.equalTo(20)
         }
@@ -3832,7 +3833,24 @@ function preAvgle(code, flag) {
       let video_num = resp.data.response.total_videos;
 //            $console.log(resp.data)
       if (video_num == 0) {
-
+        let url =
+            "https://cdn.missav.com/" +
+            code +
+            "/preview.mp4";
+          $http.get({
+            url: url,
+            handler: function(resp) {
+              var data = resp.data;
+              
+              if(data.fileName){
+                Avgle = true
+                play(url);
+              }
+              
+              
+            }
+          });
+       
       return
       }
       let infos = resp.data.response.videos;
@@ -3845,7 +3863,10 @@ function preAvgle(code, flag) {
       
     }
   });
+  return Avgle
 }
+
+
 
 //function getAvglePreview(keyword, poster, flag) {
 //  let url =
@@ -4018,8 +4039,8 @@ function getDetail(url) {
         let lastmins = /\d+/.exec(temp[1]);
         let hours = Math.floor(lastmins / 60);
         let mins = lastmins % 60;
-        mins = mins == "0" ? "00" : mins;
-        var filmLast = hours + ":" + mins;
+        mins = mins<10 ? "0"+mins : mins;
+        var filmLast = "0"+hours + ":" + mins;
       } else {
         var filmLast = "???分钟";
       }
@@ -4059,7 +4080,7 @@ function getDetail(url) {
       } else {
         var directorName = "未知";
       }
-      $("filmInfo").text = filmTime + "  " + "(时长 " + filmLast + ")";
+      $("filmInfo").text = filmTime + "("+filmLast +")";
 
       $("filmInfo").hidden = isInToday();
       var code = /<span class="header">識別碼:[\s\S]*?">([\s\S]*?)<\/span>/.exec(
@@ -4370,7 +4391,7 @@ function favoriteButtonTapped(mode, data) {
 function translate(keyword) {
   $("filmName").text = "翻译中...";
   let url =
-    "https://translate.google.cn/translate_a/single?client=it&dt=t&dt=rmt&dt=bd&dt=rms&dt=qca&dt=ss&dt=md&dt=ld&dt=ex&otf=3&dj=1&hl=zh_CN&ie=UTF-8&oe=UTF-8&sl=auto&tl=zh-CN&q=" +
+    "https://translate.google.hk/translate_a/single?client=it&dt=t&dt=rmt&dt=bd&dt=rms&dt=qca&dt=ss&dt=md&dt=ld&dt=ex&otf=3&dj=1&hl=zh_CN&ie=UTF-8&oe=UTF-8&sl=auto&tl=zh-CN&q=" +
     $text.URLEncode(keyword);
   $http.get({
     header: {
@@ -5063,7 +5084,7 @@ function jableTv(code, flag) {
             $cache.set("m3u8", m3u8);
           }
         });
-        $delay(1, () => {
+        $delay(2, () => {
           if(Avgle == true) return
         
           else if(avUrl){
