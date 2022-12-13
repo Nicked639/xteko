@@ -35,7 +35,7 @@
 
 */
 //$app.theme="auto"
-version = 8.12;
+version = 8.22;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1578,7 +1578,8 @@ function detailView(code) {
                 "Jable.TV",
                 "JavLibrary",
                 "Netflav",
-"JavDB"
+"JavDB",
+"Missav"
               ],
               handler: function(title, idx) {
                 if (idx == 0) {
@@ -1586,7 +1587,7 @@ function detailView(code) {
                     $ui.toast("磁链加载中...", 2);
                     $delay(2, function() {
                       $ui.push(magnetList(favCode));
-                      getMagnet(favCode);
+                      //getMagnet(favCode);
                       $("javbusList").data = javMagData;
                       if (javMagData.length == 0) {
                         $("loadingm").text = "☹️ JavBus 暂无磁链";
@@ -1596,7 +1597,7 @@ function detailView(code) {
                     return;
                   }
                   $ui.push(magnetList(favCode));
-                  getMagnet(favCode);
+                  //getMagnet(favCode);
                   $("javbusList").data = javMagData;
                   if (javMagData.length == 0) {
                     $("loadingm").text = "☹️ JavBus 暂无磁链";
@@ -1651,6 +1652,8 @@ function detailView(code) {
                   );
                 } else if(idx ==6){
                   $app.openURL("https://javdb.com/search?q="+favCode+"&f=all")
+                } else if(idx ==7){
+                  $app.openURL("https://missav.com/"+favCode)
                 }
               }
             });
@@ -1683,7 +1686,12 @@ function detailView(code) {
             //            $app.tips("预览视频来自 Avgle，请将 Avgle.com 加入代理");
             showTips("preview", "预览视频来自 Avgle，请将 Avgle.com 加入代理");
             let item = Avgle ?["样品图像", "八秒视频"]:["样品图像"]
-            if(Jable) item.push("完整视频")
+            if(Avgle) item.push("Avgle预览")
+            if(Missav) item.push("Missav预览")
+            if(Jable) {
+              item.push("Jable预览")
+              item.push("完整视频")
+            }
 //            let item = Jable
 //              ? ["样品图像", "八秒视频", "完整视频"]
 //              : ["样品图像", "八秒视频"];
@@ -1698,12 +1706,19 @@ function detailView(code) {
                     $ui.push(screenshotView);
                     $("screenshot").data = screenData;
                   }
-                } else if (title == "八秒视频") {
+                } else if (title == "Avgle预览") {
                   $device.taptic(1);
-                  //                  alert(sender.info)
-                  //                  getAvglePreview(sender.info, filmCover, 1);
+                  $ui.toast("预览来自 Avgle");
                   preAvgle(favCode, 1);
-                } else if (title == "完整视频") {
+                } else if (title =="Missav预览"){
+                  $device.taptic(1);
+                  $ui.toast("预览来自 Missav");
+                  preMissav(favCode);
+                }else if (title =="Jable预览"){
+                  $device.taptic(1);
+                  $ui.toast("预览来自 Jable");
+                  play($cache.get("preJable"));
+                }else if (title == "完整视频") {
                   $device.taptic(1);
                   //                  JaponX(favCode, name, 1);
                   if ($cache.get("m3u8")) {
@@ -2353,7 +2368,7 @@ function magnetList(code) {
         layout: function(make, view) {
           let height = $device.info.screen.height;
           make.left.right.top.inset(0);
-          make.height.equalTo(height / 2);
+          make.height.equalTo(height);
         }
       },
       {
@@ -2374,91 +2389,7 @@ function magnetList(code) {
           make.width.equalTo($device.info.screen.width);
         }
       },
-      {
-        type: "label",
-        props: {
-          id: "others",
-          text: "其他站点资源",
-          textColor: $color("black"),
-          //bgcolor:$color("tint"),
-          radius: 8,
-          align: $align.center,
-          font: $font("bold", 18)
-        },
-        layout: function(make, view) {
-          //make.width.equalTo(view.super).dividedBy(2)
-          make.top.equalTo($("alreadyList").bottom);
-          make.height.equalTo(30);
-          make.center.equalTo(view.super);
-        }
-      },
-      {
-        type: "view",
-        props: {
-          id: "webList"
-        },
-        views: [
-          {
-            type: "menu",
-            props: {
-              items: urls.map(i => i.name),
-              index: 0,
-              id: "mMenu"
-            },
-            layout: function(make) {
-              make.left.top.right.equalTo(0);
-              make.height.equalTo(40);
-            },
-            events: {
-              changed: function(sender) {
-                $("mlist").data = [];
-                getMagnet(code);
-              }
-            }
-          },
-          {
-            type: "list",
-            props: {
-              id: "mlist",
-              rowHeight: 50,
-              template: mTemplate,
-              stickyHeader: false,
-              actions: [
-                {
-                  title: "分享",
-                  handler: function(sender, indexPath) {
-                    let magnet = sender.data[indexPath.row].info;
-                    $share.sheet(magnet);
-                  }
-                }
-              ]
-            },
-            events: {
-              didSelect: function(sender, indexPath, data) {
-                let magnet = sender.data[indexPath.row].info;
-                $clipboard.text = magnet;
-                $ui.toast("💡 磁链已复制");
-                $app.openURL("wb1307639798://");
-              },
-              pulled(sender) {
-                //              $ui.action(favCode)
-                $("mlist").data = [];
-                getMagnet(favCode);
-              }
-            },
-            layout: function(make, view) {
-              make.top.inset(40);
-              make.left.bottom.right.inset(0);
-            }
-          }
-        ],
-        layout: function(make, view) {
-          //let height = $device.info.screen.height
-          //make.height.equalTo(height/2)
-          make.top.equalTo($("others").bottom);
-          make.left.right.bottom.inset(0);
-        }
-      }
+
     ],
     layout: $layout.fill
   };
@@ -3210,7 +3141,7 @@ function getRec(url) {
 
 function aboutMag() {
   $ui.push(magnetList(favCode));
-  getMagnet(favCode);
+  //getMagnet(favCode);
   $("javbusList").data = javMagData;
   if (javMagData.length == 0) {
     $("loadingm").text = "☹️ JavBus 暂无磁链";
@@ -3833,23 +3764,7 @@ function preAvgle(code, flag) {
       let video_num = resp.data.response.total_videos;
 //            $console.log(resp.data)
       if (video_num == 0) {
-        let url =
-            "https://cdn.missav.com/" +
-            code +
-            "/preview.mp4";
-          $http.get({
-            url: url,
-            handler: function(resp) {
-              var data = resp.data;
-              
-              if(data.fileName){
-                Avgle = true
-                play(url);
-              }
-              
-              
-            }
-          });
+        preMissav(code)
        
       return
       }
@@ -3866,6 +3781,26 @@ function preAvgle(code, flag) {
   return Avgle
 }
 
+function preMissav(code){
+  Missav = false
+  let url =
+              "https://cdn.missav.com/" +
+              code +
+              "/preview.mp4";
+            $http.get({
+              url: url,
+              handler: function(resp) {
+                var data = resp.data;
+                
+                if(data.fileName){
+                  Missav = true
+                  play(url);
+                }
+                
+                
+              }
+            });
+}
 
 
 //function getAvglePreview(keyword, poster, flag) {
@@ -5085,7 +5020,7 @@ function jableTv(code, flag) {
           }
         });
         $delay(2, () => {
-          if(Avgle == true) return
+          if(Avgle || Missav == true) return
         
           else if(avUrl){
                                                             $ui.toast("预览来自 Jable");
