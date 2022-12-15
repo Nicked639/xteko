@@ -35,7 +35,7 @@
 
 */
 //$app.theme="auto"
-version = 8.22;
+version = 8.23;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1685,7 +1685,7 @@ function detailView(code) {
           tapped(sender) {
             //            $app.tips("预览视频来自 Avgle，请将 Avgle.com 加入代理");
             showTips("preview", "预览视频来自 Avgle，请将 Avgle.com 加入代理");
-            let item = Avgle ?["样品图像", "八秒视频"]:["样品图像"]
+        let item = ["样品图像"]
             if(Avgle) item.push("Avgle预览")
             if(Missav) item.push("Missav预览")
             if(Jable) {
@@ -3773,6 +3773,7 @@ function preAvgle(code, flag) {
       if(title.indexOf(code)>-1){
         Avgle = true
         play(infos[0].preview_video_url);
+        preMissav(code,0)
       }
       
       
@@ -3781,7 +3782,7 @@ function preAvgle(code, flag) {
   return Avgle
 }
 
-function preMissav(code){
+function preMissav(code,flag){
   Missav = false
   let url =
               "https://cdn.missav.com/" +
@@ -3794,6 +3795,8 @@ function preMissav(code){
                 
                 if(data.fileName){
                   Missav = true
+                  if (flag==0)
+                    return
                   play(url);
                 }
                 
