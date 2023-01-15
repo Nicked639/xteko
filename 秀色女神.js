@@ -21,7 +21,7 @@ var Browse = true;
 var TIME = 1; //自动浏览间隔
 var Position = 0;
 var PFlag = false;
-var viewMode = "httpToView";
+var viewMode = "DownToView";
 var pushFlag = false;
 var count = 0;
 var Referer = "https://m.xsnvshen.com"
@@ -937,8 +937,10 @@ function getPostData(num, page, acUrl) {
       //console.log(p)
 let menu = $t(`${p}`).each(function(i, element) {
             let src = $t(element).find('img').attr('src');
-            if(!src)
+            if(!src){
+              
               return;
+            }
             else if(src.indexOf("res")>0){
               return;
             }
@@ -969,20 +971,20 @@ let menu = $t(`${p}`).each(function(i, element) {
                                 }
                     });
          });
-      //console.log(temp)
-
+      console.log(temp)
+      //if(temp.)
       
       if (num >= 0) {
         if (page == 1) $("preView").data = [];
 
         $("preView").data = $("preView").data.concat(temp);
       } else {
-        if (page == 1) $("acView").data = [];
+        $("acView").data = [];
 
         let len = temp.length;
-        if (len > 6) temp.splice(len - 3, 3);
+        //if (len > 6) temp.splice(len - 3, 3);
         $("acView").data = $("acView").data.concat(temp);
-        console.log(temp)
+        //console.log(temp)
       }
     }
   });
@@ -1136,11 +1138,20 @@ function getSearch(text) {
       let temp = [];
       $("acList").data = [];
       let menu = $t("li").each(function(i, element) {
+           if(!$t(element).find('img').attr('src')){
+             alert("无搜索结果")
+                          
+              return false;
+           }
            let src = "https:"+ $t(element).find('img').attr('src');
-           if(src.indexOf("cover")>0)
-             return;
+           
+           if(src.indexOf("cover")>0){
+        
+             
+             return false;
+           }
            else if(src.indexOf("album")<0)
-             return;
+             return false;
            let href = $t(element).find('a').attr('href');
            let title = $t(element).find('.titlebox').text()
            console.log(title)
