@@ -35,7 +35,7 @@
 
 */
 //$app.theme="auto"
-version = 8.23;
+version = 8.3;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -59,6 +59,7 @@ flag = 0; // 用于判断从通知中心启动的状态
 Jable = false;
 Avgle = false;
 Missav = false;
+Fanza = false;
 if (isInToday()) runWhere();
 var colorData = [
   [$color("#fd354a"), $color("#da0a6f")],
@@ -1579,7 +1580,8 @@ function detailView(code) {
                 "JavLibrary",
                 "Netflav",
 "JavDB",
-"Missav"
+"Missav",
+"Fanza"
               ],
               handler: function(title, idx) {
                 if (idx == 0) {
@@ -1654,6 +1656,9 @@ function detailView(code) {
                   $app.openURL("https://javdb.com/search?q="+favCode+"&f=all")
                 } else if(idx ==7){
                   $app.openURL("https://missav.com/"+favCode)
+                } else if(idx==8){
+                  let code = favCode.toLowerCase().replace("-","")
+                  $app.openURL("https://www.dmm.co.jp/mono/dvd/-/detail/=/cid="+code+"/?dmmref=aMonoDvd_List")
                 }
               }
             });
@@ -1685,9 +1690,10 @@ function detailView(code) {
           tapped(sender) {
             //            $app.tips("预览视频来自 Avgle，请将 Avgle.com 加入代理");
             showTips("preview", "预览视频来自 Avgle，请将 Avgle.com 加入代理");
-        let item = ["样品图像"]
+        let item = ["样品图像","Fanza预告"]
             if(Avgle) item.push("Avgle预览")
             if(Missav) item.push("Missav预览")
+            //if(Fanza) item.push("Fanza预告")
             if(Jable) {
               item.push("Jable预览")
               item.push("完整视频")
@@ -1714,6 +1720,10 @@ function detailView(code) {
                   $device.taptic(1);
                   $ui.toast("预览来自 Missav");
                   preMissav(favCode);
+                }else if (title =="Fanza预告"){
+                  $device.taptic(1);
+                  //$ui.toast("预览来自 Missav");
+                  preFanza(favCode);
                 }else if (title =="Jable预览"){
                   $device.taptic(1);
                   $ui.toast("预览来自 Jable");
@@ -3798,13 +3808,21 @@ function preMissav(code,flag){
                   if (flag==0)
                     return
                   play(url);
-                }
+                } 
                 
                 
               }
             });
 }
 
+function preFanza(favCode){
+  let code = favCode.toLowerCase().replace("-","00")
+  
+  let url = "https://cc3001.dmm.co.jp/litevideo/freepv/"+code.slice(0,1)+"/"+code.slice(0,3)+"/"+code+"/"+code+"_sm_w.mp4"
+  play(url)
+  console.log(url)
+
+}
 
 //function getAvglePreview(keyword, poster, flag) {
 //  let url =
