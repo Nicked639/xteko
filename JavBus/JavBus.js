@@ -3549,7 +3549,7 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
         link = /href="([\s\S]*?)(")/.exec(i)[1];
         //        console.log(link)
         image = homepage + /<img src="([\s\S]*?)(")/.exec(i)[1];
-               console.log(image)
+               //console.log(image)
         var title = /title="(.*?)(">)/.exec(i)[1];
         //        console.log(title)
         code = /<date>(.*?)<\/date>/.exec(i)[1];
@@ -5017,7 +5017,7 @@ function jableTv(code, flag) {
          avUrl = avPattern.exec(data)[0];
          avUrl=$detector.link(avUrl)
          }
-      console.log("url: "+avUrl)
+      //console.log("url: "+avUrl)
       if (avUrl) {
         $("check").bgcolor = $color("tint");
         $("check").titleColor = $color("white");
@@ -5033,7 +5033,7 @@ function jableTv(code, flag) {
           url: avUrl,
           handler: function(resp) {
             let data = resp.data;
-            console.log(data)
+            //console.log(data)
             let pattern = /hlsUrl = '(.*)?'/g;
             let m3u8 = pattern.exec(data)[1];
             console.log(m3u8);
@@ -5093,7 +5093,7 @@ function JaponX(code, name, flag) {
       }
       let regYanyuan = /\/portal\/index\/search\/yanyuan_id\/\d+.html">.*<\/a>/gm;
       let yanyuanArray = data.match(regYanyuan);
-      console.log(yanyuanArray);
+      //console.log(yanyuanArray);
       let len = yanyuanArray.length;
       let pop = len - lenId;
       yanyuanArray.splice(0, pop);
