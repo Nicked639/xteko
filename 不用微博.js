@@ -7,12 +7,9 @@ async function getHotSearch() {
   let resp = await $http.get(hotSearchApi);
   if (requestFailed(resp)) {  
       return JSON.parse(cache)
-    }
+  }
+  //console.log(resp.data)
   let data = resp.data.data;
-  //    if (data.errmsg) {
-  //        alert(data.errmsg); 
-  //        return;
-  //    }
   let hotCards = data.cards[0].card_group;
   let upTime = data.cardlistInfo.starttime;
   let c = { hotCards, upTime }
@@ -258,7 +255,7 @@ async function inAppInit() {
 function inAppShow() {
   $ui.render({
     props: {
-      title: "微博热点",
+      title: "不用微博",
       id: "weibo",
       type: "view"
       //     navBarHidden: $app.env == $env.app ? false : true,
@@ -334,8 +331,14 @@ async function fetch() {
   let size = "500x500";
   if (family == 1) size = "800x375";
   let url = "https://source.unsplash.com/random/" + size + "/?dark";
+  //let url = "https://api.cutowallpaper.com/api/v1/wallpapers/random/?build=35&lang=en&lang=en&build=35&os=ios&osv=14.4.0&did=3D1FD7C2-B80A-4AED-84AD-B5D6E063E5A8&tz=Asia/Shanghai&ds=" +size+"x3"
+  //let resp = await $http.get(url);
+  //console.log(resp.data)
+  //url = resp.data.url
+  //console.log(url)
+  
   const file = await $http.download(url);
-  console.log(file)
+  //console.log(file)
   if (requestFailed(file)) {
     return cache.image;
   }
@@ -536,3 +539,5 @@ if ($env.app == $app.env) {
   if($context.query.url!==undefined)
     openSafari($context.query.url)
 } else widgetInit();
+
+//await widgetInit()
