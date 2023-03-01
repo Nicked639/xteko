@@ -1,9 +1,7 @@
-//$console.log($props($file.read("hot.png")))
-if($app.env==$env.app)
-  $app.openURL("shortcuts://run-shortcut?name="+encodeURI("美的美居"))
 $ui.render({
   props: {
-    title: ""
+    title: "",
+    
   },
   views: [
     {
@@ -13,6 +11,7 @@ $ui.render({
         columns: 2,
         itemHeight: 90,
         spacing: 10,
+        bgcolor:$app.env==$env.app? $color("black"):$color("clear"),
         template: {
           props: {
             bgcolor:$device.isDarkMode?$rgba(100, 100, 100, 0.3): $rgba(233, 233, 233, 0.4),
@@ -87,7 +86,12 @@ $ui.render({
           ]
         }
       },
-      layout: $layout.fill
+      layout: $layout.fill,
+      events: {
+        didSelect: function(sender, indexPath, data) {
+        $app.openURL("shortcuts://run-shortcut?name="+encodeURI("美的美居"))
+        }
+      }
     },
     {
       type: "label",
@@ -165,7 +169,7 @@ async function getTemp() {
         console.log(temp);
       }
       $("info").data = temp;
-      curTime();
+      //curTime();
     }
   });
 }
