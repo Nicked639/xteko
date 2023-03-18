@@ -1581,7 +1581,8 @@ function detailView(code) {
                 "Netflav",
 "JavDB",
 "Missav",
-"Fanza"
+"Fanza",
+"JavDay"
               ],
               handler: function(title, idx) {
                 if (idx == 0) {
@@ -1659,6 +1660,8 @@ function detailView(code) {
                 } else if(idx==8){
                   let code = favCode.toLowerCase().replace("-","")
                   $app.openURL("https://www.dmm.co.jp/mono/dvd/-/detail/=/cid="+code+"/?dmmref=aMonoDvd_List")
+                } else if(idx==9){
+                  $app.openURL("https://javday.tv/search/?wd="+favCode)
                 }
               }
             });
