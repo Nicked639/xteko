@@ -35,7 +35,7 @@
 
 */
 //$app.theme="auto"
-version = 8.4;
+version = 8.41;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -1652,7 +1652,7 @@ function detailView(code) {
                       "/?dmmref=aMonoDvd_List"
                   );
                 } else if (title == "JavDay") {
-                  $app.openURL("https://javday.tv/search/?wd=" + favCode);
+                  $app.openURL("https://javday.tv/videos/" + favCode.replace("-",""));
                 }
               }
             });
@@ -1721,7 +1721,7 @@ function detailView(code) {
                   preMissav(favCode);
                 } else if (title == "Missav 完整视频") {
                   $device.taptic(1);
-
+                  $ui.toast("完整视频来自 Missav")
                   play($cache.get("Missav"));
                 } else if (title == "Fanza 预告") {
                   $device.taptic(1);
@@ -1735,6 +1735,7 @@ function detailView(code) {
                   $device.taptic(1);
                   //                  JaponX(favCode, name, 1);
                   if ($cache.get("m3u8")) {
+                    $ui.toast("完整视频来自 Jable")
                     play($cache.get("m3u8"));
                   } else {
                     $ui.error("未找到完整影片！");
@@ -2467,18 +2468,24 @@ const screenshotView = {
       events: {
         tapped: function (sender) {
           if ($("filmActress").data.length == 1)
-            var folderName = $("filmActress").data[0].actressName.text;
+            folderName = $("filmActress").data[0].actressName.text;
           else folderName = favCode;
           var IMGList = screenData.map(i => {
             return i.link;
           });
-          console.log(folderName + "\n" + IMGList);
-          $app.openURL(
-            "pythonista://Tools/sample_jsbox?action=run&argv=" +
-              encodeURI(folderName) +
-              "&argv=" +
-              encodeURI(IMGList)
-          );
+          //console.log(folderName + "\n" + IMGList);
+          showTips("downPics","下载图片保存在脚本文件管理内的「样品图像」中")
+          count = 0;
+          if(!$file.exists("样品图像"))
+          $file.mkdir("样品图像" );
+          if (!$file.exists("样品图像/" + folderName))
+                          $file.mkdir("样品图像/" + folderName);
+                       
+          
+          for (var i = 0; i < IMGList.length; i++) {
+              downImg(IMGList.length,IMGList[i],sender)
+            }
+          
           //          if ($("download").title == "批量下载") {
           //            showTips("downPics","下载图片保存在 iCloud Drive Jsbox 内的「样品图像」中")
           //            $device.taptic(1);
@@ -2541,6 +2548,88 @@ const screenshotView = {
   ],
   layout: $layout.fill
 };
+
+function download(params) {
+  params = params || {};
+  params.handlers = params.handlers || {};
+  const url = params.url;
+  const method = params.method || "GET";
+  const timeout =  60;
+  //const header = params.header
+  const body = params.body;
+  const callback = params.handler;
+
+  const request = $objc("NSMutableURLRequest").$requestWithURL($objc("NSURL").$URLWithString(url));
+  request.$setHTTPMethod(method);
+  request.$setTimeoutInterval(timeout);
+
+  //for (const [key, value] of Object.entries(header)) {
+    //request.$addValue_forHTTPHeaderField(value, key);
+  //}
+
+  if (body) {
+    request.$setHTTPBody(body.ocValue());
+  }
+
+  const session = $objc("NSURLSession").$sharedSession();
+  const completionHandler = $block("void, NSURL *, NSURLResponse *, NSError *", (location, response, error) => {
+    if (callback) {
+      const data = $objc("NSData").$dataWithContentsOfURL(location).$copy();
+      $thread.main({
+        handler: () => {
+          callback({
+            "data": data.jsValue(),
+            "response": response.jsValue(),
+            "error": error.jsValue(),
+          });
+        }
+      });
+    }
+  });
+
+  const task = session.$downloadTaskWithRequest_completionHandler(request, completionHandler);
+  task.$resume();
+}
+
+// exports.download = download;
+function downImg(length,url,sender){
+  download({
+    "url": url,
+   // "header":{
+     // "referer":imgReferer
+    //},
+    "handler": result => {
+//      console.log(`Finished: ${JSON.stringify(result)}`);
+      // props: data, response, error
+      const data = result.data;
+      let error = result.error
+      if ('key' in error)
+      console.log(error)
+      count++;
+            sender.title = count+"/"+length;
+            //                    $("progress").value = (count * 1.0) / urlList.length;
+            if (count == length) {
+              sender.title = "完成";
+              $device.taptic(1);
+            }
+            
+            var fileName = url.split("/").pop();
+            let fix = count<10?"0"+count:count
+            
+            fileName = favCode+"-"+fix+".jpg"
+       
+            var path =
+              "样品图像/"+
+              folderName +
+              "/" +
+              fileName;
+            $file.write({
+              data: data,
+              path: path
+            });
+    }
+  });
+}
 
 function actressView(actress, cover) {
   $ui.push({
@@ -3778,6 +3867,7 @@ function preAvgle(code, flag) {
       } else {
         let infos = resp.data.response.videos;
         Avgle = true;
+        $ui.toast("预览来自 Avgle")
         play(infos[0].preview_video_url);
       }
     }
