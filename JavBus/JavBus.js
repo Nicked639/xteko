@@ -35,7 +35,7 @@
 
 */
 //$app.theme="auto"
-version = 8.3;
+version = 8.4;
 recommend = $cache.get("recommend") || 0; // 用与检测推荐
 RecAv = []; //作者推荐影片
 RecBotAv = []; //投稿推荐影片
@@ -58,6 +58,7 @@ Timeout = 10;
 flag = 0; // 用于判断从通知中心启动的状态
 Jable = false;
 Avgle = false;
+preMissavV = false;
 Missav = false;
 Fanza = false;
 if (isInToday()) runWhere();
@@ -105,7 +106,7 @@ mainTemplate = {
         autoFontSize: true,
         radius: 5
       },
-      layout: function(make) {
+      layout: function (make) {
         make.left.right.inset(0);
         make.bottom.inset(0);
         make.height.equalTo(20);
@@ -124,7 +125,7 @@ mainTemplate = {
         hidden: true,
         alpha: 0.8
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.top.left.inset(0);
         make.height.equalTo(18);
         make.width.equalTo(34);
@@ -143,7 +144,7 @@ mainTemplate = {
         hidden: true,
         alpha: 0.8
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.top.right.inset(0);
         make.height.equalTo(18);
         make.width.equalTo(34);
@@ -176,7 +177,7 @@ mainTemplate = {
         hidden: true,
         alpha: 0.8
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.top.right.inset(0);
         make.height.equalTo(18);
         make.width.equalTo(34);
@@ -227,7 +228,7 @@ recView = {
   props: {
     id: "recView"
   },
-  layout: function(make, view) {
+  layout: function (make, view) {
     make.left.right.bottom.inset(0);
     make.top.equalTo($("menu").bottom);
   },
@@ -244,7 +245,7 @@ recView = {
         hidden: false
       },
 
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.top.inset(35);
         make.height.equalTo(100);
         make.width.equalTo($device.info.screen.width);
@@ -262,13 +263,11 @@ recView = {
         stickyHeader: false
       },
       events: {
-        didBeginEditing: function(sender) {
-          $("inputRec")
-            .runtimeValue()
-            .invoke("selectAll");
+        didBeginEditing: function (sender) {
+          $("inputRec").runtimeValue().invoke("selectAll");
           //console.log(RecBotCode.length)
         },
-        returned: function(sender) {
+        returned: function (sender) {
           let index = 0;
           Again = 0;
           homepage = "https://www.javbus.com/";
@@ -298,7 +297,7 @@ recView = {
           $("menu").index = 0;
         }
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.left.right.top.inset(5);
         make.height.equalTo(30);
       }
@@ -332,7 +331,7 @@ recView = {
               autoFontSize: true,
               radius: 5
             },
-            layout: function(make) {
+            layout: function (make) {
               make.left.right.bottom.inset(0);
               make.height.equalTo(25);
             }
@@ -350,7 +349,7 @@ recView = {
               hidden: false,
               alpha: 0.8
             },
-            layout: function(make, view) {
+            layout: function (make, view) {
               make.top.right.inset(0);
               make.height.equalTo(18);
               make.width.equalTo(34);
@@ -409,13 +408,13 @@ recView = {
             $("favorite").title = "收藏";
           }
         },
-        pulled: function(sender) {
+        pulled: function (sender) {
           //                $ui.toast("打开 Javlibrary")
           $app.openURL("http://www.javlibrary.com/cn/vl_bestrated.php");
           $("recMatrix").endRefreshing();
         }
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.top.equalTo($("inputRec").bottom).offset(5);
         //make.top.inset(5)
         make.left.right.inset(5);
@@ -434,7 +433,7 @@ recView = {
         alpha: 0.8,
         index: 0
       },
-      layout: function(make) {
+      layout: function (make) {
         make.centerX.equalTo();
         make.bottom.inset(20);
         make.height.equalTo(22);
@@ -444,7 +443,7 @@ recView = {
           $("recMatrix").data = [];
           if (sender.index == 0) {
             let tempRecAv = [];
-            RecAv.map(function(i) {
+            RecAv.map(function (i) {
               tempRecAv = tempRecAv.concat({
                 recCover: {
                   src: i.src
@@ -468,7 +467,7 @@ recView = {
             $("recMatrix").data = tempRecAv;
           } else if (sender.index == 1) {
             let tempRecBotAv = [];
-            RecBotAv.map(function(i) {
+            RecBotAv.map(function (i) {
               tempRecBotAv = tempRecBotAv.concat({
                 recCover: {
                   src: i.src
@@ -514,7 +513,7 @@ webview = {
         titleColor: $color("tint"),
         alpha: 1
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.left.equalTo(0);
         make.bottom.inset(25);
         make.height.equalTo(20);
@@ -544,20 +543,20 @@ webview = {
         }
       }
     },
-    webPreviewBTN("042", navLayout(), function(sender) {
+    webPreviewBTN("042", navLayout(), function (sender) {
       //                    $share.sheet($("web").url);
       $app.openURL($("web").url);
     }),
-    webPreviewBTN("162", navLayout(), function(sender) {
+    webPreviewBTN("162", navLayout(), function (sender) {
       $("web").reload();
     })
   ],
-  layout: function(make, view) {
+  layout: function (make, view) {
     make.left.right.bottom.inset(0);
     make.top.equalTo($("menu").bottom);
   },
   events: {
-    didFinish: function(sender, navigation) {
+    didFinish: function (sender, navigation) {
       getJavLib();
     }
   }
@@ -584,7 +583,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
           hidden: false
         },
 
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(35);
           make.height.equalTo(100);
           make.width.equalTo($device.info.screen.width);
@@ -602,7 +601,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
           editable: false
         },
 
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(200);
           make.height.equalTo(100);
           make.width.equalTo($device.info.screen.width);
@@ -620,19 +619,17 @@ function searchView(height, catname, cols = 3, spa = 1) {
           stickyHeader: false
         },
         events: {
-          didBeginEditing: function(sender) {
-            $("input")
-              .runtimeValue()
-              .invoke("selectAll");
+          didBeginEditing: function (sender) {
+            $("input").runtimeValue().invoke("selectAll");
           },
-          changed: function(sender) {
+          changed: function (sender) {
             if ($("menu").index == 5) {
               searchAr(sender.text);
               //                          sender.blur()
               return;
             } else return;
           },
-          returned: function(sender) {
+          returned: function (sender) {
             if ($("menu").index == 5) {
               searchAr(sender.text);
               sender.blur();
@@ -673,7 +670,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
             $("menu").index = 0;
           }
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.right.top.inset(5);
           make.height.equalTo(30);
         }
@@ -689,7 +686,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
           bgcolor: $color("clear"),
           template: mainTemplate
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.right.bottom.inset(5);
           make.top.equalTo($("input").bottom).offset(5);
         },
@@ -698,7 +695,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
             $("initialView").endRefreshing();
             $ui.menu({
               items: ["作者声明", "更新说明"],
-              handler: function(title, idx) {
+              handler: function (title, idx) {
                 if (idx == 0) {
                   tutorial();
                 } else if (idx == 1) {
@@ -804,7 +801,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
           alpha: 0.8,
           index: ALL ? 0 : 1
         },
-        layout: function(make) {
+        layout: function (make) {
           make.centerX.equalTo();
           make.bottom.inset(20);
           make.height.equalTo(22);
@@ -834,7 +831,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
           alpha: 0.7,
           hidden: true
         },
-        layout: function(make) {
+        layout: function (make) {
           //      make.left.right.inset(120)
           make.centerX.equalTo();
           make.bottom.inset(20);
@@ -864,7 +861,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
               } else {
                 $("initialView").hidden = false;
               }
-              LocalData.favorite.map(function(i) {
+              LocalData.favorite.map(function (i) {
                 $("initialView").data = $("initialView").data.concat({
                   code: i.code,
                   link: homepage + i.shortCode,
@@ -893,7 +890,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
               } else {
                 $("initialView").hidden = false;
               }
-              LocalData.actress.map(function(i) {
+              LocalData.actress.map(function (i) {
                 $("initialView").data = $("initialView").data.concat({
                   link:
                     "https://www.javbus.com/" + i.un + "star/" + i.shortCode,
@@ -924,7 +921,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                 } else {
                   $("initialView").hidden = false;
                 }
-                LocalData.director.map(function(i) {
+                LocalData.director.map(function (i) {
                   $("initialView").data = $("initialView").data.concat({
                     link: hp + "director/" + i.shortCode,
                     name: {
@@ -955,7 +952,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                   $("initialView").hidden = false;
                 }
 
-                LocalData.series.map(function(i) {
+                LocalData.series.map(function (i) {
                   if (i.shortCode.indexOf("uncensored") > -1) {
                     var s = "https://www.javbus.com/" + "uncensored/";
                     shortCode = i.shortCode.replace("/uncensored", "");
@@ -993,7 +990,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                 } else {
                   $("initialView").hidden = false;
                 }
-                LocalData.filmMaker.map(function(i) {
+                LocalData.filmMaker.map(function (i) {
                   if (i.shortCode.indexOf("uncensored") > -1) {
                     var s = "https://www.javbus.com/" + "uncensored/";
                     shortCode = i.shortCode.replace("/uncensored", "");
@@ -1030,7 +1027,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
                 } else {
                   $("initialView").hidden = false;
                 }
-                LocalData.filmEstab.map(function(i) {
+                LocalData.filmEstab.map(function (i) {
                   $("initialView").data = $("initialView").data.concat({
                     link: hp + "label/" + i.shortCode,
                     name: {
@@ -1073,7 +1070,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
           bgcolor: $color("white"),
           alpha: 0.8
         },
-        layout: function(make) {
+        layout: function (make) {
           make.right.inset(10);
           make.top.inset(8.5);
           make.height.equalTo(22);
@@ -1138,7 +1135,7 @@ function searchView(height, catname, cols = 3, spa = 1) {
         }
       }
     ],
-    layout: function(make, view) {
+    layout: function (make, view) {
       make.left.right.bottom.inset(0);
       make.top.equalTo($("menu").bottom);
     }
@@ -1170,7 +1167,7 @@ function detailView(code) {
           insets: $insets(0, 0, 0, 0)
         },
 
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(10);
           make.left.right.inset(5);
           if (isInToday()) make.height.equalTo(20);
@@ -1198,7 +1195,7 @@ function detailView(code) {
           //scale: 2,
           //src: "https://i.loli.net/2017/11/14/5a0a553e1c420.jpg"
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           var width = $device.info.screen.width - 20;
           var height = (width * 67) / 100;
           make.left.right.inset(10);
@@ -1228,7 +1225,7 @@ function detailView(code) {
           scrollEnabled: false,
           insets: $insets(0, 0, 0, 0)
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.inset(5);
           make.top.equalTo($("filmCover").bottom).offset(5);
           //make.height.equalTo(20)
@@ -1247,7 +1244,7 @@ function detailView(code) {
           insets: $insets(0, 0, 0, 0)
         },
 
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.equalTo($("filmCover").bottom).offset(6);
           make.left.inset(83);
           //make.width.equalTo($device.info.screen.width)
@@ -1268,7 +1265,7 @@ function detailView(code) {
           hidden: true,
           insets: $insets(0, 0, 0, 0)
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.inset(5);
           make.top.equalTo($("aboutFilm").bottom).offset(5);
           //make.height.equalTo(20)
@@ -1289,7 +1286,7 @@ function detailView(code) {
           scrollEnabled: false,
           insets: $insets(0, 0, 0, 0)
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.inset(86);
           make.top.equalTo($("aboutFilm").bottom).offset(6);
           //make.height.equalTo(20)
@@ -1317,7 +1314,7 @@ function detailView(code) {
           hidden: true,
           insets: $insets(0, 0, 0, 0)
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.inset(5);
           make.top.equalTo($("filmEstab").bottom).offset(5);
           //make.height.equalTo(20)
@@ -1338,7 +1335,7 @@ function detailView(code) {
           scrollEnabled: false,
           insets: $insets(0, 0, 0, 0)
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.inset(86);
           make.top.equalTo($("filmEstab").bottom).offset(6);
           //make.height.equalTo(20)
@@ -1366,7 +1363,7 @@ function detailView(code) {
           hidden: true,
           insets: $insets(0, 0, 0, 0)
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.inset(0);
           make.top.equalTo($("filmMaker").bottom).offset(5);
           //make.height.equalTo(20)
@@ -1387,7 +1384,7 @@ function detailView(code) {
           scrollEnabled: false,
           insets: $insets(0, 0, 0, 0)
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.inset(86);
           make.top.equalTo($("filmMaker").bottom).offset(6);
           //make.height.equalTo(20)
@@ -1415,7 +1412,7 @@ function detailView(code) {
           hidden: true,
           insets: $insets(0, 0, 0, 0)
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.inset(0);
           make.top.equalTo($("series").bottom).offset(5);
           //make.height.equalTo(20)
@@ -1436,7 +1433,7 @@ function detailView(code) {
           scrollEnabled: false,
           insets: $insets(0, 0, 0, 0)
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.inset(86);
           make.top.equalTo($("series").bottom).offset(6);
           //make.height.equalTo(20)
@@ -1464,7 +1461,7 @@ function detailView(code) {
           hidden: true,
           insets: $insets(0, 0, 0, 0)
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.inset(0);
           make.top.equalTo($("director").bottom).offset(5);
           //make.height.equalTo(20)
@@ -1493,7 +1490,7 @@ function detailView(code) {
                     id: "actressCover",
                     radius: 5
                   },
-                  layout: function(make, view) {
+                  layout: function (make, view) {
                     make.left.right.top.inset(3);
                     //                    make.height.equalTo(80);
                     make.bottom.inset(15);
@@ -1509,7 +1506,7 @@ function detailView(code) {
                     font: $font("bold", 10),
                     autoFontSize: true
                   },
-                  layout: function(make) {
+                  layout: function (make) {
                     make.left.right.inset(0);
                     make.top.equalTo($("actressCover").bottom).offset(2);
                     //make.height.equalTo(20)
@@ -1520,7 +1517,7 @@ function detailView(code) {
             }
           ]
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.right.inset(5);
           make.bottom.inset(20);
           make.top.equalTo($("whoInFilm").bottom).offset(0);
@@ -1557,13 +1554,10 @@ function detailView(code) {
           alpha: 0.9,
           radius: 6
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.inset(10);
           make.bottom.inset(20);
-          make.width
-            .equalTo(view.super)
-            .dividedBy(3)
-            .offset(-10);
+          make.width.equalTo(view.super).dividedBy(3).offset(-10);
           make.height.equalTo(30);
         },
         events: {
@@ -1573,22 +1567,22 @@ function detailView(code) {
             let favCode = code;
             $ui.menu({
               items: [
-                "磁链",
-                "Avgle",
-                "JAV.GURU",
-                "Jable.TV",
+                "JavDB",
                 "JavLibrary",
+                "Fanza",
                 "Netflav",
-"JavDB",
-"Missav",
-"Fanza",
-"JavDay"
+                "JAV.GURU",
+                "Avgle",
+                "Jable.TV",
+                "Missav",
+                "JavDay",
+                 "磁链",
               ],
-              handler: function(title, idx) {
-                if (idx == 0) {
+              handler: function (title, idx) {
+                if (title == "磁链") {
                   if (JavMag == 0) {
                     $ui.toast("磁链加载中...", 2);
-                    $delay(2, function() {
+                    $delay(2, function () {
                       $ui.push(magnetList(favCode));
                       //getMagnet(favCode);
                       $("javbusList").data = javMagData;
@@ -1606,19 +1600,10 @@ function detailView(code) {
                     $("loadingm").text = "☹️ JavBus 暂无磁链";
                     $("loadingm").hidden = false;
                   } else $("loadingm").hidden = true;
-                } else if (idx == 1) {
+                } else if (title == "Avgle") {
                   var js = jsDetect()["js"];
                   var num = jsDetect()["num"];
                   if (js) {
-                    //                    var version = $addin.list[num].version;
-                    //                    if (version > 3) {
-                    //                      $addin.run({
-                    //                        name: js,
-                    //                        query: {
-                    //                          code: favCode
-                    //                        }
-                    //                      });
-                    //                    }
                     $app.openURL("jsbox://run?name=Avgle&code=" + favCode);
                   } else {
                     $ui.alert({
@@ -1627,7 +1612,7 @@ function detailView(code) {
                       actions: [
                         {
                           title: "安装",
-                          handler: function() {
+                          handler: function () {
                             var url =
                               "jsbox://import?url=https://raw.githubusercontent.com/Nicked639/xteko/master/Avgle/Avgle.js&name=Avgle&icon=icon_87.png&types=1&version=4.1&author=Nicked&website=https://t.me/nicked";
                             $app.openURL(encodeURI(url));
@@ -1640,28 +1625,34 @@ function detailView(code) {
                       ]
                     });
                   }
-                } else if (idx == 2) {
+                } else if (title == "JAV.GURU") {
                   $app.openURL("https://jav.guru/zh/?s=" + favCode);
-                } else if (idx == 3) {
+                } else if (title == "Jable.TV") {
                   $app.openURL("https://jable.tv/search/" + favCode + "/");
-                } else if (idx == 4) {
+                } else if (title == "Javlibrary") {
                   $app.openURL(
                     "http://www.javlibrary.com/cn/vl_searchbyid.php?keyword=" +
                       favCode
                   );
-                } else if (idx == 5) {
+                } else if (title == "Netflav") {
                   $app.openURL(
                     "https://netflav.com/search?type=title&keyword=" + favCode
                   );
-                } else if(idx ==6){
-                  $app.openURL("https://javdb.com/search?q="+favCode+"&f=all")
-                } else if(idx ==7){
-                  $app.openURL("https://missav.com/"+favCode)
-                } else if(idx==8){
-                  let code = favCode.toLowerCase().replace("-","")
-                  $app.openURL("https://www.dmm.co.jp/mono/dvd/-/detail/=/cid="+code+"/?dmmref=aMonoDvd_List")
-                } else if(idx==9){
-                  $app.openURL("https://javday.tv/search/?wd="+favCode)
+                } else if (title == "JavDB") {
+                  $app.openURL(
+                    "https://javdb.com/search?q=" + favCode + "&f=all"
+                  );
+                } else if (title == "Missav") {
+                  $app.openURL("https://missav.com/" + favCode);
+                } else if (title == "Fanza") {
+                  let code = favCode.toLowerCase().replace("-", "");
+                  $app.openURL(
+                    "https://www.dmm.co.jp/mono/dvd/-/detail/=/cid=" +
+                      code +
+                      "/?dmmref=aMonoDvd_List"
+                  );
+                } else if (title == "JavDay") {
+                  $app.openURL("https://javday.tv/search/?wd=" + favCode);
                 }
               }
             });
@@ -1680,33 +1671,38 @@ function detailView(code) {
           alpha: 0.9,
           radius: 6
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.bottom.inset(20);
           make.left.equalTo($("magnet").right).offset(5);
-          make.width
-            .equalTo(view.super)
-            .dividedBy(3)
-            .offset(-10);
+          make.width.equalTo(view.super).dividedBy(3).offset(-10);
           make.height.equalTo(30);
         },
         events: {
           tapped(sender) {
             //            $app.tips("预览视频来自 Avgle，请将 Avgle.com 加入代理");
-            showTips("preview", "预览视频来自 Avgle，请将 Avgle.com 加入代理");
-        let item = ["样品图像","Fanza预告"]
-            if(Avgle) item.push("Avgle预览")
-            if(Missav) item.push("Missav预览")
-            //if(Fanza) item.push("Fanza预告")
-            if(Jable) {
-              item.push("Jable预览")
-              item.push("完整视频")
+            //showTips("preview", "预览视频来自 Avgle，请将 Avgle.com 加入代理");
+            let item = ["样品图像", "Fanza 预告"];
+            if (Avgle) item.push("Avgle 预览");
+            
+            if (preMissavV) {
+              item.push("Missav 预览");
+              
             }
-//            let item = Jable
-//              ? ["样品图像", "八秒视频", "完整视频"]
-//              : ["样品图像", "八秒视频"];
+            //if(Fanza) item.push("Fanza预告")
+            if (Jable) {
+              item.push("Jable 预览");
+              item.push("Jable 完整视频");
+            }
+            if (Missav) {
+              item.push("Missav 完整视频");
+                         
+            }
+            //            let item = Jable
+            //              ? ["样品图像", "八秒视频", "完整视频"]
+            //              : ["样品图像", "八秒视频"];
             $ui.menu({
               items: item,
-              handler: function(title, idx) {
+              handler: function (title, idx) {
                 if (idx == 0) {
                   if (screenData == "no") {
                     $ui.error("☹️ 暂无图像", 1);
@@ -1715,23 +1711,27 @@ function detailView(code) {
                     $ui.push(screenshotView);
                     $("screenshot").data = screenData;
                   }
-                } else if (title == "Avgle预览") {
+                } else if (title == "Avgle 预览") {
                   $device.taptic(1);
                   $ui.toast("预览来自 Avgle");
                   preAvgle(favCode, 1);
-                } else if (title =="Missav预览"){
+                } else if (title == "Missav 预览") {
                   $device.taptic(1);
                   $ui.toast("预览来自 Missav");
                   preMissav(favCode);
-                }else if (title =="Fanza预告"){
+                } else if (title == "Missav 完整视频") {
+                  $device.taptic(1);
+
+                  play($cache.get("Missav"));
+                } else if (title == "Fanza 预告") {
                   $device.taptic(1);
                   //$ui.toast("预览来自 Missav");
                   preFanza(favCode);
-                }else if (title =="Jable预览"){
+                } else if (title == "Jable 预览") {
                   $device.taptic(1);
                   $ui.toast("预览来自 Jable");
                   play($cache.get("preJable"));
-                }else if (title == "完整视频") {
+                } else if (title == "Jable 完整视频") {
                   $device.taptic(1);
                   //                  JaponX(favCode, name, 1);
                   if ($cache.get("m3u8")) {
@@ -1764,13 +1764,10 @@ function detailView(code) {
           alpha: 0.9,
           radius: 6
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.bottom.inset(20);
           make.right.inset(10);
-          make.width
-            .equalTo(view.super)
-            .dividedBy(3)
-            .offset(-10);
+          make.width.equalTo(view.super).dividedBy(3).offset(-10);
           make.height.equalTo(30);
         },
         events: {
@@ -1813,7 +1810,7 @@ function detailView(code) {
           //alpha: 1,
           radius: 6
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.right.inset(10);
           if (isInToday()) make.top.equalTo($("filmCover").bottom).offset(10);
           else make.top.equalTo($("filmCover").bottom).offset(6);
@@ -1834,7 +1831,7 @@ function detailView(code) {
             //            alert(shareRec)
             $ui.menu({
               items: items,
-              handler: function(title, idx) {
+              handler: function (title, idx) {
                 if (idx == 0) {
                   let url =
                     "https://shadowNicked.github.io/?code=" + sender.info;
@@ -1844,11 +1841,10 @@ function detailView(code) {
                   //                      $share.sheet(url);
                   //                    }
                   //                  });
-                  var tinyUrl =
-                    "http://tinyurl.com/api-create.php?url=";
+                  var tinyUrl = "http://tinyurl.com/api-create.php?url=";
                   $http.get({
                     url: tinyUrl + url,
-                    handler: function(resp) {
+                    handler: function (resp) {
                       $share.sheet(resp.data);
                     }
                   });
@@ -1866,7 +1862,7 @@ function detailView(code) {
                     $input.text({
                       type: $kbType.number,
                       placeholder: "输入密码",
-                      handler: function(text) {
+                      handler: function (text) {
                         let payload = {
                           pw: text,
                           av: shareRec,
@@ -1879,7 +1875,7 @@ function detailView(code) {
                           method: "POST",
                           url: gurl,
                           body: payload,
-                          handler: function(resp) {
+                          handler: function (resp) {
                             let result = resp.data;
                             if (result == "succeed") {
                               $ui.toast("成功！", 0.5);
@@ -1917,7 +1913,7 @@ function detailView(code) {
               $input.text({
                 type: $kbType.number,
                 placeholder: "输入密码",
-                handler: function(text) {
+                handler: function (text) {
                   let payload = {
                     pw: text,
                     av: code,
@@ -1930,7 +1926,7 @@ function detailView(code) {
                     method: "POST",
                     url: gurl,
                     body: payload,
-                    handler: function(resp) {
+                    handler: function (resp) {
                       let result = resp.data;
                       if (result == "succeed") {
                         $ui.toast("成功！", 0.5);
@@ -1963,7 +1959,7 @@ function detailView(code) {
           //alpha: 1,
           radius: 6
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.right.inset(65);
           if (isInToday()) make.top.equalTo($("filmCover").bottom).offset(10);
           else make.top.equalTo($("filmCover").bottom).offset(6);
@@ -2002,7 +1998,7 @@ function detailView(code) {
                 {
                   title: "OK",
                   disabled: false, // Optional
-                  handler: function() {
+                  handler: function () {
                     $ui.toast("影片上传中", 10);
                     if (RecAvCode.indexOf(sender.info) > -1) {
                       $ui.error("该影片已在推荐列表！");
@@ -2018,7 +2014,7 @@ function detailView(code) {
                       method: "POST",
                       url: gurl,
                       body: payload,
-                      handler: function(resp) {
+                      handler: function (resp) {
                         let result = resp.data;
                         if (result == "succeed") {
                           $ui.toast("成功！", 0.5);
@@ -2036,7 +2032,7 @@ function detailView(code) {
                 },
                 {
                   title: "Cancel",
-                  handler: function() {}
+                  handler: function () {}
                 }
               ]
             });
@@ -2052,7 +2048,7 @@ function detailView(code) {
               $input.text({
                 type: $kbType.number,
                 placeholder: "输入密码",
-                handler: function(text) {
+                handler: function (text) {
                   let payload = {
                     pw: text,
                     av: code,
@@ -2065,7 +2061,7 @@ function detailView(code) {
                     method: "POST",
                     url: gurl,
                     body: payload,
-                    handler: function(resp) {
+                    handler: function (resp) {
                       let result = resp.data;
                       if (result == "succeed") {
                         $ui.toast("成功！", 0.5);
@@ -2098,7 +2094,7 @@ function detailView(code) {
           //alpha: 1,
           radius: 6
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.inset(10);
           make.top.equalTo($("filmCover").bottom).offset(10);
           make.width.equalTo(60);
@@ -2123,7 +2119,7 @@ function detailView(code) {
           editable: false
         },
 
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(130);
           make.height.equalTo(100);
           make.width.equalTo($device.info.screen.width);
@@ -2172,7 +2168,7 @@ const mTemplate = {
         align: $align.left,
         font: $font(16)
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.left.inset(10);
         make.right.inset(90);
         make.top.inset(10);
@@ -2189,7 +2185,7 @@ const mTemplate = {
         font: $font(12),
         hidden: false
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.left.inset(10);
         make.bottom.inset(2);
       }
@@ -2204,7 +2200,7 @@ const mTemplate = {
         font: $font(12),
         hidden: false
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.right.inset(10);
         make.bottom.inset(2);
       }
@@ -2221,7 +2217,7 @@ const mTemplate = {
         radius: 4,
         hidden: true
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.right.inset(43);
         make.bottom.inset(20);
         make.height.equalTo(18);
@@ -2240,7 +2236,7 @@ const mTemplate = {
         radius: 4,
         hidden: true
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.right.inset(10);
         make.bottom.inset(20);
         make.height.equalTo(18);
@@ -2269,7 +2265,7 @@ function magnetList(code) {
           hidden: isInToday()
         },
 
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(180);
           make.height.equalTo(100);
           make.width.equalTo($device.info.screen.width);
@@ -2290,7 +2286,7 @@ function magnetList(code) {
               actions: [
                 {
                   title: "分享",
-                  handler: function(sender, indexPath) {
+                  handler: function (sender, indexPath) {
                     let magnet = sender.data[indexPath.row].info;
                     $share.sheet(magnet);
                   }
@@ -2308,7 +2304,7 @@ function magnetList(code) {
                       align: $align.center,
                       font: $font("Georgia-BoldItalic", 18)
                     },
-                    layout: function(make, view) {
+                    layout: function (make, view) {
                       make.left.inset(0);
                       make.width.equalTo(view.super.width);
                       make.center.equalTo(view.super);
@@ -2318,7 +2314,7 @@ function magnetList(code) {
               }
             },
             events: {
-              didSelect: function(sender, indexPath, data) {
+              didSelect: function (sender, indexPath, data) {
                 let magnet = sender.data[indexPath.row].info;
                 $clipboard.text = magnet;
                 $device.taptic(0);
@@ -2328,37 +2324,36 @@ function magnetList(code) {
                   $input.text({
                     type: $kbType.search,
                     placeholder: "Input Quicker Mail Address",
-                    handler: function(text) {
+                    handler: function (text) {
                       $cache.set("qkMail", text);
                       if (!$cache.get("qkCode")) {
                         $input.text({
                           type: $kbType.search,
                           placeholder: "Input Quicker Code",
-                          handler: function(text) {
+                          handler: function (text) {
                             $cache.set("qkCode", text);
-                            
-                              
                           }
                         });
                       }
                     }
                   });
-                }else{
+                } else {
                   let url =
-                                                "https://push.getquicker.cn/to/quicker?toUser=" +
-                                                $cache.get("qkMail") +
-                                                "&code=" +
-                                                $cache.get("qkCode") +
-                                                "&operation=copy&data=" +
-                                                encodeURI($clipboard.text);
-                                                $http.get({
-                                                  url: url,
-                                                  handler: resp => {
-                                                    var data = resp.data;
-                                                    //console.log(data)
-                                                  if(data.errorMessage) $ui.error(data.errorMessage)
-                                                  else $ui.toast("发送成功")} 
-                                                });
+                    "https://push.getquicker.cn/to/quicker?toUser=" +
+                    $cache.get("qkMail") +
+                    "&code=" +
+                    $cache.get("qkCode") +
+                    "&operation=copy&data=" +
+                    encodeURI($clipboard.text);
+                  $http.get({
+                    url: url,
+                    handler: resp => {
+                      var data = resp.data;
+                      //console.log(data)
+                      if (data.errorMessage) $ui.error(data.errorMessage);
+                      else $ui.toast("发送成功");
+                    }
+                  });
                 }
 
                 //                $app.openURL("weixin://");
@@ -2378,7 +2373,7 @@ function magnetList(code) {
             layout: $layout.fill
           }
         ],
-        layout: function(make, view) {
+        layout: function (make, view) {
           let height = $device.info.screen.height;
           make.left.right.top.inset(0);
           make.height.equalTo(height);
@@ -2396,13 +2391,12 @@ function magnetList(code) {
           editable: false
         },
 
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(200);
           make.height.equalTo(100);
           make.width.equalTo($device.info.screen.width);
         }
-      },
-
+      }
     ],
     layout: $layout.fill
   };
@@ -2464,14 +2458,14 @@ const screenshotView = {
         title: "批量下载",
         id: "download"
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.centerX.equalTo();
         make.bottom.inset(20);
         make.height.equalTo(28);
         make.width.equalTo(120);
       },
       events: {
-        tapped: function(sender) {
+        tapped: function (sender) {
           if ($("filmActress").data.length == 1)
             var folderName = $("filmActress").data[0].actressName.text;
           else folderName = favCode;
@@ -2537,7 +2531,7 @@ const screenshotView = {
         progressColor: $color("green"),
         userInteractionEnabled: false
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.centerX.equalTo();
         make.bottom.inset(20);
         make.height.equalTo(28);
@@ -2562,7 +2556,7 @@ function actressView(actress, cover) {
           src: cover,
           radius: 5
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.top.inset(5);
           make.width.equalTo(125);
           make.height.equalTo(125);
@@ -2580,7 +2574,7 @@ function actressView(actress, cover) {
           scrollEnabled: false,
           insets: $insets(0, 0, 0, 0)
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.equalTo($("actress").right).offset(5);
           make.top.inset(5);
           make.height.equalTo(150);
@@ -2599,7 +2593,7 @@ function actressView(actress, cover) {
           scrollEnabled: false,
           insets: $insets(0, 0, 0, 0)
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           //make.left.equalTo($("actressInfo").right).offset(-5)
           make.right.inset(5);
           make.top.inset(5);
@@ -2620,7 +2614,7 @@ function actressView(actress, cover) {
           radius: 5
           //tintColor: $color("white")
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           //make.top.equalTo($("actressInfo2").bottom).offset(10)
           make.top.inset(110);
           make.left.equalTo($("actressInfo2").left).offset(2);
@@ -2684,7 +2678,7 @@ function actressView(actress, cover) {
                 autoFontSize: true,
                 radius: 5
               },
-              layout: function(make) {
+              layout: function (make) {
                 make.left.right.bottom.inset(0);
                 make.height.equalTo(25);
               }
@@ -2702,7 +2696,7 @@ function actressView(actress, cover) {
                 hidden: true,
                 alpha: 0.8
               },
-              layout: function(make, view) {
+              layout: function (make, view) {
                 make.top.right.inset(0);
                 make.height.equalTo(18);
                 make.width.equalTo(34);
@@ -2738,7 +2732,7 @@ function actressView(actress, cover) {
             }
           ]
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.right.inset(5);
           make.bottom.inset(0);
           make.top.equalTo($("actressInfo").bottom).offset(-15);
@@ -2789,7 +2783,7 @@ function actressView(actress, cover) {
           editable: false
         },
 
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(200);
           make.height.equalTo(100);
           make.width.equalTo($device.info.screen.width);
@@ -2807,7 +2801,7 @@ function actressView(actress, cover) {
           alpha: 0.8,
           index: ALL ? 0 : 1
         },
-        layout: function(make) {
+        layout: function (make) {
           make.centerX.equalTo();
           make.bottom.inset(20);
           make.height.equalTo(22);
@@ -2845,7 +2839,7 @@ function webPreviewBTN(icon, layout, handler) {
 }
 
 function navLayout() {
-  return function(make, view) {
+  return function (make, view) {
     make.left.equalTo(leftView.right);
     make.bottom.inset(25);
     make.height.equalTo(20);
@@ -2867,7 +2861,7 @@ $ui.render({
         id: "menu",
         items: ["最新", "女优", "分类", "推荐", "收藏", "归档"]
       },
-      layout: function(make) {
+      layout: function (make) {
         make.top.left.right.inset(0);
         make.height.equalTo(35);
       },
@@ -2957,7 +2951,7 @@ $ui.render({
                 RecAv.length +
                 " 网友推荐 " +
                 RecBotAv.length;
-              RecAv.map(function(i) {
+              RecAv.map(function (i) {
                 $("recMatrix").data = $("recMatrix").data.concat({
                   recCover: {
                     src: i.src
@@ -2998,15 +2992,15 @@ $ui.render({
                     "鉴于 iCloud 网络问题经常使备份文件丢失，7.95 版本开始备份改为本地存储，可访问脚本内的文件管理查看，亦可将原 iCloud 里的 JavbusBackup.json 移动至脚本的文件管理接续前期的收藏数据(请在脚本编辑页面点击右下角的设置按钮，再点击文件管理。￼)",
                   actions: [
                     {
-                      title: "打开",
+                      title: "打开 iCloud Files",
                       disabled: false, // Optional
-                      handler: function() {
+                      handler: function () {
                         $app.openURL("shareddocuments://");
                       }
                     },
                     {
                       title: "取消",
-                      handler: function() {
+                      handler: function () {
                         return;
                       }
                     }
@@ -3019,7 +3013,7 @@ $ui.render({
 
               $("input").placeholder = "已收藏 " + length + " 部影片";
               let tempFav = [];
-              LocalData.favorite.map(function(i) {
+              LocalData.favorite.map(function (i) {
                 tempFav = tempFav.concat({
                   code: i.code,
                   link: homepage + i.shortCode,
@@ -3066,7 +3060,7 @@ $ui.render({
               $("initialView").data = [];
               $("initialView").contentOffset = $point(0, 0);
               let tempArc = [];
-              LocalData.archive.map(function(i) {
+              LocalData.archive.map(function (i) {
                 tempArc = tempArc.concat({
                   code: i.code,
                   link: homepage + i.shortCode,
@@ -3108,7 +3102,7 @@ $ui.render({
         align: $align.center,
         hidden: true
       },
-      layout: function(make, view) {
+      layout: function (make, view) {
         make.size.equalTo($size(15, 15));
         make.top.inset(0);
         make.left.inset(235);
@@ -3125,11 +3119,11 @@ function getRec(url) {
   );
   $http.get({
     url: url,
-    handler: function(resp) {
+    handler: function (resp) {
       $("recMatrix").data = [];
       $cache.set("recommend", resp.data.length);
       $("newIcon").hidden = true;
-      resp.data.map(function(i) {
+      resp.data.map(function (i) {
         $("recMatrix").data = $("recMatrix").data.concat({
           recCover: {
             src: i.src
@@ -3183,7 +3177,7 @@ function catCover(title) {
           hidden: false
         },
 
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(40);
           make.height.equalTo(100);
           make.width.equalTo($device.info.screen.width);
@@ -3201,7 +3195,7 @@ function catCover(title) {
           editable: false
         },
 
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(200);
           make.height.equalTo(100);
           make.width.equalTo($device.info.screen.width);
@@ -3218,7 +3212,7 @@ function catCover(title) {
           bgcolor: $color("clear"),
           template: mainTemplate
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.right.top.bottom.inset(0);
         },
         events: {
@@ -3299,7 +3293,7 @@ function catCover(title) {
           alpha: 0.7,
           radius: 5
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.bottom.inset(50);
           make.centerX.equalTo();
           make.width.equalTo(60);
@@ -3330,7 +3324,7 @@ function catCover(title) {
           alpha: 0.8,
           index: ALL ? 0 : 1
         },
-        layout: function(make) {
+        layout: function (make) {
           make.centerX.equalTo();
           make.bottom.inset(20);
           make.height.equalTo(22);
@@ -3463,7 +3457,7 @@ function getJavLib() {
         "Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1"
     },
     body: {},
-    handler: function(resp) {
+    handler: function (resp) {
       var data = resp.data;
       //      alert(data)
     }
@@ -3494,7 +3488,7 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
     url: url + page,
     timeout: Timeout,
     header: cookies,
-    handler: function(resp) {
+    handler: function (resp) {
       if (resp.data.indexOf("404 Page Not Found") > -1) {
         $ui.toast("🙈 到底了", 0.5);
         $ui.loading(false);
@@ -3547,12 +3541,12 @@ function getInitial(mode = "home", keyword = "", caturl = "") {
       //console.log(resp.data);
       //console.log(match);
       var data = [];
-      match.map(function(i) {
+      match.map(function (i) {
         //        console.log(i)
         link = /href="([\s\S]*?)(")/.exec(i)[1];
         //        console.log(link)
         image = homepage + /<img src="([\s\S]*?)(")/.exec(i)[1];
-               //console.log(image)
+        //console.log(image)
         var title = /title="(.*?)(">)/.exec(i)[1];
         //        console.log(title)
         code = /<date>(.*?)<\/date>/.exec(i)[1];
@@ -3630,14 +3624,14 @@ function getInitialActress(url) {
   //  $console.log(page)
   $http.request({
     url: url + page,
-    handler: function(resp) {
+    handler: function (resp) {
       $ui.loading(false);
       var reg = /<a class="avatar-box text-center"[\s\S]*?<\/span>/g;
       var match = resp.data.match(reg);
       var data = [];
-      match.map(function(i) {
+      match.map(function (i) {
         var link = /href="([\s\S]*?)(")/.exec(i)[1];
-        var image = homepage+/<img src="([\s\S]*?)(")/.exec(i)[1];
+        var image = homepage + /<img src="([\s\S]*?)(")/.exec(i)[1];
         var title = /title="(.*?)(">)/.exec(i)[1];
         $("initialView").data = $("initialView").data.concat({
           link: link,
@@ -3693,7 +3687,7 @@ function getJavMag(link, flag = "0") {
       url: link,
       showsProgress: false
     },
-    layout: function(make) {
+    layout: function (make) {
       make.size.equalTo($size(0, 0));
     },
     events: {
@@ -3713,7 +3707,7 @@ function getJavMag(link, flag = "0") {
         let match = html.match(pattern);
         if (!match) return;
         //  $console.log(match)
-        match.map(function(i) {
+        match.map(function (i) {
           let maglink = /window.open\('([\s\S]*?)'/g.exec(i)[1];
           let name = decodeURI(/dn=(.*)/g.exec(maglink)[1]);
           let pat = /href[\s\S]*?<\/a>/g;
@@ -3760,14 +3754,14 @@ function getJavMag(link, flag = "0") {
 }
 
 function preAvgle(code, flag) {
-  Avgle = false
+  
   let url =
     "https://api.avgle.com/v1/search/" +
     encodeURI(code) +
     "/0?limit=10&t=a&o=bw";
   $http.get({
     url: url,
-    handler: function(resp) {
+    handler: function (resp) {
       var data = resp.data;
       var success = resp.data.success;
       if (!success || !resp.response) {
@@ -3775,173 +3769,130 @@ function preAvgle(code, flag) {
         return;
       }
       let video_num = resp.data.response.total_videos;
-//            $console.log(resp.data)
+      // $console.log(resp.data)
+
       if (video_num == 0) {
-        preMissav(code)
-       
-      return
-      }
-      let infos = resp.data.response.videos;
-      let title = infos[0].title
-      if(title.indexOf(code)>-1){
-        Avgle = true
+        preMissav(code);
+
+        return;
+      } else {
+        let infos = resp.data.response.videos;
+        Avgle = true;
         play(infos[0].preview_video_url);
-        preMissav(code,0)
       }
-      
-      
     }
   });
-  return Avgle
+  return Avgle;
 }
 
-function preMissav(code,flag){
-  Missav = false
-  let url =
-              "https://cdn.missav.com/" +
-              code +
-              "/preview.mp4";
-            $http.get({
-              url: url,
-              handler: function(resp) {
-                var data = resp.data;
-                
-                if(data.fileName){
-                  Missav = true
-                  if (flag==0)
-                    return
-                  play(url);
-                } 
-                
-                
-              }
-            });
-}
-
-function preFanza(favCode){
-  let code = favCode.toLowerCase().replace("-","00")
+function preMissav(code, flag) {
   
-  let url = "https://cc3001.dmm.co.jp/litevideo/freepv/"+code.slice(0,1)+"/"+code.slice(0,3)+"/"+code+"/"+code+"_sm_w.mp4"
-  play(url)
-  console.log(url)
+  let url = "https://cdn.missav.com/" + code + "/preview.mp4";
+  $http.get({
+    url: url,
+    handler: function (resp) {
+      var data = resp.data;
 
+      if (data.fileName) {
+        preMissavV = true;
+        
+        if (flag == 0) return;
+        $ui.toast("预览来自 Missav")
+        play(url);
+      }
+    }
+  });
 }
 
-//function getAvglePreview(keyword, poster, flag) {
-//  let url =
-//    "https://api.avgle.com/v1/search/" +
-//    encodeURI(keyword) +
-//    "/0?limit=10&t=a&o=bw";
-//  $http.request({
-//    url: url,
-//    handler: function(resp) {
-//      if ($("player")) {
-//        $("player").pause();
-//        $("player").stopLoading();
-//        $("player").remove();
-//
-//      }
-//      var success = resp.data.success;
-//      if (!success || !resp.response) {
-//        $ui.error("❌ 网络连接出错！");
-//        return;
-//      }
-//      let video_num = resp.data.response.total_videos;
-//      //      $console.log(video_num)
-//      if (video_num == 0) {
-//        if (flag == 1) $ui.error("☹️ 暂无八秒预览！");
-//        $ui.loading(false);
-//        return;
-//      }
-//      let infos = resp.data.response.videos;
-//      let videoUrl = infos[0].preview_video_url;
-//      $("detailView").add({
-//        type: "video",
-//        props: {
-//          id: "player",
-//          src: videoUrl,
-//          poster: poster,
-//          loop: true
-//        },
-//        layout: function(make, view) {
-//          let width = $device.info.screen.width - 16;
-//          let height = (width * 67) / 100;
-//          make.centerX.equalTo();
-//          make.top.equalTo($("filmName").bottom).offset(5);
-//          make.size.equalTo($size(width, height));
-//        }
-//      });
-//      $("detailView").add({
-//        type: "button",
-//        props: {
-//          title: "X",
-//          id: "X",
-//          bgcolor: $color("clear")
-//        },
-//        layout: function(make, view) {
-//          //          make.top.equalTo($("filmName").bottom).offset(6);
-//          make.top.equalTo($("player").top).offset(3);
-//          make.right.inset(11);
-//          make.width.equalTo(20);
-//          make.height.equalTo(20);
-//        },
-//        events: {
-//          tapped(sender) {
-//            if ($("player")) {
-//              $("player").pause();
-//              $("player").stopLoading();
-//              $("player").remove();
-//            }
-//            $("X").hidden = true;
-//          }
-//        }
-//      });
-//      $("detailView").add({
-//        type: "button",
-//        props: {
-//          title: "↗",
-//          id: "shareVideo",
-//          bgcolor: $color("clear")
-//        },
-//        layout: function(make, view) {
-//          make.top.equalTo($("player").bottom).offset(-20);
-//          make.right.inset(11);
-//          make.width.equalTo(20);
-//          make.height.equalTo(20);
-//        },
-//        events: {
-//          tapped(sender) {
-//            $ui.menu({
-//              items: ["nplayer打开", "分享链接"],
-//              handler: function(title, idx) {
-//                if (idx == 0) $app.openURL("nplayer-" + videoUrl);
-//                else if (idx == 1) $share.sheet([videoUrl]);
-//              }
-//            });
-//          }
-//        }
-//      });
-//      $delay(0.5, function() {
-//        $("player").play();
-//        //        $delay(12,()=>{
-//        //          $("player").pause();
-//        //                        $("player").stopLoading();
-//        //                        $("player").remove();
-//        //        })
-//      });
-//    }
-//  });
-//}
-//
+function playMissav(code) {
+  $cache.remove("Missav")
+  $("detailView").add({
+    props: {
+      title: "WebView Demo",
+      id:"missWeb"
+    },
+    views: [
+      {
+        type: "web",
+        props: {
+          url: "https://missav.com/" + code,
+          script: function () {
+            const maxWaitTime = 10000; // 最大等待时间（毫秒）
+            let timerId = null;
+            let startTime = null;
+            const checkVideoUrl = () => {
+              const currentTime = new Date().getTime();
+              if (startTime === null) {
+                startTime = currentTime;
+              }
+              if (currentTime - startTime > maxWaitTime) {
+                clearInterval(timerId);
+                $ui.error("Timeout: No URL within " + maxWaitTime + "ms");
+                return;
+              }
+              const video = document.querySelector("video.player");
+              if (video) {
+                clearInterval(timerId);
+                //console.log("cached");
+                $notify("share",{"url":video.currentSrc})
+              }
+            };
+
+            timerId = setInterval(checkVideoUrl, 100);
+          }
+        },
+        events: {
+                  share:function(object){
+                    
+                    Missav = true
+                    $cache.set("Missav",object.url)
+                    //play(object.url)
+                    $("check").bgcolor = $color("tint");
+                            $("check").titleColor = $color("white");
+                    $("missWeb").remove()
+                    console.log("missav:"+object.url)
+                    
+                  }
+                }
+        //layout: $layout.fill
+      }
+    ]
+  });
+}
+
+function preFanza(favCode) {
+  let code = favCode.toLowerCase().replace("-", "00");
+
+  let url =
+    "https://cc3001.dmm.co.jp/litevideo/freepv/" +
+    code.slice(0, 1) +
+    "/" +
+    code.slice(0, 3) +
+    "/" +
+    code +
+    "/" +
+    code +
+    "_sm_w.mp4";
+  play(url);
+  console.log(url);
+}
+
+
 function getDetail(url) {
   flag++;
   Trans = 0;
-  
+  preMissavV = false;
+  Avgle = false
+  Missav = false
+  Jable = false;
   preAvgle(favCode);
+  preMissav(favCode, 0);
+  jableTv(favCode, 0);
+  playMissav(favCode)
   $http.request({
     url: url,
     timeout: Timeout,
-    handler: function(resp) {
+    handler: function (resp) {
       if (!resp.response) {
         $ui.error("❌ 网络连接错误");
         return;
@@ -3952,11 +3903,11 @@ function getDetail(url) {
       var match = resp.data.match(actressReg);
       if (match) {
         $("whoInFilm").hidden = false;
-        match.map(function(i) {
+        match.map(function (i) {
           name = /<span>(.*?)<\/span>/.exec(i)[1];
 
           var nameLink = /href="([\s\S]*?)(")/.exec(i)[1];
-          var nameImage = homepage+/<img src="([\s\S]*?)(")/.exec(i)[1];
+          var nameImage = homepage + /<img src="([\s\S]*?)(")/.exec(i)[1];
           //$ui.action(nameImage)
           $("filmActress").data = $("filmActress").data.concat({
             link: nameLink,
@@ -3969,13 +3920,13 @@ function getDetail(url) {
           });
         });
         //        JaponX(favCode,name,0)
-        Jable = false;
-        jableTv(favCode, 0);
+        
       } else {
         $("whoInFilm").hidden = true;
       }
       // 影片详情
-      filmCover = homepage+/<a class="bigImage" href="(.*?)"/.exec(resp.data)[1];
+      filmCover =
+        homepage + /<a class="bigImage" href="(.*?)"/.exec(resp.data)[1];
       $("filmCover").src = filmCover;
       var filmName = /<a class="bigImage" href="(.*?)" title="(.*?)"/.exec(
         resp.data
@@ -3998,8 +3949,8 @@ function getDetail(url) {
         let lastmins = /\d+/.exec(temp[1]);
         let hours = Math.floor(lastmins / 60);
         let mins = lastmins % 60;
-        mins = mins<10 ? "0"+mins : mins;
-        var filmLast = "0"+hours + ":" + mins;
+        mins = mins < 10 ? "0" + mins : mins;
+        var filmLast = "0" + hours + ":" + mins;
       } else {
         var filmLast = "???分钟";
       }
@@ -4039,7 +3990,7 @@ function getDetail(url) {
       } else {
         var directorName = "未知";
       }
-      $("filmInfo").text = filmTime + "("+filmLast +")";
+      $("filmInfo").text = filmTime + "(" + filmLast + ")";
 
       $("filmInfo").hidden = isInToday();
       var code = /<span class="header">識別碼:[\s\S]*?">([\s\S]*?)<\/span>/.exec(
@@ -4074,21 +4025,22 @@ function getDetail(url) {
       //console.log("screen")
       //console.log(match)
       if (match) {
-        match.map(function(i) {
+        match.map(function (i) {
           var screenshot = /<a class="sample-box" href="(.*?)"[\s\S]*?<img src="(.*?)">/g.exec(
             i
           )[1];
           //         var resp = await $http.get(screenshot);
-          var screenshotCover = /<a class="sample-box" href="(.*?)"[\s\S]*?<img src="(.*?)"\s/g.exec(i)[2];
+          var screenshotCover = /<a class="sample-box" href="(.*?)"[\s\S]*?<img src="(.*?)"\s/g.exec(
+            i
+          )[2];
           screenData.push({
             screenshotCover: {
-              source:{
-                              url: screenshot,
-                              header:{
-                                authority:"pics.dmm.co.jp"
-                              }
-                            }
-                            
+              source: {
+                url: screenshot,
+                header: {
+                  authority: "pics.dmm.co.jp"
+                }
+              }
             },
             link: screenshot
           });
@@ -4108,7 +4060,6 @@ function getDetail(url) {
       //        $("loadingm").hidden = false
       //      } else $("loadingm").hidden = true;
       //      getAvglePreview(favCode, filmCover);
-      
     }
   });
 }
@@ -4121,7 +4072,7 @@ function getActress(url) {
     url: url + "/" + actressPage,
     timeout: Timeout,
     header: cookies,
-    handler: function(resp) {
+    handler: function (resp) {
       if (!resp.response) {
         $ui.error("❌ 网络连接错误");
         return;
@@ -4210,9 +4161,9 @@ function getActress(url) {
       var match = resp.data.match(reg);
 
       var data = [];
-      match.map(function(i) {
+      match.map(function (i) {
         var link = /href="([\s\S]*?)(")/.exec(i)[1];
-        var image = homepage+/<img src="([\s\S]*?)(")/.exec(i)[1];
+        var image = homepage + /<img src="([\s\S]*?)(")/.exec(i)[1];
         var title = /title="(.*?)(">)/.exec(i)[1];
         var code = /<date>(.*?)<\/date>/.exec(i)[1];
         var date = /\/\s<date>(.*?)<\/date><\/span>/.exec(i)[1];
@@ -4358,10 +4309,10 @@ function translate(keyword) {
         "GoogleTranslate/5.8.58002 (iPhone; iOS 10.3; zh_CN; iPhone8,1)"
     },
     url: url,
-    handler: function(resp) {
+    handler: function (resp) {
       var json = resp.data.sentences;
       var count = json.length;
-      var text = json.splice(0, count - 1).map(function(i) {
+      var text = json.splice(0, count - 1).map(function (i) {
         return i.trans;
       });
 
@@ -4396,7 +4347,7 @@ function checkAdult() {
           align: $align.center,
           editable: false
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(55);
           make.left.right.inset(90);
           make.height.equalTo(40);
@@ -4414,7 +4365,7 @@ function checkAdult() {
           align: $align.justified,
           editable: false
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(120);
           make.left.right.inset(10);
           make.height.equalTo(160);
@@ -4431,7 +4382,7 @@ function checkAdult() {
           align: $align.center,
           editable: false
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(280);
           make.left.right.inset(130);
           make.height.equalTo(40);
@@ -4449,7 +4400,7 @@ function checkAdult() {
           align: $align.center,
           editable: false
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(350);
           make.left.right.inset(10);
           make.height.equalTo(160);
@@ -4462,13 +4413,13 @@ function checkAdult() {
           titleColor: $color("black"),
           bgcolor: $color("white")
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.right.inset(120);
           make.bottom.inset(100);
           make.height.equalTo(30);
         },
         events: {
-          tapped: function(sender) {
+          tapped: function (sender) {
             $cache.set("adultCheck", {
               adult: "true"
             });
@@ -4486,13 +4437,13 @@ function checkAdult() {
           titleColor: $color("white"),
           bgcolor: $color("red")
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.right.inset(120);
           make.bottom.inset(40);
           make.height.equalTo(30);
         },
         events: {
-          tapped: function(sender) {
+          tapped: function (sender) {
             $app.close();
           }
         }
@@ -4511,7 +4462,7 @@ function getMagnet(code) {
       urls[$("mMenu").index].pattern +
       code +
       "&page=1&sort=time&a=1566535262486&b=9e46e189be0a95d862379467a19322e7",
-    handler: function(resp) {
+    handler: function (resp) {
       var data = resp.data;
 
       if (!data.success) {
@@ -4530,7 +4481,7 @@ function getMagnet(code) {
           }
         ];
       } else {
-        data.data.results.map(function(i) {
+        data.data.results.map(function (i) {
           $("mlist").data = $("mlist").data.concat({
             mFileName: {
               text: i.name,
@@ -4557,7 +4508,7 @@ function getMagnet(code) {
 function getCat(url) {
   $http.request({
     url: url,
-    handler: function(resp) {
+    handler: function (resp) {
       if (!resp.response) $ui.error("❌ 网络错误或无法访问");
       let catTitles = url.includes("uncensored") ? Utitles : Titles;
       $("catMatrix").data = [];
@@ -4566,7 +4517,7 @@ function getCat(url) {
         let content = re.exec(resp.data)[1];
         let cats = content.match(/a class=(.*?)<\/a>/g);
         let data = [];
-        cats.map(function(i) {
+        cats.map(function (i) {
           let link = /href="(.*?)">(.*?)<\/a>/.exec(i)[1];
           let name = /href="(.*?">)(.*?)<\/a>/.exec(i)[2];
           data = data.concat({
@@ -4604,14 +4555,14 @@ function iniCat(titles) {
           id: "cmenu",
           items: titles
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.left.right.inset(0);
           make.height.equalTo(40);
           make.top.inset(0);
         },
         events: {
           // 不同类目的切换
-          changed: function(sender) {
+          changed: function (sender) {
             $("catMatrix").data = Category[sender.index];
             $("catMatrix").contentOffset = $point(0, 0);
             $("loading2").hidden = true;
@@ -4655,12 +4606,12 @@ function iniCat(titles) {
             }
           ]
         },
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.equalTo($("cmenu").bottom);
           make.left.right.bottom.inset(0);
         },
         events: {
-          didSelect: function(sender, indexPath, data) {
+          didSelect: function (sender, indexPath, data) {
             pushCat(data.mlabel);
           }
         }
@@ -4678,7 +4629,7 @@ function iniCat(titles) {
           editable: false
         },
 
-        layout: function(make, view) {
+        layout: function (make, view) {
           make.top.inset(200);
           make.height.equalTo(100);
           make.width.equalTo($device.info.screen.width);
@@ -4695,7 +4646,7 @@ function iniCat(titles) {
           alpha: 0.7,
           hidden: false
         },
-        layout: function(make) {
+        layout: function (make) {
           make.centerX.equalTo();
           make.bottom.inset(20);
           make.height.equalTo(22);
@@ -4721,7 +4672,7 @@ function iniCat(titles) {
         }
       }
     ],
-    layout: function(make, view) {
+    layout: function (make, view) {
       make.left.right.bottom.inset(0);
       make.top.equalTo($("menu").bottom);
     }
@@ -4733,7 +4684,7 @@ function scriptVersionUpdate() {
   $http.get({
     url:
       "https://raw.githubusercontent.com/Nicked639/xteko/master/JavBus/updateInfo",
-    handler: function(resp) {
+    handler: function (resp) {
       var afterVersion = resp.data.version;
       var msg = resp.data.msg;
       if (afterVersion > version) {
@@ -4753,7 +4704,7 @@ function scriptVersionUpdate() {
               handler: success => {
                 if (success) {
                   $device.taptic(2);
-                  $delay(0.2, function() {
+                  $delay(0.2, function () {
                     $device.taptic(2);
                   });
 
@@ -4762,7 +4713,7 @@ function scriptVersionUpdate() {
                     actions: [
                       {
                         title: "OK",
-                        handler: function() {
+                        handler: function () {
                           $cache.remove("samp");
                           $addin.restart();
                         }
@@ -4793,6 +4744,7 @@ function runWhere() {
   if (clip) detect = clipboardDetect(clip);
   if (detect.keyword == "" || link.length > 0) {
     //    $ui.alert("g")
+    
     $app.openURL("jsbox://run?name=JavBus");
   }
   return;
@@ -4922,12 +4874,12 @@ function getNewRec(mode = "Author") {
   //  let url = mode == "Author" ? recUrl : recbotUrl;
   $http.get({
     url: recUrl,
-    handler: function(resp) {
+    handler: function (resp) {
       RecAv = resp.data;
       if (recommend < RecAv.length) {
         $("newIcon").hidden = false;
       }
-      RecAv.map(function(i) {
+      RecAv.map(function (i) {
         RecAvCode = RecAvCode.concat(i.code);
         RecAuthorCode = RecAuthorCode.concat(i.code);
       });
@@ -4936,10 +4888,10 @@ function getNewRec(mode = "Author") {
   });
   $http.get({
     url: recbotUrl,
-    handler: function(resp) {
+    handler: function (resp) {
       RecBotAv = resp.data;
 
-      RecBotAv.map(function(i) {
+      RecBotAv.map(function (i) {
         RecAvCode = RecAvCode.concat(i.code);
         RecBotCode = RecBotCode.concat(i.code);
       });
@@ -4960,7 +4912,7 @@ function getOpenData(code) {
   let url = encodeURI("https://www.javbus.com/search/" + code + "/");
   $http.request({
     url: url,
-    handler: function(resp) {
+    handler: function (resp) {
       let data = resp.data;
       var image = /photo-frame">[\s\S]*?<img src="([\s\S]*?)(")/.exec(data)[1];
       var date = /\/\s<date>(.*?)<\/date><\/span>/.exec(data)[1];
@@ -4989,7 +4941,7 @@ function readMe() {
   $cache.set("samp", "1");
   $http.get({
     url: updateUrl,
-    handler: function(resp) {
+    handler: function (resp) {
       $ui.push({
         views: [
           {
@@ -4997,7 +4949,7 @@ function readMe() {
             props: {
               content: resp.data
             },
-            layout: function(make, view) {
+            layout: function (make, view) {
               make.left.bottom.right.top.inset(0);
             }
           }
@@ -5008,18 +4960,29 @@ function readMe() {
 }
 
 function jableTv(code, flag) {
+  
+  $cache.remove("preJable")
   var jableUrl = "https://jable.tv/search/" + code + "/";
+  
   $http.get({
     url: jableUrl,
-    handler: function(resp) {
-      //      console.log(resp.data)
+    handler: function (resp) {
+      //console.log(resp.data)
       let data = resp.data;
+      //console.log(Avgle+preMissavV)
+      if(data.indexOf(code)<0){
+        
+        if (Avgle==false && preMissavV==false) 
+                 $ui.error("暂无八秒预览");
+        return
+      }
+      
       let avPattern = /https:\/\/jable.tv\/videos\/(.*)?"/g;
-      let avUrl=  ""
-      if(avPattern.exec(data)){
-         avUrl = avPattern.exec(data)[0];
-         avUrl=$detector.link(avUrl)
-         }
+      let avUrl = "";
+      if (avPattern.exec(data)) {
+        avUrl = avPattern.exec(data)[0];
+        avUrl = $detector.link(avUrl);
+      }
       //console.log("url: "+avUrl)
       if (avUrl) {
         $("check").bgcolor = $color("tint");
@@ -5028,149 +4991,27 @@ function jableTv(code, flag) {
         let prePattern = /data-preview="(https.*?_preview\.mp4)/g;
         let preUrl = prePattern.exec(data)[1];
         $cache.set("preJable", preUrl);
-        
-                        
-            }
-        //              console.log(preUrl)
-        $http.get({
-          url: avUrl,
-          handler: function(resp) {
-            let data = resp.data;
-            //console.log(data)
-            let pattern = /hlsUrl = '(.*)?'/g;
-            let m3u8 = pattern.exec(data)[1];
-            console.log(m3u8);
-            $cache.set("m3u8", m3u8);
-          }
-        });
-        $delay(2, () => {
-          if(Avgle || Missav == true) return
-        
-          else if(avUrl){
-                                                            $ui.toast("预览来自 Jable");
-                                                            play($cache.get("preJable"));
-                                                           
-                                                        }  else $ui.error("暂无八秒预览");
-        });
-      }
-      
-  });
-  //  $http.get({
-  //    url:jableUrl,
-  //    handler:function(resp){
-  ////      console.log(resp.data)
-  //      let data = resp.data
-  //      let pattern = /hlsUrl = '(.*)?'/g
-  //      let m3u8 = pattern.exec(data)[1]
-  //      console.log(m3u8)
-  //      if(m3u8){
-  //        $cache.set("m3u8",m3u8)
-  //
-  //                    //            $ui.toast("可预览完整影片！",0.8)
-  //                    $("check").bgcolor = $color("tint");
-  //                    $("check").titleColor = $color("white");
-  //                    return;
-  //
-  //
-  //      }
-  //
-  //    }
-  //  })
-}
-
-function JaponX(code, name, flag) {
-  console.log(code + " " + name);
-  $http.get({
-    url:
-      "https://www.japonx.tv/portal/index/search.html?k=" + code + "&x=0&y=0",
-    handler: function(resp) {
-      let data = resp.data;
-
-      let regID = /portal\/index\/detail\/id\/(\d+).html/gm;
-      let idArray = data.match(regID);
-      let lenId = idArray.length;
-      console.log("idArray: " + idArray);
-      if (!idArray) {
-        if (flag == 1) $ui.error("未找到完整影片！");
-        return;
-      }
-      let regYanyuan = /\/portal\/index\/search\/yanyuan_id\/\d+.html">.*<\/a>/gm;
-      let yanyuanArray = data.match(regYanyuan);
-      //console.log(yanyuanArray);
-      let len = yanyuanArray.length;
-      let pop = len - lenId;
-      yanyuanArray.splice(0, pop);
-      for (let i = 0; i < lenId; i++) {
-        if (yanyuanArray[i].indexOf(name) > 0) {
-          console.log("actressNum: " + i);
-          let id = regID.exec(idArray[i])[1];
-          console.log("movieId: " + id);
-          if (flag == 0) {
-            //            $ui.toast("可预览完整影片！",0.8)
-            $("check").bgcolor = $color("tint");
-            $("check").titleColor = $color("white");
-            return;
-          }
-          geturl(id);
-          return;
+        if(Avgle==false && preMissavV==false){
+          $ui.toast("预览来自 Jable");
+          play($cache.get("preJable"));
         }
       }
-      if (flag == 1) $ui.error("未找到完整影片 ！");
-      return;
-    }
-  });
-}
-
-function geturl(id) {
-  $ui.loading(true);
-  $http.get({
-    url: "https://www.japonx.tv/portal/index/ajax_get_js.html?id=" + id,
-    handler: function(resp) {
-      $ui.loading(false);
-      var arr = resp.data;
-      var fg1 = arr.split("p}('")[1];
-      var fg2 = fg1.split("}});")[0] + "}});";
-      var k = "|" + arr.match(/\,\'\|(\S*?).split/)[1];
-      var tk = k.split("|");
-      var ac = arr.match(/\}\)\;\'\,(\S*?)\,/)[1];
-      urljs(tk, ac, fg2);
-    }
-  });
-}
-
-function urljs(tk, ac, fg2) {
-  var aa = (function(p, a, c, k, e, d) {
-    e = function(c) {
-      return (
-        (c < a ? "" : e(parseInt(c / a))) +
-        ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36))
-      );
-    };
-    if (!"".replace(/^/, String)) {
-      while (c--) {
-        d[e(c)] = k[c] || e(c);
-      }
-      k = [
-        function(e) {
-          return d[e];
+      //              console.log(preUrl)
+      $http.get({
+        url: avUrl,
+        handler: function (resp) {
+          let data = resp.data;
+          //console.log(data)
+          let pattern = /hlsUrl = '(.*)?'/g;
+          let m3u8 = pattern.exec(data)[1];
+          console.log("jable:"+m3u8);
+          $cache.set("m3u8", m3u8);
         }
-      ];
-      e = function() {
-        return "\\w+";
-      };
-      c = 1;
+      })
     }
-    while (c--) {
-      if (k[c]) {
-        p = p.replace(new RegExp("\\b" + e(c) + "\\b", "g"), k[c]);
-      }
-    }
-    return p;
-  })(fg2, ac, ac, tk, 0, {});
-  var url = aa.match(/url:\\\'(\S*?)\\\'/)[1];
-  url = url.replace(/\'/g, "");
-  play(url);
+  });
 }
+
 
 function play(url) {
   if ($("player")) {
@@ -5180,14 +5021,27 @@ function play(url) {
   }
   $("detailView").add({
     type: "video",
-    props: {
+    props: url.indexOf("video.m3u8")>-1?{
+      id: "player",
+      //src: url,
+      //poster: filmCover,
+      loop: true,
+      radius: 10,
+request:{
+        url: url,
+        header:{
+            "referer":url.indexOf("video.m3u8")>-1?"https://missav.com/":""
+         },
+       
+      },
+    }:{
       id: "player",
       src: url,
       poster: filmCover,
       loop: true,
-      radius: 10
+      radius: 10,
     },
-    layout: function(make, view) {
+    layout: function (make, view) {
       let width = $device.info.screen.width - 16;
       let height = (width * 67) / 100;
       make.centerX.equalTo();
@@ -5203,7 +5057,7 @@ function play(url) {
       id: "X",
       bgcolor: $color("clear")
     },
-    layout: function(make, view) {
+    layout: function (make, view) {
       //          make.top.equalTo($("filmName").bottom).offset(6);
       make.top.equalTo($("player").top).offset(3);
       make.right.inset(11);
@@ -5228,7 +5082,7 @@ function play(url) {
       id: "shareVideo",
       bgcolor: $color("clear")
     },
-    layout: function(make, view) {
+    layout: function (make, view) {
       make.top.equalTo($("player").bottom).offset(-20);
       make.right.inset(11);
       make.width.equalTo(20);
@@ -5238,7 +5092,7 @@ function play(url) {
       tapped(sender) {
         $ui.menu({
           items: ["nplayer打开", "分享链接"],
-          handler: function(title, idx) {
+          handler: function (title, idx) {
             if (idx == 0) $app.openURL("nplayer-" + url);
             else if (idx == 1) $share.sheet([url]);
           }
@@ -5246,28 +5100,15 @@ function play(url) {
       }
     }
   });
-  $delay(0.5, function() {
+  $delay(0.5, function () {
     $("player").play();
   });
-  //  $ui.render({
-  //    props: {
-  //      title: "JavBus"
-  //    },
-  //    views: [{
-  //      type: "web",
-  //      props: {
-  //        id: "japronx",
-  //        url: url
-  //      },
-  //      layout: $layout.fill
-  //    },
-  //    ]
-  //  });
+  
 }
 
 function searchAr(text) {
   let tempArc = [];
-  LocalData.archive.map(function(i) {
+  LocalData.archive.map(function (i) {
     if (i.code.indexOf(text.toUpperCase()) > -1) {
       tempArc = tempArc.concat({
         code: i.code,
