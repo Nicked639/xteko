@@ -1842,13 +1842,23 @@ function detailView(code) {
                   //                      $share.sheet(url);
                   //                    }
                   //                  });
-                  var tinyUrl = "http://tinyurl.com/api-create.php?url=";
                   $http.get({
-                    url: tinyUrl + url,
-                    handler: function (resp) {
-                      $share.sheet(resp.data);
-                    }
-                  });
+                      url: "http://is.gd/create.php?format=simple&url=" + $text.URLEncode(url),
+                      handler: function(resp) {
+                        var data = resp.data;
+                        console.log(data);
+                        if (data.indexOf("is.gd")) {
+                          $share.sheet(data);
+                        } else $ui.toast("短链接生成失败");
+                      }
+                    });
+                  //var tinyUrl = "http://tinyurl.com/api-create.php?url=";
+                  //$http.get({
+                    //url: tinyUrl + url,
+                    //handler: function (resp) {
+                     // $share.sheet(resp.data);
+                    //}
+                  //});
                 } else if (idx == 1) {
                   $clipboard.text = sender.info;
                   $ui.toast("番号 " + sender.info + " 已复制");
