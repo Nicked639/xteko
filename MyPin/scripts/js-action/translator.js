@@ -171,7 +171,7 @@ function transUI() {
                     type: "text",
                     props: {
                       id: "originput",
-                      font: $font(14),
+                      font: $font(12),
                       bgcolor: $color("clear")
                     },
                     layout: function(make, view) {
@@ -207,9 +207,9 @@ function transUI() {
                     props: {
                       id: "transinput",
                       editable: false,
-                      font: $font(14),
+                      font: $font(12),
                       bgcolor: $color("clear"),
-                      textColor: $color("black")
+                      //textColor: $color("white")
                     },
                     layout: function(make, view) {
                       make.left.right.top.inset(0);
@@ -217,18 +217,26 @@ function transUI() {
                     }
                   },
                   {
-                    type: "text",
+                    type: "button",
                     props: {
                       id: "Pinyin",
-                      editable: false,
+                      //editable: false,
                       font: $font(12),
                       bgcolor: $color("clear"),
-                      textColor: $color("#777777")
+                      titleColor: $color("#aaaaaa"),
+                      align:"left"
                     },
                     layout: function(make, view) {
-                      make.left.right.inset(0);
+                      make.left.inset(8);
                       make.top.inset(135);
-                      make.bottom.inset(5);
+                      make.bottom.inset(0);
+                    },
+                    events: {
+                      tapped: function(sender) {
+                          $clipboard.text = sender.title.trim()
+                          $ui.toast("已复制拼音",1)
+                        
+                      }
                     }
                   }
                 ]
@@ -280,7 +288,7 @@ function transUI() {
                   },
                   longPressed(sender) {
                     $device.taptic(0);
-                    var ttext = $("Pinyin").text;
+                    var ttext = $("Pinyin").title;
                     if (ttext == "") {
                       return;
                     } else {
@@ -575,8 +583,8 @@ function translate() {
           }
         }
       }
-      if (SPinyin) $("Pinyin").text = SPinyin;
-      else $("Pinyin").text = TPinyin;
+      if (SPinyin) $("Pinyin").title = SPinyin;
+      else $("Pinyin").title = TPinyin;
       //      $clipboard.text=JSON.stringify(data)
       var src = results.src || results.sentences.src;
       if (src == "en" || src == "es" || src == "fr" || src == "pt") {
