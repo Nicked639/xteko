@@ -1207,6 +1207,11 @@ function detailView(code) {
             $quicklook.open({
               image: $("filmCover").image
             });
+          },
+          longPressed(sender){
+          
+            $share.sheet($("filmCover").src)
+            //$ui.toast("链接已复制")
           }
         }
       },
@@ -5071,10 +5076,12 @@ function jableTv(code, flag) {
       let data = resp.data;
       //console.log(Avgle+preMissavV)
       if(data.indexOf(code)<0){
+        $delay(1, () => {
+          if (Avgle==false && preMissavV==false) 
+                           $ui.error("暂无八秒预览");
+                  return
+        })
         
-        if (Avgle==false && preMissavV==false) 
-                 $ui.error("暂无八秒预览");
-        return
       }
       
       let avPattern = /https:\/\/jable.tv\/videos\/(.*)?"/g;
@@ -5091,10 +5098,15 @@ function jableTv(code, flag) {
         let prePattern = /data-preview="(https.*?_preview\.mp4)/g;
         let preUrl = prePattern.exec(data)[1];
         $cache.set("preJable", preUrl);
-        if(Avgle==false && preMissavV==false){
-          $ui.toast("预览来自 Jable");
-          play($cache.get("preJable"));
-        }
+        $delay(1, () => {
+                  if(Avgle==false && preMissavV==false){
+                            $ui.toast("预览来自 Jable");
+                            play($cache.get("preJable"));
+                            
+                          }
+                })
+        
+        
       }
       //              console.log(preUrl)
       $http.get({
