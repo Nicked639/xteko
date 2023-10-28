@@ -2,8 +2,8 @@ let screenWidth = $device.info.screen.width;
 let offset = (screenWidth * 0.2 - 16) / 7;
 var canvas = require("./js-action/canvas");
 var rightView;
-var fontType = $cache.get("fontType")||"Courier"
-var fontSize = $cache.get("fontSize")||"13"
+var fontType = $cache.get("fontType") || "Courier";
+var fontSize = $cache.get("fontSize") || "13";
 function show(text) {
   $ui.render({
     type: "blur",
@@ -25,8 +25,9 @@ function show(text) {
             props: {
               id: "textvw",
               bgcolor: $color("clear"),
-              font: $font(fontType, fontSize),
+              font: $font(fontType, 13),
               insets: $insets(9, 10, 2, 2),
+              textColor: $color("#77B107"),
               accessoryView: {
                 type: "blur",
                 props: {
@@ -48,30 +49,14 @@ function show(text) {
                     function(sender) {
                       $device.taptic(0);
                       var content = contentCheck();
-                      saveClip(content,mode)
-
+                      saveClip(content, mode);
                     }
                   ),
-                  accessoryBTN(
-                    canvas.cross(5, 1.2),
-                    btnGeneralLayout(),
+                  accessoryBTN2(
+                    "019",
+
                     function(sender) {
-                      $device.taptic(0);
-                      $("mainbg").remove();
-                      var dataManager = require("./data-manager");
-                      dataManager.init(mode);
-                      var path =
-                        $app.env == $env.app ? "scripts/app" : "scripts/widget";
-                      var module = require(path);
-                      module.init(mode);
-                      if (path == "scripts/widget") {
-                        iconColor(mode);
-                        $("input").text = $clipboard.text
-                       
-                          ? $clipboard.text
-                          : "轻点输入..";
-                          $("input").textColor = $clipboard.text==undefined ?$color("gray"):($clipboard.text.indexOf("\n")>=0?$color("#325793"):$color("black"))
-                      } else $("tab").index = mode == "clip" ? 0 : 1;
+                      $("textvw").text = $("textvw").text + $clipboard.text;
                     }
                   ),
                   accessoryBTN(
@@ -112,7 +97,7 @@ function show(text) {
                     "022",
                     function(sender) {
                       $device.taptic(0);
-                      
+
                       var content = contentCheck();
                       if (content != "") $share.sheet(content);
                       else $ui.error($l10n("NO_CONTENT"), 0.6);
@@ -121,7 +106,7 @@ function show(text) {
                       $device.taptic(0);
                       if ($clipboard.image) {
                         $share.sheet($clipboard.image);
-//                        $ui.toast($l10n("IMAGE_SAVED"), 0.6);
+                        //                        $ui.toast($l10n("IMAGE_SAVED"), 0.6);
                       } else $ui.error($l10n("CLIP_NO_IMAGE"), 0.6);
                     }
                   ),
@@ -156,21 +141,75 @@ function show(text) {
                       var content = contentCheck();
                       var prvw = require("./js-action/widgetprvw");
                       if (content != "") {
+                        $app.openURL("x-web-search://?" + encodeURI(content));
+                      } else $ui.error($l10n("NO_CONTENT"), 0.6);
+                    },
+                    function(sender) {
+                      $device.taptic(0);
+                      var content = contentCheck();
+                      var prvw = require("./js-action/widgetprvw");
+                      if (content != "") {
                         $device.taptic(0);
                         $("textvw").blur();
                         prvw.show(content);
                       } else $ui.error($l10n("NO_CONTENT"), 0.6);
+                      //                      if ($clipboard.image) {
+                      //
+                      //                        showImage($clipboard.image);
+                      //                      } else $ui.error($l10n("CLIP_NO_IMAGE"), 0.6);
                     },
-                    function(sender) {
-                  
-                      $device.taptic(0);
-                      if ($clipboard.image) {
-                    
-                        showImage($clipboard.image);
-                      } else $ui.error($l10n("CLIP_NO_IMAGE"), 0.6);
+                    function(sender, location) {
+                      $device.taptic(1);
+
+                      if (location.y > 150) {
+                        var content = contentCheck();
+                        if (content != "") {
+                          $app.openURL("aisearch://command?q=" + content);
+                        } else $ui.error($l10n("NO_CONTENT"), 0.6);
+
+                        return;
+                      } else if (location.y < -100) {
+                        return;
+                      }
                     }
                   )
                 ]
+              }
+            },
+            events: {
+tapped: () => {
+                 if ($app.env == $env.today) {
+                                    $input.text({
+                                       text,
+                                       handler: t => {
+                                         $device.taptic(0);
+                                          
+                                         var content = t; //contentCheck();
+                                         saveClip(content, mode, "scripts/widget");
+                                       }
+                                     });
+                 }
+  
+              }
+            }
+          },
+          {
+            type: "button",
+            props: {
+              src: "assets/goBack.png",
+              font: $font(14),
+              bgcolor: $color("clear"),
+              id: "back",
+              hidden: $app.env == $env.today ? false : true
+            },
+            layout: function(make, view) {
+              make.width.height.equalTo(25);
+              make.centerX.equalTo();
+              make.bottom.inset(5);
+            },
+            events: {
+              tapped: function(sender) {
+                goBack(mode);
               }
             }
           }
@@ -199,32 +238,28 @@ function contentCheck() {
   return ctext;
 }
 
-function convertImage(image){
-  let width = image.image.size.width
-  let height = image.image.size.height
-  let fix = 1
-  alert(width)
-  if (width>height) {
-     fix = width/300
-     let resized = image.image.resized($size(300/fix,height/fix))
-     return resized
+function convertImage(image) {
+  let width = image.image.size.width;
+  let height = image.image.size.height;
+  let fix = 1;
+  alert(width);
+  if (width > height) {
+    fix = width / 300;
+    let resized = image.image.resized($size(300 / fix, height / fix));
+    return resized;
+  } else {
+    fix = height / 400;
+    let resized = image.image.resized($size(width / fix, 400 / fix));
+    return resized;
   }
-  else {
-     fix = height/400
-     let resized = image.image.resized($size(width/fix,400/fix))
-     return resized
-  }
-  
-  
 }
 
-function showImage(image,ri) {
+function showImage(image, ri) {
   if ($app.env == $env.today) {
     $widget.height = 400;
   }
   $("textvw").blur();
-  
-  
+
   $ui.window.add({
     type: "blur",
     props: {
@@ -239,7 +274,7 @@ function showImage(image,ri) {
         },
         layout: function(make, view) {
           make.center.equalTo(view.super);
-          make.size.equalTo($size(300,300));
+          make.size.equalTo($size(300, 300));
         }
       }
     ],
@@ -295,7 +330,7 @@ function accessoryBTN(canvas, layout, handler, handler2) {
   };
 }
 
-function accessoryBTN2(icon, handler, handler2) {
+function accessoryBTN2(icon, handler, handler2, handler3) {
   return {
     type: "button",
     props: {
@@ -308,7 +343,8 @@ function accessoryBTN2(icon, handler, handler2) {
     layout: btnGeneralLayout(),
     events: {
       tapped: handler,
-      longPressed: handler2
+      longPressed: handler2,
+      touchesEnded: handler3
     }
   };
 }
@@ -329,33 +365,59 @@ function iconColor(mode) {
   } else $("fav").icon = $icon("091", $color("#ed9e31"), $size(18, 18));
 }
 
-
-function saveClip(text, mode = "clip") {
+function goBack(mode = "clip") {
   var dataManager = require("./data-manager");
-  $clipboard.set({ "type": "public.plain-text", "value": text });
   $device.taptic(0);
   $("mainbg").remove();
   dataManager.init(mode);
-  var path = $app.env == $env.app ? "scripts/app" : "scripts/widget";
+  var module = require("scripts/widget");
+  module.init(mode);
+  var builder = require("./builder");
+  builder.reloadTextItems(mode);
+  $("input").textColor =
+    $clipboard.text == undefined
+      ? $color("gray")
+      : $clipboard.text.indexOf("\n") >= 0
+      ? $color("#325793")
+      : $color("black");
+  $("input").text = $clipboard.text;
+  iconColor(mode);
+
+  $delay(0.1, function() {
+    $("clipboard-list").contentOffset = $point(0, scrollFlag * 30);
+  });
+}
+
+function saveClip(text, mode = "clip", path = "scripts/app") {
+  var dataManager = require("./data-manager");
+  $clipboard.set({ type: "public.plain-text", value: text });
+  $device.taptic(0);
+  $("mainbg").remove();
+  dataManager.init(mode);
+
   var module = require(path);
   module.init(mode);
   var builder = require("./builder");
   builder.reloadTextItems(mode);
   $("input").text = $clipboard.text ? $clipboard.text : "轻点输入..";
-//  $("input").textColor = $clipboard.text ? inputColor() : $color("gray");
-  $("input").textColor = $clipboard.text==undefined ?$color("gray"):($clipboard.text.indexOf("\n")>=0?$color("#325793"):$color("black"))
-  
+  $("input").textColor =
+    $clipboard.text == undefined
+      ? $color("gray")
+      : $clipboard.text.indexOf("\n") >= 0
+      ? $color("#325793")
+      : $color("black");
+  //
   iconColor(mode);
 }
 
 function editor(text) {
   $device.taptic(0);
   show(text);
-  $("textvw").focus();
   if (text !== undefined && text.length > 0) {
     $("textvw").text = text;
-  } else if ($app.env == $env.app && $clipboard.text !== undefined) {
-    $("textvw").text = $clipboard.text;
+    if ($app.env == $env.app) {
+      $("textvw").focus();
+    }
   }
 }
 
