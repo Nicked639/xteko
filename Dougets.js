@@ -82,7 +82,7 @@ $widget.setTimeline({
                 {
                     type: "color",
                     props: {
-                        color: "black",
+                        color: $color("gray"),
                         opacity: 0.2
                     }
                 },
@@ -90,7 +90,7 @@ $widget.setTimeline({
                     type: "hstack",
                     props: {
                       alignment: $widget.horizontalAlignment.left,
-                      spacing: 5
+                      spacing: 15
                     },
                     views: [
                     
@@ -104,16 +104,18 @@ $widget.setTimeline({
                                 width: 70,
                                 height: height
                                 
-                      }
+                      },
+                     offset: $point(10, -3)
                     },
                     views: [
-                      spacerMaker(height * 57 / 155, 45),
+                      spacerMaker(height * 48 / 155, 50),
                       {
                         type: "text",
                         props: {
                           text: ""+currentDay,
                           color:$color("white"),
-                          font:$font("Helvetica-Light",40)
+                          font:$font("Helvetica-Light",53),
+                          offset: $point(0, 2)
                         }
                       },
                       {
@@ -121,7 +123,7 @@ $widget.setTimeline({
                         props: {
                           text: chineseMonth+"｜"+chineseWeekday,
                           color:$color("white"),
-                          font:$font(8)
+                          font:$font(9)
                         }
                       },
                       {
@@ -129,7 +131,8 @@ $widget.setTimeline({
                         props: {
                           text: `${movie_data.subject.actors[0].name}`.replace("·","•"),
                           color:$color("white"),
-                          font:$font(8)
+                          font:$font(9),
+                          offset: $point(0, -2)
                         }
                       },
                     ]
@@ -142,7 +145,8 @@ $widget.setTimeline({
                         frame: {
                             width: width - 90,
                             height: height
-                        }
+                        },
+                        offset: $point(5, 0)
                     },
                     views: [
                         spacerMaker(height * 70 / 155, width - 90),
@@ -157,7 +161,8 @@ $widget.setTimeline({
                                     type: "text",
                                     props: {
                                         text: `《${movie_data.subject.title}》`,
-                                        font: $font("bold", 15),
+                                        link: movie_data.subject.url,
+                                        font: $font("bold", 14.5),
                                         color: $color("white"),
                                         minimumScaleFactor: 0.5,
                                         lineLimit: 1
@@ -166,11 +171,13 @@ $widget.setTimeline({
                                 {
                                     type: "zstack",
                                     props: {
-                                        alignment: $widget.alignment.center,
+                                        alignment: $widget.alignment.left,
                                         frame: {
-                                            width: 70,
-                                            height: 15
-                                        }
+                                            width: 60,
+                                            height: 15,
+
+                                        },
+                                                                                    offset: $point(-7, 0)
                                     },
                                     views: [
                                         {
@@ -184,7 +191,7 @@ $widget.setTimeline({
                                             type: "text",
                                             props: {
                                                 text: `豆瓣评分 ${movie_data.subject.rating == null ? "无" : movie_data.subject.rating.value}`,
-                                                font: $font("bold", 10),
+                                                font: $font("bold", 9),
                                                 color: $color("black"),
                                                 minimumScaleFactor: 1,
                                                 lineLimit: 1
@@ -202,7 +209,8 @@ $widget.setTimeline({
                                 font: $font("bold", 12),
                                 color: $color("white"),
                                 minimumScaleFactor: 0.5,
-                                lineLimit: 2
+                                lineLimit: 2,
+                                offset: $point(0, -2)
                             }
                         }
                     ]
