@@ -3,11 +3,12 @@
 Dougets by Neurogram modified by Nickilism
 
  - Medium widget only
- - Tap image to open movie web page of Douban or app
+ - Tap image to open movie of Douban app
+ - Tap title to open movie web page
  
 
 */
-const mode = 1 // 0 open web page,1 app
+
 const monthNames = [
   '一月',
   '二月',
@@ -68,7 +69,7 @@ $widget.setTimeline({
                 uri: movie_data.comment.poster,
                 resizable: true,
                 scaledToFill: true,
-                link: mode==0?movie_data.subject.url:movie_data.subject.uri.replace("douban.com","v2")
+                link: movie_data.subject.uri.replace("douban.com","v2")
             }
         }
 
@@ -129,7 +130,7 @@ $widget.setTimeline({
                       {
                         type: "text",
                         props: {
-                          text: `${movie_data.subject.actors[0].name}`.replace("·","•"),
+                          text: `${movie_data.subject.actors[0].name}`+" ",
                           color:$color("white"),
                           font:$font(9),
                           offset: $point(0, -2)
@@ -143,10 +144,10 @@ $widget.setTimeline({
                         alignment: $widget.horizontalAlignment.leading,
                         spacing: 5,
                         frame: {
-                            width: width - 90,
+                            width: width - 100,
                             height: height
                         },
-                        offset: $point(5, 0)
+                        offset: $point(5, 0.5)
                     },
                     views: [
                         spacerMaker(height * 70 / 155, width - 90),
