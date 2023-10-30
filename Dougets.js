@@ -106,7 +106,7 @@ $widget.setTimeline({
                                 height: height
                                 
                       },
-                     offset: $point(10, -3)
+                     offset: $point(4, -2)
                     },
                     views: [
                       spacerMaker(height * 48 / 155, 50),
@@ -147,7 +147,7 @@ $widget.setTimeline({
                             width: width - 100,
                             height: height
                         },
-                        offset: $point(5, 0.5)
+                        offset: $point(4, 1.5)
                     },
                     views: [
                         spacerMaker(height * 70 / 155, width - 90),
@@ -178,7 +178,7 @@ $widget.setTimeline({
                                             height: 15,
 
                                         },
-                                                                                    offset: $point(-7, 0)
+                                                                                    offset: $point(-10, 0)
                                     },
                                     views: [
                                         {
