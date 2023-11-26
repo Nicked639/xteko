@@ -1634,7 +1634,7 @@ function detailView(code) {
                   $app.openURL("https://jav.guru/zh/?s=" + favCode);
                 } else if (title == "Jable.TV") {
                   $app.openURL("https://jable.tv/search/" + favCode + "/");
-                } else if (title == "Javlibrary") {
+                } else if (title == "JavLibrary") {
                   $app.openURL(
                     "http://www.javlibrary.com/cn/vl_searchbyid.php?keyword=" +
                       favCode
@@ -3865,14 +3865,15 @@ function preAvgle(code, flag) {
     "/0?limit=10&t=a&o=bw";
   $http.get({
     url: url,
+    timeout:2,
     handler: function (resp) {
       var data = resp.data;
       var success = resp.data.success;
+      let video_num = 0
       if (!success || !resp.response) {
-        $ui.error("❌ 网络连接出错！");
-        return;
-      }
-      let video_num = resp.data.response.total_videos;
+        $ui.error("❌ Avgle 网络连接出错！");
+      }else
+        video_num = resp.data.response.total_videos;
       // $console.log(resp.data)
 
       if (video_num == 0) {
